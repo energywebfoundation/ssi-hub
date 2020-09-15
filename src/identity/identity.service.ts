@@ -19,7 +19,8 @@ export class IdentityService {
 
   public async create() {
     const data = {
-      uid: "_:new"
+      uid: "_:new",
+      type: "identity"
     }
 
     const res = await this.dgraph.mutate(data);

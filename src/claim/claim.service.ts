@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { ClaimDefinition, ClaimDefinitionDTO } from '../Interfaces/Claims';
+import { ClaimDefinitionDTO } from './ClaimDTO';
+import { ClaimDefinition } from './ClaimTypes';
 
 @Injectable()
 export class ClaimService {
@@ -30,6 +31,7 @@ export class ClaimService {
   public async addClaim(data: ClaimDefinitionDTO) {
     const p: ClaimDefinition = {
       uid: "_:new",
+      type: "claimDefinition",
       "namespace": data.namespace,
       "title": data.title,
       "owner": data.owner,

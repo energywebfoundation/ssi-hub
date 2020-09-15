@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { DgraphService } from './dgraph/dgraph.service';
 import { ClaimController } from './claim/claim.controller';
 import { ClaimService } from './claim/claim.service';
@@ -15,7 +13,7 @@ import { RoleService } from './role/role.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, ClaimController, OrganizationController, ApplicationController, RoleController, IdentityController],
-  providers: [AppService, DgraphService, ClaimService, OrganizationService, IdentityService, ApplicationService, RoleService],
+  controllers: [ClaimController, OrganizationController, ApplicationController, RoleController, IdentityController],
+  providers: [DgraphService, ClaimService, OrganizationService, IdentityService, ApplicationService, RoleService],
 })
 export class AppModule {}

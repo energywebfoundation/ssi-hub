@@ -23,8 +23,11 @@ export class DgraphService {
     return txn.mutate(mu);
   }
 
-  public async query(query: string, params: Record<string, any>) {
-    return this.instance.newTxn({readOnly: true}).queryWithVars(query, params)
+  public async query(query: string, params?: Record<string, any>) {
+    if(params) {
+      return this.instance.newTxn({readOnly: true}).queryWithVars(query, params)
+    }
+    return this.instance.newTxn({readOnly: true}).query(query)
   }
 
   private createInstance() {
@@ -36,6 +39,7 @@ export class DgraphService {
       "localhost:9080",
       grpc.credentials.createInsecure(),
     );
+
 
     this._stub = clientStub;
     this._instance = new DgraphClient(clientStub);

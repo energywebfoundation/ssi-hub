@@ -7,6 +7,16 @@ export class ApplicationService {
     private readonly dgraph: DgraphService
   ) {}
 
+  public async getAll() {
+    const res =  await this.dgraph.query(`
+    query all($i: string){
+      Data(func: eq(type, "app")) {
+        uid
+      }
+    }`)
+    return res.getJson();
+  }
+
   public async getById(id: string) {
     const res =  await this.dgraph.query(`
     query all($i: string){
@@ -19,7 +29,8 @@ export class ApplicationService {
 
   public async create() {
     const data = {
-      uid: "_:new"
+      uid: "_:new",
+      type: "app"
     }
 
     const res = await this.dgraph.mutate(data);
