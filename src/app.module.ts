@@ -10,10 +10,12 @@ import { IdentityController } from './identity/identity.controller';
 import { IdentityService } from './identity/identity.service';
 import { ApplicationService } from './application/application.service';
 import { RoleService } from './role/role.service';
+import { Web3Service } from './web3/web3.service';
+import { GraphqlController } from './graphql/graphql.controller';
 
 @Module({
   imports: [],
-  controllers: [ClaimController, OrganizationController, ApplicationController, RoleController, IdentityController],
-  providers: [DgraphService, ClaimService, OrganizationService, IdentityService, ApplicationService, RoleService],
+  controllers: [ClaimController, OrganizationController, ApplicationController, RoleController, IdentityController, GraphqlController],
+  providers: [DgraphService, ClaimService, OrganizationService, IdentityService, ApplicationService, RoleService, Web3Service],
 })
 export class AppModule {}

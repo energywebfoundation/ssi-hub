@@ -1,27 +1,39 @@
 version: '3.4'
 
-x-common: &common
-  image: app:local
-  labels:
-    com.app: app
-  networks:
-    - app
-  volumes:
-    - build:/app/build/
-
 services:
-  builder:
-    volumes:
-      - build:/app/build/
-      - .:/app:delegated
-    <<: *common
-    build: .
-    container_name: app-builder
-    working_dir: /app
-    command: ['node', 'dist/main']
-
-networks:
   app:
-
-volumes:
-  build:
+    container_name: app
+    build:
+      context: .
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3000:3000
+    command: npm run start:dev
+    depends_on:
+      - dgraph
+  zero:
+    image: dgraph/dgraph:latest
+    volumes:
+      - /tmp/data:/dgraph
+    ports:
+      - 5080:5080
+      - 6080:6080
+    restart: on-failure
+    command: dgraph zero --my=zero:5080
+  dgraph:
+    image: dgraph/dgraph:latest
+    volumes:
+      - /tmp/data:/dgraph
+    ports:
+      - 8080:8080
+      - 9080:9080
+    restart: on-failure
+    command: dgraph alpha --my=dgraph:7080 --lru_mb=2048 --zero=zero:5080
+  nats:
+    image: nats
+    ports:
+      - '4222:4222'
+      - '6222:6222'
+      - '8222:8222'

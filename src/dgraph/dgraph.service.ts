@@ -14,6 +14,10 @@ export class DgraphService {
   constructor() {
     this.createInstance();
   }
+  
+  public async migrate(){
+    return this.mutate({});
+  }
 
   public async mutate(data: unknown) {
     const txn = await this.instance.newTxn();
@@ -30,16 +34,28 @@ export class DgraphService {
     return this.instance.newTxn({readOnly: true}).query(query)
   }
 
-  private createInstance() {
+  private async createInstance() {
     if(this._instance) {
       return;
     }
 
-    const clientStub = new DgraphClientStub(
-      "localhost:9080",
-      grpc.credentials.createInsecure(),
-    );
+    let clientStub: DgraphClientStub;
 
+    let retries = 5;
+    while(retries) {
+      try {
+        clientStub = new DgraphClientStub(
+          "dgraph:9080",
+          grpc.credentials.createInsecure(),
+        );
+        console.log('connection successfuly')
+        break;
+      } catch (err) {
+        console.log(err);
+        retries--;
+        await new Promise(res => setTimeout(res, 5000))
+      }
+    }
 
     this._stub = clientStub;
     this._instance = new DgraphClient(clientStub);
