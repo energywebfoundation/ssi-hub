@@ -14,10 +14,17 @@ export class RoleController {
     return await this.roleService.getAll();
   }
 
-  @Get('/:id')
+  @Get('/:namespace')
   @ApiTags('Roles')
-  public async getById(@Param('id') id: string) {
-    return await this.roleService.getById(id);
+  public async getById(@Param('namespace') id: string) {
+    return await this.roleService.getByNamespace(id);
+  }
+
+  @Get('/exists/:namespace')
+  @ApiTags('Roles')
+  public async checkNamespace(@Param('namespace') namespace: string) {
+    const namespaces = await this.roleService.namespaceExists(namespace);
+    return namespaces.Data.length > 0;
   }
 
   @Post()

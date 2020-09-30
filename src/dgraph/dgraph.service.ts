@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DgraphClient, DgraphClientStub, Mutation } from 'dgraph-js';
+import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import * as grpc from 'grpc';
 
 @Injectable()
@@ -13,10 +13,18 @@ export class DgraphService {
 
   constructor() {
     this.createInstance();
+    this.migrate();
   }
   
   public async migrate(){
-    return this.mutate({});
+    const schema = `
+      type: string @index(exact) .
+      namespace: string @index(exact) .
+    `;
+    const op = new Operation();
+    op.setSchema(schema);
+    await this._instance.alter(op);
+    console.log('migration complete')
   }
 
   public async mutate(data: unknown) {
@@ -45,7 +53,7 @@ export class DgraphService {
     while(retries) {
       try {
         clientStub = new DgraphClientStub(
-          "dgraph:9080",
+          "localhost:9080",
           grpc.credentials.createInsecure(),
         );
         console.log('connection successfuly')
