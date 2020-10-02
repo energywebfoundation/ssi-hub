@@ -20,7 +20,7 @@ export class RoleService {
     return res.getJson();
   }
 
-  public async getByNamespace(id: string) {
+  public async getByNamespace(namespace: string) {
     const res =  await this.dgraph.query(`
     query all($i: string){
       Data(func: eq(namespace, $i)) @filter(eq(type, "role")) {
@@ -29,7 +29,7 @@ export class RoleService {
         namespace
         definition ${roleDefinitionFullQuery}
       }
-    }`, {$i: id})
+    }`, {$i: namespace})
     return res.getJson();
   }
 

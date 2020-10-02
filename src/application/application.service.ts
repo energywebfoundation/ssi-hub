@@ -26,7 +26,11 @@ export class ApplicationService {
     query all($i: string){
       Data(func: eq(namespace, $i)) {
         namespace
-        roles ${roleDefinitionFullQuery}
+        roles {
+          name
+          namespace
+          definition ${roleDefinitionFullQuery}
+        }
       }
     }`, {$i: namespace})
     return res.getJson();

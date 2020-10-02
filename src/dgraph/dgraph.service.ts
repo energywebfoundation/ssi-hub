@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import * as grpc from 'grpc';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DgraphService {
@@ -14,7 +15,7 @@ export class DgraphService {
   private _instance: DgraphClient;
   private _stub: DgraphClientStub;
 
-  constructor() {
+  constructor(private configService: ConfigService) {
     this.createInstance();
     this.migrate();
   }
@@ -55,11 +56,13 @@ export class DgraphService {
 
     let clientStub: DgraphClientStub;
 
+    const DB_HOST = this.configService.get<string>('DB_HOST');
+
     let retries = 5;
     while(retries) {
       try {
         clientStub = new DgraphClientStub(
-          "localhost:9080",
+          DB_HOST,
           grpc.credentials.createInsecure(),
         );
         console.log('connection successfuly')

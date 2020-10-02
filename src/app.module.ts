@@ -12,9 +12,10 @@ import { ApplicationService } from './application/application.service';
 import { RoleService } from './role/role.service';
 import { Web3Service } from './web3/web3.service';
 import { GraphqlController } from './graphql/graphql.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule.forRoot()],
   controllers: [ClaimController, OrganizationController, ApplicationController, RoleController, IdentityController, GraphqlController],
   providers: [DgraphService, ClaimService, OrganizationService, IdentityService, ApplicationService, RoleService, Web3Service],
 })
