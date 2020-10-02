@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import * as grpc from 'grpc';
 import { ConfigService } from '@nestjs/config';
@@ -31,7 +31,7 @@ export class DgraphService {
     const op = new Operation();
     op.setSchema(schema);
     await this._instance.alter(op);
-    console.log('migration complete');
+    console.log('Migration completed');
   }
 
   public async mutate(data: unknown) {
@@ -58,7 +58,7 @@ export class DgraphService {
 
     let clientStub: DgraphClientStub;
 
-    const DB_HOST = this.configService.get<string>('DB_HOST');
+    const DB_HOST = this.configService.get<string>('DGRAPH_GRPC_HOST');
 
     const policy = Policy.handleAll().retry().attempts(5).delay(1000);
     return await policy.execute(async () => {
