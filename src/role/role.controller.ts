@@ -20,9 +20,9 @@ export class RoleController {
     return await this.roleService.getByNamespace(namespace);
   }
 
-  @Get('/exists/:namespace')
+  @Get('/:namespace/exists')
   @ApiTags('Roles')
-  public async checkNamespace(@Param('namespace') namespace: string) {
+  public async exists(@Param('namespace') namespace: string) {
     return await this.roleService.exists(namespace);
   }
 }

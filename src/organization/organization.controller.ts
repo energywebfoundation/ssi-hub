@@ -18,6 +18,13 @@ export class OrganizationController {
   public async getById(@Param('namespace') namespace: string) {
     return await this.organizationService.getByNamespace(namespace);
   }
+
+  @Get('/:namespace/exists')
+  @ApiTags('Organization')
+  public async exists(@Param('namespace') namespace: string) {
+    return await this.organizationService.exists(namespace);
+  }
+
   @Get('/:namespace/apps')
   @ApiTags('Organization')
   public async getAppsByOrgId(@Param('namespace') namespace: string) {

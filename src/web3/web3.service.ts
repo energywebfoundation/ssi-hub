@@ -8,7 +8,6 @@ import { OrganizationService } from '../organization/organization.service';
 
 @Injectable()
 export class Web3Service {
-  private connection;
 
   constructor(
     private roleService: RoleService,
@@ -16,7 +15,7 @@ export class Web3Service {
     private organizationService: OrganizationService
   ) {
     this.connect();
-    this.testOrgAppRole();
+    // this.testOrgAppRole();
   }
 
   private async testOrgAppRole(){

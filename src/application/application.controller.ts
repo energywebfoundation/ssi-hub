@@ -18,6 +18,11 @@ export class ApplicationController {
   public async getById(@Param('namespace') namespace: string) {
     return await this.applicationService.getByNamespace(namespace);
   }
+  @Get('/:namespace/exists')
+  @ApiTags('Application')
+  public async exists(@Param('namespace') namespace: string) {
+    return await this.applicationService.exists(namespace);
+  }
 
   @Get('/:namespace/roles')
   @ApiTags('Application')
