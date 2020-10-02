@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { NamespaceFragments, RoleDTO } from './RoleDTO';
+import { NamespaceFragments } from './RoleDTO';
+import { RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
 
 @Injectable()
 export class RoleService {
@@ -8,36 +9,13 @@ export class RoleService {
     private readonly dgraph: DgraphService
   ) {}
 
-  public async namespaceExists(namespace: string) {
-    const res = await this.dgraph.query(`
-    
-    query all($i: string){
-      Data(func: eq(namespace, $i)) {
-         namespace
-      }
-    }
-    `, {
-      $i: namespace
-    })
-    console.log(res.getJson())
-    return res.getJson();
-  }
-
   public async getAll() {
     const res =  await this.dgraph.query(`
     {roles(func: eq(type, "role")) {
       uid
-      metadata {
-         key
-         value
-      }
-      address
+      name
       namespace
-      fields {
-         type
-         label
-         validation
-      }
+      definition ${roleDefinitionFullQuery}
     }}`)
     return res.getJson();
   }
@@ -47,30 +25,26 @@ export class RoleService {
     query all($i: string){
       Data(func: eq(namespace, $i)) @filter(eq(type, "role")) {
         uid
-        metadata {
-           key
-           value
-        }
-        address
+        name
         namespace
-        fields {
-           type
-           label
-           validation
-        }
-        children
+        definition ${roleDefinitionFullQuery}
       }
     }`, {$i: id})
     return res.getJson();
   }
 
-  public async create(newRole: RoleDTO) {
+  public async exists(namespace: string) {
+    return (await this.getByNamespace(namespace)).Data.length > 0;
+  }
 
-    const data: RoleDTO = {
-      ...newRole,
+  public async create(name: string, definition: RoleDefinition, namespace: string) {
+
+    const data = {
       uid: "_:new",
       type: "role",
-      ...this.splitNamespace(newRole.namespace),
+      name,
+      namespace,
+      definition,
     }
 
     const res = await this.dgraph.mutate(data);
@@ -78,26 +52,7 @@ export class RoleService {
     return res.getUidsMap().get('new');
   }
 
-  public async updateById(id: string, data: RoleDTO) {
-    let patch: RoleDTO = {
-      ...data,
-      uid: id,
-      type: "role",
-    }
-
-    if(data.namespace) {
-      patch = {
-        ...patch,
-        ...this.splitNamespace(data.namespace)
-      }
-    }
-
-    const res = await this.dgraph.mutate(patch);
-
-    return res.getUidsMap().get('new');
-  }
-
-  private splitNamespace(namespace: string): NamespaceFragments {
+  public splitNamespace(namespace: string): NamespaceFragments {
     const fragments: NamespaceFragments = {
       apps: null,
       roles: null,
@@ -107,12 +62,30 @@ export class RoleService {
 
     const nsf = namespace.split('.');
 
-    fragments.roles = nsf[0];
-
-    for(let i = 1; i < nsf.length; i+=2) {
+    for(let i = 0; i < nsf.length; i+=2) {
       fragments[nsf[i+1]] = nsf[i];
     }
 
     return fragments;
+  }
+
+  public getNamespaceOf(fragment: 'org' | 'app' | 'role' = 'org', fragments: NamespaceFragments): string {
+    const f = fragments;
+    let ns = `${f.org}.org.${f.ewc}.ewc`;
+
+    if(fragment == 'app' || fragment == 'role') {
+      if(f.apps == null) {
+        return null;
+      }
+      ns = `${f.apps}.apps.${ns}`
+    }
+    if(fragment == 'role') {
+      if(f.roles == null) {
+        return null;
+      }
+      ns = `${f.roles}.roles.${ns}`
+    }
+
+    return ns;
   }
 }

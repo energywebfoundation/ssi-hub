@@ -39,11 +39,6 @@ export class RoleDTO implements Role {
   @ApiProperty()
   namespace: string;
 
-  apps?: string;
-  roles?: string;
-  org?: string;
-  ewc?: string;
-
   uid?: string;
   type?: string;
 

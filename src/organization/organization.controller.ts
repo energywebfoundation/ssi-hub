@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('organization')
+@Controller('org')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {
   }
@@ -13,15 +13,14 @@ export class OrganizationController {
     return await this.organizationService.getAll();
   }
 
-  @Get('/:id')
+  @Get('/:namespace')
   @ApiTags('Organization')
-  public async getById(@Param('id') id: string) {
-    return await this.organizationService.getById(id);
+  public async getById(@Param('namespace') namespace: string) {
+    return await this.organizationService.getByNamespace(namespace);
   }
-
-  @Post()
+  @Get('/:namespace/apps')
   @ApiTags('Organization')
-  public async create(@Body() body: unknown) {
-    return await this.organizationService.create();
+  public async getAppsByOrgId(@Param('namespace') namespace: string) {
+    return await this.organizationService.getApps(namespace);
   }
 }

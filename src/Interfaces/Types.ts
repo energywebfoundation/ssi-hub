@@ -23,6 +23,23 @@ export interface RoleDefinition {
     did: unknown[],
   }
 }
+
+export const roleDefinitionFullQuery = `
+{
+  version
+  roleType
+  roleName
+  fields {
+    fieldType
+    label
+    validation
+  }
+  metadata {
+    key
+    value
+  }
+}`
+
 export interface Role {
   name: string
   definition: RoleDefinition;

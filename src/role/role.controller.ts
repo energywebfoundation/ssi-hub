@@ -16,20 +16,13 @@ export class RoleController {
 
   @Get('/:namespace')
   @ApiTags('Roles')
-  public async getById(@Param('namespace') id: string) {
-    return await this.roleService.getByNamespace(id);
+  public async getById(@Param('namespace') namespace: string) {
+    return await this.roleService.getByNamespace(namespace);
   }
 
   @Get('/exists/:namespace')
   @ApiTags('Roles')
   public async checkNamespace(@Param('namespace') namespace: string) {
-    const namespaces = await this.roleService.namespaceExists(namespace);
-    return namespaces.Data.length > 0;
-  }
-
-  @Post()
-  @ApiTags('Roles')
-  public async create(@Body() body: RoleDTO) {
-    return await this.roleService.create(body);
+    return await this.roleService.exists(namespace);
   }
 }

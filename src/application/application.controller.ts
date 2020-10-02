@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('application')
+@Controller('app')
 export class ApplicationController {
   constructor(private applicationService: ApplicationService) {
   }
@@ -13,16 +13,15 @@ export class ApplicationController {
     return await this.applicationService.getAll();
   }
 
-  @Get('/:id')
+  @Get('/:namespace')
   @ApiTags('Application')
-  public async getById(@Param('id') id: string) {
-    return await this.applicationService.getById(id);
+  public async getById(@Param('namespace') namespace: string) {
+    return await this.applicationService.getByNamespace(namespace);
   }
 
-  @Post()
+  @Get('/:namespace/roles')
   @ApiTags('Application')
-  public async create(@Body() body: unknown) {
-    console.log(body);
-    return await this.applicationService.create();
+  public async getRolesByAppId(@Param('namespace') namespace: string) {
+    return await this.applicationService.getRoles(namespace);
   }
 }

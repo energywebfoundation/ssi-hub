@@ -4,8 +4,11 @@ import * as grpc from 'grpc';
 
 @Injectable()
 export class DgraphService {
-  get instance(): DgraphClient {
-    return this._instance;
+  private async getInstance(): Promise<DgraphClient> {
+    if(this._instance) {
+      return this._instance;
+    }
+    return this.createInstance();
   }
 
   private _instance: DgraphClient;
@@ -20,6 +23,7 @@ export class DgraphService {
     const schema = `
       type: string @index(exact) .
       namespace: string @index(exact) .
+      name: string @index(exact) .
     `;
     const op = new Operation();
     op.setSchema(schema);
@@ -28,7 +32,8 @@ export class DgraphService {
   }
 
   public async mutate(data: unknown) {
-    const txn = await this.instance.newTxn();
+    const instance = await this.getInstance();
+    const txn = await instance.newTxn();
     const mu = new Mutation()
     mu.setSetJson(data);
     mu.setCommitNow(true);
@@ -36,15 +41,16 @@ export class DgraphService {
   }
 
   public async query(query: string, params?: Record<string, any>) {
+    const instance = await this.getInstance();
     if(params) {
-      return this.instance.newTxn({readOnly: true}).queryWithVars(query, params)
+      return instance.newTxn({readOnly: true}).queryWithVars(query, params)
     }
-    return this.instance.newTxn({readOnly: true}).query(query)
+    return instance.newTxn({readOnly: true}).query(query)
   }
 
   private async createInstance() {
     if(this._instance) {
-      return;
+      return this._instance;
     }
 
     let clientStub: DgraphClientStub;
@@ -66,7 +72,10 @@ export class DgraphService {
     }
 
     this._stub = clientStub;
+
     this._instance = new DgraphClient(clientStub);
+
+    return this._instance;
   }
 
   public close() {
