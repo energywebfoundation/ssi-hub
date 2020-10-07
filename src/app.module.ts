@@ -15,6 +15,9 @@ import { GraphqlController } from './graphql/graphql.controller';
 import { ConfigModule } from '@nestjs/config';
 import { OwnerController } from './owner/owner.controller';
 import { OwnerService } from './owner/owner.service';
+import { EnsTestService } from './ENS/ens.testService';
+import { NamespaceController } from './namespace/namespace.controller';
+import { NamespaceService } from './namespace/namespace.service';
 
 @Module({
   imports: [ConfigModule.forRoot()],
@@ -26,6 +29,7 @@ import { OwnerService } from './owner/owner.service';
     IdentityController,
     GraphqlController,
     OwnerController,
+    NamespaceController,
   ],
   providers: [
     DgraphService,
@@ -35,7 +39,9 @@ import { OwnerService } from './owner/owner.service';
     ApplicationService,
     RoleService,
     EnsService,
+    EnsTestService,
     OwnerService,
+    NamespaceService,
   ],
 })
 export class AppModule {}

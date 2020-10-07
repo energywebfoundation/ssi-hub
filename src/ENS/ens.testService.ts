@@ -8,7 +8,7 @@ export class EnsTestService {
   ) {
   }
 
-  private async testOrgAppRole() {
+  public async testOrgAppRole() {
     await this.ensService.createRole({
       data: JSON.stringify({
         roleType: 'org',
