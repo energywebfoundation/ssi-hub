@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { AppDefinition, RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
 
 @Injectable()
 export class ApplicationService {
-  constructor(
-    private readonly dgraph: DgraphService
-  ) {}
+  constructor(private readonly dgraph: DgraphService) {}
 
   public async getAll() {
-    const res =  await this.dgraph.query(`
+    const res = await this.dgraph.query(`
     query all($i: string){
       Data(func: eq(type, "app")) {
         uid
@@ -17,12 +15,13 @@ export class ApplicationService {
         namespace
         definition ${roleDefinitionFullQuery}
       }
-    }`)
+    }`);
     return res.getJson();
   }
 
   public async getRoles(namespace: string) {
-    const res =  await this.dgraph.query(`
+    const res = await this.dgraph.query(
+      `
     query all($i: string){
       Data(func: eq(namespace, $i)) {
         namespace
@@ -32,12 +31,15 @@ export class ApplicationService {
           definition ${roleDefinitionFullQuery}
         }
       }
-    }`, {$i: namespace})
+    }`,
+      { $i: namespace },
+    );
     return res.getJson();
   }
 
   public async getByNamespace(name: string) {
-    const res =  await this.dgraph.query(`
+    const res = await this.dgraph.query(
+      `
     query all($i: string){
       Data(func: eq(namespace, $i)) {
         uid
@@ -45,7 +47,9 @@ export class ApplicationService {
         namespace
         definition ${roleDefinitionFullQuery}
       }
-    }`, {$i: name})
+    }`,
+      { $i: name },
+    );
     return res.getJson();
   }
 
@@ -53,15 +57,21 @@ export class ApplicationService {
     return (await this.getByNamespace(namespace)).Data.length > 0;
   }
 
-  public async create(name: string, definition: RoleDefinition, namespace: string) {
+  public async create(
+    name: string,
+    definition: AppDefinition,
+    namespace: string,
+    owner: string,
+  ) {
     const data = {
-      uid: "_:new",
-      type: "app",
+      uid: '_:new',
+      type: 'app',
       name,
       definition,
       namespace,
+      owner,
       roles: [],
-    }
+    };
 
     const res = await this.dgraph.mutate(data);
 
@@ -73,10 +83,10 @@ export class ApplicationService {
       uid: id,
       roles: [
         {
-          uid: roleDefinitionId
-        }
+          uid: roleDefinitionId,
+        },
       ],
-    }
+    };
 
     await this.dgraph.mutate(data);
 

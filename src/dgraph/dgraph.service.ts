@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import * as grpc from 'grpc';
 import { ConfigService } from '@nestjs/config';
+import { Policy } from 'cockatiel';
 
 @Injectable()
 export class DgraphService {
   private async getInstance(): Promise<DgraphClient> {
-    if(this._instance) {
+    if (this._instance) {
       return this._instance;
     }
     return this.createInstance();
@@ -19,23 +20,24 @@ export class DgraphService {
     this.createInstance();
     this.migrate();
   }
-  
-  public async migrate(){
+
+  public async migrate() {
     const schema = `
       type: string @index(exact) .
       namespace: string @index(exact) .
       name: string @index(exact) .
+      owner: string @index(exact) .
     `;
     const op = new Operation();
     op.setSchema(schema);
     await this._instance.alter(op);
-    console.log('migration complete')
+    console.log('migration complete');
   }
 
   public async mutate(data: unknown) {
     const instance = await this.getInstance();
     const txn = await instance.newTxn();
-    const mu = new Mutation()
+    const mu = new Mutation();
     mu.setSetJson(data);
     mu.setCommitNow(true);
     return txn.mutate(mu);
@@ -43,14 +45,14 @@ export class DgraphService {
 
   public async query(query: string, params?: Record<string, any>) {
     const instance = await this.getInstance();
-    if(params) {
-      return instance.newTxn({readOnly: true}).queryWithVars(query, params)
+    if (params) {
+      return instance.newTxn({ readOnly: true }).queryWithVars(query, params);
     }
-    return instance.newTxn({readOnly: true}).query(query)
+    return instance.newTxn({ readOnly: true }).query(query);
   }
 
   private async createInstance() {
-    if(this._instance) {
+    if (this._instance) {
       return this._instance;
     }
 
@@ -59,18 +61,18 @@ export class DgraphService {
     const DB_HOST = this.configService.get<string>('DB_HOST');
 
     let retries = 5;
-    while(retries) {
+    while (retries) {
       try {
         clientStub = new DgraphClientStub(
           DB_HOST,
           grpc.credentials.createInsecure(),
         );
-        console.log('connection successfuly')
+        console.log('connection successfuly');
         break;
       } catch (err) {
         console.log(err);
         retries--;
-        await new Promise(res => setTimeout(res, 5000))
+        await new Promise(res => setTimeout(res, 5000));
       }
     }
 

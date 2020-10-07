@@ -4,8 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('identity')
 export class IdentityController {
-  constructor(private identityService: IdentityService) {
-  }
+  constructor(private identityService: IdentityService) {}
 
   @Get('/:id')
   @ApiTags('Identity')

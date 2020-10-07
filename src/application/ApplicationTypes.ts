@@ -1,4 +1,3 @@
 import { DGraphObject } from '../Interfaces/Types';
 
-export interface Application extends DGraphObject {
-}
+export interface Application extends DGraphObject {}

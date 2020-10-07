@@ -1,6 +1,6 @@
 import { IsArray, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { KeyValue} from '../Interfaces/Types';
+import { KeyValue } from '../Interfaces/Types';
 import { Role } from './RoleTypes';
 
 export class RoleDTO implements Role {

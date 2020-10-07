@@ -4,8 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('app')
 export class ApplicationController {
-  constructor(private applicationService: ApplicationService) {
-  }
+  constructor(private applicationService: ApplicationService) {}
 
   @Get()
   @ApiTags('Application')

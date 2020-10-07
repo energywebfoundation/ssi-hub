@@ -5,8 +5,7 @@ import { ClaimDefinitionDTO } from './ClaimDTO';
 
 @Controller('claim')
 export class ClaimController {
-  constructor(private claimService: ClaimService) {
-  }
+  constructor(private claimService: ClaimService) {}
 
   @Get('/definition/:id')
   @ApiTags('Claims')
@@ -23,7 +22,10 @@ export class ClaimController {
 
   @Put('/definition/:id/attributes')
   @ApiTags('Claims')
-  public async update(@Param('id') id: string,@Body() body: [string, string][]) {
+  public async update(
+    @Param('id') id: string,
+    @Body() body: [string, string][],
+  ) {
     return await this.claimService.addAttributes(id, body);
   }
 }

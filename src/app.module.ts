@@ -10,13 +10,32 @@ import { IdentityController } from './identity/identity.controller';
 import { IdentityService } from './identity/identity.service';
 import { ApplicationService } from './application/application.service';
 import { RoleService } from './role/role.service';
-import { Web3Service } from './web3/web3.service';
+import { EnsService } from './ENS/ens.service';
 import { GraphqlController } from './graphql/graphql.controller';
 import { ConfigModule } from '@nestjs/config';
+import { OwnerController } from './owner/owner.controller';
+import { OwnerService } from './owner/owner.service';
 
 @Module({
   imports: [ConfigModule.forRoot()],
-  controllers: [ClaimController, OrganizationController, ApplicationController, RoleController, IdentityController, GraphqlController],
-  providers: [DgraphService, ClaimService, OrganizationService, IdentityService, ApplicationService, RoleService, Web3Service],
+  controllers: [
+    ClaimController,
+    OrganizationController,
+    ApplicationController,
+    RoleController,
+    IdentityController,
+    GraphqlController,
+    OwnerController,
+  ],
+  providers: [
+    DgraphService,
+    ClaimService,
+    OrganizationService,
+    IdentityService,
+    ApplicationService,
+    RoleService,
+    EnsService,
+    OwnerService,
+  ],
 })
 export class AppModule {}

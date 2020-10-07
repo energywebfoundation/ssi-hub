@@ -4,31 +4,67 @@ export interface DGraphObject {
 }
 
 export interface KeyValue {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
 
-export interface RoleDefinition {
-  version: string
-  roleType: 'custom' | 'org' | 'app',
-  roleName: string,
-  fields: [{
-    fieldType: string,
-    label: string,
-    validation: string
-  }],
-  metadata: KeyValue[],
-  issuer: {
-    issuerType: string,
-    did: unknown[],
-  }
+type roleType = 'custom' | 'org' | 'app';
+
+export interface Definition {
+  roleType: roleType;
+  appName?: string;
+  orgName?: string;
+  roleName?: string;
 }
+
+export interface OrgDefinition extends Definition {
+  roleType: 'org';
+  description: string
+  websiteUrl: string;
+  logoUrl: string;
+  others: KeyValue;
+}
+
+export interface AppDefinition extends Definition {
+  roleType: 'app';
+  description: string
+  websiteUrl: string;
+  logoUrl: string;
+  others: KeyValue;
+}
+
+export interface RoleDefinition extends Definition {
+  version: string;
+  roleType: 'custom';
+  roleName: string;
+  fields: {
+    fieldType: string;
+    label: string;
+    validation: string;
+  }[];
+  metadata: KeyValue[];
+  issuer: {
+    issuerType: string;
+    did: string[];
+  };
+}
+
+export type DefinitionData = RoleDefinition | AppDefinition | OrgDefinition;
 
 export const roleDefinitionFullQuery = `
 {
   version
   roleType
   roleName
+  appName
+  orgName
+  description
+  websiteUrl
+  logoUrl
+  others {
+    key
+    value
+  }
   fields {
     fieldType
     label
@@ -38,10 +74,10 @@ export const roleDefinitionFullQuery = `
     key
     value
   }
-}`
+}`;
 
 export interface Role {
-  name: string
+  name: string;
   definition: RoleDefinition;
 }
 export interface Application {

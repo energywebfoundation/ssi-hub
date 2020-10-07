@@ -4,8 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('org')
 export class OrganizationController {
-  constructor(private organizationService: OrganizationService) {
-  }
+  constructor(private organizationService: OrganizationService) {}
 
   @Get()
   @ApiTags('Organization')

@@ -5,23 +5,22 @@ import { RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
 
 @Injectable()
 export class RoleService {
-  constructor(
-    private readonly dgraph: DgraphService
-  ) {}
+  constructor(private readonly dgraph: DgraphService) {}
 
   public async getAll() {
-    const res =  await this.dgraph.query(`
+    const res = await this.dgraph.query(`
     {roles(func: eq(type, "role")) {
       uid
       name
       namespace
       definition ${roleDefinitionFullQuery}
-    }}`)
+    }}`);
     return res.getJson();
   }
 
   public async getByNamespace(namespace: string) {
-    const res =  await this.dgraph.query(`
+    const res = await this.dgraph.query(
+      `
     query all($i: string){
       Data(func: eq(namespace, $i)) @filter(eq(type, "role")) {
         uid
@@ -29,7 +28,9 @@ export class RoleService {
         namespace
         definition ${roleDefinitionFullQuery}
       }
-    }`, {$i: namespace})
+    }`,
+      { $i: namespace },
+    );
     return res.getJson();
   }
 
@@ -37,15 +38,20 @@ export class RoleService {
     return (await this.getByNamespace(namespace)).Data.length > 0;
   }
 
-  public async create(name: string, definition: RoleDefinition, namespace: string) {
-
+  public async create(
+    name: string,
+    definition: RoleDefinition,
+    namespace: string,
+    owner: string,
+  ) {
     const data = {
-      uid: "_:new",
-      type: "role",
+      uid: '_:new',
+      type: 'role',
       name,
       namespace,
+      owner,
       definition,
-    }
+    };
 
     const res = await this.dgraph.mutate(data);
 
@@ -62,30 +68,32 @@ export class RoleService {
 
     const nsf = namespace.split('.');
 
-    for(let i = 0; i < nsf.length; i+=2) {
-      fragments[nsf[i+1]] = nsf[i];
+    for (let i = 0; i < nsf.length; i += 2) {
+      fragments[nsf[i + 1]] = nsf[i];
     }
 
     return fragments;
   }
 
-  public getNamespaceOf(fragment: 'org' | 'app' | 'role' = 'org', fragments: NamespaceFragments): string {
-    const f = fragments;
-    let ns = `${f.org}.org.${f.ewc}.ewc`;
+  public getNamespaceOf(
+    fragment: 'org' | 'app' | 'role' = 'org',
+    fragments: NamespaceFragments,
+  ): string {
+    let namespace = `${fragments.org}.org.${fragments.ewc}.ewc`;
 
-    if(fragment == 'app' || fragment == 'role') {
-      if(f.apps == null) {
+    if (fragment == 'app' || fragment == 'role') {
+      if (fragments.apps == null) {
         return null;
       }
-      ns = `${f.apps}.apps.${ns}`
+      namespace = `${fragments.apps}.apps.${namespace}`;
     }
-    if(fragment == 'role') {
-      if(f.roles == null) {
+    if (fragment == 'role') {
+      if (fragments.roles == null) {
         return null;
       }
-      ns = `${f.roles}.roles.${ns}`
+      namespace = `${fragments.roles}.roles.${namespace}`;
     }
 
-    return ns;
+    return namespace;
   }
 }

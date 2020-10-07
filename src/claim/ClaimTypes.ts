@@ -10,7 +10,7 @@ export interface ClaimDefinition extends DGraphObject {
 }
 
 export interface Claim extends DGraphObject {
-  definition: ClaimDefinition,
+  definition: ClaimDefinition;
   data: KeyValue[];
   issuer: Identity;
   owner: Identity;
