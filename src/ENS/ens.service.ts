@@ -32,12 +32,15 @@ export class EnsService {
 
     const provider = new providers.JsonRpcProvider(ENS_URL);
     const publicResolverFactory = PublicResolverFactory.connect(PUBLIC_RESOLVER_ADDRESS, provider);
+    const ensRegistry = EnsRegistryFactory.connect(ENS_REGISTRY_ADDRESS, provider);
 
     publicResolverFactory.addListener('TextChanged', async hash => {
       try {
-        const namespace = await publicResolverFactory.name(hash);
-        const owner = await publicResolverFactory.name(hash);
-        const data = await publicResolverFactory.text(hash, 'metadata');
+        const [namespace, owner, data] = await Promise.all([
+          publicResolverFactory.name(hash),
+          ensRegistry.owner(hash),
+          publicResolverFactory.text(hash, 'metadata'),
+        ]);
 
         if (!namespace || !owner || !data) {
           return;
@@ -63,6 +66,7 @@ export class EnsService {
     try {
       metadata = JSON.parse(data);
     } catch (err) {
+      console.log('invalid metadata json', err)
       return;
     }
     const namespaceFragments = this.roleService.splitNamespace(namespace);
