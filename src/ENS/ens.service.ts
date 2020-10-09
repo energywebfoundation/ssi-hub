@@ -10,7 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { PublicResolver } from '../ethers/PublicResolver';
 import { EnsRegistry } from '../ethers/EnsRegistry';
 import { namehash } from '../ethers/utils';
-import { ORG_MOCK_DATA } from './ens.testService';
+import { APP_MOCK_DATA, ORG_MOCK_DATA, ROLE_MOCK_DATA } from './ens.testService';
+import { PopulateRolesConfig } from '../../PopulateRolesConfig';
 
 enum RoleTypes {
   ORG= 'org',
@@ -144,15 +145,13 @@ export class EnsService {
   }
 
   private async loadNamespaces() {
-
-    const a = async (namespace: string, data: string) => {
+    const create = async (namespace: string, data: string) => {
       const owner = await this.ensRegistry.owner(namehash(namespace));
       await this.createRole({data, namespace, owner})
     }
 
-    await a('daniel.iam.ewc', ORG_MOCK_DATA);
-    await a('kim.iam.ewc', ORG_MOCK_DATA);
-    await a('mani.iam.ewc', ORG_MOCK_DATA);
-    await a('marcin.iam.ewc', ORG_MOCK_DATA);
+    await Promise.all(PopulateRolesConfig.orgs.map(o => create(o, ORG_MOCK_DATA)))
+    await Promise.all(PopulateRolesConfig.apps.map(a => create(a, APP_MOCK_DATA)))
+    await Promise.all(PopulateRolesConfig.roles.map(r => create(r, ROLE_MOCK_DATA)))
   }
 }
