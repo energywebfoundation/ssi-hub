@@ -7,6 +7,10 @@ import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../ethers/EnsRegistryFactory';
 import { ConfigService } from '@nestjs/config';
+import { PublicResolver } from '../ethers/PublicResolver';
+import { EnsRegistry } from '../ethers/EnsRegistry';
+import { namehash } from '../ethers/utils';
+import { ORG_MOCK_DATA } from './ens.testService';
 
 enum RoleTypes {
   ORG= 'org',
@@ -16,41 +20,53 @@ enum RoleTypes {
 
 @Injectable()
 export class EnsService {
+  private publicResolver: PublicResolver;
+  private ensRegistry: EnsRegistry;
   constructor(
     private roleService: RoleService,
     private applicationService: ApplicationService,
     private organizationService: OrganizationService,
     private config: ConfigService,
   ) {
-    this.connect();
-  }
 
-  private async connect() {
     const ENS_URL = this.config.get<string>('ENS_URL');
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>('PUBLIC_RESOLVER_ADDRESS');
     const ENS_REGISTRY_ADDRESS = this.config.get<string>('ENS_REGISTRY_ADDRESS');
-
     const provider = new providers.JsonRpcProvider(ENS_URL);
-    const publicResolverFactory = PublicResolverFactory.connect(PUBLIC_RESOLVER_ADDRESS, provider);
-    const ensRegistry = EnsRegistryFactory.connect(ENS_REGISTRY_ADDRESS, provider);
+    this.publicResolver = PublicResolverFactory.connect(PUBLIC_RESOLVER_ADDRESS, provider);
+    this.ensRegistry = EnsRegistryFactory.connect(ENS_REGISTRY_ADDRESS, provider);
 
-    publicResolverFactory.addListener('TextChanged', async hash => {
-      try {
-        const [namespace, owner, data] = await Promise.all([
-          publicResolverFactory.name(hash),
-          ensRegistry.owner(hash),
-          publicResolverFactory.text(hash, 'metadata'),
-        ]);
+    this.InitEventListeners();
+    this.loadNamespaces();
+  }
 
-        if (!namespace || !owner || !data) {
-          return;
-        }
+  private async InitEventListeners(): Promise<void> {
+    this.publicResolver.addListener('TextChanged', async hash => {
+      this.eventHandler(hash);
+    });
+  }
 
-        await this.createRole({ data, namespace, owner });
-      } catch (err) {
+  public async eventHandler(hash: string) {
+    try {
+      const [namespace, owner, data] = await Promise.all([
+        this.publicResolver.name(hash),
+        this.ensRegistry.owner(hash),
+        this.publicResolver.text(hash, 'metadata'),
+      ]);
+
+      console.log('hash: ' + hash)
+      console.log('namespace: ' + namespace);
+      console.log('owner: ' + owner);
+      console.log('data: ' + data);
+
+      if (!namespace || !owner || !data) {
         return;
       }
-    });
+
+      await this.createRole({ data, namespace, owner });
+    } catch (err) {
+      return;
+    }
   }
 
   public async createRole({
@@ -94,13 +110,13 @@ export class EnsService {
     if (metadata.roleType === RoleTypes.APP && appNamespace) {
       const appExists = await this.applicationService.exists(appNamespace);
       if (orgId && !appExists) {
-        const appId = await this.applicationService.create(
+        const newAppId = await this.applicationService.create(
           namespaceFragments.apps,
           metadata,
           namespace,
           owner,
         );
-        await this.organizationService.addApp(orgId, appId);
+        await this.organizationService.addApp(orgId, newAppId);
         return;
       }
     }
@@ -125,5 +141,18 @@ export class EnsService {
         return;
       }
     }
+  }
+
+  private async loadNamespaces() {
+
+    const a = async (namespace: string, data: string) => {
+      const owner = await this.ensRegistry.owner(namehash(namespace));
+      await this.createRole({data, namespace, owner})
+    }
+
+    await a('daniel.iam.ewc', ORG_MOCK_DATA);
+    await a('kim.iam.ewc', ORG_MOCK_DATA);
+    await a('mani.iam.ewc', ORG_MOCK_DATA);
+    await a('marcin.iam.ewc', ORG_MOCK_DATA);
   }
 }

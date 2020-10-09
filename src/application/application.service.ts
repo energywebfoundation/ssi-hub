@@ -58,7 +58,7 @@ export class ApplicationService {
   }
 
   public async exists(namespace: string) {
-    return (await this.getByNamespace(namespace)) !== null;
+    return (await this.getByNamespace(namespace)) !== undefined;
   }
 
   public async create(

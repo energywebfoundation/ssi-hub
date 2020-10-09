@@ -38,7 +38,7 @@ export class RoleService {
   }
 
   public async exists(namespace: string) {
-    return (await this.getByNamespace(namespace)) !== null;
+    return (await this.getByNamespace(namespace)) !== undefined;
   }
 
   public async create(
@@ -87,10 +87,27 @@ export class RoleService {
       ewc: null,
     };
 
-    const nsf = namespace.split('.');
+    const nsf = namespace.split('.').reverse();
 
-    for (let i = 0; i < nsf.length; i += 2) {
-      fragments[nsf[i + 1]] = nsf[i];
+    // 0 - ewc
+    // 1 - .iam
+    fragments.ewc = nsf[1];
+    // 2 - ORGNAME
+    fragments.org = nsf[2];
+    // 3 - .apps. * or .roles.
+
+    if(nsf[3] == 'roles' && nsf[4]) {
+      fragments.roles = nsf[4]
+      return fragments;
+    }
+
+    if(nsf[3] == 'apps' && nsf[4]) {
+      fragments.apps = nsf[4]
+
+      // 5 - .roles. *
+      if(nsf[5] == 'roles' && nsf[6]) {
+        fragments.roles = nsf[6];
+      }
     }
 
     return fragments;
@@ -100,7 +117,7 @@ export class RoleService {
     fragment: 'org' | 'app' | 'role' = 'org',
     fragments: NamespaceFragments,
   ): string {
-    let namespace = `${fragments.org}.org.${fragments.ewc}.ewc`;
+    let namespace = `${fragments.org}.${fragments.ewc}.ewc`;
 
     //special case for role with organization
     if(fragment == 'role' && fragments.org && !fragments.apps) {
