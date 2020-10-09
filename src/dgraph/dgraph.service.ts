@@ -60,27 +60,20 @@ export class DgraphService {
 
     const DB_HOST = this.configService.get<string>('DB_HOST');
 
-    let retries = 5;
-    while (retries) {
-      try {
-        clientStub = new DgraphClientStub(
-          DB_HOST,
-          grpc.credentials.createInsecure(),
-        );
-        console.log('connection successfuly');
-        break;
-      } catch (err) {
-        console.log(err);
-        retries--;
-        await new Promise(res => setTimeout(res, 5000));
-      }
-    }
+    const policy = Policy.handleAll().retry().attempts(5).delay(1000);
+    return await policy.execute(async () => {
+      clientStub = new DgraphClientStub(
+        DB_HOST,
+        grpc.credentials.createInsecure(),
+      );
+      console.log('connection successfuly');
 
-    this._stub = clientStub;
+      this._stub = clientStub;
 
-    this._instance = new DgraphClient(clientStub);
+      this._instance = new DgraphClient(clientStub);
 
-    return this._instance;
+      return this._instance;
+    })
   }
 
   public close() {

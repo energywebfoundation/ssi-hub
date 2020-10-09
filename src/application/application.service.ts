@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { AppDefinition, RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { AppDefinition, RecordToKeyValue, RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { ApplicationDefinitionDTO, ApplicationDTO, CreateApplicationData } from '../role/ApplicationDTO';
+import { OrganizationDefinitionDTO, OrganizationDTO } from '../role/OrganizationDTO';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class ApplicationService {
@@ -59,18 +62,36 @@ export class ApplicationService {
 
   public async create(
     name: string,
-    definition: AppDefinition,
+    definition: CreateApplicationData,
     namespace: string,
     owner: string,
   ) {
+
+    const appDTO = new ApplicationDTO()
+    appDTO.name = name;
+    appDTO.owner = owner;
+    appDTO.namespace = namespace;
+    appDTO.roles = [];
+
+    const orgDefDTO = new ApplicationDefinitionDTO()
+    orgDefDTO.description = definition.description
+    orgDefDTO.logoUrl = definition.logoUrl
+    orgDefDTO.websiteUrl = definition.websiteUrl
+    orgDefDTO.others = RecordToKeyValue(definition.others)
+    orgDefDTO.appName = definition.appName
+
+    appDTO.definition = orgDefDTO;
+
+    const err = await validate(appDTO);
+
+    if(err.length > 0) {
+      return;
+    }
+
     const data = {
       uid: '_:new',
       type: 'app',
-      name,
-      definition,
-      namespace,
-      owner,
-      roles: [],
+      ...appDTO
     };
 
     const res = await this.dgraph.mutate(data);

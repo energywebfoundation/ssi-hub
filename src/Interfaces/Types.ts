@@ -1,3 +1,7 @@
+import { CreateOrganizationData } from '../role/OrganizationDTO';
+import { CreateApplicationData } from '../role/ApplicationDTO';
+import { CreateRoleData } from '../role/RoleTypes';
+
 export interface DGraphObject {
   uid?: string;
   type?: string;
@@ -6,6 +10,21 @@ export interface DGraphObject {
 export interface KeyValue {
   key: string;
   value: string;
+}
+
+export function RecordToKeyValue(record: Record<string, string>): KeyValue[] {
+  return Object.entries(record).map(([key,value]) => ({ key, value}))
+}
+
+export const KeyValueAPIDefinition = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      key: { type: 'string' },
+      value: { type: 'string' },
+    },
+  },
 }
 
 type roleType = 'custom' | 'org' | 'app';
@@ -19,22 +38,23 @@ export interface Definition {
 
 export interface OrgDefinition extends Definition {
   roleType: 'org';
+  orgName: string;
   description: string
   websiteUrl: string;
   logoUrl: string;
-  others: KeyValue;
+  others: KeyValue[];
 }
 
 export interface AppDefinition extends Definition {
   roleType: 'app';
+  appName: string;
   description: string
   websiteUrl: string;
   logoUrl: string;
-  others: KeyValue;
+  others: KeyValue[];
 }
 
 export interface RoleDefinition extends Definition {
-  version: string;
   roleType: 'custom';
   roleName: string;
   fields: {
@@ -49,7 +69,7 @@ export interface RoleDefinition extends Definition {
   };
 }
 
-export type DefinitionData = RoleDefinition | AppDefinition | OrgDefinition;
+export type DefinitionData = CreateOrganizationData | CreateApplicationData | CreateRoleData;
 
 export const roleDefinitionFullQuery = `
 {
@@ -76,18 +96,24 @@ export const roleDefinitionFullQuery = `
   }
 }`;
 
-export interface Role {
+export interface Role extends DGraphObject {
   name: string;
+  owner: string;
+  namespace: string;
   definition: RoleDefinition;
 }
-export interface Application {
+export interface Application extends DGraphObject {
   name: string;
-  definition: RoleDefinition;
+  owner: string;
+  namespace: string;
+  definition: AppDefinition;
   roles: RoleDefinition[];
 }
-export interface Organization {
+export interface Organization extends DGraphObject {
   name: string;
-  definition: RoleDefinition;
+  owner: string;
+  namespace: string;
+  definition: OrgDefinition;
   apps: RoleDefinition[];
   roles: RoleDefinition[];
 }

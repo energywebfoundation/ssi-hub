@@ -29,4 +29,10 @@ export class OrganizationController {
   public async getAppsByOrgId(@Param('namespace') namespace: string) {
     return await this.organizationService.getApps(namespace);
   }
+
+  @Get('/:namespace/roles')
+  @ApiTags('Organization')
+  public async getRolesByOrgId(@Param('namespace') namespace: string) {
+    return await this.organizationService.getRoles(namespace);
+  }
 }

@@ -1,13 +1,8 @@
-import { IsArray, IsString } from 'class-validator';
+import { Equals, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { KeyValue } from '../Interfaces/Types';
-import { Role } from './RoleTypes';
+import { KeyValue, KeyValueAPIDefinition, Role, RoleDefinition } from '../Interfaces/Types';
 
-export class RoleDTO implements Role {
-  @IsString()
-  @ApiProperty()
-  address: string;
-
+export class RoleDefinitionDTO implements RoleDefinition {
   @IsArray()
   @ApiProperty({
     type: 'array',
@@ -20,29 +15,29 @@ export class RoleDTO implements Role {
       },
     },
   })
-  fields: { type: string; label: string; validation: string }[];
+  fields: { fieldType: string; label: string; validation: string }[];
 
   @IsArray()
-  @ApiProperty({
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        key: { type: 'string' },
-        value: { type: 'string' },
-      },
-    },
-  })
+  @ApiProperty(KeyValueAPIDefinition)
   metadata: KeyValue[];
 
+  issuer: { issuerType: string; did: string[] };
+  roleName: string;
+
+  @Equals("custom")
+  readonly roleType: "custom" = "custom";
+  version: string;
+}
+
+export class RoleDTO implements Role {
+  @ValidateNested()
+  definition: RoleDefinitionDTO;
   @IsString()
-  @ApiProperty()
+  name: string;
+  @IsString()
   namespace: string;
-
-  uid?: string;
-  type?: string;
-
-  children?: RoleDTO[];
+  @IsString()
+  owner: string;
 }
 
 export interface NamespaceFragments {

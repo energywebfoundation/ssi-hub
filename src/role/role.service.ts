@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { NamespaceFragments } from './RoleDTO';
-import { RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { NamespaceFragments, RoleDefinitionDTO, RoleDTO } from './RoleDTO';
+import { RecordToKeyValue, RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { CreateRoleData } from './RoleTypes';
+import { ApplicationDefinitionDTO, ApplicationDTO } from './ApplicationDTO';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class RoleService {
@@ -40,17 +43,35 @@ export class RoleService {
 
   public async create(
     name: string,
-    definition: RoleDefinition,
+    definition: CreateRoleData,
     namespace: string,
     owner: string,
   ) {
+
+    const roleDTO = new RoleDTO()
+    roleDTO.name = name;
+    roleDTO.owner = owner;
+    roleDTO.namespace = namespace;
+
+    const orgDefDTO = new RoleDefinitionDTO()
+    orgDefDTO.metadata = RecordToKeyValue(definition.metadata);
+    orgDefDTO.roleName = definition.roleName;
+    orgDefDTO.fields = definition.fields;
+    orgDefDTO.version = definition.version;
+    orgDefDTO.issuer = definition.issuer;
+
+    roleDTO.definition = orgDefDTO;
+
+    const err = await validate(roleDTO);
+
+    if(err.length > 0) {
+      return;
+    }
+
     const data = {
       uid: '_:new',
       type: 'role',
-      name,
-      namespace,
-      owner,
-      definition,
+      ...roleDTO
     };
 
     const res = await this.dgraph.mutate(data);
@@ -81,12 +102,18 @@ export class RoleService {
   ): string {
     let namespace = `${fragments.org}.org.${fragments.ewc}.ewc`;
 
+    //special case for role with organization
+    if(fragment == 'role' && fragments.org && !fragments.apps) {
+      return `${fragments.roles}.roles.${namespace}`
+    }
+
     if (fragment == 'app' || fragment == 'role') {
       if (fragments.apps == null) {
         return null;
       }
       namespace = `${fragments.apps}.apps.${namespace}`;
     }
+
     if (fragment == 'role') {
       if (fragments.roles == null) {
         return null;

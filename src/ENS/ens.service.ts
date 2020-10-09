@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { providers } from 'ethers';
 import { PublicResolverFactory } from '../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
-import { DefinitionData, RoleDefinition } from '../Interfaces/Types';
+import { DefinitionData } from '../Interfaces/Types';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../ethers/EnsRegistryFactory';
@@ -32,18 +32,21 @@ export class EnsService {
 
     const provider = new providers.JsonRpcProvider(ENS_URL);
     const publicResolverFactory = PublicResolverFactory.connect(PUBLIC_RESOLVER_ADDRESS, provider);
-    const ensRegistryFactory = EnsRegistryFactory.connect(ENS_REGISTRY_ADDRESS,provider);
 
     publicResolverFactory.addListener('TextChanged', async hash => {
-      const namespace = await publicResolverFactory.name(hash);
-      const owner = await ensRegistryFactory.name(hash);
-      const data = await publicResolverFactory.text(hash, 'metadata');
-      if (!namespace || !owner || !data) {
+      try {
+        const namespace = await publicResolverFactory.name(hash);
+        const owner = await publicResolverFactory.name(hash);
+        const data = await publicResolverFactory.text(hash, 'metadata');
+
+        if (!namespace || !owner || !data) {
+          return;
+        }
+
+        await this.createRole({ data, namespace, owner });
+      } catch (err) {
         return;
       }
-      console.log(owner);
-
-      await this.createRole({ data, namespace, owner });
     });
   }
 
@@ -56,7 +59,12 @@ export class EnsService {
     namespace: string;
     owner: string;
   }) {
-    const metadata: DefinitionData = JSON.parse(data);
+    let metadata: DefinitionData
+    try {
+      metadata = JSON.parse(data);
+    } catch (err) {
+      return;
+    }
     const namespaceFragments = this.roleService.splitNamespace(namespace);
 
     const orgNamespace = this.roleService.getNamespaceOf('org', namespaceFragments);
@@ -98,14 +106,18 @@ export class EnsService {
 
     if (metadata.roleType === RoleTypes.ROLE && roleNamespace) {
       const roleExists = await this.roleService.exists(roleNamespace);
-      if (orgId && appId && !roleExists) {
+      if ((orgId || appId) && !roleExists) {
         const roleId = await this.roleService.create(
           namespaceFragments.roles,
           metadata,
           namespace,
           owner,
         );
-        await this.applicationService.addRole(appId, roleId);
+        if(appId) {
+          await this.applicationService.addRole(appId, roleId);
+        } else if(orgId) {
+          await this.organizationService.addRole(orgId, roleId);
+        }
         return;
       }
     }

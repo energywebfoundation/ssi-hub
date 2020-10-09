@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { OrgDefinition, RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { OrgDefinition, RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { CreateOrganizationData, OrganizationDefinitionDTO, OrganizationDTO } from '../role/OrganizationDTO';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class OrganizationService {
@@ -37,6 +39,24 @@ export class OrganizationService {
     return res.getJson();
   }
 
+  public async getRoles(namespace: string) {
+    const res = await this.dgraph.query(
+      `
+    query all($i: string){
+      Data(func: eq(namespace, $i)) {
+        namespace
+        roles {
+          name
+          namespace
+          definition ${roleDefinitionFullQuery}
+        }
+      }
+    }`,
+      { $i: namespace },
+    );
+    return res.getJson();
+  }
+
   public async getByNamespace(namespace: string) {
     const res = await this.dgraph.query(
       `
@@ -59,18 +79,37 @@ export class OrganizationService {
 
   public async create(
     name: string,
-    definition: OrgDefinition,
+    definition: CreateOrganizationData,
     namespace: string,
     owner: string,
   ) {
+
+    const orgDTO = new OrganizationDTO()
+    orgDTO.name = name;
+    orgDTO.owner = owner;
+    orgDTO.namespace = namespace;
+    orgDTO.apps = [];
+    orgDTO.roles = [];
+
+    const orgDefDTO = new OrganizationDefinitionDTO()
+    orgDefDTO.description = definition.description
+    orgDefDTO.logoUrl = definition.logoUrl
+    orgDefDTO.websiteUrl = definition.websiteUrl
+    orgDefDTO.others = RecordToKeyValue(definition.others)
+    orgDefDTO.orgName = definition.orgName
+
+    orgDTO.definition = orgDefDTO;
+
+    const err = await validate(orgDTO);
+
+    if(err.length > 0) {
+      return;
+    }
+
     const data = {
       uid: '_:new',
       type: 'org',
-      name: name,
-      definition,
-      namespace,
-      owner,
-      apps: [],
+      ...orgDTO
     };
 
     const res = await this.dgraph.mutate(data);
@@ -84,6 +123,21 @@ export class OrganizationService {
       apps: [
         {
           uid: appDefinitionId,
+        },
+      ],
+    };
+
+    await this.dgraph.mutate(data);
+
+    return id;
+  }
+
+  public async addRole(id: string, roleDefinitionId: string) {
+    const data = {
+      uid: id,
+      roles: [
+        {
+          uid: roleDefinitionId,
         },
       ],
     };

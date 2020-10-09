@@ -25,6 +25,19 @@ export class EnsTestService {
       namespace: 'onion.org.iam.ewc',
       owner: 'onion',
     });
+
+    await this.ensService.createRole({
+      data: JSON.stringify({
+        version: '1',
+        roleType: 'custom',
+        roleName: 'moderator',
+        fields: [],
+        metadata: {},
+      }),
+      namespace: 'admin.roles.onion.org.iam.ewc',
+      owner: 'carrot',
+    });
+
     await this.ensService.createRole({
       data: JSON.stringify({
         roleType: 'app',
@@ -41,6 +54,7 @@ export class EnsTestService {
       namespace: 'onionapp.apps.onion.org.iam.ewc',
       owner: 'onion',
     });
+
     await this.ensService.createRole({
       data: JSON.stringify({
         version: '1',
