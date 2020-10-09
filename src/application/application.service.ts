@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { AppDefinition, RecordToKeyValue, RoleDefinition, roleDefinitionFullQuery } from '../Interfaces/Types';
-import { ApplicationDefinitionDTO, ApplicationDTO, CreateApplicationData } from '../role/ApplicationDTO';
-import { OrganizationDefinitionDTO, OrganizationDTO } from '../role/OrganizationDTO';
+import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { ApplicationDefinitionDTO, ApplicationDTO, CreateApplicationData } from './ApplicationDTO';
 import { validate } from 'class-validator';
 
 @Injectable()
@@ -53,11 +52,12 @@ export class ApplicationService {
     }`,
       { $i: name },
     );
-    return res.getJson();
+    const json = res.getJson();
+    return json?.Data[0];
   }
 
   public async exists(namespace: string) {
-    return (await this.getByNamespace(namespace)).Data.length > 0;
+    return (await this.getByNamespace(namespace)) !== null;
   }
 
   public async create(

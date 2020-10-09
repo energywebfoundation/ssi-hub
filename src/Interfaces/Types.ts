@@ -1,5 +1,5 @@
-import { CreateOrganizationData } from '../role/OrganizationDTO';
-import { CreateApplicationData } from '../role/ApplicationDTO';
+import { CreateOrganizationData } from '../organization/OrganizationDTO';
+import { CreateApplicationData } from '../application/ApplicationDTO';
 import { CreateRoleData } from '../role/RoleTypes';
 
 export interface DGraphObject {
