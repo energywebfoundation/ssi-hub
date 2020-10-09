@@ -1,8 +1,21 @@
-import { DGraphObject, RoleDefinition } from '../Interfaces/Types';
+import { Definition, DGraphObject, KeyValue } from '../Interfaces/Types';
+import { RoleDefinition } from '../role/RoleTypes';
+import { AppDefinition } from '../application/ApplicationTypes';
+
+export interface OrgDefinition extends Definition {
+  roleType: 'org';
+  orgName: string;
+  description: string
+  websiteUrl: string;
+  logoUrl: string;
+  others: KeyValue[];
+}
 
 export interface Organization extends DGraphObject {
   name: string;
-  definition: RoleDefinition;
-  apps: RoleDefinition[];
+  owner: string;
+  namespace: string;
+  definition: OrgDefinition;
+  apps: AppDefinition[];
   roles: RoleDefinition[];
 }

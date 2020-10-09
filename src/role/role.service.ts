@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { NamespaceFragments, RoleDefinitionDTO, RoleDTO } from './RoleDTO';
 import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
-import { CreateRoleData } from './RoleTypes';
+import { CreateRoleData, Role } from './RoleTypes';
 import { validate } from 'class-validator';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class RoleService {
     return res.getJson();
   }
 
-  public async getByNamespace(namespace: string) {
+  public async getByNamespace(namespace: string): Promise<Role> {
     const res = await this.dgraph.query(
       `
     query all($i: string){
@@ -34,7 +34,7 @@ export class RoleService {
       { $i: namespace },
     );
     const json = res.getJson();
-    return json?.Data[0];
+    return json?.Data?.[0];
   }
 
   public async exists(namespace: string) {

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { OrgDefinition, RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
 import { CreateOrganizationData, OrganizationDefinitionDTO, OrganizationDTO } from './OrganizationDTO';
 import { validate } from 'class-validator';
+import { Organization } from './OrganizationTypes';
 
 @Injectable()
 export class OrganizationService {
@@ -57,7 +58,7 @@ export class OrganizationService {
     return res.getJson();
   }
 
-  public async getByNamespace(namespace: string) {
+  public async getByNamespace(namespace: string): Promise<Organization> {
     const res = await this.dgraph.query(
       `
     query all($i: string){
@@ -71,7 +72,7 @@ export class OrganizationService {
       { $i: namespace },
     );
     const json = res.getJson();
-    return json?.Data[0];
+    return json?.Data?.[0];
   }
 
   public async exists(namespace: string) {

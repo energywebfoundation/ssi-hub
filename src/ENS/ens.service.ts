@@ -85,7 +85,7 @@ export class EnsService {
     }
 
     const org = await this.organizationService.getByNamespace(orgNamespace);
-    const orgId = org.Data[0].uid;
+    const orgId = org?.uid;
 
     if (metadata.roleType === RoleTypes.APP && appNamespace) {
       const appExists = await this.applicationService.exists(appNamespace);
@@ -102,7 +102,7 @@ export class EnsService {
     }
 
     const app = await this.applicationService.getByNamespace(appNamespace);
-    const appId = app.Data[0]?.uid;
+    const appId = app?.uid;
 
     if (metadata.roleType === RoleTypes.ROLE && roleNamespace) {
       const roleExists = await this.roleService.exists(roleNamespace);

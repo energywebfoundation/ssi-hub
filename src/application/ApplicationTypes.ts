@@ -1,3 +1,19 @@
-import { DGraphObject } from '../Interfaces/Types';
+import { Definition, DGraphObject, KeyValue } from '../Interfaces/Types';
+import { RoleDefinition } from '../role/RoleTypes';
 
-export type Application = DGraphObject
+export interface Application extends DGraphObject {
+  name: string;
+  owner: string;
+  namespace: string;
+  definition: AppDefinition;
+  roles: RoleDefinition[];
+}
+
+export interface AppDefinition extends Definition {
+  roleType: 'app';
+  appName: string;
+  description: string
+  websiteUrl: string;
+  logoUrl: string;
+  others: KeyValue[];
+}

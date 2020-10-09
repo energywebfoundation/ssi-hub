@@ -36,39 +36,6 @@ export interface Definition {
   roleName?: string;
 }
 
-export interface OrgDefinition extends Definition {
-  roleType: 'org';
-  orgName: string;
-  description: string
-  websiteUrl: string;
-  logoUrl: string;
-  others: KeyValue[];
-}
-
-export interface AppDefinition extends Definition {
-  roleType: 'app';
-  appName: string;
-  description: string
-  websiteUrl: string;
-  logoUrl: string;
-  others: KeyValue[];
-}
-
-export interface RoleDefinition extends Definition {
-  roleType: 'custom';
-  roleName: string;
-  fields: {
-    fieldType: string;
-    label: string;
-    validation: string;
-  }[];
-  metadata: KeyValue[];
-  issuer: {
-    issuerType: string;
-    did: string[];
-  };
-}
-
 export type DefinitionData = CreateOrganizationData | CreateApplicationData | CreateRoleData;
 
 export const roleDefinitionFullQuery = `
@@ -95,25 +62,3 @@ export const roleDefinitionFullQuery = `
     value
   }
 }`;
-
-export interface Role extends DGraphObject {
-  name: string;
-  owner: string;
-  namespace: string;
-  definition: RoleDefinition;
-}
-export interface Application extends DGraphObject {
-  name: string;
-  owner: string;
-  namespace: string;
-  definition: AppDefinition;
-  roles: RoleDefinition[];
-}
-export interface Organization extends DGraphObject {
-  name: string;
-  owner: string;
-  namespace: string;
-  definition: OrgDefinition;
-  apps: RoleDefinition[];
-  roles: RoleDefinition[];
-}

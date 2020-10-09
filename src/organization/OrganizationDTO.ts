@@ -1,6 +1,9 @@
-import { KeyValue, KeyValueAPIDefinition, Organization, OrgDefinition, RoleDefinition } from '../Interfaces/Types';
+import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
 import { Equals, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Organization, OrgDefinition } from './OrganizationTypes';
+import { RoleDefinition } from '../role/RoleTypes';
+import { AppDefinition } from '../application/ApplicationTypes';
 
 export interface CreateOrganizationData {
   roleType: 'org';
@@ -49,5 +52,5 @@ export class OrganizationDTO implements Organization {
   roles: RoleDefinition[] = [];
 
   @IsArray()
-  apps: RoleDefinition[] = [];
+  apps: AppDefinition[] = [];
 }

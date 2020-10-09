@@ -1,6 +1,7 @@
 import { Equals, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { KeyValue, KeyValueAPIDefinition, Role, RoleDefinition } from '../Interfaces/Types';
+import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
+import { Role, RoleDefinition } from './RoleTypes';
 
 export class RoleDefinitionDTO implements RoleDefinition {
   @IsArray()

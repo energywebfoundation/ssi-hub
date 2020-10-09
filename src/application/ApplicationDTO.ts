@@ -1,6 +1,8 @@
-import { AppDefinition, Application, KeyValue, KeyValueAPIDefinition, RoleDefinition } from '../Interfaces/Types';
+import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
 import { Equals, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { AppDefinition, Application } from './ApplicationTypes';
+import { RoleDefinition } from '../role/RoleTypes';
 
 export interface CreateApplicationData {
   roleType: 'app';

@@ -1,3 +1,5 @@
+import { Definition, DGraphObject, KeyValue } from '../Interfaces/Types';
+
 export interface CreateRoleData {
   version: string;
   roleType: 'custom';
@@ -12,4 +14,26 @@ export interface CreateRoleData {
     issuerType: string;
     did: string[];
   };
+}
+
+export interface RoleDefinition extends Definition {
+  roleType: 'custom';
+  roleName: string;
+  fields: {
+    fieldType: string;
+    label: string;
+    validation: string;
+  }[];
+  metadata: KeyValue[];
+  issuer: {
+    issuerType: string;
+    did: string[];
+  };
+}
+
+export interface Role extends DGraphObject {
+  name: string;
+  owner: string;
+  namespace: string;
+  definition: RoleDefinition;
 }

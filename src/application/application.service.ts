@@ -3,6 +3,7 @@ import { DgraphService } from '../dgraph/dgraph.service';
 import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
 import { ApplicationDefinitionDTO, ApplicationDTO, CreateApplicationData } from './ApplicationDTO';
 import { validate } from 'class-validator';
+import { Application } from './ApplicationTypes';
 
 @Injectable()
 export class ApplicationService {
@@ -39,7 +40,7 @@ export class ApplicationService {
     return res.getJson();
   }
 
-  public async getByNamespace(name: string) {
+  public async getByNamespace(name: string): Promise<Application> {
     const res = await this.dgraph.query(
       `
     query all($i: string){
@@ -53,7 +54,7 @@ export class ApplicationService {
       { $i: name },
     );
     const json = res.getJson();
-    return json?.Data[0];
+    return json?.Data?.[0];
   }
 
   public async exists(namespace: string) {
