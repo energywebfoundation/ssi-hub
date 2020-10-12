@@ -11,7 +11,7 @@ export interface Application extends DGraphObject {
 
 export interface AppDefinition extends Definition {
   appName: string;
-  description: string
+  description: string;
   websiteUrl: string;
   logoUrl: string;
   others: KeyValue[];

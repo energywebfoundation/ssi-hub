@@ -13,7 +13,7 @@ export interface CreateApplicationData {
 
 export interface CreateApplicationDefinition {
   appName: string;
-  description: string
+  description: string;
   websiteUrl: string;
   logoUrl: string;
   others: Record<string, string>;
@@ -25,7 +25,7 @@ export class ApplicationDefinitionDTO implements AppDefinition {
   @IsString()
   websiteUrl: string;
   @IsString()
-  logoUrl: string
+  logoUrl: string;
   @IsString()
   appName: string;
   @IsArray()

@@ -21,6 +21,7 @@ export class ApplicationService {
         uid
         name
         namespace
+        owner
         definition ${roleDefinitionFullQuery}
       }
     }`);
@@ -36,6 +37,7 @@ export class ApplicationService {
         roles {
           name
           namespace
+          owner
           definition ${roleDefinitionFullQuery}
         }
       }
@@ -53,6 +55,7 @@ export class ApplicationService {
         uid
         name
         namespace
+        owner
         definition ${roleDefinitionFullQuery}
       }
     }`,
@@ -67,7 +70,7 @@ export class ApplicationService {
   }
 
   public async create(data: CreateApplicationData) {
-    const appDTO = new ApplicationDTO()
+    const appDTO = new ApplicationDTO();
     appDTO.name = data.name;
     appDTO.owner = data.owner;
     appDTO.namespace = data.namespace;
@@ -84,14 +87,14 @@ export class ApplicationService {
 
     const err = await validate(appDTO);
 
-    if(err.length > 0) {
+    if (err.length > 0) {
       return;
     }
 
     const queryData = {
       uid: '_:new',
       type: 'app',
-      ...appDTO
+      ...appDTO,
     };
 
     const res = await this.dgraph.mutate(queryData);
@@ -99,18 +102,21 @@ export class ApplicationService {
     return res.getUidsMap().get('new');
   }
 
-  public async updateNamespace(namespace: string, patch: CreateApplicationData) {
+  public async updateNamespace(
+    namespace: string,
+    patch: CreateApplicationData,
+  ) {
     const oldData = await this.getByNamespace(namespace);
-    if(!oldData) {
-      return
+    if (!oldData) {
+      return;
     }
 
-    const appDTO = new ApplicationDTO()
+    const appDTO = new ApplicationDTO();
     appDTO.name = patch.name;
     appDTO.owner = patch.owner;
     appDTO.namespace = patch.namespace;
 
-    const definition = patch.definition
+    const definition = patch.definition;
 
     const orgDefDTO = new ApplicationDefinitionDTO();
     orgDefDTO.description = definition.description;
@@ -124,7 +130,7 @@ export class ApplicationService {
     const data = {
       uid: oldData.uid,
       ...appDTO,
-    }
+    };
 
     await this.dgraph.mutate(data);
 

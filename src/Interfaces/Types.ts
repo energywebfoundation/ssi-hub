@@ -13,7 +13,7 @@ export interface KeyValue {
 }
 
 export function RecordToKeyValue(record: Record<string, string>): KeyValue[] {
-  return Object.entries(record).map(([key,value]) => ({ key, value}))
+  return Object.entries(record).map(([key, value]) => ({ key, value }));
 }
 
 export const KeyValueAPIDefinition = {
@@ -25,7 +25,7 @@ export const KeyValueAPIDefinition = {
       value: { type: 'string' },
     },
   },
-}
+};
 
 export interface Definition {
   appName?: string;
@@ -33,7 +33,10 @@ export interface Definition {
   roleName?: string;
 }
 
-export type DefinitionData = CreateOrganizationDefinition | CreateApplicationDefinition | CreateRoleDefinition;
+export type DefinitionData =
+  | CreateOrganizationDefinition
+  | CreateApplicationDefinition
+  | CreateRoleDefinition;
 
 export const roleDefinitionFullQuery = `
 {

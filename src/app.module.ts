@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { DgraphService } from './dgraph/dgraph.service';
 import { ClaimController } from './claim/claim.controller';
 import { ClaimService } from './claim/claim.service';
@@ -20,7 +21,7 @@ import { NamespaceController } from './namespace/namespace.controller';
 import { NamespaceService } from './namespace/namespace.service';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
   controllers: [
     ClaimController,
     OrganizationController,

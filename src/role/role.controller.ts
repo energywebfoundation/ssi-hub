@@ -32,8 +32,6 @@ export class RoleController {
   @ApiTags('Test')
   public async doMock() {
     await this.ensTest.testOrgAppRole();
-    return "Done";
+    return 'Done';
   }
-
-
 }

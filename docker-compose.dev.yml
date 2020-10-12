@@ -48,7 +48,7 @@ services:
       - 8000:8000
     command: dgraph-ratel
   nats:
-    image: nats:${NATS_VERSION}
+    image: synadia/nats-server:nightly
     volumes:
        - ./config/:/etc/nats
     command: "-c /etc/nats/nats.conf"

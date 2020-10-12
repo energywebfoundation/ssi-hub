@@ -5,7 +5,7 @@ import { AppDefinition } from '../application/ApplicationTypes';
 export interface OrgDefinition extends Definition {
   roleType: 'org';
   orgName: string;
-  description: string
+  description: string;
   websiteUrl: string;
   logoUrl: string;
   others: KeyValue[];
