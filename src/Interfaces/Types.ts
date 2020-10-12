@@ -1,6 +1,6 @@
-import { CreateOrganizationData } from '../organization/OrganizationDTO';
-import { CreateApplicationData } from '../application/ApplicationDTO';
-import { CreateRoleData } from '../role/RoleTypes';
+import { CreateOrganizationDefinition } from '../organization/OrganizationDTO';
+import { CreateApplicationDefinition } from '../application/ApplicationDTO';
+import { CreateRoleDefinition } from '../role/RoleTypes';
 
 export interface DGraphObject {
   uid?: string;
@@ -27,16 +27,13 @@ export const KeyValueAPIDefinition = {
   },
 }
 
-type roleType = 'custom' | 'org' | 'app';
-
 export interface Definition {
-  roleType: roleType;
   appName?: string;
   orgName?: string;
   roleName?: string;
 }
 
-export type DefinitionData = CreateOrganizationData | CreateApplicationData | CreateRoleData;
+export type DefinitionData = CreateOrganizationDefinition | CreateApplicationDefinition | CreateRoleDefinition;
 
 export const roleDefinitionFullQuery = `
 {

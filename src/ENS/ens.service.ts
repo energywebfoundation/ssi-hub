@@ -12,12 +12,9 @@ import { EnsRegistry } from '../ethers/EnsRegistry';
 import { namehash } from '../ethers/utils';
 import { APP_MOCK_DATA, ORG_MOCK_DATA, ROLE_MOCK_DATA } from './ens.testService';
 import { PopulateRolesConfig } from '../../PopulateRolesConfig';
-
-enum RoleTypes {
-  ORG= 'org',
-  APP= 'app',
-  ROLE= 'custom',
-}
+import { CreateOrganizationDefinition } from '../organization/OrganizationDTO';
+import { CreateApplicationDefinition } from '../application/ApplicationDTO';
+import { CreateRoleDefinition } from '../role/RoleTypes';
 
 @Injectable()
 export class EnsService {
@@ -55,11 +52,6 @@ export class EnsService {
         this.publicResolver.text(hash, 'metadata'),
       ]);
 
-      console.log('hash: ' + hash)
-      console.log('namespace: ' + namespace);
-      console.log('owner: ' + owner);
-      console.log('data: ' + data);
-
       if (!namespace || !owner || !data) {
         return;
       }
@@ -92,54 +84,81 @@ export class EnsService {
     const appNamespace = this.roleService.getNamespaceOf('app', namespaceFragments);
     const roleNamespace = this.roleService.getNamespaceOf('role', namespaceFragments);
 
-    if (metadata.roleType === RoleTypes.ORG && orgNamespace) {
+    const orgData = metadata as CreateOrganizationDefinition;
+
+    if (orgData.orgName && orgNamespace) {
       const orgExists = await this.organizationService.exists(orgNamespace);
       if (!orgExists) {
-        await this.organizationService.create(
-          namespaceFragments.org,
-          metadata,
+        await this.organizationService.create({
+          name: namespaceFragments.org,
+          definition: orgData,
           namespace,
           owner,
-        );
+        });
         return;
+      } else {
+        await this.organizationService.updateNamespace(orgNamespace, {
+          name: namespaceFragments.org,
+          definition: orgData,
+          namespace,
+          owner,
+        });
       }
     }
 
     const org = await this.organizationService.getByNamespace(orgNamespace);
     const orgId = org?.uid;
 
-    if (metadata.roleType === RoleTypes.APP && appNamespace) {
+    const appData = metadata as CreateApplicationDefinition;
+
+    if (appData.appName && appNamespace) {
       const appExists = await this.applicationService.exists(appNamespace);
       if (orgId && !appExists) {
-        const newAppId = await this.applicationService.create(
-          namespaceFragments.apps,
-          metadata,
+        const newAppId = await this.applicationService.create({
+          name: namespaceFragments.apps,
+          definition: appData,
           namespace,
           owner,
-        );
+        });
         await this.organizationService.addApp(orgId, newAppId);
         return;
+      } else {
+        await this.organizationService.updateNamespace(appNamespace, {
+          name: namespaceFragments.apps,
+          definition: orgData,
+          namespace,
+          owner,
+        })
       }
     }
 
     const app = await this.applicationService.getByNamespace(appNamespace);
     const appId = app?.uid;
 
-    if (metadata.roleType === RoleTypes.ROLE && roleNamespace) {
+    const roleData = metadata as CreateRoleDefinition;
+
+    if (roleData.roleName && roleNamespace) {
       const roleExists = await this.roleService.exists(roleNamespace);
       if ((orgId || appId) && !roleExists) {
-        const roleId = await this.roleService.create(
-          namespaceFragments.roles,
-          metadata,
+        const roleId = await this.roleService.create({
+          name: namespaceFragments.roles,
+          definition: roleData,
           namespace,
           owner,
-        );
+        });
         if(appId) {
           await this.applicationService.addRole(appId, roleId);
         } else if(orgId) {
           await this.organizationService.addRole(orgId, roleId);
         }
         return;
+      } else {
+        await this.roleService.updateNamespace(roleNamespace,{
+          name: namespaceFragments.roles,
+          definition: roleData,
+          namespace,
+          owner,
+        });
       }
     }
   }

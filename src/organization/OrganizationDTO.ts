@@ -6,7 +6,13 @@ import { RoleDefinition } from '../role/RoleTypes';
 import { AppDefinition } from '../application/ApplicationTypes';
 
 export interface CreateOrganizationData {
-  roleType: 'org';
+  name: string;
+  namespace: string;
+  owner: string;
+  definition: CreateOrganizationDefinition;
+}
+
+export interface CreateOrganizationDefinition {
   orgName: string;
   description: string
   websiteUrl: string;

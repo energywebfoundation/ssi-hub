@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { NamespaceFragments, RoleDefinitionDTO, RoleDTO } from './RoleDTO';
 import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
-import { CreateRoleData, Role } from './RoleTypes';
+import { CreateRoleData, CreateRoleDefinition, Role } from './RoleTypes';
 import { validate } from 'class-validator';
+import { CreateApplicationData } from '../application/ApplicationDTO';
 
 @Injectable()
 export class RoleService {
@@ -41,24 +42,19 @@ export class RoleService {
     return (await this.getByNamespace(namespace)) !== undefined;
   }
 
-  public async create(
-    name: string,
-    definition: CreateRoleData,
-    namespace: string,
-    owner: string,
-  ) {
+  public async create(data: CreateRoleData) {
 
     const roleDTO = new RoleDTO()
-    roleDTO.name = name;
-    roleDTO.owner = owner;
-    roleDTO.namespace = namespace;
+    roleDTO.name = data.name;
+    roleDTO.owner = data.owner;
+    roleDTO.namespace = data.namespace;
 
     const orgDefDTO = new RoleDefinitionDTO()
-    orgDefDTO.metadata = RecordToKeyValue(definition.metadata);
-    orgDefDTO.roleName = definition.roleName;
-    orgDefDTO.fields = definition.fields;
-    orgDefDTO.version = definition.version;
-    orgDefDTO.issuer = definition.issuer;
+    orgDefDTO.metadata = RecordToKeyValue(data.definition.metadata);
+    orgDefDTO.roleName = data.definition.roleName;
+    orgDefDTO.fields = data.definition.fields;
+    orgDefDTO.version = data.definition.version;
+    orgDefDTO.issuer = data.definition.issuer;
 
     roleDTO.definition = orgDefDTO;
 
@@ -68,15 +64,45 @@ export class RoleService {
       return;
     }
 
-    const data = {
+    const queryData = {
       uid: '_:new',
       type: 'role',
       ...roleDTO
     };
 
-    const res = await this.dgraph.mutate(data);
+    const res = await this.dgraph.mutate(queryData);
 
     return res.getUidsMap().get('new');
+  }
+
+  public async updateNamespace(namespace: string, patch: CreateRoleData) {
+    const oldData = await this.getByNamespace(namespace);
+    if (!oldData) {
+      return
+    }
+
+    const roleDTO = new RoleDTO()
+    roleDTO.name = patch.name;
+    roleDTO.owner = patch.owner;
+    roleDTO.namespace = patch.namespace;
+
+    const roleDefDTO = new RoleDefinitionDTO()
+    roleDefDTO.metadata = RecordToKeyValue(patch.definition.metadata);
+    roleDefDTO.roleName = patch.definition.roleName;
+    roleDefDTO.fields = patch.definition.fields;
+    roleDefDTO.version = patch.definition.version;
+    roleDefDTO.issuer = patch.definition.issuer;
+
+    roleDTO.definition = roleDefDTO;
+
+    const data = {
+      uid: oldData.uid,
+      ...roleDTO,
+    }
+
+    await this.dgraph.mutate(data);
+
+    return oldData.uid;
   }
 
   public splitNamespace(namespace: string): NamespaceFragments {

@@ -1,6 +1,12 @@
 import { Definition, DGraphObject, KeyValue } from '../Interfaces/Types';
 
 export interface CreateRoleData {
+  name: string;
+  namespace: string;
+  owner: string;
+  definition: CreateRoleDefinition;
+}
+export interface CreateRoleDefinition {
   version: string;
   roleType: 'custom';
   roleName: string;

@@ -5,7 +5,13 @@ import { AppDefinition, Application } from './ApplicationTypes';
 import { RoleDefinition } from '../role/RoleTypes';
 
 export interface CreateApplicationData {
-  roleType: 'app';
+  name: string;
+  namespace: string;
+  owner: string;
+  definition: CreateApplicationDefinition;
+}
+
+export interface CreateApplicationDefinition {
   appName: string;
   description: string
   websiteUrl: string;
@@ -28,9 +34,6 @@ export class ApplicationDefinitionDTO implements AppDefinition {
     items: KeyValueAPIDefinition,
   })
   others: KeyValue[] = [];
-
-  @Equals("app")
-  readonly roleType: "app" = "app";
 }
 
 export class ApplicationDTO implements Application {

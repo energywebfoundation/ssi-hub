@@ -10,7 +10,6 @@ export interface Application extends DGraphObject {
 }
 
 export interface AppDefinition extends Definition {
-  roleType: 'app';
   appName: string;
   description: string
   websiteUrl: string;

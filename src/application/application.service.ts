@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
-import { ApplicationDefinitionDTO, ApplicationDTO, CreateApplicationData } from './ApplicationDTO';
+import {
+  ApplicationDefinitionDTO,
+  ApplicationDTO,
+  CreateApplicationData,
+  CreateApplicationDefinition,
+} from './ApplicationDTO';
 import { validate } from 'class-validator';
 import { Application } from './ApplicationTypes';
 
@@ -61,25 +66,19 @@ export class ApplicationService {
     return (await this.getByNamespace(namespace)) !== undefined;
   }
 
-  public async create(
-    name: string,
-    definition: CreateApplicationData,
-    namespace: string,
-    owner: string,
-  ) {
-
+  public async create(data: CreateApplicationData) {
     const appDTO = new ApplicationDTO()
-    appDTO.name = name;
-    appDTO.owner = owner;
-    appDTO.namespace = namespace;
+    appDTO.name = data.name;
+    appDTO.owner = data.owner;
+    appDTO.namespace = data.namespace;
     appDTO.roles = [];
 
-    const orgDefDTO = new ApplicationDefinitionDTO()
-    orgDefDTO.description = definition.description
-    orgDefDTO.logoUrl = definition.logoUrl
-    orgDefDTO.websiteUrl = definition.websiteUrl
-    orgDefDTO.others = RecordToKeyValue(definition.others)
-    orgDefDTO.appName = definition.appName
+    const orgDefDTO = new ApplicationDefinitionDTO();
+    orgDefDTO.description = data.definition.description;
+    orgDefDTO.logoUrl = data.definition.logoUrl;
+    orgDefDTO.websiteUrl = data.definition.websiteUrl;
+    orgDefDTO.others = RecordToKeyValue(data.definition.others);
+    orgDefDTO.appName = data.definition.appName;
 
     appDTO.definition = orgDefDTO;
 
@@ -89,15 +88,47 @@ export class ApplicationService {
       return;
     }
 
-    const data = {
+    const queryData = {
       uid: '_:new',
       type: 'app',
       ...appDTO
     };
 
-    const res = await this.dgraph.mutate(data);
+    const res = await this.dgraph.mutate(queryData);
 
     return res.getUidsMap().get('new');
+  }
+
+  public async updateNamespace(namespace: string, patch: CreateApplicationData) {
+    const oldData = await this.getByNamespace(namespace);
+    if(!oldData) {
+      return
+    }
+
+    const appDTO = new ApplicationDTO()
+    appDTO.name = patch.name;
+    appDTO.owner = patch.owner;
+    appDTO.namespace = patch.namespace;
+
+    const definition = patch.definition
+
+    const orgDefDTO = new ApplicationDefinitionDTO();
+    orgDefDTO.description = definition.description;
+    orgDefDTO.logoUrl = definition.logoUrl;
+    orgDefDTO.websiteUrl = definition.websiteUrl;
+    orgDefDTO.others = RecordToKeyValue(definition.others);
+    orgDefDTO.appName = definition.appName;
+
+    appDTO.definition = orgDefDTO;
+
+    const data = {
+      uid: oldData.uid,
+      ...appDTO,
+    }
+
+    await this.dgraph.mutate(data);
+
+    return oldData.uid;
   }
 
   public async addRole(id: string, roleDefinitionId: string) {

@@ -55,7 +55,7 @@ export class EnsTestService {
   public async testOrgAppRole() {
     await this.ensService.createRole({
       data: ORG_MOCK_DATA,
-      namespace: 'onion.iam.ewc',
+      namespace: 'aaaa.iam.ewc',
       owner: 'onion',
     });
 
