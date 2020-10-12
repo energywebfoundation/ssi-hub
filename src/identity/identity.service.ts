@@ -3,24 +3,26 @@ import { DgraphService } from '../dgraph/dgraph.service';
 
 @Injectable()
 export class IdentityService {
-  constructor(
-    private readonly dgraph: DgraphService
-  ) {}
+  constructor(private readonly dgraph: DgraphService) {}
 
   public async getById(id: string) {
-    const res =  await this.dgraph.query(`
+    const res = await this.dgraph.query(
+      `
     query all($i: string){
       Data(func: uid($i)) {
 
       }
-    }`, {$i: id})
+    }`,
+      { $i: id },
+    );
     return res.getJson();
   }
 
   public async create() {
     const data = {
-      uid: "_:new"
-    }
+      uid: '_:new',
+      type: 'identity',
+    };
 
     const res = await this.dgraph.mutate(data);
 

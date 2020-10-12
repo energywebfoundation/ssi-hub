@@ -8,10 +8,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const options = new DocumentBuilder()
-    .setTitle('Cache server API')
-    .setDescription('')
+    .setTitle('API')
+    .setDescription('Cache Server API documentation')
     .setVersion('1.0')
-    .addTag('cache')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);

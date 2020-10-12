@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { DgraphService } from './dgraph/dgraph.service';
 import { ClaimController } from './claim/claim.controller';
 import { ClaimService } from './claim/claim.service';
@@ -12,10 +10,38 @@ import { IdentityController } from './identity/identity.controller';
 import { IdentityService } from './identity/identity.service';
 import { ApplicationService } from './application/application.service';
 import { RoleService } from './role/role.service';
+import { EnsService } from './ENS/ens.service';
+import { GraphqlController } from './graphql/graphql.controller';
+import { ConfigModule } from '@nestjs/config';
+import { OwnerController } from './owner/owner.controller';
+import { OwnerService } from './owner/owner.service';
+import { EnsTestService } from './ENS/ens.testService';
+import { NamespaceController } from './namespace/namespace.controller';
+import { NamespaceService } from './namespace/namespace.service';
 
 @Module({
-  imports: [],
-  controllers: [AppController, ClaimController, OrganizationController, ApplicationController, RoleController, IdentityController],
-  providers: [AppService, DgraphService, ClaimService, OrganizationService, IdentityService, ApplicationService, RoleService],
+  imports: [ConfigModule.forRoot()],
+  controllers: [
+    ClaimController,
+    OrganizationController,
+    ApplicationController,
+    RoleController,
+    IdentityController,
+    GraphqlController,
+    OwnerController,
+    NamespaceController,
+  ],
+  providers: [
+    DgraphService,
+    ClaimService,
+    OrganizationService,
+    IdentityService,
+    ApplicationService,
+    RoleService,
+    EnsService,
+    EnsTestService,
+    OwnerService,
+    NamespaceService,
+  ],
 })
 export class AppModule {}

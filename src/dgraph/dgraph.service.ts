@@ -1,44 +1,79 @@
 import { Injectable } from '@nestjs/common';
-import { DgraphClient, DgraphClientStub, Mutation } from 'dgraph-js';
+import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import * as grpc from 'grpc';
+import { ConfigService } from '@nestjs/config';
+import { Policy } from 'cockatiel';
 
 @Injectable()
 export class DgraphService {
-  get instance(): DgraphClient {
-    return this._instance;
+  private async getInstance(): Promise<DgraphClient> {
+    if (this._instance) {
+      return this._instance;
+    }
+    return this.createInstance();
   }
 
   private _instance: DgraphClient;
   private _stub: DgraphClientStub;
 
-  constructor() {
+  constructor(private configService: ConfigService) {
     this.createInstance();
+    this.migrate();
+  }
+
+  public async migrate() {
+    const schema = `
+      type: string @index(exact) .
+      namespace: string @index(exact) .
+      name: string @index(exact) .
+      owner: string @index(exact) .
+    `;
+    const op = new Operation();
+    op.setSchema(schema);
+    await this._instance.alter(op);
+    console.log('migration complete');
   }
 
   public async mutate(data: unknown) {
-    const txn = await this.instance.newTxn();
-    const mu = new Mutation()
+    const instance = await this.getInstance();
+    const txn = await instance.newTxn();
+    const mu = new Mutation();
     mu.setSetJson(data);
     mu.setCommitNow(true);
     return txn.mutate(mu);
   }
 
-  public async query(query: string, params: Record<string, any>) {
-    return this.instance.newTxn({readOnly: true}).queryWithVars(query, params)
+  public async query(query: string, params?: Record<string, any>) {
+    const instance = await this.getInstance();
+    if (params) {
+      return instance.newTxn({ readOnly: true }).queryWithVars(query, params);
+    }
+    return instance.newTxn({ readOnly: true }).query(query);
   }
 
-  private createInstance() {
-    if(this._instance) {
-      return;
+  private async createInstance() {
+    if (this._instance) {
+      return this._instance;
     }
 
-    const clientStub = new DgraphClientStub(
-      "localhost:9080",
-      grpc.credentials.createInsecure(),
-    );
+    let clientStub: DgraphClientStub;
 
-    this._stub = clientStub;
-    this._instance = new DgraphClient(clientStub);
+    const DB_HOST = this.configService.get<string>('DB_HOST');
+
+    const policy = Policy.handleAll().retry().attempts(5).delay(1000);
+    return await policy.execute(async () => {
+      clientStub = new DgraphClientStub(
+        DB_HOST,
+        grpc.credentials.createInsecure(),
+      );
+      console.log('connection successfuly');
+
+      this._stub = clientStub;
+
+      this._instance = new DgraphClient(clientStub);
+
+      return this._instance;
+    })
   }
 
   public close() {

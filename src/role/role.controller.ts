@@ -1,19 +1,39 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { RoleService } from './role.service';
+import { ApiTags } from '@nestjs/swagger';
+import { EnsTestService } from '../ENS/ens.testService';
 
 @Controller('role')
 export class RoleController {
-  constructor(private roleService: RoleService) {
+  constructor(
+    private roleService: RoleService,
+    private ensTest: EnsTestService,
+  ) {}
+
+  @Get()
+  @ApiTags('Roles')
+  public async getAll() {
+    return await this.roleService.getAll();
   }
 
-  @Get('/:id')
-  public async getById(@Param('id') id: string) {
-    return await this.roleService.getById(id);
+  @Get('/:namespace')
+  @ApiTags('Roles')
+  public async getById(@Param('namespace') namespace: string) {
+    return await this.roleService.getByNamespace(namespace);
   }
 
-  @Post()
-  public async create(@Body() body: unknown) {
-    console.log(body);
-    return await this.roleService.create();
+  @Get('/:namespace/exists')
+  @ApiTags('Roles')
+  public async exists(@Param('namespace') namespace: string) {
+    return await this.roleService.exists(namespace);
   }
+
+  @Post('/mock')
+  @ApiTags('Test')
+  public async doMock() {
+    await this.ensTest.testOrgAppRole();
+    return "Done";
+  }
+
+
 }
