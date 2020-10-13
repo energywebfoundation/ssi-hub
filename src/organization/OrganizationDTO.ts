@@ -14,7 +14,7 @@ export interface CreateOrganizationData {
 
 export interface CreateOrganizationDefinition {
   orgName: string;
-  description: string
+  description: string;
   websiteUrl: string;
   logoUrl: string;
   others: Record<string, string>;
@@ -26,9 +26,9 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
   @IsString()
   websiteUrl: string;
   @IsString()
-  logoUrl: string
+  logoUrl: string;
   @IsString()
-  orgName: string
+  orgName: string;
 
   @IsArray()
   @ApiProperty({
@@ -37,8 +37,8 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
   })
   others: KeyValue[] = [];
 
-  @Equals("org")
-  readonly roleType = "org";
+  @Equals('org')
+  readonly roleType = 'org';
 }
 
 export class OrganizationDTO implements Organization {

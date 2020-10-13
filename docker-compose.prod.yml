@@ -36,7 +36,7 @@ services:
     networks:
       - main
   nats:
-    image: nats:${NATS_VERSION}
+    image: synadia/nats-server:nightly
     command: "-c /etc/nats/nats.conf"
     volumes:
        - ./config/:/etc/nats

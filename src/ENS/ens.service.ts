@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { providers } from 'ethers';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { providers, utils, errors } from 'ethers';
+import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
 import { DefinitionData } from '../Interfaces/Types';
@@ -10,29 +12,48 @@ import { ConfigService } from '@nestjs/config';
 import { PublicResolver } from '../ethers/PublicResolver';
 import { EnsRegistry } from '../ethers/EnsRegistry';
 import { namehash } from '../ethers/utils';
-import { APP_MOCK_DATA, ORG_MOCK_DATA, ROLE_MOCK_DATA } from './ens.testService';
+import { ORG_MOCK_DATA } from './ens.testService';
 import { PopulateRolesConfig } from '../../PopulateRolesConfig';
 import { CreateOrganizationDefinition } from '../organization/OrganizationDTO';
 import { CreateApplicationDefinition } from '../application/ApplicationDTO';
 import { CreateRoleDefinition } from '../role/RoleTypes';
 
+enum ENSNamespaceTypes {
+  Roles = 'roles',
+  Application = 'apps',
+  Organization = 'org',
+}
+
 @Injectable()
 export class EnsService {
   private publicResolver: PublicResolver;
   private ensRegistry: EnsRegistry;
+  private provider: providers.JsonRpcProvider;
+  private logger: Logger;
   constructor(
     private roleService: RoleService,
     private applicationService: ApplicationService,
     private organizationService: OrganizationService,
     private config: ConfigService,
   ) {
-
+    this.logger = new Logger('ENSService');
+    errors.setLogLevel('error');
     const ENS_URL = this.config.get<string>('ENS_URL');
-    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>('PUBLIC_RESOLVER_ADDRESS');
-    const ENS_REGISTRY_ADDRESS = this.config.get<string>('ENS_REGISTRY_ADDRESS');
-    const provider = new providers.JsonRpcProvider(ENS_URL);
-    this.publicResolver = PublicResolverFactory.connect(PUBLIC_RESOLVER_ADDRESS, provider);
-    this.ensRegistry = EnsRegistryFactory.connect(ENS_REGISTRY_ADDRESS, provider);
+    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
+      'PUBLIC_RESOLVER_ADDRESS',
+    );
+    const ENS_REGISTRY_ADDRESS = this.config.get<string>(
+      'ENS_REGISTRY_ADDRESS',
+    );
+    this.provider = new providers.JsonRpcProvider(ENS_URL);
+    this.publicResolver = PublicResolverFactory.connect(
+      PUBLIC_RESOLVER_ADDRESS,
+      this.provider,
+    );
+    this.ensRegistry = EnsRegistryFactory.connect(
+      ENS_REGISTRY_ADDRESS,
+      this.provider,
+    );
 
     this.InitEventListeners();
     this.loadNamespaces();
@@ -44,6 +65,46 @@ export class EnsService {
     });
   }
 
+  private async getSubdomains({ domain }: { domain: string }) {
+    const ensInterface = new utils.Interface(ensResolverContract);
+    const Event = this.publicResolver.filters.TextChanged(
+      null,
+      'metadata',
+      null,
+    );
+    const filter = {
+      fromBlock: 0,
+      toBlock: 'latest',
+      address: Event.address,
+      topics: [...(Event.topics as string[])],
+    };
+    const logs = await this.provider.getLogs(filter);
+    const rawLogs = logs.map(log => {
+      const parsedLog = ensInterface.parseLog(log);
+      return parsedLog.values;
+    });
+    const domains = await Promise.all(
+      rawLogs.map(async ({ node }) => {
+        return this.publicResolver.name(node);
+      }),
+    );
+    const uniqDomains: Record<string, unknown> = {};
+    for (const item of domains) {
+      if (item && item.endsWith(domain) && !uniqDomains[item]) {
+        uniqDomains[item] = null;
+      }
+    }
+    const foundDomains = Object.keys(uniqDomains);
+    const role = domain.split('.');
+    const subdomains: Record<string, null> = {};
+    for (const name of foundDomains) {
+      const nameArray = name.split('.').reverse();
+      if (nameArray.length <= role.length) return;
+      subdomains[nameArray[role.length]] = null;
+    }
+    return Object.keys(subdomains);
+  }
+
   public async eventHandler(hash: string) {
     try {
       const [namespace, owner, data] = await Promise.all([
@@ -53,11 +114,13 @@ export class EnsService {
       ]);
 
       if (!namespace || !owner || !data) {
+        this.logger.debug(`Role not supported ${namespace || hash}`);
         return;
       }
 
       await this.createRole({ data, namespace, owner });
     } catch (err) {
+      this.logger.debug(err);
       return;
     }
   }
@@ -71,18 +134,27 @@ export class EnsService {
     namespace: string;
     owner: string;
   }) {
-    let metadata: DefinitionData
+    let metadata: DefinitionData;
     try {
       metadata = JSON.parse(data);
     } catch (err) {
-      console.log('invalid metadata json', err)
+      this.logger.debug('invalid metadata json: ', data);
       return;
     }
     const namespaceFragments = this.roleService.splitNamespace(namespace);
 
-    const orgNamespace = this.roleService.getNamespaceOf('org', namespaceFragments);
-    const appNamespace = this.roleService.getNamespaceOf('app', namespaceFragments);
-    const roleNamespace = this.roleService.getNamespaceOf('role', namespaceFragments);
+    const orgNamespace = this.roleService.getNamespaceOf(
+      'org',
+      namespaceFragments,
+    );
+    const appNamespace = this.roleService.getNamespaceOf(
+      'app',
+      namespaceFragments,
+    );
+    const roleNamespace = this.roleService.getNamespaceOf(
+      'role',
+      namespaceFragments,
+    );
 
     const orgData = metadata as CreateOrganizationDefinition;
 
@@ -95,15 +167,17 @@ export class EnsService {
           namespace,
           owner,
         });
+        this.logger.debug(`created organization for ${orgNamespace}`);
         return;
-      } else {
-        await this.organizationService.updateNamespace(orgNamespace, {
-          name: namespaceFragments.org,
-          definition: orgData,
-          namespace,
-          owner,
-        });
       }
+      this.logger.debug(`Org already exists ${orgNamespace}`);
+      // await this.organizationService.updateNamespace(orgNamespace, {
+      //   name: namespaceFragments.org,
+      //   definition: orgData,
+      //   namespace,
+      //   owner,
+      // });
+      return;
     }
 
     const org = await this.organizationService.getByNamespace(orgNamespace);
@@ -121,15 +195,26 @@ export class EnsService {
           owner,
         });
         await this.organizationService.addApp(orgId, newAppId);
+        this.logger.debug(
+          `created app for ${appNamespace} and added to ${orgNamespace}`,
+        );
         return;
-      } else {
-        await this.organizationService.updateNamespace(appNamespace, {
-          name: namespaceFragments.apps,
-          definition: orgData,
-          namespace,
-          owner,
-        })
       }
+      if (appExists) {
+        this.logger.debug(`Application already exists ${appNamespace}`);
+      }
+      if (!orgId) {
+        this.logger.debug(
+          `Organization for application not exists ${appNamespace}`,
+        );
+      }
+      // await this.organizationService.updateNamespace(appNamespace, {
+      //   name: namespaceFragments.apps,
+      //   definition: orgData,
+      //   namespace,
+      //   owner,
+      // });
+      return;
     }
 
     const app = await this.applicationService.getByNamespace(appNamespace);
@@ -146,31 +231,88 @@ export class EnsService {
           namespace,
           owner,
         });
-        if(appId) {
+        if (appId) {
           await this.applicationService.addRole(appId, roleId);
-        } else if(orgId) {
+          this.logger.debug(
+            `created role ${roleNamespace} and added to app ${appNamespace}`,
+          );
+        } else if (orgId) {
           await this.organizationService.addRole(orgId, roleId);
+          this.logger.debug(
+            `created role ${roleNamespace} and added to org ${orgNamespace}`,
+          );
         }
         return;
-      } else {
-        await this.roleService.updateNamespace(roleNamespace,{
-          name: namespaceFragments.roles,
-          definition: roleData,
-          namespace,
-          owner,
-        });
       }
+      if (roleExists) {
+        this.logger.debug(`Role already exists ${roleNamespace}`);
+      }
+      if (!orgId || !appId) {
+        this.logger.debug(
+          `App or organization for role does not exists: ${roleNamespace}`,
+        );
+      }
+      // await this.roleService.updateNamespace(roleNamespace, {
+      //   name: namespaceFragments.roles,
+      //   definition: roleData,
+      //   namespace,
+      //   owner,
+      // });
+      return;
     }
+    this.logger.debug(
+      `Bailed: Data not supported ${namespace}, ${JSON.stringify(metadata)}`,
+    );
   }
 
   private async loadNamespaces() {
     const create = async (namespace: string, data: string) => {
       const owner = await this.ensRegistry.owner(namehash(namespace));
-      await this.createRole({data, namespace, owner})
-    }
+      await this.createRole({ data, namespace, owner });
+    };
 
-    await Promise.all(PopulateRolesConfig.orgs.map(o => create(o, ORG_MOCK_DATA)))
-    await Promise.all(PopulateRolesConfig.apps.map(a => create(a, APP_MOCK_DATA)))
-    await Promise.all(PopulateRolesConfig.roles.map(r => create(r, ROLE_MOCK_DATA)))
+    await Promise.all(
+      PopulateRolesConfig.orgs.map(o => create(o, ORG_MOCK_DATA)),
+    );
+  }
+
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async syncDatabase() {
+    this.logger.debug('started sync');
+    const organizations = await this.getSubdomains({ domain: 'iam.ewc' });
+    for (const org of organizations) {
+      const hash = namehash(`${org}.iam.ewc`);
+      await this.eventHandler(hash);
+      const [roles, applications] = await Promise.all([
+        this.getSubdomains({
+          domain: `${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
+        }),
+        this.getSubdomains({
+          domain: `${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
+        }),
+      ]);
+      for (const role of roles) {
+        const hash = namehash(
+          `${role}.${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
+        );
+        await this.eventHandler(hash);
+      }
+      for (const app of applications) {
+        const hash = namehash(
+          `${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
+        );
+        await this.eventHandler(hash);
+        const roles = await this.getSubdomains({
+          domain: `${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
+        });
+        for (const role of roles) {
+          const hash = namehash(
+            `${role}.${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
+          );
+          await this.eventHandler(hash);
+        }
+      }
+    }
+    this.logger.debug('finished sync');
   }
 }

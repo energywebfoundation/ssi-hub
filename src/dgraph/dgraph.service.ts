@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import * as grpc from 'grpc';
 import { ConfigService } from '@nestjs/config';
@@ -60,12 +60,12 @@ export class DgraphService {
 
     const DB_HOST = this.configService.get<string>('DGRAPH_GRPC_HOST');
 
-    const policy = Policy.handleAll().retry().attempts(5).delay(1000);
+    const policy = Policy.handleAll()
+      .retry()
+      .attempts(5)
+      .delay(1000);
     return await policy.execute(async () => {
-      clientStub = new DgraphClientStub(
-        DB_HOST,
-        grpc.credentials.createInsecure(),
-      );
+      clientStub = new DgraphClientStub(DB_HOST);
       console.log('connection successfuly');
 
       this._stub = clientStub;
@@ -73,7 +73,7 @@ export class DgraphService {
       this._instance = new DgraphClient(clientStub);
 
       return this._instance;
-    })
+    });
   }
 
   public close() {

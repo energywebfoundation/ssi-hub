@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { EnsService } from './ens.service';
 
 export const ORG_MOCK_DATA = JSON.stringify({
-  roleType: 'org',
   orgName: 'onion',
   description: '',
   websiteUrl: '',
@@ -15,7 +14,6 @@ export const ORG_MOCK_DATA = JSON.stringify({
 });
 
 export const APP_MOCK_DATA = JSON.stringify({
-  roleType: 'app',
   appName: 'onionapp',
   description: '',
   websiteUrl: '',
@@ -25,7 +23,7 @@ export const APP_MOCK_DATA = JSON.stringify({
     b: '2',
     c: '3',
   },
-})
+});
 
 export const ROLE_MOCK_DATA = JSON.stringify({
   version: '1',
@@ -47,10 +45,7 @@ export const ROLE_MOCK_DATA = JSON.stringify({
 
 @Injectable()
 export class EnsTestService {
-  constructor(
-    private ensService: EnsService,
-  ) {
-  }
+  constructor(private ensService: EnsService) {}
 
   public async testOrgAppRole() {
     await this.ensService.createRole({

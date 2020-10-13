@@ -4,9 +4,7 @@ import { NamespaceService } from './namespace.service';
 
 @Controller('namespace')
 export class NamespaceController {
-
-  constructor(private namespaceService: NamespaceService) {
-  }
+  constructor(private namespaceService: NamespaceService) {}
 
   @Get('/:namespace/exists')
   @ApiTags('Roles')

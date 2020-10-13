@@ -43,13 +43,12 @@ export class RoleService {
   }
 
   public async create(data: CreateRoleData) {
-
-    const roleDTO = new RoleDTO()
+    const roleDTO = new RoleDTO();
     roleDTO.name = data.name;
     roleDTO.owner = data.owner;
     roleDTO.namespace = data.namespace;
 
-    const orgDefDTO = new RoleDefinitionDTO()
+    const orgDefDTO = new RoleDefinitionDTO();
     orgDefDTO.metadata = RecordToKeyValue(data.definition.metadata);
     orgDefDTO.roleName = data.definition.roleName;
     orgDefDTO.fields = data.definition.fields;
@@ -60,14 +59,14 @@ export class RoleService {
 
     const err = await validate(roleDTO);
 
-    if(err.length > 0) {
+    if (err.length > 0) {
       return;
     }
 
     const queryData = {
       uid: '_:new',
       type: 'role',
-      ...roleDTO
+      ...roleDTO,
     };
 
     const res = await this.dgraph.mutate(queryData);
@@ -78,15 +77,15 @@ export class RoleService {
   public async updateNamespace(namespace: string, patch: CreateRoleData) {
     const oldData = await this.getByNamespace(namespace);
     if (!oldData) {
-      return
+      return;
     }
 
-    const roleDTO = new RoleDTO()
+    const roleDTO = new RoleDTO();
     roleDTO.name = patch.name;
     roleDTO.owner = patch.owner;
     roleDTO.namespace = patch.namespace;
 
-    const roleDefDTO = new RoleDefinitionDTO()
+    const roleDefDTO = new RoleDefinitionDTO();
     roleDefDTO.metadata = RecordToKeyValue(patch.definition.metadata);
     roleDefDTO.roleName = patch.definition.roleName;
     roleDefDTO.fields = patch.definition.fields;
@@ -98,7 +97,7 @@ export class RoleService {
     const data = {
       uid: oldData.uid,
       ...roleDTO,
-    }
+    };
 
     await this.dgraph.mutate(data);
 
@@ -122,16 +121,16 @@ export class RoleService {
     fragments.org = nsf[2];
     // 3 - .apps. * or .roles.
 
-    if(nsf[3] == 'roles' && nsf[4]) {
-      fragments.roles = nsf[4]
+    if (nsf[3] == 'roles' && nsf[4]) {
+      fragments.roles = nsf[4];
       return fragments;
     }
 
-    if(nsf[3] == 'apps' && nsf[4]) {
-      fragments.apps = nsf[4]
+    if (nsf[3] == 'apps' && nsf[4]) {
+      fragments.apps = nsf[4];
 
       // 5 - .roles. *
-      if(nsf[5] == 'roles' && nsf[6]) {
+      if (nsf[5] == 'roles' && nsf[6]) {
         fragments.roles = nsf[6];
       }
     }
@@ -146,8 +145,8 @@ export class RoleService {
     let namespace = `${fragments.org}.${fragments.ewc}.ewc`;
 
     //special case for role with organization
-    if(fragment == 'role' && fragments.org && !fragments.apps) {
-      return `${fragments.roles}.roles.${namespace}`
+    if (fragment == 'role' && fragments.org && !fragments.apps) {
+      return `${fragments.roles}.roles.${namespace}`;
     }
 
     if (fragment == 'app' || fragment == 'role') {
