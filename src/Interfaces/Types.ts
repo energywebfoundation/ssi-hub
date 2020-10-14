@@ -48,6 +48,10 @@ export const roleDefinitionFullQuery = `
   description
   websiteUrl
   logoUrl
+  issuer {
+    issuerType
+    did
+  }
   others {
     key
     value

@@ -54,6 +54,7 @@ export class RoleService {
     orgDefDTO.fields = data.definition.fields;
     orgDefDTO.version = data.definition.version;
     orgDefDTO.issuer = data.definition.issuer;
+    orgDefDTO.roleType = data.definition.roleType;
 
     roleDTO.definition = orgDefDTO;
 

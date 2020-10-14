@@ -23,7 +23,7 @@ export interface CreateRoleDefinition {
 }
 
 export interface RoleDefinition extends Definition {
-  roleType: 'custom';
+  roleType: string;
   roleName: string;
   fields: {
     fieldType: string;

@@ -25,8 +25,7 @@ export class RoleDefinitionDTO implements RoleDefinition {
   issuer: { issuerType: string; did: string[] };
   roleName: string;
 
-  @Equals('custom')
-  readonly roleType: 'custom' = 'custom';
+  roleType: string;
   version: string;
 }
 

@@ -57,6 +57,7 @@ export class EnsService {
 
     this.InitEventListeners();
     this.loadNamespaces();
+    this.syncDatabase();
   }
 
   private async InitEventListeners(): Promise<void> {
