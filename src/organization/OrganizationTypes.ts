@@ -3,12 +3,11 @@ import { RoleDefinition } from '../role/RoleTypes';
 import { AppDefinition } from '../application/ApplicationTypes';
 
 export interface OrgDefinition extends Definition {
-  roleType: 'org';
   orgName: string;
-  description: string;
-  websiteUrl: string;
-  logoUrl: string;
-  others: KeyValue[];
+  description?: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+  others?: KeyValue[];
 }
 
 export interface Organization extends DGraphObject {
