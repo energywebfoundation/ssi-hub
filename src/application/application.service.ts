@@ -88,6 +88,7 @@ export class ApplicationService {
     const err = await validate(appDTO);
 
     if (err.length > 0) {
+      console.log(err);
       return;
     }
 

@@ -106,16 +106,20 @@ export class EnsService {
     return Object.keys(subdomains);
   }
 
-  public async eventHandler(hash: string) {
+  public async eventHandler(hash: string, name?: string) {
     try {
-      const [namespace, owner, data] = await Promise.all([
-        this.publicResolver.name(hash),
+      const promises = [
         this.ensRegistry.owner(hash),
         this.publicResolver.text(hash, 'metadata'),
-      ]);
+      ]
+      if (!name) {
+        promises.push(this.publicResolver.name(hash))
+      }
+      
+      const [owner, data, namespace = name] = await Promise.all(promises);
 
       if (!namespace || !owner || !data) {
-        this.logger.debug(`Role not supported ${namespace || hash}`);
+        this.logger.debug(`Role not supported ${name || namespace || hash}`);
         return;
       }
 
@@ -283,7 +287,7 @@ export class EnsService {
     const organizations = await this.getSubdomains({ domain: 'iam.ewc' });
     for (const org of organizations) {
       const hash = namehash(`${org}.iam.ewc`);
-      await this.eventHandler(hash);
+      await this.eventHandler(hash, `${org}.iam.ewc`);
       const [roles, applications] = await Promise.all([
         this.getSubdomains({
           domain: `${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
@@ -296,13 +300,13 @@ export class EnsService {
         const hash = namehash(
           `${role}.${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
         );
-        await this.eventHandler(hash);
+        await this.eventHandler(hash, `${role}.${ENSNamespaceTypes.Roles}.${org}.iam.ewc`);
       }
       for (const app of applications) {
         const hash = namehash(
           `${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
         );
-        await this.eventHandler(hash);
+        await this.eventHandler(hash, `${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`);
         const roles = await this.getSubdomains({
           domain: `${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
         });
@@ -310,7 +314,7 @@ export class EnsService {
           const hash = namehash(
             `${role}.${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
           );
-          await this.eventHandler(hash);
+          await this.eventHandler(hash, `${role}.${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`);
         }
       }
     }
