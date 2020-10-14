@@ -7,8 +7,6 @@ import { OrganizationController } from './organization/organization.controller';
 import { OrganizationService } from './organization/organization.service';
 import { ApplicationController } from './application/application.controller';
 import { RoleController } from './role/role.controller';
-import { IdentityController } from './identity/identity.controller';
-import { IdentityService } from './identity/identity.service';
 import { ApplicationService } from './application/application.service';
 import { RoleService } from './role/role.service';
 import { EnsService } from './ENS/ens.service';
@@ -19,15 +17,18 @@ import { OwnerService } from './owner/owner.service';
 import { EnsTestService } from './ENS/ens.testService';
 import { NamespaceController } from './namespace/namespace.controller';
 import { NamespaceService } from './namespace/namespace.service';
+import { NatsService } from './nats/nats.service';
 
 @Module({
-  imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot()
+  ],
   controllers: [
     ClaimController,
     OrganizationController,
     ApplicationController,
     RoleController,
-    IdentityController,
     GraphqlController,
     OwnerController,
     NamespaceController,
@@ -36,13 +37,13 @@ import { NamespaceService } from './namespace/namespace.service';
     DgraphService,
     ClaimService,
     OrganizationService,
-    IdentityService,
     ApplicationService,
     RoleService,
     EnsService,
     EnsTestService,
     OwnerService,
     NamespaceService,
+    NatsService,
   ],
 })
 export class AppModule {}

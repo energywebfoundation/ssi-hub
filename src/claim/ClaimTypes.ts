@@ -1,17 +1,22 @@
 import { DGraphObject, KeyValue } from '../Interfaces/Types';
-import { Identity } from '../identity/IdentityTypes';
 
-export interface ClaimDefinition extends DGraphObject {
-  namespace: string;
-  title: string;
-  owner: string;
+export const NATS_EXCHANGE_TOPIC = "claim.exchange";
+
+export interface ClaimData {
+  id: string;
+  token: string;
+  issuedToken: string;
+  requester: string;
   issuer: string;
-  attributes: KeyValue[];
 }
 
 export interface Claim extends DGraphObject {
-  definition: ClaimDefinition;
-  data: KeyValue[];
-  issuer: Identity;
-  owner: Identity;
+  id: string,
+  requester: string,
+  issuer: string,
+  claimType: string,
+  token: string,
+  issuedToken: string,
+  isAccepted: boolean,
+  createdAt: string;
 }

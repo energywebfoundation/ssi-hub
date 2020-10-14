@@ -27,6 +27,9 @@ export class DgraphService {
       namespace: string @index(exact) .
       name: string @index(exact) .
       owner: string @index(exact) .
+      id: string @index(exact) .
+      issuer: string @index(exact) .
+      requester: string @index(exact) .
     `;
     const op = new Operation();
     op.setSchema(schema);

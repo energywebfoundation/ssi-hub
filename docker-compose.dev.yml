@@ -52,6 +52,8 @@ services:
     volumes:
        - ./config/:/etc/nats
     command: "-c /etc/nats/nats.conf"
+    networks:
+      - main
     ports:
       - '4222:4222'
       - '8222:8222'
