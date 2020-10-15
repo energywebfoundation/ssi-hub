@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ClaimService, StatusQueryFilter } from './claim.service';
+import { ClaimService } from './claim.service';
 import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('claim')
@@ -23,19 +23,19 @@ export class ClaimController {
   @ApiQuery({ name: 'namespace', required: false})
   public async getByIssuerDid(
     @Param('did') did: string,
-    @Query('status') status: StatusQueryFilter,
+    @Query('accepted') accepted: boolean,
     @Query('namespace') namespace: string
   ) {
-    return await this.claimService.getByIssuer(did, {status, namespace});
+    return await this.claimService.getByIssuer(did, {accepted, namespace});
   }
   @Get('/requester/:did')
-  @ApiQuery({ name: 'status', required: false})
+  @ApiQuery({ name: 'accepted', required: false})
   @ApiQuery({ name: 'namespace', required: false})
   public async getByRequesterDid(
     @Param('did') did: string,
-    @Query('status') status: StatusQueryFilter,
+    @Query('accepted') accepted: boolean,
     @Query('namespace') namespace: string,
   ) {
-    return await this.claimService.getByRequester(did, {status, namespace});
+    return await this.claimService.getByRequester(did, {accepted, namespace});
   }
 }

@@ -4,9 +4,6 @@ import { Claim, ClaimDataMessage, DecodedClaimToken, NATS_EXCHANGE_TOPIC } from 
 import { NatsService } from '../nats/nats.service';
 import jwt_decode from "jwt-decode";
 
-
-export type StatusQueryFilter = 'pending' | 'accepted' | null;
-
 const claimQuery = `
   id
   requester
@@ -20,7 +17,7 @@ const claimQuery = `
 `;
 
 interface QueryFilters {
-  status?: StatusQueryFilter,
+  accepted?: boolean,
   namespace?: string;
 }
 
@@ -131,8 +128,11 @@ export class ClaimService {
 
   private getIsAccepterFilter(options: QueryFilters) {
     const filters: string[] = [];
-    if(options.status != null) {
-      filters.push(`eq(isAccepted, ${options.status==='accepted' ? 'true' : 'false'})`)
+    if(options.accepted !== undefined) {
+      filters.push(`eq(isAccepted, ${options.accepted})`)
+    }
+    if(options.namespace) {
+      filters.push(`eq(parentNamespace, ${options.namespace})`)
     }
     return ` @filter(${filters.join(' AND ')}) `
   }
