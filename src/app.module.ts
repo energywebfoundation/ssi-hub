@@ -20,10 +20,7 @@ import { NamespaceService } from './namespace/namespace.service';
 import { NatsService } from './nats/nats.service';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    ScheduleModule.forRoot()
-  ],
+  imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
   controllers: [
     ClaimController,
     OrganizationController,

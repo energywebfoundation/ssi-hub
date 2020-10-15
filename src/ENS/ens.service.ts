@@ -73,9 +73,11 @@ export class EnsService {
       'metadata',
       null,
     );
+    const latestBlock = await this.provider.getBlockNumber();
+    const fromBlock = latestBlock - 10000;
     const filter = {
-      fromBlock: 0,
-      toBlock: 'latest',
+      fromBlock: fromBlock,
+      toBlock: latestBlock,
       address: Event.address,
       topics: [...(Event.topics as string[])],
     };
