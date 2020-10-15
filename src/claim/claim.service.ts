@@ -38,7 +38,7 @@ export class ClaimService {
 
   public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
     const claim: Claim = await this.getById(data.id);
-    if(claim == null) {
+    if(claim===null) {
       return await this.saveClaim(data);
     } else if(data.issuedToken) {
       const patch: Claim = {
@@ -132,7 +132,7 @@ export class ClaimService {
   private getIsAccepterFilter(options: QueryFilters) {
     const filters: string[] = [];
     if(options.status != null) {
-      filters.push(`eq(isAccepted, ${options.status == 'accepted' ? 'true' : 'false'})`)
+      filters.push(`eq(isAccepted, ${options.status==='accepted' ? 'true' : 'false'})`)
     }
     return ` @filter(${filters.join(' AND ')}) `
   }
