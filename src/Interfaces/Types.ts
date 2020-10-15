@@ -12,8 +12,12 @@ export interface KeyValue {
   value: string;
 }
 
-export function RecordToKeyValue(record: Record<string, string> | undefined): KeyValue[] {
-  return record && Object.entries(record).map(([key, value]) => ({ key, value }));
+export function RecordToKeyValue(
+  record: Record<string, string> | undefined,
+): KeyValue[] {
+  return (
+    record && Object.entries(record).map(([key, value]) => ({ key, value }))
+  );
 }
 
 export const KeyValueAPIDefinition = {
