@@ -36,13 +36,15 @@ export class OrganizationService {
         apps {
           name
           namespace
+          owner
           definition ${roleDefinitionFullQuery}
         }
       }
     }`,
       { $i: namespace },
     );
-    return res.getJson();
+    const org = res.getJson()?.Data[0];
+    return org ? { Data: org.apps } : { Data: [] };
   }
 
   public async getRoles(namespace: string) {
@@ -61,7 +63,8 @@ export class OrganizationService {
     }`,
       { $i: namespace },
     );
-    return res.getJson();
+    const org = res.getJson()?.Data[0];
+    return org ? { Data: org.roles } : { Data: [] };
   }
 
   public async getByNamespace(namespace: string): Promise<Organization> {
@@ -106,6 +109,7 @@ export class OrganizationService {
     const err = await validate(orgDTO);
 
     if (err.length > 0) {
+      console.log(err);
       return;
     }
 
@@ -146,8 +150,6 @@ export class OrganizationService {
     orgDefDTO.orgName = definition.orgName;
 
     appDTO.definition = orgDefDTO;
-
-    console.log(appDTO);
 
     const data = {
       uid: oldData.uid,

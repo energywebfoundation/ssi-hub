@@ -1,5 +1,5 @@
 import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
-import { Equals, IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization, OrgDefinition } from './OrganizationTypes';
 import { RoleDefinition } from '../role/RoleTypes';
@@ -14,31 +14,35 @@ export interface CreateOrganizationData {
 
 export interface CreateOrganizationDefinition {
   orgName: string;
-  description: string;
-  websiteUrl: string;
-  logoUrl: string;
-  others: Record<string, string>;
+  description?: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+  others?: Record<string, string>;
 }
 
 export class OrganizationDefinitionDTO implements OrgDefinition {
+  @IsOptional()
   @IsString()
-  description: string;
+  description?: string;
+
+  @IsOptional()
   @IsString()
-  websiteUrl: string;
+  websiteUrl?: string;
+
+  @IsOptional()
   @IsString()
-  logoUrl: string;
+  logoUrl?: string;
+
   @IsString()
   orgName: string;
 
+  @IsOptional()
   @IsArray()
   @ApiProperty({
     type: 'array',
     items: KeyValueAPIDefinition,
   })
   others: KeyValue[] = [];
-
-  @Equals('org')
-  readonly roleType = 'org';
 }
 
 export class OrganizationDTO implements Organization {

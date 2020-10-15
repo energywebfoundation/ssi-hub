@@ -1,9 +1,10 @@
-import { Equals, IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
 import { Role, RoleDefinition } from './RoleTypes';
 
 export class RoleDefinitionDTO implements RoleDefinition {
+  @IsOptional()
   @IsArray()
   @ApiProperty({
     type: 'array',
@@ -18,15 +19,21 @@ export class RoleDefinitionDTO implements RoleDefinition {
   })
   fields: { fieldType: string; label: string; validation: string }[];
 
+  @IsOptional()
   @IsArray()
   @ApiProperty(KeyValueAPIDefinition)
   metadata: KeyValue[];
 
   issuer: { issuerType: string; did: string[] };
+
+  @IsString()
   roleName: string;
 
-  @Equals('custom')
-  readonly roleType: 'custom' = 'custom';
+  @IsString()
+  roleType: string;
+
+  @IsOptional()
+  @IsString()
   version: string;
 }
 

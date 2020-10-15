@@ -15,6 +15,7 @@ export class RoleService {
       uid
       name
       namespace
+      owner
       definition ${roleDefinitionFullQuery}
     }}`);
     return res.getJson();
@@ -28,6 +29,7 @@ export class RoleService {
         uid
         name
         namespace
+        owner
         definition ${roleDefinitionFullQuery}
       }
     }`,
@@ -53,6 +55,7 @@ export class RoleService {
     orgDefDTO.fields = data.definition.fields;
     orgDefDTO.version = data.definition.version;
     orgDefDTO.issuer = data.definition.issuer;
+    orgDefDTO.roleType = data.definition.roleType;
 
     roleDTO.definition = orgDefDTO;
 
@@ -90,6 +93,7 @@ export class RoleService {
     roleDefDTO.fields = patch.definition.fields;
     roleDefDTO.version = patch.definition.version;
     roleDefDTO.issuer = patch.definition.issuer;
+    roleDefDTO.roleType = patch.definition.roleType;
 
     roleDTO.definition = roleDefDTO;
 

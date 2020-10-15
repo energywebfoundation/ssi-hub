@@ -43,7 +43,8 @@ export class ApplicationService {
     }`,
       { $i: namespace },
     );
-    return res.getJson();
+    const app = res.getJson()?.Data[0];
+    return app ? { Data: app.roles } : { Data: [] };
   }
 
   public async getByNamespace(name: string): Promise<Application> {
@@ -87,6 +88,7 @@ export class ApplicationService {
     const err = await validate(appDTO);
 
     if (err.length > 0) {
+      console.log(err);
       return;
     }
 
