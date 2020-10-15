@@ -5,7 +5,7 @@ import { NatsService } from '../nats/nats.service';
 import jwt_decode from "jwt-decode";
 
 
-type StatusQueryFilter = 'pending' | 'accepted' | null;
+export type StatusQueryFilter = 'pending' | 'accepted' | null;
 
 const claimQuery = `
   id
@@ -18,6 +18,11 @@ const claimQuery = `
   isAccepted
   createdAt
 `;
+
+interface QueryFilters {
+  status?: StatusQueryFilter,
+  namespace?: string;
+}
 
 @Injectable()
 export class ClaimService {
@@ -101,8 +106,8 @@ export class ClaimService {
     return res.getJson();
   }
 
-  async getByIssuer(did: string, status: StatusQueryFilter = null) {
-    const filter = this.getIsAccepterFilter(status);
+  async getByIssuer(did: string, filters: QueryFilters = {}) {
+    const filter = this.getIsAccepterFilter(filters);
     const res = await this.dgraph.query(`
       query all($did: string) {
         claim(func: eq(issuer, $did)) ${filter} {
@@ -112,8 +117,8 @@ export class ClaimService {
 
     return res.getJson();
   }
-  async getByRequester(did: string, status: StatusQueryFilter = null) {
-    const filter = this.getIsAccepterFilter(status);
+  async getByRequester(did: string, filters: QueryFilters = {}) {
+    const filter = this.getIsAccepterFilter(filters);
     const res = await this.dgraph.query(`
       query all($did: string) {
         claim(func: eq(requester, $did)) ${filter} {
@@ -124,11 +129,11 @@ export class ClaimService {
     return res.getJson();
   }
 
-  private getIsAccepterFilter(status: StatusQueryFilter = null) {
-    let filter = '';
-    if(status != null) {
-      filter = ` @filter(eq(isAccepted, ${status == 'accepted' ? 'true' : 'false'})) `
+  private getIsAccepterFilter(options: QueryFilters) {
+    const filters: string[] = [];
+    if(options.status != null) {
+      filters.push(`eq(isAccepted, ${options.status == 'accepted' ? 'true' : 'false'})`)
     }
-    return filter;
+    return ` @filter(${filters.join(' AND ')}) `
   }
 }

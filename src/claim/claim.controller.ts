@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { ClaimService } from './claim.service';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ClaimService, StatusQueryFilter } from './claim.service';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('claim')
 export class ClaimController {
@@ -18,27 +19,23 @@ export class ClaimController {
     return await this.claimService.getByUserDid(did);
   }
   @Get('/issuer/:did')
-  public async getByIssuerDid(@Param('did') did: string) {
-    return await this.claimService.getByIssuer(did);
-  }
-  @Get('/issuer/:did/accepted')
-  public async getAcceptedByIssuerDid(@Param('did') did: string) {
-    return await this.claimService.getByIssuer(did, 'accepted');
-  }
-  @Get('/issuer/:did/pending')
-  public async getPendingByIssuerDid(@Param('did') did: string) {
-    return await this.claimService.getByIssuer(did, 'pending');
+  @ApiQuery({ name: 'status', required: false})
+  @ApiQuery({ name: 'namespace', required: false})
+  public async getByIssuerDid(
+    @Param('did') did: string,
+    @Query('status') status: StatusQueryFilter,
+    @Query('namespace') namespace: string
+  ) {
+    return await this.claimService.getByIssuer(did, {status, namespace});
   }
   @Get('/requester/:did')
-  public async getByRequesterDid(@Param('did') did: string) {
-    return await this.claimService.getByRequester(did);
-  }
-  @Get('/requester/:did/accepted')
-  public async getAcceptedByRequesterDid(@Param('did') did: string) {
-    return await this.claimService.getByRequester(did, 'accepted');
-  }
-  @Get('/requester/:did/pending')
-  public async getPendingByRequesterDid(@Param('did') did: string) {
-    return await this.claimService.getByRequester(did, 'pending');
+  @ApiQuery({ name: 'status', required: false})
+  @ApiQuery({ name: 'namespace', required: false})
+  public async getByRequesterDid(
+    @Param('did') did: string,
+    @Query('status') status: StatusQueryFilter,
+    @Query('namespace') namespace: string,
+  ) {
+    return await this.claimService.getByRequester(did, {status, namespace});
   }
 }
