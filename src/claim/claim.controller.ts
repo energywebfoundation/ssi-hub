@@ -19,7 +19,7 @@ export class ClaimController {
     return await this.claimService.getByUserDid(did);
   }
   @Get('/issuer/:did')
-  @ApiQuery({ name: 'status', required: false})
+  @ApiQuery({ name: 'accepted', required: false})
   @ApiQuery({ name: 'namespace', required: false})
   public async getByIssuerDid(
     @Param('did') did: string,
