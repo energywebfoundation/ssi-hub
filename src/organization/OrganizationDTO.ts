@@ -28,14 +28,14 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
   @IsOptional()
   @IsString()
   websiteUrl?: string;
-  
+
   @IsOptional()
   @IsString()
   logoUrl?: string;
 
   @IsString()
   orgName: string;
-  
+
   @IsOptional()
   @IsArray()
   @ApiProperty({
@@ -43,7 +43,6 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
     items: KeyValueAPIDefinition,
   })
   others: KeyValue[] = [];
-  
 }
 
 export class OrganizationDTO implements Organization {
