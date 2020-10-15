@@ -9,6 +9,14 @@ export class ClaimController {
   public async getById(@Param('id') id: string) {
     return await this.claimService.getById(id);
   }
+  @Get('/parent/:namespace')
+  public async getByParentNamespace(@Param('id') id: string) {
+    return await this.claimService.getByParentNamespace(id);
+  }
+  @Get('/user/:did')
+  public async getByUserDid(@Param('did') did: string) {
+    return await this.claimService.getByUserDid(did);
+  }
   @Get('/issuer/:did')
   public async getByIssuerDid(@Param('did') did: string) {
     return await this.claimService.getByIssuer(did);

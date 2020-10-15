@@ -4,6 +4,7 @@ import { Claim, ClaimDataMessage, DecodedClaimToken, NATS_EXCHANGE_TOPIC } from 
 import { NatsService } from '../nats/nats.service';
 import jwt_decode from "jwt-decode";
 
+
 type StatusQueryFilter = 'pending' | 'accepted' | null;
 
 const claimQuery = `
@@ -13,6 +14,7 @@ const claimQuery = `
   claimType
   token
   issuedToken
+  parentNamespace
   isAccepted
   createdAt
 `;
@@ -75,6 +77,28 @@ export class ClaimService {
 
     const json = res.getJson();
     return json.claim[0];
+  }
+
+  async getByParentNamespace(namespace: string) {
+    const res = await this.dgraph.query(`
+      query all($ns: string) {
+        claim(func: eq(parentNamespace, $ns)) {
+          ${claimQuery}
+        }
+      }`, {$ns: namespace})
+
+    return res.getJson();
+  }
+
+  async getByUserDid(did: string) {
+    const res = await this.dgraph.query(`
+      query all($did: string) {
+        claim(func: eq(type, "claim")) @filter(eq(issuedToken, $did) OR eq(requester, $did)) {
+          ${claimQuery}
+        }
+      }`, {$did: did})
+
+    return res.getJson();
   }
 
   async getByIssuer(did: string, status: StatusQueryFilter = null) {
