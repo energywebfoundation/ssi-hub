@@ -13,6 +13,14 @@ export class ClaimController {
   public async getByIssuerDid(@Param('did') did: string) {
     return await this.claimService.getByIssuer(did);
   }
+  @Get('/issuer/:did/accepted')
+  public async getAcceptedByIssuerDid(@Param('did') did: string) {
+    return await this.claimService.getByIssuer(did, 'accepted');
+  }
+  @Get('/issuer/:did/pending')
+  public async getPendingByIssuerDid(@Param('did') did: string) {
+    return await this.claimService.getByIssuer(did, 'pending');
+  }
   @Get('/requester/:did')
   public async getByRequesterDid(@Param('did') did: string) {
     return await this.claimService.getByRequester(did);

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { Claim, ClaimData, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
+import { Claim, ClaimDataMessage, DecodedClaimToken, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
 import { NatsService } from '../nats/nats.service';
+import jwt_decode from "jwt-decode";
+
+type StatusQueryFilter = 'pending' | 'accepted' | null;
 
 const claimQuery = `
   id
@@ -26,14 +29,15 @@ export class ClaimService {
     });
   }
 
-  public async saveOrUpdate(data: ClaimData): Promise<string> {
+  public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
     const claim: Claim = await this.getById(data.id);
     if(claim == null) {
-      this.saveClaim(data);
-    } else {
+      return await this.saveClaim(data);
+    } else if(data.issuedToken) {
       const patch: Claim = {
         ...claim,
         ...data,
+        isAccepted: true,
         uid: claim.uid,
       }
       await this.dgraph.mutate(patch);
@@ -41,18 +45,24 @@ export class ClaimService {
     }
   }
 
-  public async saveClaim(data: ClaimData): Promise<string> {
+  public async saveClaim(data: ClaimDataMessage): Promise<string> {
+    const decodedData: DecodedClaimToken = jwt_decode(data.token);
+
+    const namespace = decodedData.claimData.claimType;
+
+    const parent = namespace.split('.').slice(2).join('.')
+
     const claim: Claim = {
       ...data,
       isAccepted: false,
       createdAt: Date.now().toString(),
-      claimType: '',
+      claimType: decodedData.claimData.claimType,
+      parentNamespace: parent,
       uid: '_:new',
       type: 'claim',
     }
     const res = await this.dgraph.mutate(claim);
-    const id = res.getUidsMap().get('new');
-    return id;
+    return res.getUidsMap().get('new');
   }
 
   public async getById(id: string): Promise<Claim> {
@@ -67,22 +77,19 @@ export class ClaimService {
     return json.claim[0];
   }
 
-  async getByIssuer(did: string) {
+  async getByIssuer(did: string, status: StatusQueryFilter = null) {
+    const filter = this.getIsAccepterFilter(status);
     const res = await this.dgraph.query(`
       query all($did: string) {
-        claim(func: eq(issuer, $did)) {
+        claim(func: eq(issuer, $did)) ${filter} {
           ${claimQuery}
         }
       }`, {$did: did})
 
     return res.getJson();
   }
-  async getByRequester(did: string, status: 'pending' | 'accepted' | null = null) {
-    let filter = '';
-    if(status != null) {
-      filter = ` @filter(eq(isAccepted, ${status == 'accepted' ? 'true' : 'false'})) `
-    }
-    else if(status == 'pending') {}
+  async getByRequester(did: string, status: StatusQueryFilter = null) {
+    const filter = this.getIsAccepterFilter(status);
     const res = await this.dgraph.query(`
       query all($did: string) {
         claim(func: eq(requester, $did)) ${filter} {
@@ -91,5 +98,13 @@ export class ClaimService {
       }`, {$did: did})
 
     return res.getJson();
+  }
+
+  private getIsAccepterFilter(status: StatusQueryFilter = null) {
+    let filter = '';
+    if(status != null) {
+      filter = ` @filter(eq(isAccepted, ${status == 'accepted' ? 'true' : 'false'})) `
+    }
+    return filter;
   }
 }

@@ -30,6 +30,8 @@ export class DgraphService {
       id: string @index(exact) .
       issuer: string @index(exact) .
       requester: string @index(exact) .
+      claimType: string @index(exact) .
+      parentNamespace: string @index(exact) .
     `;
     const op = new Operation();
     op.setSchema(schema);
