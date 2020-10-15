@@ -40,9 +40,9 @@ export class ClaimService {
     } else if(data.issuedToken) {
       const patch: Claim = {
         ...claim,
-        ...data,
+        issuedToken: data.issuedToken,
         isAccepted: true,
-        uid: claim.uid,
+        uid: claim.uid
       }
       await this.dgraph.mutate(patch);
       return claim.uid;
