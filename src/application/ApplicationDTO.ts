@@ -1,5 +1,5 @@
 import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
-import { Equals, IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppDefinition, Application } from './ApplicationTypes';
 import { RoleDefinition } from '../role/RoleTypes';

@@ -5,7 +5,6 @@ import {
   ApplicationDefinitionDTO,
   ApplicationDTO,
   CreateApplicationData,
-  CreateApplicationDefinition,
 } from './ApplicationDTO';
 import { validate } from 'class-validator';
 import { Application } from './ApplicationTypes';

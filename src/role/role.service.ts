@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { NamespaceFragments, RoleDefinitionDTO, RoleDTO } from './RoleDTO';
 import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
-import { CreateRoleData, CreateRoleDefinition, Role } from './RoleTypes';
+import { CreateRoleData, Role } from './RoleTypes';
 import { validate } from 'class-validator';
-import { CreateApplicationData } from '../application/ApplicationDTO';
 
 @Injectable()
 export class RoleService {

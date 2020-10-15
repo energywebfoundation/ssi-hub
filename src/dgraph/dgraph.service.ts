@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
-import * as grpc from 'grpc';
 import { ConfigService } from '@nestjs/config';
 import { Policy } from 'cockatiel';
 

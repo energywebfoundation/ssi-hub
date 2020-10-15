@@ -35,7 +35,7 @@ export class ClaimService {
 
   public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
     const claim: Claim = await this.getById(data.id);
-    if(claim===null) {
+    if(!claim) {
       return await this.saveClaim(data);
     } else if(data.issuedToken) {
       const patch: Claim = {
