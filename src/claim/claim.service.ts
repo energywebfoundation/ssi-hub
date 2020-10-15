@@ -37,7 +37,9 @@ export class ClaimService {
     const claim: Claim = await this.getById(data.id);
     if(!claim) {
       return await this.saveClaim(data);
-    } else if(data.issuedToken) {
+    }
+
+    if(claim && data.issuedToken) {
       const patch: Claim = {
         ...claim,
         issuedToken: data.issuedToken,
