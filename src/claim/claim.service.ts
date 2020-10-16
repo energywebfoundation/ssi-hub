@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { Claim, ClaimDataMessage, DecodedClaimToken, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
 import { NatsService } from '../nats/nats.service';
-import jwt_decode from "jwt-decode";
+import * as jwt_decode from 'jwt-decode';
 
 const claimQuery = `
   id
@@ -52,11 +52,14 @@ export class ClaimService {
   }
 
   public async saveClaim(data: ClaimDataMessage): Promise<string> {
-    const decodedData: DecodedClaimToken = jwt_decode(data.token);
+    const decodedData: DecodedClaimToken = jwt_decode<DecodedClaimToken>(data.token);
+    console.log(decodedData);
 
     const namespace = decodedData.claimData.claimType;
+    console.log(namespace);
 
     const parent = namespace.split('.').slice(2).join('.')
+    console.log(parent);
 
     const claim: Claim = {
       ...data,
@@ -67,6 +70,8 @@ export class ClaimService {
       uid: '_:new',
       type: 'claim',
     }
+
+    console.log(claim);
     const res = await this.dgraph.mutate(claim);
     return res.getUidsMap().get('new');
   }
