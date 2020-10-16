@@ -7,6 +7,17 @@ import { ClaimDataMessage } from './ClaimTypes';
 export class ClaimController {
   constructor(private readonly claimService: ClaimService) {}
 
+  @Get('/test')
+  public async test() {
+    const fakeData: ClaimDataMessage = {
+      id: 'ASDF2',
+      issuer: 'issuer_did',
+      requester: 'requester_did',
+      token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGFpbURhdGEiOnsiY2xhaW1UeXBlIjoib25pb24ucm9sZXMuYXNkZi5hcHAub25pb24uaWFtLmV3YyJ9LCJqdGkiOiIwOTBhNzM0NS1iNDBkLTRiZDktOWY5ZC1hMzU0ZTk0NWYzN2EiLCJpYXQiOjE2MDI3Njc3NDYsImV4cCI6MTYwMjc3MTM0Nn0.xxk6tng0kpQYk6yNkW2OxTM7Q440rplNCe78NDeOAgU'
+    }
+    this.claimService.saveOrUpdate(fakeData);
+  }
+
   @Get('/:id')
   public async getById(@Param('id') id: string) {
     return await this.claimService.getById(id);
