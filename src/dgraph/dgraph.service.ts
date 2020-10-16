@@ -27,7 +27,7 @@ export class DgraphService {
       name: string @index(exact) .
       owner: string @index(exact) .
       id: string @index(exact) .
-      issuer: string @index(exact) .
+      claimIssuer: string @index(exact) .
       requester: string @index(exact) .
       claimType: string @index(exact) .
       parentNamespace: string @index(exact) .

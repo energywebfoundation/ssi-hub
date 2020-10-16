@@ -35,23 +35,23 @@ export class ClaimController {
     return await this.claimService.getByUserDid(did);
   }
   @Get('/issuer/:did')
-  @ApiQuery({ name: 'accepted', required: false})
-  @ApiQuery({ name: 'namespace', required: false})
+  @ApiQuery({ name: 'accepted', required: false })
+  @ApiQuery({ name: 'namespace', required: false })
   public async getByIssuerDid(
     @Param('did') did: string,
     @Query('accepted') accepted: boolean,
-    @Query('namespace') namespace: string
+    @Query('namespace') namespace: string,
   ) {
-    return await this.claimService.getByIssuer(did, {accepted, namespace});
+    return await this.claimService.getByIssuer(did, { accepted, namespace });
   }
   @Get('/requester/:did')
-  @ApiQuery({ name: 'accepted', required: false})
-  @ApiQuery({ name: 'namespace', required: false})
+  @ApiQuery({ name: 'accepted', required: false })
+  @ApiQuery({ name: 'namespace', required: false })
   public async getByRequesterDid(
     @Param('did') did: string,
     @Query('accepted') accepted: boolean,
     @Query('namespace') namespace: string,
   ) {
-    return await this.claimService.getByRequester(did, {accepted, namespace});
+    return await this.claimService.getByRequester(did, { accepted, namespace });
   }
 }
