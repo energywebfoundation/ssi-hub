@@ -38,6 +38,8 @@ services:
   nats:
     image: synadia/nats-server:nightly
     command: "-c /etc/nats/nats.conf"
+    networks:
+      - main
     volumes:
        - ./config/:/etc/nats
     ports:

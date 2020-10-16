@@ -41,6 +41,10 @@ export const ROLE_MOCK_DATA = JSON.stringify({
     b: '2',
     c: '3',
   },
+  issuer: {
+    issuerType: 'issuer',
+    did: ['did_0000000']
+  }
 });
 
 @Injectable()
@@ -50,7 +54,7 @@ export class EnsTestService {
   public async testOrgAppRole() {
     await this.ensService.createRole({
       data: ORG_MOCK_DATA,
-      namespace: 'aaaa.iam.ewc',
+      namespace: 'onion.iam.ewc',
       owner: 'onion',
     });
 

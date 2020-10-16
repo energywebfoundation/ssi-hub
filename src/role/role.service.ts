@@ -124,16 +124,16 @@ export class RoleService {
     fragments.org = nsf[2];
     // 3 - .apps. * or .roles.
 
-    if (nsf[3] == 'roles' && nsf[4]) {
+    if (nsf[3] === 'roles' && nsf[4]) {
       fragments.roles = nsf[4];
       return fragments;
     }
 
-    if (nsf[3] == 'apps' && nsf[4]) {
+    if (nsf[3] === 'apps' && nsf[4]) {
       fragments.apps = nsf[4];
 
       // 5 - .roles. *
-      if (nsf[5] == 'roles' && nsf[6]) {
+      if (nsf[5] === 'roles' && nsf[6]) {
         fragments.roles = nsf[6];
       }
     }
@@ -148,19 +148,19 @@ export class RoleService {
     let namespace = `${fragments.org}.${fragments.ewc}.ewc`;
 
     //special case for role with organization
-    if (fragment == 'role' && fragments.org && !fragments.apps) {
+    if (fragment === 'role' && fragments.org && !fragments.apps) {
       return `${fragments.roles}.roles.${namespace}`;
     }
 
-    if (fragment == 'app' || fragment == 'role') {
-      if (fragments.apps == null) {
+    if (fragment === 'app' || fragment === 'role') {
+      if (fragments.apps === null) {
         return null;
       }
       namespace = `${fragments.apps}.apps.${namespace}`;
     }
 
-    if (fragment == 'role') {
-      if (fragments.roles == null) {
+    if (fragment === 'role') {
+      if (fragments.roles === null) {
         return null;
       }
       namespace = `${fragments.roles}.roles.${namespace}`;

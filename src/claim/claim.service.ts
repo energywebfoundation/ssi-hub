@@ -1,58 +1,168 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { ClaimDefinitionDTO } from './ClaimDTO';
-import { ClaimDefinition } from './ClaimTypes';
+import {
+  Claim,
+  ClaimDataMessage,
+  DecodedClaimToken,
+  NATS_EXCHANGE_TOPIC,
+} from './ClaimTypes';
+import { NatsService } from '../nats/nats.service';
+import * as jwt_decode from 'jwt-decode';
+
+const claimQuery = `
+  id
+  requester
+  claimIssuer
+  claimType
+  token
+  issuedToken
+  parentNamespace
+  isAccepted
+  createdAt
+`;
+
+interface QueryFilters {
+  accepted?: boolean;
+  namespace?: string;
+}
 
 @Injectable()
 export class ClaimService {
-  constructor(private readonly dgraph: DgraphService) {}
-
-  public async getClaimById(id: string) {
-    const res = await this.dgraph.query(
-      `
-    query all($i: string){
-      ClaimDefinition(func: uid($i)) {
-         uid
-         title
-         owner
-         issuer
-         attributes {
-            uid
-            key
-            value
-         }
-      }
-    }`,
-      { $i: id },
-    );
-    console.log(res);
-    return res.getJson();
+  constructor(
+    private readonly dgraph: DgraphService,
+    private readonly nats: NatsService,
+  ) {
+    this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, data => {
+      const json = JSON.parse(data);
+      this.saveOrUpdate(json);
+    });
   }
 
-  public async addClaim(data: ClaimDefinitionDTO) {
-    const p: ClaimDefinition = {
+  public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
+    const claim: Claim = await this.getById(data.id);
+    if (!claim) {
+      return await this.saveClaim(data);
+    }
+
+    if (claim && data.issuedToken) {
+      const patch: Claim = {
+        ...claim,
+        issuedToken: data.issuedToken,
+        isAccepted: true,
+        uid: claim.uid,
+      };
+      await this.dgraph.mutate(patch);
+      return claim.uid;
+    }
+  }
+
+  public async saveClaim({
+    issuer,
+    ...data
+  }: ClaimDataMessage): Promise<string> {
+    const decodedData: DecodedClaimToken = jwt_decode(data.token);
+
+    const namespace = decodedData.claimData.claimType;
+
+    const parent = namespace
+      .split('.')
+      .slice(2)
+      .join('.');
+
+    const claim: Claim = {
+      ...data,
+      claimIssuer: issuer,
+      isAccepted: false,
+      createdAt: Date.now().toString(),
+      claimType: decodedData.claimData.claimType,
+      parentNamespace: parent,
       uid: '_:new',
-      type: 'claimDefinition',
-      namespace: data.namespace,
-      title: data.title,
-      owner: data.owner,
-      issuer: data.issuer,
-      attributes: [],
+      type: 'claim',
     };
-
-    const res = await this.dgraph.mutate(p);
-
+    const res = await this.dgraph.mutate(claim);
     return res.getUidsMap().get('new');
   }
 
-  public async addAttributes(id: string, attrs: [string, string][]) {
-    const p = {
-      uid: id,
-      attributes: attrs.map(([key, value]) => ({ key, value })),
-    };
+  public async getById(id: string): Promise<Claim> {
+    const res = await this.dgraph.query(
+      `
+      query all($id: string) {
+        claim(func: eq(id, $id)) {
+          ${claimQuery}
+        }
+      }`,
+      { $id: id },
+    );
 
-    const res = await this.dgraph.mutate(p);
+    const json = res.getJson();
+    return json.claim[0];
+  }
 
-    return res.getUidsMap();
+  async getByParentNamespace(namespace: string) {
+    const res = await this.dgraph.query(
+      `
+      query all($ns: string) {
+        claim(func: eq(parentNamespace, $ns)) {
+          ${claimQuery}
+        }
+      }`,
+      { $ns: namespace },
+    );
+
+    return res.getJson();
+  }
+
+  async getByUserDid(did: string) {
+    const res = await this.dgraph.query(
+      `
+      query all($did: string) {
+        claim(func: eq(type, "claim")) @filter(eq(issuedToken, $did) OR eq(requester, $did)) {
+          ${claimQuery}
+        }
+      }`,
+      { $did: did },
+    );
+
+    return res.getJson();
+  }
+
+  async getByIssuer(did: string, filters: QueryFilters = {}) {
+    const filter = this.getIsAccepterFilter(filters);
+    const res = await this.dgraph.query(
+      `
+      query all($did: string) {
+        claim(func: eq(claimIssuer, $did)) ${filter} {
+          ${claimQuery}
+        }
+      }`,
+      { $did: did },
+    );
+
+    return res.getJson();
+  }
+  async getByRequester(did: string, filters: QueryFilters = {}) {
+    const filter = this.getIsAccepterFilter(filters);
+    const res = await this.dgraph.query(
+      `
+      query all($did: string) {
+        claim(func: eq(requester, $did)) ${filter} {
+          ${claimQuery}
+        }
+      }`,
+      { $did: did },
+    );
+
+    return res.getJson();
+  }
+
+  private getIsAccepterFilter(options: QueryFilters) {
+    const filters: string[] = [];
+    if (options.accepted !== undefined) {
+      filters.push(`eq(isAccepted, ${options.accepted})`);
+    }
+    if (options.namespace) {
+      filters.push(`eq(parentNamespace, ${options.namespace})`);
+    }
+    return ` @filter(${filters.join(' AND ')}) `;
   }
 }
