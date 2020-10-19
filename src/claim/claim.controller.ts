@@ -14,7 +14,6 @@ export class ClaimController {
   @Get('/test')
   public async test() {
     const id = 'ASDF' + Date.now();
-    console.log(id)
     const fakeData: ClaimDataMessage = {
       id: id,
       claimIssuer: ['issuerAAAA_did', 'issuerBBBB_did'],

@@ -41,12 +41,10 @@ export class ClaimService {
   public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
     const claim: Claim = await this.getById(data.id);
     if (!claim) {
-      console.log('claim doest exists, saving id ' + data.id);
       return await this.saveClaim(data);
     }
 
     if (claim && data.issuedToken) {
-      console.log('claim ' + data.id + 'exists, updating')
       const patch: Claim = {
         ...claim,
         isAccepted: true,
@@ -55,9 +53,6 @@ export class ClaimService {
       await this.dgraph.mutate(patch);
       return claim.uid;
     }
-
-
-    console.log('not saving, not updating' + data.id);
   }
 
   public async saveClaim({
