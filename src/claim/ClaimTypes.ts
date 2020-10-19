@@ -6,8 +6,9 @@ export interface ClaimDataMessage {
   id: string;
   token: string;
   issuedToken?: string;
+  acceptedBy?: string;
   requester: string;
-  issuer: string;
+  claimIssuer: string[];
 }
 
 export type DecodedClaimToken = { claimData: { claimType: string } };
@@ -15,11 +16,12 @@ export type DecodedClaimToken = { claimData: { claimType: string } };
 export interface Claim extends DGraphObject {
   id: string;
   requester: string;
-  claimIssuer: string;
+  claimIssuer: string[];
   claimType: string;
   token: string;
   issuedToken?: string;
   isAccepted: boolean;
   createdAt: string;
+  acceptedBy?: string;
   parentNamespace: string;
 }
