@@ -37,9 +37,6 @@ export class ClaimController {
 
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload);
-    setTimeout(() => this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload), 1);
-    setTimeout(() => this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload), 10);
-    setTimeout(() => this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload), 100);
     return id;
   }
 
