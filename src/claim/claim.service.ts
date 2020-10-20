@@ -18,6 +18,7 @@ const claimQuery = `
   parentNamespace
   isAccepted
   createdAt
+  acceptedBy
   type
 `;
 
@@ -63,6 +64,7 @@ export class ClaimService {
 
     const claim: Claim = {
       ...data,
+      id: data.id,
       isAccepted: false,
       createdAt: Date.now().toString(),
       claimType: decodedData.claimData.claimType,

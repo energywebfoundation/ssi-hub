@@ -3,7 +3,7 @@ import { DGraphObject } from '../Interfaces/Types';
 export const NATS_EXCHANGE_TOPIC = 'claim.exchange';
 
 export interface ClaimDataMessage {
-  id: string;
+  id?: string;
   token: string;
   issuedToken?: string;
   requester: string;

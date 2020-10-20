@@ -17,7 +17,6 @@ export class DgraphService {
 
   constructor(private configService: ConfigService) {
     this.createInstance();
-    this.migrate();
   }
 
   public async migrate() {
@@ -102,6 +101,8 @@ export class DgraphService {
       this._stub = clientStub;
 
       this._instance = new DgraphClient(clientStub);
+
+      await this.migrate();
 
       return this._instance;
     });

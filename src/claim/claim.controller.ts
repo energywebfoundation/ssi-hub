@@ -6,6 +6,8 @@ import { NatsService } from '../nats/nats.service';
 import { v4 as uuid } from 'uuid';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { validate } from 'class-validator';
+import { ClaimIssue, ClaimRequest } from './ClaimDTO';
 
 @Controller('claim')
 export class ClaimController {
@@ -31,6 +33,16 @@ export class ClaimController {
       acceptedBy: did,
     }
 
+    const claimDTO = new ClaimIssue(claimData);
+
+    const err = await validate(claimDTO);
+
+    if (err.length > 0) {
+      return err;
+    }
+
+    console.log(claimData);
+
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload);
   }
@@ -46,6 +58,15 @@ export class ClaimController {
       ...data,
       id,
     }
+
+    const claimDTO = new ClaimRequest(claimData);
+
+    const err = await validate(claimDTO);
+
+    if (err.length > 0) {
+      return err;
+    }
+
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(did, payload);
     data.claimIssuer.map(issuerDid => {
