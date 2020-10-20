@@ -22,15 +22,33 @@ export class DgraphService {
 
   public async migrate() {
     const schema = `
+      type Claim {
+        id
+        requester
+        claimIssuer
+        claimType
+        token
+        parentNamespace
+        isAccepted
+        createdAt
+      }
+
+      token: string .
+      isAccepted: bool .
+      createdAt: string .
+      token: string .
+      issuedToken: string .
+      parentNamespace: string .
+      claimIssuer: string @index(exact) .
+      requester: string @index(exact) .
+      claimType: string @index(exact) .
+      parentNamespace: string @index(exact) .
+
       type: string @index(exact) .
       namespace: string @index(exact) .
       name: string @index(exact) .
       owner: string @index(exact) .
       id: string @index(exact) .
-      claimIssuer: string @index(exact) .
-      requester: string @index(exact) .
-      claimType: string @index(exact) .
-      parentNamespace: string @index(exact) .
     `;
     const op = new Operation();
     op.setSchema(schema);
