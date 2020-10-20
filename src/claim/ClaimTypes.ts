@@ -6,9 +6,9 @@ export interface ClaimDataMessage {
   id: string;
   token: string;
   issuedToken?: string;
-  acceptedBy?: string;
   requester: string;
   claimIssuer: string[];
+  acceptedBy?: string;
 }
 
 export type DecodedClaimToken = { claimData: { claimType: string } };

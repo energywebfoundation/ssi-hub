@@ -26,10 +26,10 @@ export const PlainBody = createParamDecorator(
 export class GraphqlController {
   constructor(private dgraph: DgraphService) {}
 
-  @Post()
-  @ApiTags('GraphQL')
-  public async query(@PlainBody() query: string) {
-    const res = await this.dgraph.query(query);
-    return res.getJson();
-  }
+  // @Post()
+  // @ApiTags('GraphQL')
+  // public async query(@PlainBody() query: string) {
+  //   const res = await this.dgraph.query(query);
+  //   return res.getJson();
+  // }
 }

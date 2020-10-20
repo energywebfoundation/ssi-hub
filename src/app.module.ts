@@ -18,9 +18,21 @@ import { EnsTestService } from './ENS/ens.testService';
 import { NamespaceController } from './namespace/namespace.controller';
 import { NamespaceService } from './namespace/namespace.service';
 import { NatsService } from './nats/nats.service';
+import { BullModule } from '@nestjs/bull';
+import { claimProcessor } from './claim/claim.processor';
 
 @Module({
-  imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
+  imports: [
+    BullModule.registerQueue({
+      name: 'claims',
+      redis: {
+        port: 6379,
+        host: 'redis',
+        password: process.env.REDIS_PASSWORD
+      },
+    }),
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot()],
   controllers: [
     ClaimController,
     OrganizationController,
@@ -31,6 +43,8 @@ import { NatsService } from './nats/nats.service';
     NamespaceController,
   ],
   providers: [
+    claimProcessor,
+
     DgraphService,
     ClaimService,
     OrganizationService,

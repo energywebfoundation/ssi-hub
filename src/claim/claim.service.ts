@@ -8,6 +8,10 @@ import {
 } from './ClaimTypes';
 import { NatsService } from '../nats/nats.service';
 import * as jwt_decode from 'jwt-decode';
+import * as Bull from 'bull';
+import { ConfigService } from '@nestjs/config';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 const claimQuery = `
   id
@@ -28,15 +32,7 @@ interface QueryFilters {
 
 @Injectable()
 export class ClaimService {
-  constructor(
-    private readonly dgraph: DgraphService,
-    private readonly nats: NatsService,
-  ) {
-    this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, data => {
-      const json = JSON.parse(data);
-      this.saveOrUpdate(json);
-    });
-  }
+  constructor(private readonly dgraph: DgraphService){}
 
   public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
     const claim: Claim = await this.getById(data.id);
@@ -47,6 +43,8 @@ export class ClaimService {
     if (claim && data.issuedToken) {
       const patch: Claim = {
         ...claim,
+        issuedToken: data.issuedToken,
+        acceptedBy: data.acceptedBy,
         isAccepted: true,
         uid: claim.uid,
       };
@@ -150,6 +148,10 @@ export class ClaimService {
     );
 
     return res.getJson();
+  }
+
+  public removeById(id: string) {
+    return null;
   }
 
   private getIsAccepterFilter(options: QueryFilters) {
