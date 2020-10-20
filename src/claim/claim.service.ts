@@ -10,6 +10,7 @@ import { NatsService } from '../nats/nats.service';
 import * as jwt_decode from 'jwt-decode';
 
 const claimQuery = `
+  uid
   id
   requester
   claimIssuer
@@ -19,6 +20,7 @@ const claimQuery = `
   parentNamespace
   isAccepted
   createdAt
+  type
 `;
 
 interface QueryFilters {
