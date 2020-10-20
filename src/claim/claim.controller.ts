@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
@@ -26,18 +26,13 @@ export class ClaimController {
     @Param('did') did: string,
     @Body() data: ClaimDataMessage
   ){
-    const id = uuid();
     const claimData: ClaimDataMessage = {
       ...data,
-      id,
       acceptedBy: did,
     }
 
-    console.log(id);
-
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload);
-    return id;
   }
 
   @Post('/request/:did')
@@ -46,21 +41,28 @@ export class ClaimController {
     @Param('did') did: string,
     @Body() data: ClaimDataMessage
   ){
+    const id = uuid();
     const claimData: ClaimDataMessage = {
       ...data,
-      id: uuid(),
+      id,
     }
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(did, payload);
     data.claimIssuer.map(issuerDid => {
       this.nats.connection.publish(`${issuerDid}.${NATS_EXCHANGE_TOPIC}`, payload);
     })
+    return id;
   }
 
   @Get('/:id')
   @ApiTags('Claims')
   public async getById(@Param('id') id: string) {
     return await this.claimService.getById(id);
+  }
+  @Delete('/:id')
+  @ApiTags('Claims')
+  public async removeById(@Param('id') id: string) {
+    return await this.claimService.removeById(id);
   }
   @Get('/parent/:namespace')
   @ApiTags('Claims')

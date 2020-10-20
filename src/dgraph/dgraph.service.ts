@@ -27,10 +27,6 @@ export class DgraphService {
       name: string @index(exact) .
       owner: string @index(exact) .
       id: string @index(exact) .
-      claimIssuer: [string] @index(exact) .
-      requester: string @index(exact) .
-      claimType: string @index(exact) .
-      parentNamespace: string @index(exact) .
     `;
     const op = new Operation();
     op.setSchema(schema);
@@ -43,6 +39,15 @@ export class DgraphService {
     const txn = await instance.newTxn();
     const mu = new Mutation();
     mu.setSetJson(data);
+    mu.setCommitNow(true);
+    return txn.mutate(mu);
+  }
+
+  public async delete(uid: string) {
+    const instance = await this.getInstance();
+    const txn = await instance.newTxn();
+    const mu = new Mutation();
+    mu.setDeleteJson({uid})
     mu.setCommitNow(true);
     return txn.mutate(mu);
   }

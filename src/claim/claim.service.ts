@@ -4,16 +4,11 @@ import {
   Claim,
   ClaimDataMessage,
   DecodedClaimToken,
-  NATS_EXCHANGE_TOPIC,
 } from './ClaimTypes';
-import { NatsService } from '../nats/nats.service';
 import * as jwt_decode from 'jwt-decode';
-import * as Bull from 'bull';
-import { ConfigService } from '@nestjs/config';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 
 const claimQuery = `
+  uid
   id
   requester
   claimIssuer
@@ -72,7 +67,7 @@ export class ClaimService {
       claimType: decodedData.claimData.claimType,
       parentNamespace: parent,
       uid: '_:new',
-      type: 'claim',
+      'dgraph.type': 'Claim',
     };
     const res = await this.dgraph.mutate(claim);
     return res.getUidsMap().get('new');
@@ -150,8 +145,18 @@ export class ClaimService {
     return res.getJson();
   }
 
-  public removeById(id: string) {
-    return null;
+  public async removeById(id: string) {
+    const claim = await this.getById(id)
+    console.log(claim);
+    if(claim && claim.uid) {
+      try {
+        this.dgraph.delete(claim.uid);
+        return true;
+      } catch(err) {
+        return false
+      }
+    }
+    return false;
   }
 
   private getIsAccepterFilter(options: QueryFilters) {
