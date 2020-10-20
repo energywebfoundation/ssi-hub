@@ -79,7 +79,7 @@ export class ClaimService {
       claimType: decodedData.claimData.claimType,
       parentNamespace: parent,
       uid: '_:new',
-      type: 'claim',
+      'dgraph.type': 'Claim',
     };
     const res = await this.dgraph.mutate(claim);
     return res.getUidsMap().get('new');
