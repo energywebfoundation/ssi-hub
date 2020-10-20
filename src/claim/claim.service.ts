@@ -18,6 +18,7 @@ const claimQuery = `
   parentNamespace
   isAccepted
   createdAt
+  type
 `;
 
 interface QueryFilters {
