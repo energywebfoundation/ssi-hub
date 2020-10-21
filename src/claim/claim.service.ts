@@ -150,7 +150,6 @@ export class ClaimService {
 
   public async removeById(id: string) {
     const claim = await this.getById(id)
-    console.log(claim);
     if(claim && claim.uid) {
       try {
         this.dgraph.delete(claim.uid);

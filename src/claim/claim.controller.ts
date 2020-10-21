@@ -18,7 +18,6 @@ export class ClaimController {
   ) {
     this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
       const job = await this.claimQueue.add('save', data);
-      console.log(job.id);
     });
   }
 
@@ -40,8 +39,6 @@ export class ClaimController {
     if (err.length > 0) {
       return err;
     }
-
-    console.log(claimData);
 
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload);
