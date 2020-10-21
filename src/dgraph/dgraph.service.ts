@@ -38,7 +38,7 @@ export class DgraphService {
       token: string .
       issuedToken: string .
       parentNamespace: string .
-      claimIssuer: string @index(exact) .
+      claimIssuer: [string] @index(exact) .
       requester: string @index(exact) .
       claimType: string @index(exact) .
       parentNamespace: string @index(exact) .
