@@ -17,7 +17,7 @@ export class ClaimController {
     @InjectQueue('claims') private claimQueue: Queue<string>
   ) {
     this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
-      const job = await this.claimQueue.add('save', data);
+      await this.claimQueue.add('save', data);
     });
   }
 
