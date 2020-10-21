@@ -3,11 +3,9 @@ import {
   Controller,
   createParamDecorator,
   ExecutionContext,
-  Post,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { ApiTags } from '@nestjs/swagger';
 import * as rawBody from 'raw-body';
 
 export const PlainBody = createParamDecorator(
@@ -26,10 +24,10 @@ export const PlainBody = createParamDecorator(
 export class GraphqlController {
   constructor(private dgraph: DgraphService) {}
 
-  @Post()
-  @ApiTags('GraphQL')
-  public async query(@PlainBody() query: string) {
-    const res = await this.dgraph.query(query);
-    return res.getJson();
-  }
+  // @Post()
+  // @ApiTags('GraphQL')
+  // public async query(@PlainBody() query: string) {
+  //   const res = await this.dgraph.query(query);
+  //   return res.getJson();
+  // }
 }

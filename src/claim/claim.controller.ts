@@ -1,36 +1,99 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ClaimService } from './claim.service';
-import { ApiQuery } from '@nestjs/swagger';
-import { ClaimDataMessage } from './ClaimTypes';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
+import { NatsService } from '../nats/nats.service';
+import { v4 as uuid } from 'uuid';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { validate } from 'class-validator';
+import { ClaimIssue, ClaimRequest } from './ClaimDTO';
 
 @Controller('claim')
 export class ClaimController {
-  constructor(private readonly claimService: ClaimService) {}
+  constructor(
+    private readonly claimService: ClaimService,
+    private readonly nats: NatsService,
+    @InjectQueue('claims') private claimQueue: Queue<string>
+  ) {
+    this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
+      await this.claimQueue.add('save', data);
+    });
+  }
 
-  @Get('/test')
-  public async test() {
-    const fakeData: ClaimDataMessage = {
-      id: 'ASDF2',
-      issuer: 'issuer_did',
-      requester: 'requester_did',
-      token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGFpbURhdGEiOnsiY2xhaW1UeXBlIjoib25pb24ucm9sZXMuYXNkZi5hcHAub25pb24uaWFtLmV3YyJ9LCJqdGkiOiIwOTBhNzM0NS1iNDBkLTRiZDktOWY5ZC1hMzU0ZTk0NWYzN2EiLCJpYXQiOjE2MDI3Njc3NDYsImV4cCI6MTYwMjc3MTM0Nn0.xxk6tng0kpQYk6yNkW2OxTM7Q440rplNCe78NDeOAgU'
+  @Post('/issue/:did')
+  @ApiTags('Claims')
+  public async postIssuerClaim(
+    @Param('did') did: string,
+    @Body() data: ClaimDataMessage
+  ){
+    const claimData: ClaimDataMessage = {
+      ...data,
+      acceptedBy: did,
     }
-    this.claimService.saveOrUpdate(fakeData);
+
+    const claimDTO = new ClaimIssue(claimData);
+
+    const err = await validate(claimDTO);
+
+    if (err.length > 0) {
+      return err;
+    }
+
+    const payload = JSON.stringify(claimData);
+    this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload);
+  }
+
+  @Post('/request/:did')
+  @ApiTags('Claims')
+  public async postRequesterClaim(
+    @Param('did') did: string,
+    @Body() data: ClaimDataMessage
+  ){
+    const id = uuid();
+    const claimData: ClaimDataMessage = {
+      ...data,
+      id,
+    }
+
+    const claimDTO = new ClaimRequest(claimData);
+
+    const err = await validate(claimDTO);
+
+    if (err.length > 0) {
+      return err;
+    }
+
+    const payload = JSON.stringify(claimData);
+    this.nats.connection.publish(did, payload);
+    data.claimIssuer.map(issuerDid => {
+      this.nats.connection.publish(`${issuerDid}.${NATS_EXCHANGE_TOPIC}`, payload);
+    })
+    return id;
   }
 
   @Get('/:id')
+  @ApiTags('Claims')
   public async getById(@Param('id') id: string) {
     return await this.claimService.getById(id);
   }
+  @Delete('/:id')
+  @ApiTags('Claims')
+  public async removeById(@Param('id') id: string) {
+    return await this.claimService.removeById(id);
+  }
   @Get('/parent/:namespace')
+  @ApiTags('Claims')
   public async getByParentNamespace(@Param('id') id: string) {
     return await this.claimService.getByParentNamespace(id);
   }
   @Get('/user/:did')
+  @ApiTags('Claims')
   public async getByUserDid(@Param('did') did: string) {
     return await this.claimService.getByUserDid(did);
   }
   @Get('/issuer/:did')
+  @ApiTags('Claims')
   @ApiQuery({ name: 'accepted', required: false })
   @ApiQuery({ name: 'namespace', required: false })
   public async getByIssuerDid(
@@ -41,6 +104,7 @@ export class ClaimController {
     return await this.claimService.getByIssuer(did, { accepted, namespace });
   }
   @Get('/requester/:did')
+  @ApiTags('Claims')
   @ApiQuery({ name: 'accepted', required: false })
   @ApiQuery({ name: 'namespace', required: false })
   public async getByRequesterDid(

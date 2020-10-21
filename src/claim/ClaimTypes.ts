@@ -3,11 +3,12 @@ import { DGraphObject } from '../Interfaces/Types';
 export const NATS_EXCHANGE_TOPIC = 'claim.exchange';
 
 export interface ClaimDataMessage {
-  id: string;
+  id?: string;
   token: string;
   issuedToken?: string;
   requester: string;
-  issuer: string;
+  claimIssuer: string[];
+  acceptedBy?: string;
 }
 
 export type DecodedClaimToken = { claimData: { claimType: string } };
@@ -15,11 +16,12 @@ export type DecodedClaimToken = { claimData: { claimType: string } };
 export interface Claim extends DGraphObject {
   id: string;
   requester: string;
-  claimIssuer: string;
+  claimIssuer: string[];
   claimType: string;
   token: string;
   issuedToken?: string;
   isAccepted: boolean;
   createdAt: string;
+  acceptedBy?: string;
   parentNamespace: string;
 }

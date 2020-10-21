@@ -4,9 +4,7 @@ import {
   Claim,
   ClaimDataMessage,
   DecodedClaimToken,
-  NATS_EXCHANGE_TOPIC,
 } from './ClaimTypes';
-import { NatsService } from '../nats/nats.service';
 import * as jwt_decode from 'jwt-decode';
 
 const claimQuery = `
@@ -20,6 +18,7 @@ const claimQuery = `
   parentNamespace
   isAccepted
   createdAt
+  acceptedBy
   type
 `;
 
@@ -30,15 +29,7 @@ interface QueryFilters {
 
 @Injectable()
 export class ClaimService {
-  constructor(
-    private readonly dgraph: DgraphService,
-    private readonly nats: NatsService,
-  ) {
-    this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, data => {
-      const json = JSON.parse(data);
-      this.saveOrUpdate(json);
-    });
-  }
+  constructor(private readonly dgraph: DgraphService){}
 
   public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
     const claim: Claim = await this.getById(data.id);
@@ -50,6 +41,7 @@ export class ClaimService {
       const patch: Claim = {
         ...claim,
         issuedToken: data.issuedToken,
+        acceptedBy: data.acceptedBy,
         isAccepted: true,
         uid: claim.uid,
       };
@@ -59,7 +51,6 @@ export class ClaimService {
   }
 
   public async saveClaim({
-    issuer,
     ...data
   }: ClaimDataMessage): Promise<string> {
     const decodedData: DecodedClaimToken = jwt_decode(data.token);
@@ -73,7 +64,7 @@ export class ClaimService {
 
     const claim: Claim = {
       ...data,
-      claimIssuer: issuer,
+      id: data.id,
       isAccepted: false,
       createdAt: Date.now().toString(),
       claimType: decodedData.claimData.claimType,
@@ -155,6 +146,19 @@ export class ClaimService {
     );
 
     return res.getJson();
+  }
+
+  public async removeById(id: string) {
+    const claim = await this.getById(id)
+    if(claim && claim.uid) {
+      try {
+        this.dgraph.delete(claim.uid);
+        return true;
+      } catch(err) {
+        return false
+      }
+    }
+    return false;
   }
 
   private getIsAccepterFilter(options: QueryFilters) {

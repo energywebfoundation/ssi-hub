@@ -17,7 +17,6 @@ export class DgraphService {
 
   constructor(private configService: ConfigService) {
     this.createInstance();
-    this.migrate();
   }
 
   public async migrate() {
@@ -39,7 +38,7 @@ export class DgraphService {
       token: string .
       issuedToken: string .
       parentNamespace: string .
-      claimIssuer: string @index(exact) .
+      claimIssuer: [string] @index(exact) .
       requester: string @index(exact) .
       claimType: string @index(exact) .
       parentNamespace: string @index(exact) .
@@ -61,6 +60,15 @@ export class DgraphService {
     const txn = await instance.newTxn();
     const mu = new Mutation();
     mu.setSetJson(data);
+    mu.setCommitNow(true);
+    return txn.mutate(mu);
+  }
+
+  public async delete(uid: string) {
+    const instance = await this.getInstance();
+    const txn = await instance.newTxn();
+    const mu = new Mutation();
+    mu.setDeleteJson({uid})
     mu.setCommitNow(true);
     return txn.mutate(mu);
   }
@@ -93,6 +101,8 @@ export class DgraphService {
       this._stub = clientStub;
 
       this._instance = new DgraphClient(clientStub);
+
+      await this.migrate();
 
       return this._instance;
     });
