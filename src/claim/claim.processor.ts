@@ -1,4 +1,4 @@
-import { OnQueueActive, Process, Processor } from '@nestjs/bull';
+import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { ClaimService } from './claim.service';
 
