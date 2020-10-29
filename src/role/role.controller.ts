@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { ApiTags } from '@nestjs/swagger';
 import { EnsTestService } from '../ENS/ens.testService';
@@ -28,10 +28,10 @@ export class RoleController {
     return await this.roleService.exists(namespace);
   }
 
-  // @Post('/mock')
-  // @ApiTags('Test')
-  // public async doMock() {
-  //   await this.ensTest.testOrgAppRole();
-  //   return 'Done';
-  // }
+  @Post('/mock')
+  @ApiTags('Test')
+  public async doMock() {
+    await this.ensTest.testOrgAppRole();
+    return 'Done';
+  }
 }

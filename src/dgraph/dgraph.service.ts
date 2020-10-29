@@ -31,7 +31,103 @@ export class DgraphService {
         isAccepted
         createdAt
       }
-
+      
+      type RoleIssuer {
+        issuerType
+        did
+      }
+      
+      issuerType: string .
+      did: [string] .
+      
+      type KeyValue {
+        key
+        value
+      }
+      
+      key: string .
+      value: string .
+      
+      type Field {
+        fieldType
+        label
+        validation
+      }
+      
+      fieldType: string .
+      label: string .
+      validation: string .
+      
+      type RoleDefinition {
+        version
+        roleType
+        roleName
+        fields
+        metadata
+        issuer
+      }
+      
+      type AppDefinition {
+        description
+        logoUrl
+        websiteUrl
+        others
+        appName
+      }
+      
+      type OrgDefinition {
+        description
+        logoUrl
+        websiteUrl
+        others
+        orgName
+      }
+      
+      fields: [uid] .
+      metadata: [uid] .
+      issuer: uid .
+      version: string .
+      roleType: string .
+      roleName: string .
+      
+      description: string .
+      logoUrl: string .
+      websiteUrl: string .
+      others: [uid] .
+      appName: string .
+      orgName: string .
+      
+      type Role {
+        name
+        owner
+        namespace
+        definition
+      } 
+      
+      type App {
+        name
+        owner
+        namespace
+        definition
+        roles
+      }
+       
+      type Org {
+        name
+        owner
+        namespace
+        definition
+        apps
+        roles
+      }
+      
+      name: string @index(exact) .
+      owner: string @index(exact) .
+      namespace: string @index(exact) .
+      definition: uid .
+      roles: [uid] .
+      apps: [uid] .
+      
       token: string .
       isAccepted: bool .
       createdAt: string .
@@ -42,17 +138,14 @@ export class DgraphService {
       requester: string @index(exact) .
       claimType: string @index(exact) .
       parentNamespace: string @index(exact) .
-
       type: string @index(exact) .
-      namespace: string @index(exact) .
-      name: string @index(exact) .
-      owner: string @index(exact) .
       id: string @index(exact) .
     `;
     const op = new Operation();
     op.setSchema(schema);
     await this._instance.alter(op);
     console.log('Migration completed');
+
   }
 
   public async mutate(data: unknown) {
@@ -64,11 +157,17 @@ export class DgraphService {
     return txn.mutate(mu);
   }
 
-  public async delete(uid: string) {
+  public async delete(ids: string | string[]) {
+    let json;
+    if(Array.isArray(ids)) {
+      json = ids.map(uid => ({uid}));
+    } else {
+      json = [{uid: ids}]
+    }
     const instance = await this.getInstance();
     const txn = await instance.newTxn();
     const mu = new Mutation();
-    mu.setDeleteJson({uid})
+    mu.setDeleteJson(json)
     mu.setCommitNow(true);
     return txn.mutate(mu);
   }

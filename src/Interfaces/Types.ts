@@ -11,13 +11,18 @@ export interface DGraphObject {
 export interface KeyValue {
   key: string;
   value: string;
+  uid?: string
 }
 
 export function RecordToKeyValue(
   record: Record<string, string> | undefined,
 ): KeyValue[] {
   return (
-    record && Object.entries(record).map(([key, value]) => ({ key, value }))
+    record && Object.entries(record).map(([key, value]) => ({
+      key,
+      value,
+      'dgraph.type': 'KeyValue'
+    }))
   );
 }
 
@@ -45,6 +50,7 @@ export type DefinitionData =
 
 export const roleDefinitionFullQuery = `
 {
+  uid
   version
   roleType
   roleName
@@ -54,19 +60,23 @@ export const roleDefinitionFullQuery = `
   websiteUrl
   logoUrl
   issuer {
+    uid
     issuerType
     did
   }
   others {
+    uid
     key
     value
   }
   fields {
+    uid
     fieldType
     label
     validation
   }
   metadata {
+    uid
     key
     value
   }

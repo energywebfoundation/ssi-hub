@@ -1,4 +1,4 @@
-import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
+import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/Types';
 import { IsOptional, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization, OrgDefinition } from './OrganizationTypes';
@@ -21,6 +21,15 @@ export interface CreateOrganizationDefinition {
 }
 
 export class OrganizationDefinitionDTO implements OrgDefinition {
+
+  constructor(data: CreateOrganizationDefinition) {
+    this.description = data.description;
+    this.logoUrl = data.logoUrl;
+    this.websiteUrl = data.websiteUrl;
+    this.others = RecordToKeyValue(data.others);
+    this.orgName = data.orgName;
+  }
+
   @IsOptional()
   @IsString()
   description?: string;
@@ -43,9 +52,33 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
     items: KeyValueAPIDefinition,
   })
   others: KeyValue[] = [];
+
+  readonly 'dgraph.type' = 'OrgDefinition';
+}
+
+interface OrganizationDTOParams {
+  name: string,
+  owner: string,
+  namespace: string,
+  roles?: RoleDefinition[]
+  apps?: AppDefinition[]
 }
 
 export class OrganizationDTO implements Organization {
+
+  constructor(data: OrganizationDTOParams, definition: OrganizationDefinitionDTO) {
+    this.name = data.name;
+    this.owner = data.owner;
+    this.namespace = data.namespace;
+
+    if(data.roles)
+      this.roles = data.roles;
+    if(data.apps)
+      this.apps = data.apps;
+
+    this.definition = definition;
+  }
+
   @ValidateNested()
   definition: OrganizationDefinitionDTO;
 
@@ -63,4 +96,6 @@ export class OrganizationDTO implements Organization {
 
   @IsArray()
   apps: AppDefinition[] = [];
+
+  readonly 'dgraph.type' = 'Org';
 }

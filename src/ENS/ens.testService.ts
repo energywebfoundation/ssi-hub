@@ -70,10 +70,15 @@ export class EnsTestService {
       owner: 'onion',
     });
 
+    console.log('aaaaaaaaa');
+
     await this.ensService.createRole({
       data: ROLE_MOCK_DATA,
-      namespace: 'admin.roles.onionapp.apps.onion.iam.ewc',
+      namespace: Date.now() + 'test.roles.onionapp.apps.onion.iam.ewc',
       owner: 'carrot',
     });
+
+
+
   }
 }

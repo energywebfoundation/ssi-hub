@@ -1,4 +1,4 @@
-import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
+import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/Types';
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppDefinition, Application } from './ApplicationTypes';
@@ -20,6 +20,15 @@ export interface CreateApplicationDefinition {
 }
 
 export class ApplicationDefinitionDTO implements AppDefinition {
+
+  constructor(data: CreateApplicationDefinition) {
+    this.description = data.description;
+    this.logoUrl = data.logoUrl;
+    this.websiteUrl = data.websiteUrl;
+    this.others = RecordToKeyValue(data.others);
+    this.appName = data.appName;
+  }
+
   @IsOptional()
   @IsString()
   description?: string;
@@ -42,9 +51,30 @@ export class ApplicationDefinitionDTO implements AppDefinition {
     items: KeyValueAPIDefinition,
   })
   others?: KeyValue[] = [];
+
+  readonly 'dgraph.type' = 'AppDefinition';
+}
+
+interface ApplicationDTOParams {
+  name: string,
+  owner: string,
+  namespace: string,
+  roles?: RoleDefinition[]
 }
 
 export class ApplicationDTO implements Application {
+
+  constructor(data: ApplicationDTOParams, definition: ApplicationDefinitionDTO) {
+    this.name = data.name;
+    this.owner = data.owner;
+    this.namespace = data.namespace;
+
+    if(data.roles)
+      this.roles = data.roles;
+
+    this.definition = definition;
+  }
+
   @ValidateNested()
   definition: ApplicationDefinitionDTO;
 
@@ -59,4 +89,6 @@ export class ApplicationDTO implements Application {
 
   @IsArray()
   roles: RoleDefinition[] = [];
+
+  readonly 'dgraph.type' = 'App';
 }
