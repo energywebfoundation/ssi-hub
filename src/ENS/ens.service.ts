@@ -130,10 +130,6 @@ export class EnsService {
 
       const [owner, data, namespace = name] = await Promise.all(promises);
 
-      console.log('owner');
-      console.log(owner);
-      console.log(namespace);
-
       if (!namespace || !owner || !data) {
         this.logger.debug(`Role not supported ${name || namespace || hash}`);
         return;
