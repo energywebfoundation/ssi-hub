@@ -17,6 +17,7 @@ import { CreateOrganizationDefinition } from '../organization/OrganizationDTO';
 import { CreateApplicationDefinition } from '../application/ApplicationDTO';
 import { CreateRoleDefinition } from '../role/RoleTypes';
 import { namehash } from '../ethers/utils';
+import { OwnerService } from '../owner/owner.service';
 
 enum ENSNamespaceTypes {
   Roles = 'roles',
@@ -31,6 +32,7 @@ export class EnsService {
   private provider: providers.JsonRpcProvider;
   private logger: Logger;
   constructor(
+    private ownerService: OwnerService,
     private roleService: RoleService,
     private applicationService: ApplicationService,
     private organizationService: OrganizationService,
@@ -70,11 +72,11 @@ export class EnsService {
       const namespace = await this.publicResolver.name(hash.toString());
 
       if(owner === "0x0000000000000000000000000000000000000000") {
-        await this.roleService.deleteRole(namespace);
+        await this.ownerService.deleteNamespace(namespace);
         return;
       }
 
-      await this.organizationService.changeOwner(namespace, owner);
+      await this.ownerService.changeOwner(namespace, owner);
     })
   }
 

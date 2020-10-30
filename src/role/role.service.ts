@@ -63,24 +63,6 @@ export class RoleService {
     return res.getUidsMap().get('new');
   }
 
-  public async deleteRole(namespace: string) {
-    const role = await this.getByNamespace(namespace);
-
-    if(!role) {
-      return;
-    }
-
-    const uids: string[] = [
-      role.uid,
-      ...role.definition.fields.map(f => f.uid),
-      ...role.definition.metadata.map(f => f.uid),
-      role.definition.issuer.uid,
-      role.definition.uid,
-    ];
-
-    await this.dgraph.delete(uids);
-  }
-
   public async updateNamespace(namespace: string, patch: CreateRoleData) {
     const oldData = await this.getByNamespace(namespace);
     if (!oldData) {

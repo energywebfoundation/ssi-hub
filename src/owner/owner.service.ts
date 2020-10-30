@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
+import { Role } from '../role/RoleTypes';
+import { Organization } from '../organization/OrganizationTypes';
+import { Application } from '../application/ApplicationTypes';
 
 @Injectable()
 export class OwnerService {
@@ -27,5 +30,70 @@ export class OwnerService {
       definition ${roleDefinitionFullQuery}
     }}`);
     return res.getJson();
+  }
+
+  public async deleteNamespace(namespace: string) {
+    const res = await this.dgraph.query(`{
+      res(func: eq(namespace, "${namespace}")) {
+        uid
+        expand(_all_) {
+          uid
+          expand(_all_) {
+             uid
+             expand(_all_)
+          }
+        }
+      }
+    }`);
+
+    const json = res.getJson();
+
+    const ns: Role & Organization & Application = json.res[0];
+    if(!ns) {
+      return;
+    }
+
+    const ids = [
+      ns?.uid,
+      ns?.definition?.uid,
+      ...ns?.definition?.fields?.map(f => f.uid) ?? [],
+      ...ns?.definition?.metadata?.map(f => f.uid) ?? [],
+      ...ns?.definition?.others?.map(f => f.uid) ?? [],
+      ns?.definition?.issuer?.uid,
+      ns?.definition?.uid,
+    ].filter(u => u !== undefined)
+
+    this.dgraph.delete(ids);
+  }
+
+  public async changeOwner(namespace: string, newOwner: string) {
+    const res = await this.dgraph.query(`{
+      res(func: eq(namespace, "${namespace}")) {
+        uid
+        expand(_all_) {
+          uid
+          expand(_all_) {
+             uid
+             expand(_all_)
+          }
+        }
+      }
+    }`);
+
+    const json = res.getJson();
+    const ns = json.res[0];
+
+    if (!ns) {
+      return;
+    }
+
+    const data = {
+      uid: ns.uid,
+      owner: newOwner,
+    };
+
+    await this.dgraph.mutate(data);
+
+    return ns.uid;
   }
 }

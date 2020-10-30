@@ -8,7 +8,7 @@ export class RoleDefinitionDTO implements RoleDefinition {
   constructor(data: RoleDTODefinitionData) {
     this.metadata = RecordToKeyValue(data.metadata);
     this.roleName = data.roleName;
-    this.fields = data.fields.map(f => {
+    this.fields = data?.fields?.map(f => {
       f['dgraph.type'] = 'Field'
       return f;
     });

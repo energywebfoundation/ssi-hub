@@ -170,21 +170,6 @@ export class OrganizationService {
     return id;
   }
 
-  public async changeOwner(namespace: string, owner: string) {
-    const org = await this.getByNamespace(namespace);
-    if (!org) {
-      return;
-    }
-
-    const data = {
-      uid: org.uid,
-      owner: owner,
-    };
-
-    await this.dgraph.mutate(data);
-
-    return org.uid;
-  }
   public async remove(namespace: string) {
     const org = await this.getByNamespace(namespace);
     if (!org) {
