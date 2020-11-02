@@ -23,10 +23,10 @@ export class OwnerController {
   public async getOrgs(@Param('owner') owner: string) {
     return await this.ownerService.getOrgsByOwner(owner);
   }
-
-  @Delete('/:namespace')
-  @ApiTags('Ownership')
-  public async delete(@Param('namespace') namespace: string) {
-    return await this.ownerService.deleteNamespace(namespace);
-  }
+  //
+  // @Delete('/:namespace')
+  // @ApiTags('Ownership')
+  // public async delete(@Param('namespace') namespace: string) {
+  //   return await this.ownerService.deleteNamespace(namespace);
+  // }
 }
