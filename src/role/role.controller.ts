@@ -28,10 +28,10 @@ export class RoleController {
     return await this.roleService.exists(namespace);
   }
 
-  // @Post('/mock')
-  // @ApiTags('Test')
-  // public async doMock() {
-  //   await this.ensTest.testOrgAppRole();
-  //   return 'Done';
-  // }
+  @Post('/mock')
+  @ApiTags('Test')
+  public async doMock() {
+    await this.ensTest.testOrgAppRole();
+    return 'Done';
+  }
 }

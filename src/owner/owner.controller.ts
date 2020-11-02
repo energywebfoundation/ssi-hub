@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OwnerService } from './owner.service';
 
@@ -22,5 +22,11 @@ export class OwnerController {
   @ApiTags('Ownership')
   public async getOrgs(@Param('owner') owner: string) {
     return await this.ownerService.getOrgsByOwner(owner);
+  }
+
+  @Delete('/:namespace')
+  @ApiTags('Ownership')
+  public async delete(@Param('namespace') namespace: string) {
+    return await this.ownerService.deleteNamespace(namespace);
   }
 }

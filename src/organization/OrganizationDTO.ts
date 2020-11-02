@@ -2,8 +2,8 @@ import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces
 import { IsOptional, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization, OrgDefinition } from './OrganizationTypes';
-import { RoleDefinition } from '../role/RoleTypes';
-import { AppDefinition } from '../application/ApplicationTypes';
+import { Role, RoleDefinition } from '../role/RoleTypes';
+import { AppDefinition, Application } from '../application/ApplicationTypes';
 
 export interface CreateOrganizationData {
   name: string;
@@ -60,8 +60,8 @@ interface OrganizationDTOParams {
   name: string,
   owner: string,
   namespace: string,
-  roles?: RoleDefinition[]
-  apps?: AppDefinition[]
+  roles?: Role[]
+  apps?: Application[]
 }
 
 export class OrganizationDTO implements Organization {
@@ -92,10 +92,10 @@ export class OrganizationDTO implements Organization {
   namespace: string;
 
   @IsArray()
-  roles: RoleDefinition[] = [];
+  roles: Role[] = [];
 
   @IsArray()
-  apps: AppDefinition[] = [];
+  apps: Application[] = [];
 
   readonly 'dgraph.type' = 'Org';
 }

@@ -2,7 +2,7 @@ import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppDefinition, Application } from './ApplicationTypes';
-import { RoleDefinition } from '../role/RoleTypes';
+import { Role, RoleDefinition } from '../role/RoleTypes';
 
 export interface CreateApplicationData {
   name: string;
@@ -59,7 +59,7 @@ interface ApplicationDTOParams {
   name: string,
   owner: string,
   namespace: string,
-  roles?: RoleDefinition[]
+  roles?: Role[]
 }
 
 export class ApplicationDTO implements Application {
@@ -88,7 +88,7 @@ export class ApplicationDTO implements Application {
   namespace: string;
 
   @IsArray()
-  roles: RoleDefinition[] = [];
+  roles: Role[] = [];
 
   readonly 'dgraph.type' = 'App';
 }

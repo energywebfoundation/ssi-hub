@@ -39,8 +39,14 @@ export class OwnerService {
         expand(_all_) {
           uid
           expand(_all_) {
-             uid
-             expand(_all_)
+            uid
+            expand(_all_) {
+              uid
+              expand(_all_) {
+                uid
+                expand(_all_)
+              }
+            }
           }
         }
       }
@@ -53,15 +59,31 @@ export class OwnerService {
       return;
     }
 
-    const ids = [
-      ns?.uid,
-      ns?.definition?.uid,
-      ...ns?.definition?.fields?.map(f => f.uid) ?? [],
-      ...ns?.definition?.metadata?.map(f => f.uid) ?? [],
-      ...ns?.definition?.others?.map(f => f.uid) ?? [],
-      ns?.definition?.issuer?.uid,
-      ns?.definition?.uid,
+    const getIds = node => [
+      node?.uid,
+      node?.definition?.uid,
+      ...node?.definition?.fields?.map(f => f.uid) ?? [],
+      ...node?.definition?.metadata?.map(f => f.uid) ?? [],
+      ...node?.definition?.others?.map(f => f.uid) ?? [],
+      node?.definition?.issuer?.uid,
+      node?.definition?.uid,
     ].filter(u => u !== undefined)
+
+    let ids: string[] = [
+      ...getIds(ns),
+    ]
+
+    ns?.apps?.forEach(app => {
+      ids = ids.concat(getIds(app))
+
+      app.roles.forEach(role => {
+        ids = ids.concat(getIds(role))
+      })
+    })
+
+    ns?.roles.forEach(role => {
+      ids = ids.concat(getIds(role))
+    })
 
     this.dgraph.delete(ids);
   }
