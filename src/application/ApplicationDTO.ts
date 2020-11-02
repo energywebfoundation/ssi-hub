@@ -2,7 +2,7 @@ import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppDefinition, Application } from './ApplicationTypes';
-import { Role, RoleDefinition } from '../role/RoleTypes';
+import { Role} from '../role/RoleTypes';
 
 export interface CreateApplicationData {
   name: string;

@@ -1,6 +1,6 @@
 import { Definition, DGraphObject, KeyValue } from '../Interfaces/Types';
-import { Role, RoleDefinition } from '../role/RoleTypes';
-import { AppDefinition, Application } from '../application/ApplicationTypes';
+import { Role} from '../role/RoleTypes';
+import { Application } from '../application/ApplicationTypes';
 
 export interface OrgDefinition extends Definition {
   orgName: string;

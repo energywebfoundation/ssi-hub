@@ -2,8 +2,8 @@ import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces
 import { IsOptional, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization, OrgDefinition } from './OrganizationTypes';
-import { Role, RoleDefinition } from '../role/RoleTypes';
-import { AppDefinition, Application } from '../application/ApplicationTypes';
+import { Role } from '../role/RoleTypes';
+import { Application } from '../application/ApplicationTypes';
 
 export interface CreateOrganizationData {
   name: string;
