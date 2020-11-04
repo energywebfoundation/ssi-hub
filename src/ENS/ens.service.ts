@@ -70,6 +70,9 @@ export class EnsService {
     this.ensRegistry.addListener('NewOwner', async (node,label,owner) => {
       const hash = utils.keccak256(node + label.slice(2));
       const namespace = await this.publicResolver.name(hash.toString());
+      if(namespace === "") {
+        return;
+      }
 
       if(owner === "0x0000000000000000000000000000000000000000") {
         await this.ownerService.deleteNamespace(namespace);

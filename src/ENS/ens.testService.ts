@@ -200,7 +200,7 @@ export class EnsTestService {
 
     await this.ensService.createRole({
       data: ROLE_MOCK_DATA,
-      namespace: Date.now() + 'test.roles.onionapp.apps.onion.iam.ewc',
+      namespace: 'test.roles.onionapp.apps.onion.iam.ewc',
       owner: 'carrot',
     });
   }
