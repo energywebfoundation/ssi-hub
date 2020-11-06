@@ -11,12 +11,13 @@ import { EnsRegistryFactory } from '../ethers/EnsRegistryFactory';
 import { ConfigService } from '@nestjs/config';
 import { PublicResolver } from '../ethers/PublicResolver';
 import { EnsRegistry } from '../ethers/EnsRegistry';
-import { namehash } from '../ethers/utils';
 import { ORG_MOCK_DATA } from './ens.testService';
 import { PopulateRolesConfig } from '../../PopulateRolesConfig';
 import { CreateOrganizationDefinition } from '../organization/OrganizationDTO';
 import { CreateApplicationDefinition } from '../application/ApplicationDTO';
 import { CreateRoleDefinition } from '../role/RoleTypes';
+import { namehash } from '../ethers/utils';
+import { OwnerService } from '../owner/owner.service';
 
 enum ENSNamespaceTypes {
   Roles = 'roles',
@@ -31,6 +32,7 @@ export class EnsService {
   private provider: providers.JsonRpcProvider;
   private logger: Logger;
   constructor(
+    private ownerService: OwnerService,
     private roleService: RoleService,
     private applicationService: ApplicationService,
     private organizationService: OrganizationService,
@@ -62,8 +64,23 @@ export class EnsService {
 
   private async InitEventListeners(): Promise<void> {
     this.publicResolver.addListener('TextChanged', async hash => {
-      this.eventHandler(hash);
+      await this.eventHandler(hash);
     });
+
+    this.ensRegistry.addListener('NewOwner', async (node,label,owner) => {
+      const hash = utils.keccak256(node + label.slice(2));
+      const namespace = await this.publicResolver.name(hash.toString());
+      if(namespace === "") {
+        return;
+      }
+
+      if(owner === "0x0000000000000000000000000000000000000000") {
+        await this.ownerService.deleteNamespace(namespace);
+        return;
+      }
+
+      await this.ownerService.changeOwner(namespace, owner);
+    })
   }
 
   private async getSubdomains({ domain }: { domain: string }) {
@@ -144,6 +161,7 @@ export class EnsService {
       metadata = JSON.parse(data);
     } catch (err) {
       this.logger.debug('invalid metadata json: ', data);
+
       return;
     }
     const namespaceFragments = this.roleService.splitNamespace(namespace);

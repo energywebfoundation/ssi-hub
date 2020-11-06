@@ -11,6 +11,5 @@ export class claimProcessor {
   public async processClaim(job: Job<string>) {
     const json = JSON.parse(job.data);
     await this.claimService.saveOrUpdate(json);
-
   }
 }

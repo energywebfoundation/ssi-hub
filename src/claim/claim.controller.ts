@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ClaimService } from './claim.service';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiExcludeEndpoint, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
 import { NatsService } from '../nats/nats.service';
 import { v4 as uuid } from 'uuid';
@@ -23,6 +23,10 @@ export class ClaimController {
 
   @Post('/issue/:did')
   @ApiTags('Claims')
+  @ApiBody({
+    type: ClaimIssue,
+    description: 'Claim data object, containing id and issuedToken'
+  })
   public async postIssuerClaim(
     @Param('did') did: string,
     @Body() data: ClaimDataMessage
@@ -78,6 +82,7 @@ export class ClaimController {
     return await this.claimService.getById(id);
   }
   @Delete('/:id')
+  @ApiExcludeEndpoint()
   @ApiTags('Claims')
   public async removeById(@Param('id') id: string) {
     return await this.claimService.removeById(id);

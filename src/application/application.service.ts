@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import {
   ApplicationDefinitionDTO,
   ApplicationDTO,
@@ -8,6 +8,14 @@ import {
 } from './ApplicationDTO';
 import { validate } from 'class-validator';
 import { Application } from './ApplicationTypes';
+
+const baseQueryFields = `
+uid
+name
+namespace
+owner
+definition ${roleDefinitionFullQuery}
+`;
 
 @Injectable()
 export class ApplicationService {
@@ -17,11 +25,7 @@ export class ApplicationService {
     const res = await this.dgraph.query(`
     query all($i: string){
       Data(func: eq(type, "app")) {
-        uid
-        name
-        namespace
-        owner
-        definition ${roleDefinitionFullQuery}
+        ${baseQueryFields}
       }
     }`);
     return res.getJson();
@@ -34,10 +38,7 @@ export class ApplicationService {
       Data(func: eq(namespace, $i)) {
         namespace
         roles {
-          name
-          namespace
-          owner
-          definition ${roleDefinitionFullQuery}
+          ${baseQueryFields}
         }
       }
     }`,
@@ -52,11 +53,7 @@ export class ApplicationService {
       `
     query all($i: string){
       Data(func: eq(namespace, $i)) {
-        uid
-        name
-        namespace
-        owner
-        definition ${roleDefinitionFullQuery}
+        ${baseQueryFields}
       }
     }`,
       { $i: name },
@@ -70,20 +67,8 @@ export class ApplicationService {
   }
 
   public async create(data: CreateApplicationData) {
-    const appDTO = new ApplicationDTO();
-    appDTO.name = data.name;
-    appDTO.owner = data.owner;
-    appDTO.namespace = data.namespace;
-    appDTO.roles = [];
-
-    const orgDefDTO = new ApplicationDefinitionDTO();
-    orgDefDTO.description = data.definition.description;
-    orgDefDTO.logoUrl = data.definition.logoUrl;
-    orgDefDTO.websiteUrl = data.definition.websiteUrl;
-    orgDefDTO.others = RecordToKeyValue(data.definition.others);
-    orgDefDTO.appName = data.definition.appName;
-
-    appDTO.definition = orgDefDTO;
+    const appDefDTO = new ApplicationDefinitionDTO(data.definition);
+    const appDTO = new ApplicationDTO(data, appDefDTO);
 
     const err = await validate(appDTO);
 
@@ -112,21 +97,15 @@ export class ApplicationService {
       return;
     }
 
-    const appDTO = new ApplicationDTO();
-    appDTO.name = patch.name;
-    appDTO.owner = patch.owner;
-    appDTO.namespace = patch.namespace;
+    const appDefDTO = new ApplicationDefinitionDTO(patch.definition);
+    const appDTO = new ApplicationDTO(patch, appDefDTO);
 
-    const definition = patch.definition;
+    const err = await validate(appDTO);
 
-    const orgDefDTO = new ApplicationDefinitionDTO();
-    orgDefDTO.description = definition.description;
-    orgDefDTO.logoUrl = definition.logoUrl;
-    orgDefDTO.websiteUrl = definition.websiteUrl;
-    orgDefDTO.others = RecordToKeyValue(definition.others);
-    orgDefDTO.appName = definition.appName;
-
-    appDTO.definition = orgDefDTO;
+    if (err.length > 0) {
+      console.log(err);
+      return;
+    }
 
     const data = {
       uid: oldData.uid,

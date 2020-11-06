@@ -1,12 +1,12 @@
 import { Definition, DGraphObject, KeyValue } from '../Interfaces/Types';
-import { RoleDefinition } from '../role/RoleTypes';
+import { Role} from '../role/RoleTypes';
 
 export interface Application extends DGraphObject {
   name: string;
   owner: string;
   namespace: string;
   definition: AppDefinition;
-  roles: RoleDefinition[];
+  roles: Role[];
 }
 
 export interface AppDefinition extends Definition {

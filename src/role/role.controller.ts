@@ -27,11 +27,4 @@ export class RoleController {
   public async exists(@Param('namespace') namespace: string) {
     return await this.roleService.exists(namespace);
   }
-
-  // @Post('/mock')
-  // @ApiTags('Test')
-  // public async doMock() {
-  //   await this.ensTest.testOrgAppRole();
-  //   return 'Done';
-  // }
 }

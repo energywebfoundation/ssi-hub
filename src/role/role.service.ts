@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { NamespaceFragments, RoleDefinitionDTO, RoleDTO } from './RoleDTO';
-import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import { CreateRoleData, Role } from './RoleTypes';
 import { validate } from 'class-validator';
 
@@ -11,7 +11,7 @@ export class RoleService {
 
   public async getAll() {
     const res = await this.dgraph.query(`
-    {roles(func: eq(type, "role")) {
+    {roles(func: eq(dgraph.type, "Role")) {
       uid
       name
       namespace
@@ -25,7 +25,7 @@ export class RoleService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(type, "role")) {
+      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Role")) {
         uid
         name
         namespace
@@ -44,20 +44,8 @@ export class RoleService {
   }
 
   public async create(data: CreateRoleData) {
-    const roleDTO = new RoleDTO();
-    roleDTO.name = data.name;
-    roleDTO.owner = data.owner;
-    roleDTO.namespace = data.namespace;
-
-    const orgDefDTO = new RoleDefinitionDTO();
-    orgDefDTO.metadata = RecordToKeyValue(data.definition.metadata);
-    orgDefDTO.roleName = data.definition.roleName;
-    orgDefDTO.fields = data.definition.fields;
-    orgDefDTO.version = data.definition.version;
-    orgDefDTO.issuer = data.definition.issuer;
-    orgDefDTO.roleType = data.definition.roleType;
-
-    roleDTO.definition = orgDefDTO;
+    const orgDefDTO = new RoleDefinitionDTO(data.definition);
+    const roleDTO = new RoleDTO(data, orgDefDTO);
 
     const err = await validate(roleDTO);
 
@@ -67,7 +55,6 @@ export class RoleService {
 
     const queryData = {
       uid: '_:new',
-      type: 'role',
       ...roleDTO,
     };
 
@@ -82,18 +69,8 @@ export class RoleService {
       return;
     }
 
-    const roleDTO = new RoleDTO();
-    roleDTO.name = patch.name;
-    roleDTO.owner = patch.owner;
-    roleDTO.namespace = patch.namespace;
-
-    const roleDefDTO = new RoleDefinitionDTO();
-    roleDefDTO.metadata = RecordToKeyValue(patch.definition.metadata);
-    roleDefDTO.roleName = patch.definition.roleName;
-    roleDefDTO.fields = patch.definition.fields;
-    roleDefDTO.version = patch.definition.version;
-    roleDefDTO.issuer = patch.definition.issuer;
-    roleDefDTO.roleType = patch.definition.roleType;
+    const roleDefDTO = new RoleDefinitionDTO(patch.definition);
+    const roleDTO = new RoleDTO(patch, roleDefDTO);
 
     roleDTO.definition = roleDefDTO;
 

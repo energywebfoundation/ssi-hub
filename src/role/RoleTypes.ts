@@ -23,17 +23,20 @@ export interface CreateRoleDefinition {
 }
 
 export interface RoleDefinition extends Definition {
+  uid?: string;
   roleType: string;
   roleName: string;
   fields: {
     fieldType: string;
     label: string;
     validation: string;
+    uid?: string
   }[];
   metadata: KeyValue[];
   issuer: {
     issuerType: string;
     did: string[];
+    uid?: string
   };
 }
 

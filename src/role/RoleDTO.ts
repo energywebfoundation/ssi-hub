@@ -1,9 +1,23 @@
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { KeyValue, KeyValueAPIDefinition } from '../Interfaces/Types';
+import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/Types';
 import { Role, RoleDefinition } from './RoleTypes';
 
 export class RoleDefinitionDTO implements RoleDefinition {
+
+  constructor(data: RoleDTODefinitionData) {
+    this.metadata = RecordToKeyValue(data.metadata);
+    this.roleName = data.roleName;
+    this.fields = data?.fields?.map(f => {
+      f['dgraph.type'] = 'Field'
+      return f;
+    });
+    this.version = data.version;
+    this.issuer = data.issuer;
+    this.issuer['dgraph.type'] = 'RoleIssuer'
+    this.roleType = data.roleType;
+  }
+
   @IsOptional()
   @IsArray()
   @ApiProperty({
@@ -35,9 +49,34 @@ export class RoleDefinitionDTO implements RoleDefinition {
   @IsOptional()
   @IsString()
   version: string;
+
+  readonly 'dgraph.type' = 'RoleDefinition'
+}
+
+interface RoleDTOData {
+  name: string;
+  owner: string;
+  namespace: string;
+}
+
+interface RoleDTODefinitionData {
+  metadata: Record<string, string>;
+  roleName: string;
+  fields: { fieldType: string; label: string; validation: string }[]
+  version: string;
+  issuer: { issuerType: string; did: string[] };
+  roleType: string;
 }
 
 export class RoleDTO implements Role {
+
+  constructor(data: RoleDTOData, definition: RoleDefinitionDTO) {
+    this.name = data.name;
+    this.owner = data.owner;
+    this.namespace = data.namespace;
+    this.definition = definition;
+  }
+
   @ValidateNested()
   definition: RoleDefinitionDTO;
   @IsString()
@@ -46,6 +85,8 @@ export class RoleDTO implements Role {
   namespace: string;
   @IsString()
   owner: string;
+
+  readonly 'dgraph.type' = 'Role'
 }
 
 export interface NamespaceFragments {

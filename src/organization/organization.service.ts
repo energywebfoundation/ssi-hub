@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { RecordToKeyValue, roleDefinitionFullQuery } from '../Interfaces/Types';
+import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import {
   CreateOrganizationData,
   OrganizationDefinitionDTO,
@@ -16,7 +16,7 @@ export class OrganizationService {
   public async getAll() {
     const res = await this.dgraph.query(`
     query all($i: string){
-      Data(func: eq(type, "org")) {
+      Data(func: eq(dgraph.type, "Org")) {
         uid
         name
         namespace
@@ -90,21 +90,8 @@ export class OrganizationService {
   }
 
   public async create(data: CreateOrganizationData) {
-    const orgDTO = new OrganizationDTO();
-    orgDTO.name = data.name;
-    orgDTO.owner = data.owner;
-    orgDTO.namespace = data.namespace;
-    orgDTO.apps = [];
-    orgDTO.roles = [];
-
-    const orgDefDTO = new OrganizationDefinitionDTO();
-    orgDefDTO.description = data.definition.description;
-    orgDefDTO.logoUrl = data.definition.logoUrl;
-    orgDefDTO.websiteUrl = data.definition.websiteUrl;
-    orgDefDTO.others = RecordToKeyValue(data.definition.others);
-    orgDefDTO.orgName = data.definition.orgName;
-
-    orgDTO.definition = orgDefDTO;
+    const orgDefDTO = new OrganizationDefinitionDTO(data.definition);
+    const orgDTO = new OrganizationDTO(data, orgDefDTO);
 
     const err = await validate(orgDTO);
 
@@ -133,27 +120,19 @@ export class OrganizationService {
       return;
     }
 
-    const appDTO = new OrganizationDTO();
-    appDTO.name = patch.name;
-    appDTO.owner = patch.owner;
-    appDTO.namespace = patch.namespace;
-    appDTO.roles = [];
-    appDTO.apps = [];
+    const orgDefDTO = new OrganizationDefinitionDTO(patch.definition);
+    const orgDTO = new OrganizationDTO(patch, orgDefDTO);
 
-    const definition = patch.definition;
+    const err = await validate(orgDTO);
 
-    const orgDefDTO = new OrganizationDefinitionDTO();
-    orgDefDTO.description = definition.description;
-    orgDefDTO.logoUrl = definition.logoUrl;
-    orgDefDTO.websiteUrl = definition.websiteUrl;
-    orgDefDTO.others = RecordToKeyValue(definition.others);
-    orgDefDTO.orgName = definition.orgName;
-
-    appDTO.definition = orgDefDTO;
+    if (err.length > 0) {
+      console.log(err);
+      return;
+    }
 
     const data = {
       uid: oldData.uid,
-      ...appDTO,
+      ...orgDTO,
     };
 
     await this.dgraph.mutate(data);
@@ -189,5 +168,14 @@ export class OrganizationService {
     await this.dgraph.mutate(data);
 
     return id;
+  }
+
+  public async remove(namespace: string) {
+    const org = await this.getByNamespace(namespace);
+    if (!org) {
+      return;
+    }
+
+    await this.dgraph.delete(org.uid);
   }
 }
