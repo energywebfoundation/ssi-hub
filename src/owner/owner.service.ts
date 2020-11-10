@@ -76,12 +76,12 @@ export class OwnerService {
     ns?.apps?.forEach(app => {
       ids = ids.concat(getIds(app))
 
-      app.roles.forEach(role => {
+      app.roles?.forEach(role => {
         ids = ids.concat(getIds(role))
       })
     })
 
-    ns?.roles.forEach(role => {
+    ns?.roles?.forEach(role => {
       ids = ids.concat(getIds(role))
     })
 
