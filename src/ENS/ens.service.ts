@@ -4,7 +4,7 @@ import { providers, utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
-import { DefinitionData } from '../Interfaces/Types';
+import { DefinitionData, KeyValue } from '../Interfaces/Types';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../ethers/EnsRegistryFactory';
@@ -18,6 +18,11 @@ import { CreateApplicationDefinition } from '../application/ApplicationDTO';
 import { CreateRoleDefinition } from '../role/RoleTypes';
 import { namehash } from '../ethers/utils';
 import { OwnerService } from '../owner/owner.service';
+import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory';
+import { EthereumDidRegistry } from '../ethers/EthereumDidRegistry';
+import * as jwt_decode from 'jwt-decode';
+import fetch from 'node-fetch';
+import { DIDAttributeChangedJWTValue, DIDAttributeChangedValue } from '../did/DidTypes';
 
 enum ENSNamespaceTypes {
   Roles = 'roles',
@@ -31,6 +36,7 @@ export class EnsService {
   private ensRegistry: EnsRegistry;
   private provider: providers.JsonRpcProvider;
   private logger: Logger;
+  private didRegistry: EthereumDidRegistry;
   constructor(
     private ownerService: OwnerService,
     private roleService: RoleService,
@@ -47,7 +53,16 @@ export class EnsService {
     const ENS_REGISTRY_ADDRESS = this.config.get<string>(
       'ENS_REGISTRY_ADDRESS',
     );
+    const DID_REGISTRY_ADDRESS = this.config.get<string>(
+      'DID_REGISTRY_ADDRESS',
+    );
     this.provider = new providers.JsonRpcProvider(ENS_URL);
+
+    this.didRegistry = EthereumDidRegistryFactory.connect(
+      DID_REGISTRY_ADDRESS,
+      this.provider,
+    );
+
     this.publicResolver = PublicResolverFactory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
@@ -63,6 +78,23 @@ export class EnsService {
   }
 
   private async InitEventListeners(): Promise<void> {
+
+    this.didRegistry.addListener('DIDAttributeChanged', async (owner,hash,value) => {
+      const val: DIDAttributeChangedValue = JSON.parse(utils.toUtf8String(value));
+
+      if(val.serviceEndpoint) {
+        const res = await fetch(`https://ipfs.infura.io/ipfs/${val.serviceEndpoint}`);
+        const jwt = await res.text();
+        const data = jwt_decode(jwt) as DIDAttributeChangedJWTValue;
+
+        console.log(data);
+
+        //save or update did document
+        // this.didService.addDocument(owner, data);
+      }
+    })
+
+
     this.publicResolver.addListener('TextChanged', async hash => {
       await this.eventHandler(hash);
     });
