@@ -22,7 +22,7 @@ import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory
 import { EthereumDidRegistry } from '../ethers/EthereumDidRegistry';
 import * as jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
-import { DIDAttributeChangedJWTValue, DIDAttributeChangedValue } from '../did/DidTypes';
+import { DIDAttributeChangedJWTValue, DIDAttributeChangedValue } from '../didDocument/DidDocumentTypes';
 
 enum ENSNamespaceTypes {
   Roles = 'roles',

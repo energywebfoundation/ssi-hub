@@ -20,6 +20,8 @@ import { NamespaceService } from './namespace/namespace.service';
 import { NatsService } from './nats/nats.service';
 import { BullModule } from '@nestjs/bull';
 import { claimProcessor } from './claim/claim.processor';
+import { DidDocumentController } from './didDocument/didDocument.controller';
+import { DidDocumentService } from './didDocument/didDocument.service';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { claimProcessor } from './claim/claim.processor';
     GraphqlController,
     OwnerController,
     NamespaceController,
+    DidDocumentController,
   ],
   providers: [
     claimProcessor,
@@ -55,6 +58,7 @@ import { claimProcessor } from './claim/claim.processor';
     OwnerService,
     NamespaceService,
     NatsService,
+    DidDocumentService,
   ],
 })
 export class AppModule {}
