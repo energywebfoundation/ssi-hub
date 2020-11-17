@@ -23,6 +23,7 @@ export class NamespaceService {
       if(!Array.isArray(types)) {
         types = [types];
       }
+      types = types.filter(t => ["App", "Org", "Role"].includes(t))
       filters = `@filter(eq(dgraph.type, [${types.map(a => `"${a}"`).join(',')}]))`
     }
 
@@ -32,6 +33,7 @@ export class NamespaceService {
       ${full?expand:''}
     }}`);
     const json = res.getJson();
+
     return json.data[0];
   }
   public async namespaceExists(namespace: string): Promise<boolean> {
