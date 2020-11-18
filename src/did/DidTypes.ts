@@ -1,4 +1,4 @@
-import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
+import { IAuthentication, IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { DGraphObject, KeyValue } from '../Interfaces/Types';
 
 /**
@@ -29,10 +29,4 @@ export interface IpfsClaim {
   iss: string;
   jti: string;
   exp: number;
-}
-
-/**
- * DIDDocument as persisted to DGraph
- */
-export interface DIDDocument extends IDIDDocument, DGraphObject {
 }

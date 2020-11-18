@@ -140,6 +140,13 @@ export class DgraphService {
       parentNamespace: string @index(exact) .
       type: string @index(exact) .
       id: string @index(exact) .
+
+      type DID {
+        id
+        document
+      }
+
+      document: string .
     `;
     const op = new Operation();
     op.setSchema(schema);
@@ -201,7 +208,12 @@ export class DgraphService {
 
       this._instance = new DgraphClient(clientStub);
 
-      await this.migrate();
+      try {
+        await this.migrate();
+      }
+      catch(err) {
+        console.log(err);
+      }
 
       return this._instance;
     });

@@ -299,6 +299,7 @@ export class EnsService {
     );
   }
 
+  // TODO: Pull value from config
   @Cron(CronExpression.EVERY_10_MINUTES)
   async syncDatabase() {
     this.logger.debug('started sync');
