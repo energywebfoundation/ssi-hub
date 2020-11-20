@@ -43,21 +43,14 @@ export class NamespaceService {
 
   public async searchByText(text: string): Promise<(Application | Organization)[]> {
     const res = await this.dgraph.query(`{
-       data(func: eq(dgraph.type, ["App", "Org"])) {
+       data(func: match(namespace, "${text}", 32)) @filter(eq(dgraph.type, ["App", "Org"])) {
           uid
           ${expand}
        }
     }`)
     const json = res.getJson() as {data: (Application | Organization)[]};
 
-    if(json?.data?.length > 0) {
-      return json.data.filter(orgApp => {
-        return orgApp?.namespace?.indexOf(text) >= 0
-          || orgApp?.definition?.description?.indexOf(text) >= 0;
-      })
-    }
-
-    return [];
+    return json.data;
 
   }
 }
