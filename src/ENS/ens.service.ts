@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { providers, utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../ethers/PublicResolverFactory';
@@ -36,6 +36,7 @@ export class EnsService {
     private roleService: RoleService,
     private applicationService: ApplicationService,
     private organizationService: OrganizationService,
+    private readonly schedulerRegistry: SchedulerRegistry,
     private config: ConfigService,
   ) {
     this.logger = new Logger('ENSService');
@@ -58,9 +59,15 @@ export class EnsService {
       this.provider,
     );
 
+    // Using setInterval so that interval can be set dynamically from config
+    const interval = setInterval(
+      () => this.syncENS(),
+      parseInt(this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS')));
+    this.schedulerRegistry.addInterval('ENS Sync', interval);
+
     this.InitEventListeners();
     this.loadNamespaces();
-    this.syncDatabase();
+    this.syncENS();
   }
 
   private async InitEventListeners(): Promise<void> {
@@ -299,9 +306,7 @@ export class EnsService {
     );
   }
 
-  // TODO: Pull value from config
-  @Cron(CronExpression.EVERY_10_MINUTES)
-  async syncDatabase() {
+  async syncENS() {
     this.logger.debug('started sync');
     try {
       const organizations = await this.getSubdomains({ domain: 'iam.ewc' });
