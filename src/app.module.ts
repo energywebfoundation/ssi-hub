@@ -24,6 +24,7 @@ import { DIDController } from './did/did.controller';
 import { DIDService } from './did/did.service';
 import { ResolverFactory } from './did/ResolverFactory';
 import { DIDProcessor } from './did/did.processor';
+import { DIDDGraphRepository } from './did/did.repository';
 
 const redisConfig = {
         port: parseInt(process.env.REDIS_PORT),
@@ -66,6 +67,7 @@ const redisConfig = {
     NamespaceService,
     NatsService,
     DIDService,
+    DIDDGraphRepository,
     ResolverFactory
   ],
 })

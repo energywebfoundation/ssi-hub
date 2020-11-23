@@ -2,6 +2,7 @@ import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { DIDService } from './did.service';
+import { DID } from './DidTypes';
 
 @Processor('dids')
 export class DIDProcessor {
@@ -13,10 +14,17 @@ export class DIDProcessor {
     this.logger = new Logger('DIDProcessor');
   }
 
-  @Process('register')
-  public async processDidRegistration(job: Job<string>) {
-    this.logger.debug(`processing ${job.data}`);
-    const id = job.data;
-    this.didService.upsertCache(id)
+  @Process('upsertDocument')
+  public async processDIDDocumentUpsert(job: Job<string>) {
+    this.logger.log(`processing cache upsert for ${job.data}`);
+    const did = new DID(job.data);
+    this.didService.upsertCachedDocument(did);
+  }
+
+  @Process('refreshDocument')
+  public async processDIDDocumentRefresh(job: Job<string>) {
+    this.logger.log(`processing cache refresh for ${job.data}`);
+    const did = new DID(job.data);
+    this.didService.refreshCachedDocument(did);
   }
 }

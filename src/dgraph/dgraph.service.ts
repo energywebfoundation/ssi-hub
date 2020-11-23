@@ -141,12 +141,22 @@ export class DgraphService {
       type: string @index(exact) .
       id: string @index(exact) .
 
-      type DID {
+      type DIDDocument {
         id
-        document
+        logs
+        claims
       }
 
-      document: string .
+      logs: string .
+      claims: [uid] .
+
+      type IPFSClaim {
+        serviceEndpoint
+        jwt
+      }
+
+      serviceEndpoint: string .
+      jwt: string .
     `;
     const op = new Operation();
     op.setSchema(schema);

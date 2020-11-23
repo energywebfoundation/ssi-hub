@@ -30,7 +30,7 @@ export class ResolverFactory {
     };
   }
 
-  create(): IResolver {
+  create(): Resolver {
     return new Resolver(this.provider as Provider, this.registrySettings);
   }
 }

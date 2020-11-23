@@ -1,37 +1,42 @@
-import { DIDDocumentLite } from '@ew-did-registry/did-document';
-import { IResolver } from "@ew-did-registry/did-resolver-interface";
-import { IDIDDocument, IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
+import { Methods } from "@ew-did-registry/did";
+import { Resolver } from "@ew-did-registry/did-ethr-resolver";
+import { IDIDDocument, IDIDLogData, IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store'
 import { IDidStore } from '@ew-did-registry/did-store-interface'
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { DgraphService } from 'src/dgraph/dgraph.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory';
 import { EthereumDidRegistry } from '../ethers/EthereumDidRegistry';
 import * as jwt_decode from 'jwt-decode';
 import { providers } from 'ethers';
-import { DIDEntity, DID_DgraphType, IDIDEntity } from './DidEntity';
+import { DIDDocumentEntity } from './DidDocumentEntity';
 import { ResolverFactory } from './ResolverFactory';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { DID } from './DidTypes';
+import { BigNumber, bigNumberify } from 'ethers/utils';
+import { DIDDGraphRepository } from "./did.repository";
 
 @Injectable()
 export class DIDService {
   private readonly logger: Logger;
   private readonly provider: providers.JsonRpcProvider;
   private readonly didRegistry: EthereumDidRegistry;
-  private readonly resolver: IResolver
-  private readonly ipfsStore: IDidStore
+  private readonly resolver: Resolver;
+  private readonly ipfsStore: IDidStore;
+  private readonly upsert_queue_channel = 'upsertDocument';
+  private readonly refresh_queue_channel = 'refreshDocument';
 
   constructor(
-    private readonly dgraph: DgraphService,
-    private config: ConfigService,
+    private readonly config: ConfigService,
+    private readonly schedulerRegistry: SchedulerRegistry,
     private readonly resolverFactory: ResolverFactory,
+    private readonly didRepository: DIDDGraphRepository,
     @InjectQueue('dids') private readonly didQueue: Queue<string>
   ) {
     this.logger = new Logger('DIDService');
-    this.resolver = resolverFactory.create()
+    this.resolver = this.resolverFactory.create();
 
     const IPFS_URL = this.config.get<string>('IPFS_URL');
     this.ipfsStore = new DidStore(IPFS_URL);
@@ -46,124 +51,137 @@ export class DIDService {
     );
 
     this.InitEventListeners();
+
+    // Using setInterval so that interval can be set dynamically from config
+    const interval = setInterval(
+      () => this.syncDocuments(),
+      parseInt(this.config.get<string>('DIDDOC_SYNC_INTERVAL_IN_MS')));
+    this.schedulerRegistry.addInterval('DID Document Sync', interval);
   }
 
   private async InitEventListeners(): Promise<void> {
     const DIDAttributeChanged = 'DIDAttributeChanged'
     this.didRegistry.addListener(DIDAttributeChanged, async (owner, hash, value) => {
       this.logger.log(`${DIDAttributeChanged} event received for owner: ${owner}`)
-      const did = 'did:ethr:' + owner;
-      this.upsertCache(did);
+      const did = `did:${Methods.Erc1056}:${owner}`;
+      await this.didQueue.add(this.refresh_queue_channel, did);
     })
   }
 
-  public async getById(id: string) {
-    const res = await this.dgraph.query(
-      `
-      query all($id: string) {
-        document(func: eq(id, $id)) {
-          expand(_all_)
-        }
-      }`,
-      { $id: id },
-    );
-    const json = res.getJson();
-    return json.document[0] as IDIDEntity;
+  private async syncDocuments() {
+    const cachedDIDs = await this.didRepository.queryAllDIDs();
+    cachedDIDs.forEach(async (did) => {
+      await this.didQueue.add(this.refresh_queue_channel, did.id);
+    })
   }
 
   /**
-   * Insert or update the DIDDocument cache for a given DID
-   * @param did 
+   * Retrieves a DID Document for a given DID
+   * @param {DID} did DID whose document should be retrieved
+   * @param {boolean} enhanceWithClaims 
+   * @returns {IDIDDocument} Resolved DID Document. Null if no Document is not cached.
    */
-  public async upsertCache(did: string) {
-    const document = await this.resolveFromChain(did);
-    this.enhanceWithClaims(document)
-    await this.saveOrUpdateDocument(document);
+  public async getById(did: DID, enhanceWithClaims: boolean = false): Promise<IDIDDocument> {
+    const didEntity = await this.didRepository.queryById(did);
+    if (!didEntity) {
+      return null;
+    }
+    const resolvedDocument = await didEntity.getResolvedDIDDocument(this.resolver);
+    if (enhanceWithClaims) {
+      this.enhanceWithClaims(didEntity, resolvedDocument);
+    }
+    return resolvedDocument;
   }
 
-  private async resolveFromChain(did: string) {
-    const document = new DIDDocumentLite(did, this.resolver)
-    return await document.read();
+  /**
+   * Insert or update the DID Document cache for a given DID.
+   * Also retrieves all claims from IPFS for the document.
+   * @param {DID} did 
+   */
+  public async upsertCachedDocument(did: DID): Promise<void> {
+    try {
+      this.logger.log(`upserting cached document for did: ${did.id}`);
+      const didEntity = await this.didRepository.queryById(did) ?? new DIDDocumentEntity(did);
+      const logs = await this.readNewLogsFromChain(didEntity);
+      didEntity.updateLogData(logs, this.resolver);
+      didEntity.cacheIPFSClaims(this.resolver, this.ipfsStore);
+      await this.didRepository.saveDocument(didEntity.getDTO());
+    }
+    catch (err) {
+      this.logger.error(`upserting cached document for did: ${did.id} threw error: ${err}`);
+    }
+  }
+
+  /**
+   * Refresh the DID Document cache for a given DID.
+   * Also retrieves all claims from IPFS for the document.
+   * @param {DID} did 
+   */
+  public async refreshCachedDocument(did: DID): Promise<void> {
+    try {
+      this.logger.log(`refreshing cached document for did: ${did.id}`);
+      const didEntity = await this.didRepository.queryById(did) ?? new DIDDocumentEntity(did);
+      const logs = await this.readAllLogsFromChain(didEntity);
+      didEntity.setLogData(logs);
+      await didEntity.cacheIPFSClaims(this.resolver, this.ipfsStore);
+      await this.didRepository.saveDocument(didEntity.getDTO());
+    }
+    catch (err) {
+      this.logger.error(`refreshing cached document for did: ${did.id} threw error: ${err}`);
+    }
+  }
+
+  /**
+   * Reads all logs for a given DID that haven't been cached yet
+   * @param documentEntity 
+   */
+  private async readNewLogsFromChain(documentEntity: DIDDocumentEntity): Promise<IDIDLogData> {
+    if (documentEntity.getLogData()?.topBlock) {
+      const logData = documentEntity.getLogData();
+      const readFromBlock = logData.topBlock.add(1); // Want to read from 1 more than previously last read to
+      return await this.resolver.readFromBlock(documentEntity.id, readFromBlock);
+    }
+    else {
+      this.readAllLogsFromChain(documentEntity);
+    }
+  }
+
+  /**
+   * Reads all logs for a given DID
+   * @param documentEntity 
+   */
+  private async readAllLogsFromChain(documentEntity: DIDDocumentEntity): Promise<IDIDLogData> {
+    let readFromBlock: BigNumber;
+    const genesisBlockNumber = 0;
+    readFromBlock = bigNumberify(genesisBlockNumber);
+    return await this.resolver.readFromBlock(documentEntity.id, readFromBlock);
   }
 
   /**
    * Enhances a DID Document with full claim data
-   * @param document Document to enhance
+   * Remark: The approach of enhancing the IServiceEndpoint structure directly is taken from iam-client-lib
+   * @param {DIDDocumentEntity} documentEntity Document entity which contains the full claim data
+   * @param {IDIDDocument} resolvedDocument Resolved document to enhance
    */
-  private async enhanceWithClaims(document: IDIDDocument) {
-    const claims = await this.downloadClaims({ services: document.service });
-    document.service = claims;
-  }
+  private async enhanceWithClaims(documentEntity: DIDDocumentEntity, resolvedDocument: IDIDDocument) {
+    const cachedClaims = documentEntity.getCachedClaimsMap();
 
-  /**
-   * Downloads claims from IPFS
-   * Remark: This method is copied from iam-client-lib. It should be moved onto ew-did-registry so that it can be shared
-   * @param services Service endpoints from which claims can be downloaded
-   */
-  private async downloadClaims({ services }: { services: IServiceEndpoint[] }) {
-    return Promise.all(
-      services.map(async ({ serviceEndpoint, ...rest }) => {
-        const data = await this.ipfsStore.get(serviceEndpoint);
-        const { claimData, ...claimRest } = jwt_decode(data) as {
-          claimData: Record<string, string>;
-        };
-        return {
-          serviceEndpoint,
-          ...rest,
-          ...claimData,
-          ...claimRest
-        };
-      })
-    );
-  }
-
-  private async saveOrUpdateDocument(data: IDIDDocument): Promise<string> {
-    try {
-      this.logger.verbose(`saving or updating doc: ${data.id}`)
-      const document: IDIDEntity = await this.getById(data.id);
-      if (!document) {
-        return await this.saveDocument(data);
+    resolvedDocument.service = resolvedDocument.service?.map((service: IServiceEndpoint) => {
+      const { serviceEndpoint, ...rest } = service;
+      const cachedClaim = cachedClaims.get(serviceEndpoint);
+      if (!cachedClaim) {
+        this.logger.warn(`claim at service endpoint ${serviceEndpoint} not cached for did: ${documentEntity.id}`);
+        return service;
       }
-
-      //TODO: Fix updating - new nodes are continually being created
-      const patch = new DIDEntity(data, document.uid);
-      await this.dgraph.mutate(patch);
-      return document.uid;
-    }
-    catch (err) {
-      this.logger.error(err);
-    }
-  }
-
-  private async saveDocument({
-    ...data
-  }: IDIDDocument): Promise<string> {
-    const didDocument = new DIDEntity(data);
-    const res = await this.dgraph.mutate(didDocument);
-    this.logger.verbose(`document save response: ${res}`);
-    return res.getUidsMap().get('new');
-  }
-
-  // TODO: Pull value from config
-  @Cron(CronExpression.EVERY_10_MINUTES)
-  private async syncDocuments() {
-    const cachedDIDs = await this.queryAllDIDs();
-
-    cachedDIDs.forEach(async (did) => {
-      await this.didQueue.add('register', did.id)
+      const { claimData, ...claimRest } = jwt_decode(cachedClaim) as {
+        claimData: Record<string, string>;
+      };
+      return {
+        serviceEndpoint,
+        ...rest,
+        ...claimData,
+        ...claimRest
+      };
     })
-  }
-
-  private async queryAllDIDs() {
-    const res = await this.dgraph.query(
-      `
-      query all() {
-        dids(func: eq(dgraph.type, ${DID_DgraphType})) {
-          id
-        }
-      }`
-    );
-    const json = res.getJson();
-    return json.dids as Array<{ id: string }>;
   }
 }
