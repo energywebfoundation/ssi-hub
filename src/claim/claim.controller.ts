@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Query } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import { ApiBody, ApiExcludeEndpoint, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
@@ -11,12 +11,16 @@ import { ClaimIssue, ClaimRequest } from './ClaimDTO';
 
 @Controller('claim')
 export class ClaimController {
+  private readonly logger: Logger;
+
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
     @InjectQueue('claims') private claimQueue: Queue<string>
   ) {
+    this.logger = new Logger("ClaimController")
     this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
+      this.logger.debug(`saving ${data}`)
       await this.claimQueue.add('save', data);
     });
   }
@@ -69,6 +73,7 @@ export class ClaimController {
     }
 
     const payload = JSON.stringify(claimData);
+    this.logger.debug(`publishing claims request ${payload}`);
     this.nats.connection.publish(did, payload);
     data.claimIssuer.map(issuerDid => {
       this.nats.connection.publish(`${issuerDid}.${NATS_EXCHANGE_TOPIC}`, payload);
