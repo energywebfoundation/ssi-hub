@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ClaimService } from './claim.service';
-import { ApiBody, ApiExcludeEndpoint, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
 import { NatsService } from '../nats/nats.service';
 import { v4 as uuid } from 'uuid';
@@ -27,6 +27,10 @@ export class ClaimController {
     type: ClaimIssue,
     description: 'Claim data object, containing id and issuedToken'
   })
+  @ApiOperation({
+    summary: "updates claim request",
+    description: "updates claim request upon acceptance with DID of an Issuer"
+  })
   public async postIssuerClaim(
     @Param('did') did: string,
     @Body() data: ClaimDataMessage
@@ -50,6 +54,15 @@ export class ClaimController {
 
   @Post('/request/:did')
   @ApiTags('Claims')
+  @ApiOperation({
+    summary: "registers new claim request",
+    description: "registers new claim request, returns ID of newly added claim request"
+  })
+  @ApiResponse({
+    status: 200,
+    type: String,
+    description: "ID of newly added claim"
+  })
   public async postRequesterClaim(
     @Param('did') did: string,
     @Body() data: ClaimDataMessage
@@ -78,29 +91,57 @@ export class ClaimController {
 
   @Get('/:id')
   @ApiTags('Claims')
+  @ApiOperation({
+    summary: "returns claim with given ID"
+  })
   public async getById(@Param('id') id: string) {
     return await this.claimService.getById(id);
   }
+
   @Delete('/:id')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
   public async removeById(@Param('id') id: string) {
     return await this.claimService.removeById(id);
   }
+
   @Get('/parent/:namespace')
   @ApiTags('Claims')
+  @ApiOperation({
+    summary: "returns claims for roles related to given namespace",
+    description: "### Usage: \n " +
+      "providing namespace \`myApp.apps.myOrg.iam.ewc\` <br> " +
+      "should return claims for namespaces like " +
+      "\`admin.roles.myApp.apps.myOrg.iam.ewc\`"
+  })
   public async getByParentNamespace(@Param('id') id: string) {
     return await this.claimService.getByParentNamespace(id);
   }
+
   @Get('/user/:did')
   @ApiTags('Claims')
+  @ApiOperation({
+    summary: "returns claims Related to given DID"
+  })
   public async getByUserDid(@Param('did') did: string) {
     return await this.claimService.getByUserDid(did);
   }
+
   @Get('/issuer/:did')
   @ApiTags('Claims')
-  @ApiQuery({ name: 'accepted', required: false })
-  @ApiQuery({ name: 'namespace', required: false })
+  @ApiOperation({
+    summary: "returns claims or Issuer with given DID"
+  })
+  @ApiQuery({
+    name: 'accepted',
+    required: false,
+    description: "**true** - show only accepted <br> **false** - show only pending"
+  })
+  @ApiQuery({
+    name: 'namespace',
+    required: false,
+    description: "filter only claims of given namespace"
+  })
   public async getByIssuerDid(
     @Param('did') did: string,
     @Query('accepted') accepted: boolean,
@@ -108,10 +149,22 @@ export class ClaimController {
   ) {
     return await this.claimService.getByIssuer(did, { accepted, namespace });
   }
+
   @Get('/requester/:did')
   @ApiTags('Claims')
-  @ApiQuery({ name: 'accepted', required: false })
-  @ApiQuery({ name: 'namespace', required: false })
+  @ApiOperation({
+    summary: "returns claims for Requester with given DID"
+  })
+  @ApiQuery({
+    name: 'accepted',
+    required: false,
+    description: "**true** - show only accepted <br> **false** - show only pending"
+  })
+  @ApiQuery({
+    name: 'namespace',
+    required: false,
+    description: "filter only claims of given namespace"
+  })
   public async getByRequesterDid(
     @Param('did') did: string,
     @Query('accepted') accepted: boolean,

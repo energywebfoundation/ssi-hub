@@ -41,13 +41,16 @@ export class RoleDefinitionDTO implements RoleDefinition {
   issuer: { issuerType: string; did: string[] };
 
   @IsString()
+  @ApiProperty()
   roleName: string;
 
   @IsString()
+  @ApiProperty()
   roleType: string;
 
   @IsOptional()
   @IsString()
+  @ApiProperty()
   version: string;
 
   readonly 'dgraph.type' = 'RoleDefinition'
@@ -70,6 +73,8 @@ interface RoleDTODefinitionData {
 
 export class RoleDTO implements Role {
 
+  public uid?: string
+
   constructor(data: RoleDTOData, definition: RoleDefinitionDTO) {
     this.name = data.name;
     this.owner = data.owner;
@@ -78,12 +83,16 @@ export class RoleDTO implements Role {
   }
 
   @ValidateNested()
+  @ApiProperty()
   definition: RoleDefinitionDTO;
   @IsString()
+  @ApiProperty()
   name: string;
   @IsString()
+  @ApiProperty()
   namespace: string;
   @IsString()
+  @ApiProperty()
   owner: string;
 
   readonly 'dgraph.type' = 'Role'
