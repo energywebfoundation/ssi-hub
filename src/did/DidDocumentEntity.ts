@@ -1,5 +1,5 @@
-import { Resolver } from '@ew-did-registry/did-ethr-resolver';
-import { IDIDDocument, IDIDLogData, IResolver } from '@ew-did-registry/did-resolver-interface';
+import { documentFromLogs, mergeLogs } from '@ew-did-registry/did-ethr-resolver';
+import { IDIDDocument, IDIDLogData } from '@ew-did-registry/did-resolver-interface';
 import { IDidStore } from '@ew-did-registry/did-store-interface'
 import { bigNumberify } from 'ethers/utils';
 import { DIDDocumentDTO, IPFSClaimDTO } from './DidDTOs';
@@ -57,11 +57,10 @@ export class DIDDocumentEntity {
 
   /**
    * Resolves a DIDDocument from the entity's logs
-   * @param resolver Re
    * @returns {IDIDDocument} Resolved DID Document
    */
-  async getResolvedDIDDocument(resolver: IResolver): Promise<IDIDDocument> {
-    return await resolver.documentFromLogs(this.id, Array(this.logData));
+  async getResolvedDIDDocument(): Promise<IDIDDocument> {
+    return await documentFromLogs(this.id, Array(this.logData));
   }
 
   getDTO(): DIDDocumentDTO {
@@ -82,15 +81,14 @@ export class DIDDocumentEntity {
   /**
    * Add new log data to existing logs
    * @param newLogData Log data to merge in
-   * @param resolver 
    */
-  updateLogData(newLogData: IDIDLogData, resolver: Resolver): void {
+  updateLogData(newLogData: IDIDLogData): void {
     const logsToMerge = new Array<IDIDLogData>();
     if (this.logData) {
       logsToMerge.push(this.logData);
     }
     logsToMerge.push(newLogData);
-    const mergedLogs = resolver.mergeLogs(logsToMerge);
+    const mergedLogs = mergeLogs(logsToMerge);
     mergedLogs.topBlock = newLogData.topBlock;
     this.logData = mergedLogs;
   }
@@ -117,8 +115,8 @@ export class DIDDocumentEntity {
    * @param resolver 
    * @param ipfsStore 
    */
-  async cacheIPFSClaims(resolver: IResolver, ipfsStore: IDidStore) {
-    const resolvedDocument = await this.getResolvedDIDDocument(resolver);
+  async cacheIPFSClaims(ipfsStore: IDidStore) {
+    const resolvedDocument = await this.getResolvedDIDDocument();
     const endpoints = this.getUncachedServiceEndpoints(resolvedDocument);
     await Promise.all(endpoints.map(async (endpoint) => {
       const jwt = await ipfsStore.get(endpoint);

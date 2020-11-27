@@ -86,7 +86,7 @@ export class DIDService {
     if (!didEntity) {
       return null;
     }
-    const resolvedDocument = await didEntity.getResolvedDIDDocument(this.resolver);
+    const resolvedDocument = await didEntity.getResolvedDIDDocument();
     if (enhanceWithClaims) {
       this.enhanceWithClaims(didEntity, resolvedDocument);
     }
@@ -103,8 +103,8 @@ export class DIDService {
       this.logger.log(`upserting cached document for did: ${did.id}`);
       const didEntity = await this.didRepository.queryById(did) ?? new DIDDocumentEntity(did);
       const logs = await this.readNewLogsFromChain(didEntity);
-      didEntity.updateLogData(logs, this.resolver);
-      didEntity.cacheIPFSClaims(this.resolver, this.ipfsStore);
+      didEntity.updateLogData(logs);
+      didEntity.cacheIPFSClaims(this.ipfsStore);
       await this.didRepository.saveDocument(didEntity.getDTO());
     }
     catch (err) {
@@ -123,7 +123,7 @@ export class DIDService {
       const didEntity = await this.didRepository.queryById(did) ?? new DIDDocumentEntity(did);
       const logs = await this.readAllLogsFromChain(didEntity);
       didEntity.setLogData(logs);
-      await didEntity.cacheIPFSClaims(this.resolver, this.ipfsStore);
+      await didEntity.cacheIPFSClaims(this.ipfsStore);
       await this.didRepository.saveDocument(didEntity.getDTO());
     }
     catch (err) {
