@@ -64,7 +64,13 @@ export class DIDService {
     this.didRegistry.addListener(DIDAttributeChanged, async (owner, hash, value) => {
       this.logger.log(`${DIDAttributeChanged} event received for owner: ${owner}`)
       const did = `did:${Methods.Erc1056}:${owner}`;
-      await this.didQueue.add(this.refresh_queue_channel, did);
+      const didObject = new DID(did);
+      const didDocEntity = await this.didRepository.queryById(didObject);
+      // Only refreshing a DID that is already cached. 
+      // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
+      if (didDocEntity) {
+        await this.didQueue.add(this.refresh_queue_channel, did);
+      }
     })
   }
 
