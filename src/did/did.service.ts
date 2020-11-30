@@ -23,7 +23,6 @@ export class DIDService {
   private readonly logger: Logger;
   private readonly provider: providers.JsonRpcProvider;
   private readonly didRegistry: EthereumDidRegistry;
-  private readonly resolver: Resolver;
   private readonly ipfsStore: IDidStore;
   private readonly upsert_queue_channel = 'upsertDocument';
   private readonly refresh_queue_channel = 'refreshDocument';
@@ -36,7 +35,6 @@ export class DIDService {
     @InjectQueue('dids') private readonly didQueue: Queue<string>
   ) {
     this.logger = new Logger('DIDService');
-    this.resolver = this.resolverFactory.create();
 
     const IPFS_URL = this.config.get<string>('IPFS_URL');
     this.ipfsStore = new DidStore(IPFS_URL);
@@ -94,7 +92,7 @@ export class DIDService {
     if (!didEntity) {
       return null;
     }
-    const resolvedDocument = await didEntity.getResolvedDIDDocument(this.resolver);
+    const resolvedDocument = await didEntity.getResolvedDIDDocument();
     if (enhanceWithClaims) {
       this.enhanceWithClaims(didEntity, resolvedDocument);
     }
@@ -111,8 +109,8 @@ export class DIDService {
       this.logger.log(`upserting cached document for did: ${did.id}`);
       const didEntity = await this.didRepository.queryById(did) ?? new DIDDocumentEntity(did);
       const logs = await this.readNewLogsFromChain(didEntity);
-      didEntity.updateLogData(logs, this.resolver);
-      didEntity.cacheIPFSClaims(this.resolver, this.ipfsStore);
+      didEntity.updateLogData(logs);
+      didEntity.cacheIPFSClaims(this.ipfsStore);
       await this.didRepository.saveDocument(didEntity.getDTO());
     }
     catch (err) {
@@ -131,7 +129,7 @@ export class DIDService {
       const didEntity = await this.didRepository.queryById(did) ?? new DIDDocumentEntity(did);
       const logs = await this.readAllLogsFromChain(didEntity);
       didEntity.setLogData(logs);
-      await didEntity.cacheIPFSClaims(this.resolver, this.ipfsStore);
+      await didEntity.cacheIPFSClaims(this.ipfsStore);
       await this.didRepository.saveDocument(didEntity.getDTO());
     }
     catch (err) {
@@ -147,7 +145,8 @@ export class DIDService {
     if (documentEntity.getLogData()?.topBlock) {
       const logData = documentEntity.getLogData();
       const readFromBlock = logData.topBlock.add(1); // Want to read from 1 more than previously last read to
-      return await this.resolver.readFromBlock(documentEntity.id, readFromBlock);
+      const resolver = this.resolverFactory.create();
+      return await resolver.readFromBlock(documentEntity.id, readFromBlock);
     }
     else {
       this.readAllLogsFromChain(documentEntity);
@@ -162,7 +161,8 @@ export class DIDService {
     let readFromBlock: BigNumber;
     const genesisBlockNumber = 0;
     readFromBlock = bigNumberify(genesisBlockNumber);
-    return await this.resolver.readFromBlock(documentEntity.id, readFromBlock);
+    const resolver = this.resolverFactory.create();
+    return await resolver.readFromBlock(documentEntity.id, readFromBlock);
   }
 
   /**
