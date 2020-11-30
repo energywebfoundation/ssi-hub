@@ -60,10 +60,11 @@ export class EnsService {
     );
 
     // Using setInterval so that interval can be set dynamically from config
-    const interval = setInterval(
-      () => this.syncENS(),
-      parseInt(this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS')));
-    this.schedulerRegistry.addInterval('ENS Sync', interval);
+    const ensSyncInterval = this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS');
+    if (ensSyncInterval) {
+      const interval = setInterval(() => this.syncENS(), parseInt(ensSyncInterval));
+      this.schedulerRegistry.addInterval('ENS Sync', interval);
+    }
 
     this.InitEventListeners();
     this.loadNamespaces();
