@@ -53,10 +53,11 @@ export class DIDService {
     this.InitEventListeners();
 
     // Using setInterval so that interval can be set dynamically from config
-    const interval = setInterval(
-      () => this.syncDocuments(),
-      parseInt(this.config.get<string>('DIDDOC_SYNC_INTERVAL_IN_MS')));
-    this.schedulerRegistry.addInterval('DID Document Sync', interval);
+    const didDocSyncInteral = this.config.get<string>('DIDDOC_SYNC_INTERVAL_IN_MS');
+    if (didDocSyncInteral) {
+      const interval = setInterval(() => this.syncDocuments(), parseInt(didDocSyncInteral));
+      this.schedulerRegistry.addInterval('DID Document Sync', interval);
+    }
   }
 
   private async InitEventListeners(): Promise<void> {
@@ -75,6 +76,7 @@ export class DIDService {
   }
 
   private async syncDocuments() {
+    this.logger.log(`Beginning sync of DID Documents`)
     const cachedDIDs = await this.didRepository.queryAllDIDs();
     cachedDIDs.forEach(async (did) => {
       await this.didQueue.add(this.refresh_queue_channel, did.id);
