@@ -171,4 +171,27 @@ export class ClaimService {
     }
     return ` @filter(${filters.join(' AND ')}) `;
   }
+
+  public async getDidOfClaimsOfnamespace(namespace: string, accepted?: boolean) {
+    const filters: string[] = [
+      `eq(claimType, "${namespace}")`
+    ]
+    if(accepted !== undefined) {
+      filters.push(`eq(isAccepted, ${accepted})`);
+    }
+    const query = `{
+      data(func: has(requester)) @filter(${filters.join(' AND ')}) {
+        claimType
+        requester
+      }
+    }`;
+    const res = await this.dgraph.query(query)
+    const json = res.getJson();
+
+    if(json?.data?.length) {
+      return json.data.map(c => c.requester)
+    }
+
+    return [];
+  }
 }

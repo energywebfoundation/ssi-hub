@@ -14,7 +14,6 @@ import { GraphqlController } from './graphql/graphql.controller';
 import { ConfigModule } from '@nestjs/config';
 import { OwnerController } from './owner/owner.controller';
 import { OwnerService } from './owner/owner.service';
-import { EnsTestService } from './ENS/ens.testService';
 import { NamespaceController } from './namespace/namespace.controller';
 import { NamespaceService } from './namespace/namespace.service';
 import { NatsService } from './nats/nats.service';
@@ -62,7 +61,6 @@ const redisConfig = {
     ApplicationService,
     RoleService,
     EnsService,
-    EnsTestService,
     OwnerService,
     NamespaceService,
     NatsService,
