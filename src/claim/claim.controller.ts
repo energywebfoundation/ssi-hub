@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Query } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import { ApiBody, ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
@@ -11,12 +11,16 @@ import { ClaimIssue, ClaimRequest } from './ClaimDTO';
 
 @Controller('claim')
 export class ClaimController {
+  private readonly logger: Logger;
+
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
     @InjectQueue('claims') private claimQueue: Queue<string>
   ) {
+    this.logger = new Logger("ClaimController")
     this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
+      this.logger.debug(`saving ${data}`)
       await this.claimQueue.add('save', data);
     });
   }
@@ -82,6 +86,7 @@ export class ClaimController {
     }
 
     const payload = JSON.stringify(claimData);
+    this.logger.debug(`publishing claims request ${payload}`);
     this.nats.connection.publish(did, payload);
     data.claimIssuer.map(issuerDid => {
       this.nats.connection.publish(`${issuerDid}.${NATS_EXCHANGE_TOPIC}`, payload);
@@ -130,7 +135,7 @@ export class ClaimController {
   @Get('/issuer/:did')
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "returns claims or Issuer with given DID"
+    summary: "returns claims of Issuer with given DID"
   })
   @ApiQuery({
     name: 'accepted',
@@ -171,5 +176,22 @@ export class ClaimController {
     @Query('namespace') namespace: string,
   ) {
     return await this.claimService.getByRequester(did, { accepted, namespace });
+  }
+
+  @Get('/did/:namespace')
+  @ApiQuery({
+    name: 'accepted',
+    required: false,
+    description: 'additional filter'
+  })
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: "returns DIDs of claim requests for given namespace"
+  })
+  public async getDidsOfNamespace(
+    @Param('namespace') namespace: string,
+    @Query('accepted') accepted: boolean,
+  ) {
+    return this.claimService.getDidOfClaimsOfnamespace(namespace, accepted);
   }
 }

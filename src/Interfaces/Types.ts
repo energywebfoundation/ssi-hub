@@ -4,7 +4,6 @@ import { CreateRoleDefinition } from '../role/RoleTypes';
 
 export interface DGraphObject {
   uid?: string;
-  type?: string;
   'dgraph.type'?: string;
 }
 

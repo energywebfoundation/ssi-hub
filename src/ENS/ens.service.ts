@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { providers, utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
-import { DefinitionData } from '../Interfaces/Types';
+import { DefinitionData, KeyValue } from '../Interfaces/Types';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../ethers/EnsRegistryFactory';
@@ -36,6 +36,7 @@ export class EnsService {
     private roleService: RoleService,
     private applicationService: ApplicationService,
     private organizationService: OrganizationService,
+    private readonly schedulerRegistry: SchedulerRegistry,
     private config: ConfigService,
   ) {
     this.logger = new Logger('ENSService');
@@ -48,6 +49,7 @@ export class EnsService {
       'ENS_REGISTRY_ADDRESS',
     );
     this.provider = new providers.JsonRpcProvider(ENS_URL);
+
     this.publicResolver = PublicResolverFactory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
@@ -57,12 +59,20 @@ export class EnsService {
       this.provider,
     );
 
+    // Using setInterval so that interval can be set dynamically from config
+    const ensSyncInterval = this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS');
+    if (ensSyncInterval) {
+      const interval = setInterval(() => this.syncENS(), parseInt(ensSyncInterval));
+      this.schedulerRegistry.addInterval('ENS Sync', interval);
+    }
+
     this.InitEventListeners();
     this.loadNamespaces();
-    this.syncDatabase();
+    this.syncENS();
   }
 
   private async InitEventListeners(): Promise<void> {
+
     this.publicResolver.addListener('TextChanged', async hash => {
       await this.eventHandler(hash);
     });
@@ -297,8 +307,7 @@ export class EnsService {
     );
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
-  async syncDatabase() {
+  async syncENS() {
     this.logger.debug('started sync');
     try {
       const organizations = await this.getSubdomains({ domain: 'iam.ewc' });
