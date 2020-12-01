@@ -34,6 +34,15 @@ export class DIDController {
       this.logger.log(`Retrieving document for did: ${id} with includeClaims: ${includeClaims}`)
       const did = new DID(id);
       const didDocument = await this.didService.getById(did, includeClaims);
+
+      // If DID document isn't in the cache, queue cache so that it can be retrieved on subsequent calls 
+      if (!didDocument) {
+        this.logger.log(`Requested document for did: ${id} not cached. Queuing cache request.`);
+        //Not awaiting result of add because it does not affect result returned to client
+        this.didQueue.add('refreshDocument', id);
+      }
+
+      this.logger.debug(`Retrieved document for did: ${id}`);
       return didDocument;
     }
     catch (err) {
