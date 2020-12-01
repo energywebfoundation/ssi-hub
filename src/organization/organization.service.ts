@@ -7,7 +7,6 @@ import {
   OrganizationDTO,
 } from './OrganizationDTO';
 import { validate } from 'class-validator';
-import { Organization } from './OrganizationTypes';
 
 @Injectable()
 export class OrganizationService {
@@ -31,7 +30,7 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) {
+      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "App")) {
         namespace
         apps {
           name
@@ -51,7 +50,7 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) {
+      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Role")) {
         namespace
         roles {
           name
@@ -67,11 +66,11 @@ export class OrganizationService {
     return org ? { Data: org.roles } : { Data: [] };
   }
 
-  public async getByNamespace(namespace: string): Promise<Organization> {
+  public async getByNamespace(namespace: string): Promise<OrganizationDTO> {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) {
+      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Org")) {
         uid
         name
         namespace
@@ -85,11 +84,11 @@ export class OrganizationService {
     return json?.Data?.[0];
   }
 
-  public async exists(namespace: string) {
+  public async exists(namespace: string): Promise<boolean> {
     return (await this.getByNamespace(namespace)) !== undefined;
   }
 
-  public async create(data: CreateOrganizationData) {
+  public async create(data: CreateOrganizationData): Promise<string> {
     const orgDefDTO = new OrganizationDefinitionDTO(data.definition);
     const orgDTO = new OrganizationDTO(data, orgDefDTO);
 
@@ -114,7 +113,7 @@ export class OrganizationService {
   public async updateNamespace(
     namespace: string,
     patch: CreateOrganizationData,
-  ) {
+  ): Promise<string> {
     const oldData = await this.getByNamespace(namespace);
     if (!oldData) {
       return;

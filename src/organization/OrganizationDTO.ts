@@ -2,8 +2,8 @@ import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces
 import { IsOptional, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization, OrgDefinition } from './OrganizationTypes';
-import { Role } from '../role/RoleTypes';
-import { Application } from '../application/ApplicationTypes';
+import { RoleDTO } from '../role/RoleDTO';
+import { ApplicationDTO } from '../application/ApplicationDTO';
 
 export interface CreateOrganizationData {
   name: string;
@@ -32,17 +32,21 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
 
   @IsOptional()
   @IsString()
+  @ApiProperty()
   description?: string;
 
   @IsOptional()
   @IsString()
+  @ApiProperty()
   websiteUrl?: string;
 
   @IsOptional()
   @IsString()
+  @ApiProperty()
   logoUrl?: string;
 
   @IsString()
+  @ApiProperty()
   orgName: string;
 
   @IsOptional()
@@ -60,11 +64,13 @@ interface OrganizationDTOParams {
   name: string,
   owner: string,
   namespace: string,
-  roles?: Role[]
-  apps?: Application[]
+  roles?: RoleDTO[]
+  apps?: ApplicationDTO[]
 }
 
 export class OrganizationDTO implements Organization {
+
+  public uid?: string
 
   constructor(data: OrganizationDTOParams, definition: OrganizationDefinitionDTO) {
     this.name = data.name;
@@ -80,22 +86,27 @@ export class OrganizationDTO implements Organization {
   }
 
   @ValidateNested()
+  @ApiProperty()
   definition: OrganizationDefinitionDTO;
 
   @IsString()
+  @ApiProperty()
   name: string;
 
   @IsString()
+  @ApiProperty()
   owner: string;
 
   @IsString()
+  @ApiProperty()
   namespace: string;
 
   @IsArray()
-  roles: Role[] = [];
+  roles: RoleDTO[] = [];
 
   @IsArray()
-  apps: Application[] = [];
+  @ApiProperty()
+  apps: ApplicationDTO[] = [];
 
   readonly 'dgraph.type' = 'Org';
 }
