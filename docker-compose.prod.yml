@@ -20,6 +20,7 @@ services:
       - zero
       - nats
   zero:
+    container_name: dgraph_zero
     image: dgraph/dgraph:${DGRAPH_VERSION}
     volumes:
       - dgraph:/dgraph
@@ -28,6 +29,7 @@ services:
     networks:
       - main
   dgraph:
+    container_name: dgraph_alpha
     image: dgraph/dgraph:${DGRAPH_VERSION}
     volumes:
       - dgraph:/dgraph
@@ -36,6 +38,7 @@ services:
     networks:
       - main
   nats:
+    container_name: nats
     image: synadia/nats-server:nightly
     command: "-c /etc/nats/nats.conf"
     networks:
@@ -47,6 +50,7 @@ services:
       - '8222:8222'
       - '9222:9222'
   redis:
+    container_name: redis
     image: redis:${REDIS_VERSION}
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
