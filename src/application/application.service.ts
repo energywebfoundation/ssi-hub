@@ -35,7 +35,7 @@ export class ApplicationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i))) {
+      Data(func: eq(namespace, $i)) {
         namespace
         roles @filter(eq(dgraph.type, "Role")) {
           ${baseQueryFields}
