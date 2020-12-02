@@ -53,6 +53,8 @@ export class ClaimService {
   public async saveClaim({
     ...data
   }: ClaimDataMessage): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const decodedData: DecodedClaimToken = jwt_decode(data.token);
 
     const namespace = decodedData.claimData.claimType;

@@ -26,6 +26,7 @@ export class ClaimController {
   }
 
   @Post('/issue/:did')
+  @ApiExcludeEndpoint()
   @ApiTags('Claims')
   @ApiBody({
     type: ClaimIssue,
@@ -57,6 +58,7 @@ export class ClaimController {
   }
 
   @Post('/request/:did')
+  @ApiExcludeEndpoint()
   @ApiTags('Claims')
   @ApiOperation({
     summary: "registers new claim request",

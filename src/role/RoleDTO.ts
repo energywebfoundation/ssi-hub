@@ -18,6 +18,7 @@ export class RoleDefinitionDTO implements RoleDefinition {
     this.roleType = data.roleType;
   }
 
+
   @IsOptional()
   @IsArray()
   @ApiProperty({
@@ -38,7 +39,7 @@ export class RoleDefinitionDTO implements RoleDefinition {
   @ApiProperty(KeyValueAPIDefinition)
   metadata: KeyValue[];
 
-  issuer: { issuerType: string; did: string[] };
+  issuer: { issuerType: string; did: string[], roleName: string; };
 
   @IsString()
   @ApiProperty()
@@ -67,7 +68,7 @@ interface RoleDTODefinitionData {
   roleName: string;
   fields: { fieldType: string; label: string; validation: string }[]
   version: string;
-  issuer: { issuerType: string; did: string[] };
+  issuer: { issuerType: string; did: string[], roleName: string };
   roleType: string;
 }
 
