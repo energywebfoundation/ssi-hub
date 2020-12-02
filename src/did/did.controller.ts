@@ -28,11 +28,12 @@ export class DIDController {
   @UseInterceptors(NotFoundInterceptor)
   public async getById(
     @Param('did') id: string,
-    @Query('includeClaims') includeClaims: boolean
+    @Query('includeClaims') includeClaimsString: string
   ) {
     try {
-      this.logger.log(`Retrieving document for did: ${id} with includeClaims: ${includeClaims}`)
+      this.logger.log(`Retrieving document for did: ${id} with includeClaims: ${includeClaimsString}`)
       const did = new DID(id);
+      const includeClaims = (includeClaimsString === 'true');
       const didDocument = await this.didService.getById(did, includeClaims);
 
       // If DID document isn't in the cache, queue cache so that it can be retrieved on subsequent calls 
