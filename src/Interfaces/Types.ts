@@ -61,6 +61,7 @@ export const roleDefinitionFullQuery = `
   issuer {
     uid
     issuerType
+    roleName
     did
   }
   others {

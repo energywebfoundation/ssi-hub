@@ -19,6 +19,7 @@ export interface CreateRoleDefinition {
   issuer: {
     issuerType: string;
     did: string[];
+    roleName: string;
   };
 }
 

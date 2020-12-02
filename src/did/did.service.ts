@@ -1,5 +1,4 @@
 import { Methods } from "@ew-did-registry/did";
-import { Resolver } from "@ew-did-registry/did-ethr-resolver";
 import { IDIDDocument, IDIDLogData, IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store'
 import { IDidStore } from '@ew-did-registry/did-store-interface'
@@ -65,7 +64,7 @@ export class DIDService {
       const did = `did:${Methods.Erc1056}:${owner}`;
       const didObject = new DID(did);
       const didDocEntity = await this.didRepository.queryById(didObject);
-      // Only refreshing a DID that is already cached. 
+      // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
         await this.didQueue.add(this.refresh_queue_channel, did);
@@ -84,10 +83,10 @@ export class DIDService {
   /**
    * Retrieves a DID Document for a given DID
    * @param {DID} did DID whose document should be retrieved
-   * @param {boolean} enhanceWithClaims 
+   * @param {boolean} enhanceWithClaims
    * @returns {IDIDDocument} Resolved DID Document. Null if no Document is not cached.
    */
-  public async getById(did: DID, enhanceWithClaims: boolean = false): Promise<IDIDDocument> {
+  public async getById(did: DID, enhanceWithClaims = false): Promise<IDIDDocument> {
     const didEntity = await this.didRepository.queryById(did);
     if (!didEntity) {
       return null;
@@ -102,7 +101,7 @@ export class DIDService {
   /**
    * Insert or update the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
-   * @param {DID} did 
+   * @param {DID} did
    */
   public async upsertCachedDocument(did: DID): Promise<void> {
     try {
@@ -121,7 +120,7 @@ export class DIDService {
   /**
    * Refresh the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
-   * @param {DID} did 
+   * @param {DID} did
    */
   public async refreshCachedDocument(did: DID): Promise<void> {
     try {
@@ -139,7 +138,7 @@ export class DIDService {
 
   /**
    * Reads all logs for a given DID that haven't been cached yet
-   * @param documentEntity 
+   * @param documentEntity
    */
   private async readNewLogsFromChain(documentEntity: DIDDocumentEntity): Promise<IDIDLogData> {
     if (documentEntity.getLogData()?.topBlock) {
@@ -155,12 +154,11 @@ export class DIDService {
 
   /**
    * Reads all logs for a given DID
-   * @param documentEntity 
+   * @param documentEntity
    */
   private async readAllLogsFromChain(documentEntity: DIDDocumentEntity): Promise<IDIDLogData> {
-    let readFromBlock: BigNumber;
     const genesisBlockNumber = 0;
-    readFromBlock = bigNumberify(genesisBlockNumber);
+    const readFromBlock: BigNumber = bigNumberify(genesisBlockNumber);
     const resolver = this.resolverFactory.create();
     return await resolver.readFromBlock(documentEntity.id, readFromBlock);
   }
@@ -181,6 +179,8 @@ export class DIDService {
         this.logger.warn(`claim at service endpoint ${serviceEndpoint} not cached for did: ${documentEntity.id}`);
         return service;
       }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const { claimData, ...claimRest } = jwt_decode(cachedClaim) as {
         claimData: Record<string, string>;
       };

@@ -7,7 +7,9 @@ import { validate } from 'class-validator';
 
 @Injectable()
 export class RoleService {
-  constructor(private readonly dgraph: DgraphService) {}
+  constructor(private readonly dgraph: DgraphService) {
+
+  }
 
   public async getAll() {
     const res = await this.dgraph.query(`

@@ -33,6 +33,7 @@ export class DgraphService {
       }
       
       type RoleIssuer {
+        roleName
         issuerType
         did
       }
