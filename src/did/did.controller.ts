@@ -1,6 +1,6 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Controller, Get, HttpCode, Logger, Param, Post, Query, UseInterceptors } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Queue } from 'bull';
 import { NotFoundInterceptor } from 'src/interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
@@ -58,6 +58,7 @@ export class DIDController {
    */
   @Post('/:id')
   @ApiTags('DID')
+  @ApiExcludeEndpoint()
   @HttpCode(202)
   public async upsertById(@Param('id') id: string) {
     this.logger.debug(`queueing upsert for ${id}`)
