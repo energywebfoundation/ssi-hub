@@ -1,6 +1,6 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Controller, Get, HttpCode, Logger, Param, Post, Query, UseInterceptors } from '@nestjs/common';
-import { ApiExcludeEndpoint, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Queue } from 'bull';
 import { NotFoundInterceptor } from 'src/interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
@@ -20,11 +20,21 @@ export class DIDController {
   /**
    * Retrieves a cached DID Document
    * @param id The DID to retrieve
-   * @returns A DID Document representation which includes full claims. Returns 404 if not in cache.
+   * @param includeClaimsString true/false string as to whether or not to return full claim data
+   * @returns A DID Document representation which optionally includes full claims. Returns 404 if not in cache.
    */
   @Get('/:did')
   @ApiTags('DID')
-  @ApiQuery({ name: 'includeClaims', required: false })
+  @ApiOperation({
+    summary: "Retrieves a cached DID Document",
+    description: 'Returns a resolved DID Document, optionally with full claim data. \n'
+      + 'If DID Document is not yet cached, 404 is returned and request to cache is queued'
+  })
+  @ApiQuery({
+    name: 'includeClaims',
+    required: false,
+    description: 'If true, includes parsed claim JWT data in service endpoint objects'
+  })
   @UseInterceptors(NotFoundInterceptor)
   public async getById(
     @Param('did') id: string,
