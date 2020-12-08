@@ -12,6 +12,9 @@ import { validate } from 'class-validator';
 export class OrganizationService {
   constructor(private readonly dgraph: DgraphService) {}
 
+  /**
+   * retrieves all existing organizations
+   */
   public async getAll() {
     const res = await this.dgraph.query(`
     query all($i: string){
@@ -26,6 +29,10 @@ export class OrganizationService {
     return res.getJson();
   }
 
+  /**
+   * Returns all Apps belonging to Organization with matching namespace
+   * @param namespace
+   */
   public async getApps(namespace: string) {
     const res = await this.dgraph.query(
       `
@@ -46,6 +53,10 @@ export class OrganizationService {
     return org ? { Data: org.apps } : { Data: [] };
   }
 
+  /**
+   * Returns all Role belonging to Organization with matching namespace
+   * @param namespace
+   */
   public async getRoles(namespace: string) {
     const res = await this.dgraph.query(
       `
@@ -66,6 +77,10 @@ export class OrganizationService {
     return org ? { Data: org.roles } : { Data: [] };
   }
 
+  /**
+   * returns single Org with matching namespace
+   * @param {String} namespace
+   */
   public async getByNamespace(namespace: string): Promise<OrganizationDTO> {
     const res = await this.dgraph.query(
       `
@@ -84,10 +99,19 @@ export class OrganizationService {
     return json?.Data?.[0];
   }
 
+  /**
+   * return true if Org with given namespace exists
+   * @param namespace
+   */
   public async exists(namespace: string): Promise<boolean> {
     return (await this.getByNamespace(namespace)) !== undefined;
   }
 
+  /**
+   * Method for adding new Org to database
+   * @param data object containing all needed Org properties
+   * @return id of newly added Org
+   */
   public async create(data: CreateOrganizationData): Promise<string> {
     const orgDefDTO = new OrganizationDefinitionDTO(data.definition);
     const orgDTO = new OrganizationDTO(data, orgDefDTO);
@@ -110,6 +134,11 @@ export class OrganizationService {
     return res.getUidsMap().get('new');
   }
 
+  /**
+   * Update existing Org with given namespace
+   * @param namespace target Org's namespace
+   * @param patch
+   */
   public async updateNamespace(
     namespace: string,
     patch: CreateOrganizationData,
@@ -139,12 +168,17 @@ export class OrganizationService {
     return oldData.uid;
   }
 
-  public async addApp(id: string, appDefinitionId: string) {
+  /**
+   * Creates connection between Organization and Application
+   * @param id Id of target organization
+   * @param appId App Id
+   */
+  public async addApp(id: string, appId: string) {
     const data = {
       uid: id,
       apps: [
         {
-          uid: appDefinitionId,
+          uid: appId,
         },
       ],
     };
@@ -154,12 +188,17 @@ export class OrganizationService {
     return id;
   }
 
-  public async addRole(id: string, roleDefinitionId: string) {
+  /**
+   * Creates connection between Organization and Role
+   * @param id Id of target organization
+   * @param roleId
+   */
+  public async addRole(id: string, roleId: string) {
     const data = {
       uid: id,
       roles: [
         {
-          uid: roleDefinitionId,
+          uid: roleId,
         },
       ],
     };
@@ -169,6 +208,10 @@ export class OrganizationService {
     return id;
   }
 
+  /**
+   * removes Organization with matching namespace
+   * @param namespace
+   */
   public async remove(namespace: string) {
     const org = await this.getByNamespace(namespace);
     if (!org) {

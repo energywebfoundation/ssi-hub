@@ -1,8 +1,11 @@
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/Types';
 import { Role, RoleDefinition } from './RoleTypes';
+import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/KeyValue';
 
+/**
+ * Role's Definition DTO providing validation and API schema for swagger UI
+ */
 export class RoleDefinitionDTO implements RoleDefinition {
 
   constructor(data: RoleDTODefinitionData) {
@@ -72,6 +75,9 @@ interface RoleDTODefinitionData {
   roleType: string;
 }
 
+/**
+ * Role DTO providing validation and API schema for swagger UI
+ */
 export class RoleDTO implements Role {
 
   public uid?: string

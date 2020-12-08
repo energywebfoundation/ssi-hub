@@ -5,6 +5,11 @@ import { Policy } from 'cockatiel';
 
 @Injectable()
 export class DgraphService {
+
+  /**
+   * returns promise of active connection instance
+   * @private
+   */
   private async getInstance(): Promise<DgraphClient> {
     if (this._instance) {
       return this._instance;
@@ -19,6 +24,9 @@ export class DgraphService {
     this.createInstance();
   }
 
+  /**
+   * Method for updating dgraph schemas, triggers every time after initial server startup
+   */
   public async migrate() {
     const schema = `
       type Claim {
@@ -166,6 +174,10 @@ export class DgraphService {
 
   }
 
+  /**
+   * performs update on dgraph database
+   * @param data Mutation data
+   */
   public async mutate(data: unknown) {
     const instance = await this.getInstance();
     const txn = await instance.newTxn();
@@ -175,6 +187,10 @@ export class DgraphService {
     return txn.mutate(mu);
   }
 
+  /**
+   * Removes nodes with matching ids from database
+   * @param ids ID or array of IDs
+   */
   public async delete(ids: string | string[]) {
     let json;
     if(Array.isArray(ids)) {
@@ -190,6 +206,11 @@ export class DgraphService {
     return txn.mutate(mu);
   }
 
+  /**
+   * Query data
+   * @param query Query string
+   * @param params Params
+   */
   public async query(query: string, params?: Record<string, any>) {
     const instance = await this.getInstance();
     if (params) {
@@ -198,6 +219,10 @@ export class DgraphService {
     return instance.newTxn({ readOnly: true }).query(query);
   }
 
+  /**
+   * Initial Connection/Database setup method
+   * @private
+   */
   private async createInstance() {
     if (this._instance) {
       return this._instance;
@@ -230,6 +255,9 @@ export class DgraphService {
     });
   }
 
+  /**
+   * Closes/Ends connection to Dgraph
+   */
   public close() {
     // close existing connection;
     this._stub?.close();

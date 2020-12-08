@@ -1,4 +1,4 @@
-import { DGraphObject } from "src/Interfaces/Types";
+import { DGraphObject } from '../Interfaces/DGraphObject';
 
 export const DIDDocumentClaim_DgraphType = 'IPFSClaim';
 

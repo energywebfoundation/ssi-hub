@@ -1,9 +1,12 @@
-import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/Types';
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppDefinition, Application } from './ApplicationTypes';
 import { RoleDTO } from '../role/RoleDTO';
+import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/KeyValue';
 
+/**
+ * Interface describing raw data required for creation of Application DTO
+ */
 export interface CreateApplicationData {
   name: string;
   namespace: string;
@@ -11,6 +14,9 @@ export interface CreateApplicationData {
   definition: CreateApplicationDefinition;
 }
 
+/**
+ * Interface describing raw data required for creation of Application's Definition DTO
+ */
 export interface CreateApplicationDefinition {
   appName: string;
   description?: string;
@@ -19,6 +25,9 @@ export interface CreateApplicationDefinition {
   others?: Record<string, string>;
 }
 
+/**
+ * Application's Definition DTO providing validation and API schema for swagger UI
+ */
 export class ApplicationDefinitionDTO implements AppDefinition {
 
   constructor(data: CreateApplicationDefinition) {
@@ -59,6 +68,9 @@ export class ApplicationDefinitionDTO implements AppDefinition {
   readonly 'dgraph.type' = 'AppDefinition';
 }
 
+/**
+ * interface describing required params for creating Application DTO instance
+ */
 interface ApplicationDTOParams {
   name: string,
   owner: string,
@@ -66,6 +78,9 @@ interface ApplicationDTOParams {
   roles?: RoleDTO[]
 }
 
+/**
+ * Application DTO providing validation and API schema for swagger UI
+ */
 export class ApplicationDTO implements Application {
 
   public uid?: string

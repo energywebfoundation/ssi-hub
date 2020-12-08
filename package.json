@@ -26,7 +26,8 @@
     "docker:build": "docker-compose build app",
     "docker:start": "docker-compose up -d",
     "docker:watch": "docker-compose up -d && docker-compose logs -f app",
-    "docker:down": "docker-compose down -v"
+    "docker:down": "docker-compose down -v",
+    "build:docs": "typedoc --out docs src"
   },
   "dependencies": {
     "@ensdomains/ens": "^0.4.5",

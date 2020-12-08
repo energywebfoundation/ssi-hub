@@ -9,16 +9,34 @@ import { Application } from '../application/ApplicationTypes';
 export class OwnerService {
   constructor(private readonly dgraph: DgraphService) {}
 
+  /**
+   * returns Roles owned by given user
+   * @param owner Owner DID
+   */
   public async getRolesByOwner(owner: string) {
     return this.getTypeByOwner(owner, 'Role');
   }
+  /**
+   * returns Apps owned by given user
+   * @param owner Owner DID
+   */
   public async getAppsByOwner(owner: string) {
     return this.getTypeByOwner(owner, 'App');
   }
+  /**
+   * returns Orgs owned by given user
+   * @param owner Owner DID
+   */
   public async getOrgsByOwner(owner: string) {
     return this.getTypeByOwner(owner, 'Org');
   }
 
+  /**
+   * returns any Role/App/Org with matching owner
+   * @param owner Owner DID
+   * @param type
+   * @private
+   */
   private async getTypeByOwner(owner: string, type: string) {
     const res = await this.dgraph.query(`
     {${type.toLocaleLowerCase()}s(func: eq(owner, "${owner}")) @filter(eq(dgraph.type, "${type}")) {
@@ -32,6 +50,10 @@ export class OwnerService {
     return res.getJson();
   }
 
+  /**
+   * Completely deletes namespace with all sub namespaces
+   * @param namespace
+   */
   public async deleteNamespace(namespace: string) {
     const res = await this.dgraph.query(`{
       res(func: eq(namespace, "${namespace}")) {
@@ -88,6 +110,11 @@ export class OwnerService {
     this.dgraph.delete(ids);
   }
 
+  /**
+   * Changes owner of given namespace
+   * @param namespace Target namespace
+   * @param newOwner New Owner DID
+   */
   public async changeOwner(namespace: string, newOwner: string) {
     const res = await this.dgraph.query(`{
       res(func: eq(namespace, "${namespace}")) {

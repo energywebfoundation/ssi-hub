@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { providers, utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
-import { DefinitionData, KeyValue } from '../Interfaces/Types';
+import { DefinitionData } from '../Interfaces/Types';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../ethers/EnsRegistryFactory';
@@ -41,15 +41,14 @@ export class EnsService {
   ) {
     this.logger = new Logger('ENSService');
     errors.setLogLevel('error');
-    const ENS_URL = this.config.get<string>('ENS_URL');
-    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
-      'PUBLIC_RESOLVER_ADDRESS',
-    );
-    const ENS_REGISTRY_ADDRESS = this.config.get<string>(
-      'ENS_REGISTRY_ADDRESS',
-    );
-    this.provider = new providers.JsonRpcProvider(ENS_URL);
 
+    // Get config values from .env file
+    const ENS_URL = this.config.get<string>('ENS_URL');
+    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>('PUBLIC_RESOLVER_ADDRESS');
+    const ENS_REGISTRY_ADDRESS = this.config.get<string>('ENS_REGISTRY_ADDRESS');
+
+    // Connect to smart contracts
+    this.provider = new providers.JsonRpcProvider(ENS_URL);
     this.publicResolver = PublicResolverFactory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
@@ -73,10 +72,12 @@ export class EnsService {
 
   private async InitEventListeners(): Promise<void> {
 
+    // Register event handler for new Role/App/Org
     this.publicResolver.addListener('TextChanged', async hash => {
       await this.eventHandler(hash);
     });
 
+    // Register event handler for owner change or namespace deletion
     this.ensRegistry.addListener('NewOwner', async (node,label,owner) => {
       const hash = utils.keccak256(node + label.slice(2));
       const namespace = await this.publicResolver.name(hash.toString());
@@ -84,6 +85,7 @@ export class EnsService {
         return;
       }
 
+      // Remove namespace if owner is set to hex zero
       if(owner === "0x0000000000000000000000000000000000000000") {
         await this.ownerService.deleteNamespace(namespace);
         return;
@@ -136,7 +138,9 @@ export class EnsService {
   public async eventHandler(hash: string, name?: string) {
     try {
       const promises = [
+        // get owner did
         this.ensRegistry.owner(hash),
+        // get role data
         this.publicResolver.text(hash, 'metadata'),
       ];
       if (!name) {
@@ -176,18 +180,9 @@ export class EnsService {
     }
     const namespaceFragments = this.roleService.splitNamespace(namespace);
 
-    const orgNamespace = this.roleService.getNamespaceOf(
-      'org',
-      namespaceFragments,
-    );
-    const appNamespace = this.roleService.getNamespaceOf(
-      'app',
-      namespaceFragments,
-    );
-    const roleNamespace = this.roleService.getNamespaceOf(
-      'role',
-      namespaceFragments,
-    );
+    const orgNamespace = this.roleService.getNamespaceOf('org', namespaceFragments);
+    const appNamespace = this.roleService.getNamespaceOf('app', namespaceFragments);
+    const roleNamespace = this.roleService.getNamespaceOf('role', namespaceFragments);
 
     const orgData = metadata as CreateOrganizationDefinition;
 

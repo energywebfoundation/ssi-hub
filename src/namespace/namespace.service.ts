@@ -41,6 +41,11 @@ export class NamespaceService {
     return Boolean(res?.uid);
   }
 
+  /**
+   * returns App/Org with namespace matching or similar to provided text
+   * @param text fragment of namespace string
+   * @return Array of Apps and Orgs
+   */
   public async searchByText(text: string): Promise<(Application | Organization)[]> {
     const res = await this.dgraph.query(`{
        data(func: match(namespace, "${text}", 32)) @filter(eq(dgraph.type, ["App", "Org"])) {

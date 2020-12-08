@@ -21,6 +21,9 @@ definition ${roleDefinitionFullQuery}
 export class ApplicationService {
   constructor(private readonly dgraph: DgraphService) {}
 
+  /**
+   * retrieves all existing applications
+   */
   public async getAll() {
     const res = await this.dgraph.query(`
     query all($i: string){
@@ -31,6 +34,10 @@ export class ApplicationService {
     return res.getJson();
   }
 
+  /**
+   * Returns all Roles belonging to Application with matching namespace
+   * @param namespace
+   */
   public async getRoles(namespace: string) {
     const res = await this.dgraph.query(
       `
@@ -48,7 +55,11 @@ export class ApplicationService {
     return app ? { Data: app.roles } : { Data: [] };
   }
 
-  public async getByNamespace(name: string): Promise<Application> {
+  /**
+   * returns single App with matching namespace
+   * @param {String} namespace
+   */
+  public async getByNamespace(namespace: string): Promise<Application> {
     const res = await this.dgraph.query(
       `
     query all($i: string){
@@ -56,16 +67,25 @@ export class ApplicationService {
         ${baseQueryFields}
       }
     }`,
-      { $i: name },
+      { $i: namespace },
     );
     const json = res.getJson();
     return json?.Data?.[0];
   }
 
+  /**
+   * return true if App with given namespace exists
+   * @param namespace
+   */
   public async exists(namespace: string) {
     return (await this.getByNamespace(namespace)) !== undefined;
   }
 
+  /**
+   * Method for adding new App to database
+   * @param data object containing all needed App properties
+   * @return id of newly added App
+   */
   public async create(data: CreateApplicationData) {
     const appDefDTO = new ApplicationDefinitionDTO(data.definition);
     const appDTO = new ApplicationDTO(data, appDefDTO);
@@ -88,6 +108,11 @@ export class ApplicationService {
     return res.getUidsMap().get('new');
   }
 
+  /**
+   * Update existing App with given namespace
+   * @param namespace target App's namespace
+   * @param patch
+   */
   public async updateNamespace(
     namespace: string,
     patch: CreateApplicationData,
@@ -117,12 +142,17 @@ export class ApplicationService {
     return oldData.uid;
   }
 
-  public async addRole(id: string, roleDefinitionId: string) {
+  /**
+   * Creates connection between Application and Role
+   * @param id Id of target organization
+   * @param roleId
+   */
+  public async addRole(id: string, roleId: string) {
     const data = {
       uid: id,
       roles: [
         {
-          uid: roleDefinitionId,
+          uid: roleId,
         },
       ],
     };

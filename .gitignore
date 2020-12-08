@@ -3,6 +3,7 @@
 /node_modules
 /src/ethers
 .env
+/docs
 
 # Logs
 logs
