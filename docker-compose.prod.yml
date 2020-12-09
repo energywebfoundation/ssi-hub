@@ -3,14 +3,10 @@ version: '3.4'
 services:
   app:
     container_name: app
-    build:
-      context: .
-      dockerfile: ./docker/prod/Dockerfile
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+    image: ${DOCKER_REGISTRY}/ew-iam-cache-server
     ports:
       - ${NESTJS_PORT}:${NESTJS_PORT}
+    restart: on-failure:3
     env_file:
       - .env
     networks:
@@ -24,7 +20,7 @@ services:
     image: dgraph/dgraph:${DGRAPH_VERSION}
     volumes:
       - dgraph:/dgraph
-    restart: on-failure
+    restart: on-failure:3
     command: dgraph zero --my=zero:5080
     networks:
       - main
@@ -33,7 +29,7 @@ services:
     image: dgraph/dgraph:${DGRAPH_VERSION}
     volumes:
       - dgraph:/dgraph
-    restart: on-failure
+    restart: on-failure:3
     command: dgraph alpha --my=dgraph:7080 --lru_mb=2048 --zero=zero:5080
     networks:
       - main
@@ -41,6 +37,7 @@ services:
     container_name: nats
     image: synadia/nats-server:nightly
     command: "-c /etc/nats/nats.conf"
+    restart: on-failure:3
     networks:
       - main
     volumes:
@@ -53,6 +50,7 @@ services:
     container_name: redis
     image: redis:${REDIS_VERSION}
     command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: on-failure:3
     volumes:
       - $PWD/redis-data:/var/lib/redis
     environment:
