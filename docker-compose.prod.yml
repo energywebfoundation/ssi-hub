@@ -1,9 +1,10 @@
-version: '3.4'
+version: "3.4"
 
 services:
   app:
     container_name: app
-    image: ${DOCKER_REGISTRY}/ew-iam-cache-server
+    image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:latest
+    command: "sh /app/wait-for-db.sh $DGRAPH_HEALTH_CHECK_ENDPOINT node /app/dist/src/main.js"
     ports:
       - ${NESTJS_PORT}:${NESTJS_PORT}
     restart: on-failure:3
@@ -41,11 +42,10 @@ services:
     networks:
       - main
     volumes:
-       - ./config/:/etc/nats
+      - ./config/:/etc/nats
     ports:
-      - '4222:4222'
-      - '8222:8222'
-      - '9222:9222'
+      - "4222:4222"
+      - "9222:9222"
   redis:
     container_name: redis
     image: redis:${REDIS_VERSION}

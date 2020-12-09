@@ -19,9 +19,11 @@ RUN apk add --no-cache curl git py-pip make g++ && \
 
 FROM build as final
 COPY --chown=node:node --from=build /app/dist /app/dist
-COPY --chown=node:node --from=build /app/.env /app/.env
 COPY --chown=node:node --from=build /app/node_modules /app/node_modules
+COPY --chown=node:node --from=build /app/wait-for-db.sh /app/wait-for-db.sh
+
+RUN chmod +x /app/wait-for-db.sh
+
 ENV NODE_ENV=production
-CMD ["node", "/app/dist/src/main.js"]
 
 USER node
