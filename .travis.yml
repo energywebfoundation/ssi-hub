@@ -44,3 +44,5 @@ deploy:
   provider: script
   script: ssh -i deploy_rsa -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "cd $APP_DIRECTORY; bash ./deploy.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $AWS_REGION $IAM_CACHE_SERVER_IMAGE"
   skip_cleanup: true
+  on:
+    all_branches: true
