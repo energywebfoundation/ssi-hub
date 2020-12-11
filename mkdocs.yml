@@ -1,0 +1,5 @@
+site_name: Cache Server Documentation
+nav:
+    - Home: index.md
+    - Swagger: "http://13.52.78.249:3333/api/"
+theme: readthedocs
