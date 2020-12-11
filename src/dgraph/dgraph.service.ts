@@ -5,7 +5,6 @@ import { Policy } from 'cockatiel';
 
 @Injectable()
 export class DgraphService {
-
   /**
    * returns promise of active connection instance
    * @private
@@ -171,7 +170,6 @@ export class DgraphService {
     op.setSchema(schema);
     await this._instance.alter(op);
     console.log('Migration completed');
-
   }
 
   /**
@@ -193,15 +191,15 @@ export class DgraphService {
    */
   public async delete(ids: string | string[]) {
     let json;
-    if(Array.isArray(ids)) {
-      json = ids.map(uid => ({uid}));
+    if (Array.isArray(ids)) {
+      json = ids.map(uid => ({ uid }));
     } else {
-      json = [{uid: ids}]
+      json = [{ uid: ids }];
     }
     const instance = await this.getInstance();
     const txn = await instance.newTxn();
     const mu = new Mutation();
-    mu.setDeleteJson(json)
+    mu.setDeleteJson(json);
     mu.setCommitNow(true);
     return txn.mutate(mu);
   }
@@ -246,8 +244,7 @@ export class DgraphService {
 
       try {
         await this.migrate();
-      }
-      catch(err) {
+      } catch (err) {
         console.log(err);
       }
 

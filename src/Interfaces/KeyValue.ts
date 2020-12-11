@@ -14,7 +14,8 @@ export function RecordToKeyValue(
   record: Record<string, string> | undefined,
 ): KeyValue[] {
   return (
-    record && Object.entries(record).map(([key, value]) => ({
+    record &&
+    Object.entries(record).map(([key, value]) => ({
       key,
       value,
       'dgraph.type': 'KeyValue',

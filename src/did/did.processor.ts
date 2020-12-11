@@ -8,9 +8,7 @@ import { DID } from './DidTypes';
 export class DIDProcessor {
   private readonly logger: Logger;
 
-  constructor(
-    private readonly didService: DIDService,
-  ) {
+  constructor(private readonly didService: DIDService) {
     this.logger = new Logger('DIDProcessor');
   }
 

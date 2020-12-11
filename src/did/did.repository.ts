@@ -1,16 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DIDDocumentEntity, DID_DgraphType } from './DidDocumentEntity';
 import { DID } from './DidTypes';
-import { DIDDocumentDTO } from "./DidDTOs";
+import { DIDDocumentDTO } from './DidDTOs';
 import { DgraphService } from 'src/dgraph/dgraph.service';
 
 @Injectable()
 export class DIDDGraphRepository {
   private readonly logger: Logger;
 
-  constructor(
-    private readonly dgraph: DgraphService,
-  ) {
+  constructor(private readonly dgraph: DgraphService) {
     this.logger = new Logger('DidDgraphRepository');
   }
 
@@ -50,7 +48,7 @@ export class DIDDGraphRepository {
         dids(func: eq(dgraph.type, ${DID_DgraphType})) {
           id
         }
-      }`
+      }`,
     );
     const json = res.getJson();
     return json.dids as Array<{ id: string }>;

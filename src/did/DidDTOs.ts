@@ -6,9 +6,8 @@ export const DIDDocumentClaim_DgraphType = 'IPFSClaim';
  * DIDDocument as persisted to DGraph
  */
 export interface DIDDocumentDTO extends DGraphObject {
-  
   id: string;
-  
+
   /**
    * JSON serialized IDIDLogData from did-resolver-interface
    * Deserialized logs could potentially be persisted but it would require a more complicated model structure
@@ -22,7 +21,6 @@ export interface DIDDocumentDTO extends DGraphObject {
  * An IPFS claim as persisted to DGraph
  */
 export class IPFSClaimDTO implements DGraphObject {
-
   constructor(jwt: string, serviceEndpoint: string, uid?: string) {
     this.jwt = jwt;
     this.serviceEndpoint = serviceEndpoint;
@@ -30,10 +28,10 @@ export class IPFSClaimDTO implements DGraphObject {
   }
 
   serviceEndpoint: string;
-  
+
   jwt: string;
 
-  readonly uid: string
+  readonly uid: string;
 
   readonly 'dgraph.type' = DIDDocumentClaim_DgraphType;
 }

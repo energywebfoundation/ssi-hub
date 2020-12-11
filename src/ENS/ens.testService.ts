@@ -43,15 +43,13 @@ export const ROLE_MOCK_DATA = JSON.stringify({
   },
   issuer: {
     issuerType: 'issuer',
-    did: ['did_0000000']
-  }
+    did: ['did_0000000'],
+  },
 });
 
 @Injectable()
 export class EnsTestService {
-  constructor(
-    private ensService: EnsService
-  ) {}
+  constructor(private ensService: EnsService) {}
 
   public async testOrgAppRole() {
     await this.ensService.createRole({

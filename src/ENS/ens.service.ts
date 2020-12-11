@@ -44,8 +44,12 @@ export class EnsService {
 
     // Get config values from .env file
     const ENS_URL = this.config.get<string>('ENS_URL');
-    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>('PUBLIC_RESOLVER_ADDRESS');
-    const ENS_REGISTRY_ADDRESS = this.config.get<string>('ENS_REGISTRY_ADDRESS');
+    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
+      'PUBLIC_RESOLVER_ADDRESS',
+    );
+    const ENS_REGISTRY_ADDRESS = this.config.get<string>(
+      'ENS_REGISTRY_ADDRESS',
+    );
 
     // Connect to smart contracts
     this.provider = new providers.JsonRpcProvider(ENS_URL);
@@ -61,7 +65,10 @@ export class EnsService {
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS');
     if (ensSyncInterval) {
-      const interval = setInterval(() => this.syncENS(), parseInt(ensSyncInterval));
+      const interval = setInterval(
+        () => this.syncENS(),
+        parseInt(ensSyncInterval),
+      );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
 
@@ -71,28 +78,27 @@ export class EnsService {
   }
 
   private async InitEventListeners(): Promise<void> {
-
     // Register event handler for new Role/App/Org
     this.publicResolver.addListener('TextChanged', async hash => {
       await this.eventHandler(hash);
     });
 
     // Register event handler for owner change or namespace deletion
-    this.ensRegistry.addListener('NewOwner', async (node,label,owner) => {
+    this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
       const hash = utils.keccak256(node + label.slice(2));
       const namespace = await this.publicResolver.name(hash.toString());
-      if(namespace === "") {
+      if (namespace === '') {
         return;
       }
 
       // Remove namespace if owner is set to hex zero
-      if(owner === "0x0000000000000000000000000000000000000000") {
+      if (owner === '0x0000000000000000000000000000000000000000') {
         await this.ownerService.deleteNamespace(namespace);
         return;
       }
 
       await this.ownerService.changeOwner(namespace, owner);
-    })
+    });
   }
 
   private async getSubdomains({ domain }: { domain: string }) {
@@ -180,9 +186,18 @@ export class EnsService {
     }
     const namespaceFragments = this.roleService.splitNamespace(namespace);
 
-    const orgNamespace = this.roleService.getNamespaceOf('org', namespaceFragments);
-    const appNamespace = this.roleService.getNamespaceOf('app', namespaceFragments);
-    const roleNamespace = this.roleService.getNamespaceOf('role', namespaceFragments);
+    const orgNamespace = this.roleService.getNamespaceOf(
+      'org',
+      namespaceFragments,
+    );
+    const appNamespace = this.roleService.getNamespaceOf(
+      'app',
+      namespaceFragments,
+    );
+    const roleNamespace = this.roleService.getNamespaceOf(
+      'role',
+      namespaceFragments,
+    );
 
     const orgData = metadata as CreateOrganizationDefinition;
 

@@ -1,6 +1,22 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ClaimService } from './claim.service';
-import { ApiBody, ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
 import { NatsService } from '../nats/nats.service';
 import { v4 as uuid } from 'uuid';
@@ -16,11 +32,11 @@ export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
-    @InjectQueue('claims') private claimQueue: Queue<string>
+    @InjectQueue('claims') private claimQueue: Queue<string>,
   ) {
-    this.logger = new Logger("ClaimController")
+    this.logger = new Logger('ClaimController');
     this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
-      this.logger.debug(`saving ${data}`)
+      this.logger.debug(`saving ${data}`);
       await this.claimQueue.add('save', data);
     });
   }
@@ -30,20 +46,20 @@ export class ClaimController {
   @ApiTags('Claims')
   @ApiBody({
     type: ClaimIssue,
-    description: 'Claim data object, containing id and issuedToken'
+    description: 'Claim data object, containing id and issuedToken',
   })
   @ApiOperation({
-    summary: "updates claim request",
-    description: "updates claim request upon acceptance with DID of an Issuer"
+    summary: 'updates claim request',
+    description: 'updates claim request upon acceptance with DID of an Issuer',
   })
   public async postIssuerClaim(
     @Param('did') did: string,
-    @Body() data: ClaimDataMessage
-  ){
+    @Body() data: ClaimDataMessage,
+  ) {
     const claimData: ClaimDataMessage = {
       ...data,
       acceptedBy: did,
-    }
+    };
 
     const claimDTO = new ClaimIssue(claimData);
 
@@ -54,30 +70,34 @@ export class ClaimController {
     }
 
     const payload = JSON.stringify(claimData);
-    this.nats.connection.publish(`${data.requester}.${NATS_EXCHANGE_TOPIC}`, payload);
+    this.nats.connection.publish(
+      `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
+      payload,
+    );
   }
 
   @Post('/request/:did')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "registers new claim request",
-    description: "registers new claim request, returns ID of newly added claim request"
+    summary: 'registers new claim request',
+    description:
+      'registers new claim request, returns ID of newly added claim request',
   })
   @ApiResponse({
     status: 200,
     type: String,
-    description: "ID of newly added claim"
+    description: 'ID of newly added claim',
   })
   public async postRequesterClaim(
     @Param('did') did: string,
-    @Body() data: ClaimDataMessage
-  ){
+    @Body() data: ClaimDataMessage,
+  ) {
     const id = uuid();
     const claimData: ClaimDataMessage = {
       ...data,
       id,
-    }
+    };
 
     const claimDTO = new ClaimRequest(claimData);
 
@@ -91,15 +111,18 @@ export class ClaimController {
     this.logger.debug(`publishing claims request ${payload}`);
     this.nats.connection.publish(did, payload);
     data.claimIssuer.map(issuerDid => {
-      this.nats.connection.publish(`${issuerDid}.${NATS_EXCHANGE_TOPIC}`, payload);
-    })
+      this.nats.connection.publish(
+        `${issuerDid}.${NATS_EXCHANGE_TOPIC}`,
+        payload,
+      );
+    });
     return id;
   }
 
   @Get('/:id')
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "returns claim with given ID"
+    summary: 'returns claim with given ID',
   })
   public async getById(@Param('id') id: string) {
     return await this.claimService.getById(id);
@@ -115,11 +138,12 @@ export class ClaimController {
   @Get('/parent/:namespace')
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "returns claims for roles related to given namespace",
-    description: "### Usage: \n " +
-      "providing namespace \`myApp.apps.myOrg.iam.ewc\` <br> " +
-      "should return claims for namespaces like " +
-      "\`admin.roles.myApp.apps.myOrg.iam.ewc\`"
+    summary: 'returns claims for roles related to given namespace',
+    description:
+      '### Usage: \n ' +
+      'providing namespace `myApp.apps.myOrg.iam.ewc` <br> ' +
+      'should return claims for namespaces like ' +
+      '`admin.roles.myApp.apps.myOrg.iam.ewc`',
   })
   public async getByParentNamespace(@Param('id') id: string) {
     return await this.claimService.getByParentNamespace(id);
@@ -128,7 +152,7 @@ export class ClaimController {
   @Get('/user/:did')
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "returns claims Related to given DID"
+    summary: 'returns claims Related to given DID',
   })
   public async getByUserDid(@Param('did') did: string) {
     return await this.claimService.getByUserDid(did);
@@ -137,17 +161,18 @@ export class ClaimController {
   @Get('/issuer/:did')
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "returns claims of Issuer with given DID"
+    summary: 'returns claims of Issuer with given DID',
   })
   @ApiQuery({
     name: 'accepted',
     required: false,
-    description: "**true** - show only accepted <br> **false** - show only pending"
+    description:
+      '**true** - show only accepted <br> **false** - show only pending',
   })
   @ApiQuery({
     name: 'namespace',
     required: false,
-    description: "filter only claims of given namespace"
+    description: 'filter only claims of given namespace',
   })
   public async getByIssuerDid(
     @Param('did') did: string,
@@ -160,17 +185,18 @@ export class ClaimController {
   @Get('/requester/:did')
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "returns claims for Requester with given DID"
+    summary: 'returns claims for Requester with given DID',
   })
   @ApiQuery({
     name: 'accepted',
     required: false,
-    description: "**true** - show only accepted <br> **false** - show only pending"
+    description:
+      '**true** - show only accepted <br> **false** - show only pending',
   })
   @ApiQuery({
     name: 'namespace',
     required: false,
-    description: "filter only claims of given namespace"
+    description: 'filter only claims of given namespace',
   })
   public async getByRequesterDid(
     @Param('did') did: string,
@@ -184,11 +210,11 @@ export class ClaimController {
   @ApiQuery({
     name: 'accepted',
     required: false,
-    description: 'additional filter'
+    description: 'additional filter',
   })
   @ApiTags('Claims')
   @ApiOperation({
-    summary: "returns DIDs of claim requests for given namespace"
+    summary: 'returns DIDs of claim requests for given namespace',
   })
   public async getDidsOfNamespace(
     @Param('namespace') namespace: string,

@@ -2,7 +2,11 @@ import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppDefinition, Application } from './ApplicationTypes';
 import { RoleDTO } from '../role/RoleDTO';
-import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/KeyValue';
+import {
+  KeyValue,
+  KeyValueAPIDefinition,
+  RecordToKeyValue,
+} from '../Interfaces/KeyValue';
 
 /**
  * Interface describing raw data required for creation of Application DTO
@@ -29,7 +33,6 @@ export interface CreateApplicationDefinition {
  * Application's Definition DTO providing validation and API schema for swagger UI
  */
 export class ApplicationDefinitionDTO implements AppDefinition {
-
   constructor(data: CreateApplicationDefinition) {
     this.description = data.description;
     this.logoUrl = data.logoUrl;
@@ -72,26 +75,27 @@ export class ApplicationDefinitionDTO implements AppDefinition {
  * interface describing required params for creating Application DTO instance
  */
 interface ApplicationDTOParams {
-  name: string,
-  owner: string,
-  namespace: string,
-  roles?: RoleDTO[]
+  name: string;
+  owner: string;
+  namespace: string;
+  roles?: RoleDTO[];
 }
 
 /**
  * Application DTO providing validation and API schema for swagger UI
  */
 export class ApplicationDTO implements Application {
+  public uid?: string;
 
-  public uid?: string
-
-  constructor(data: ApplicationDTOParams, definition: ApplicationDefinitionDTO) {
+  constructor(
+    data: ApplicationDTOParams,
+    definition: ApplicationDefinitionDTO,
+  ) {
     this.name = data.name;
     this.owner = data.owner;
     this.namespace = data.namespace;
 
-    if(data.roles)
-      this.roles = data.roles;
+    if (data.roles) this.roles = data.roles;
 
     this.definition = definition;
   }

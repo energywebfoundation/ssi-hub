@@ -4,7 +4,6 @@ import { ClaimService } from './claim.service';
 
 @Processor('claims')
 export class claimProcessor {
-
   constructor(private readonly claimService: ClaimService) {}
 
   @Process('save')

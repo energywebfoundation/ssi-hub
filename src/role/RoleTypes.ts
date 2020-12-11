@@ -1,4 +1,4 @@
-import { Definition} from '../Interfaces/Types';
+import { Definition } from '../Interfaces/Types';
 import { KeyValue } from '../Interfaces/KeyValue';
 import { DGraphObject } from '../Interfaces/DGraphObject';
 
@@ -53,12 +53,12 @@ export interface RoleDefinition extends Definition {
     fieldType: string;
     label: string;
     validation: string;
-    uid?: string
+    uid?: string;
   }[];
   metadata: KeyValue[];
   issuer: {
     issuerType: string;
     did: string[];
-    uid?: string
+    uid?: string;
   };
 }

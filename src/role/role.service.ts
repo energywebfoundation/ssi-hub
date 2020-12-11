@@ -7,14 +7,12 @@ import { validate } from 'class-validator';
 
 @Injectable()
 export class RoleService {
-  constructor(private readonly dgraph: DgraphService) {
-
-  }
+  constructor(private readonly dgraph: DgraphService) {}
 
   /**
    * retrieves all existing roles
    */
-  public async getAll(): Promise<{roles: RoleDTO[]}> {
+  public async getAll(): Promise<{ roles: RoleDTO[] }> {
     const res = await this.dgraph.query(`
     {roles(func: eq(dgraph.type, "Role")) {
       uid
@@ -86,7 +84,10 @@ export class RoleService {
    * @param namespace target role's namespace
    * @param patch
    */
-  public async updateNamespace(namespace: string, patch: CreateRoleData): Promise<string> {
+  public async updateNamespace(
+    namespace: string,
+    patch: CreateRoleData,
+  ): Promise<string> {
     const oldData = await this.getByNamespace(namespace);
     if (!oldData) {
       return;

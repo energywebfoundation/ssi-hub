@@ -77,35 +77,34 @@ export class OwnerService {
     const json = res.getJson();
 
     const ns: Role & Organization & Application = json.res[0];
-    if(!ns) {
+    if (!ns) {
       return;
     }
 
-    const getIds = node => [
-      node?.uid,
-      node?.definition?.uid,
-      ...node?.definition?.fields?.map(f => f.uid) ?? [],
-      ...node?.definition?.metadata?.map(f => f.uid) ?? [],
-      ...node?.definition?.others?.map(f => f.uid) ?? [],
-      node?.definition?.issuer?.uid,
-      node?.definition?.uid,
-    ].filter(u => u !== undefined)
+    const getIds = node =>
+      [
+        node?.uid,
+        node?.definition?.uid,
+        ...(node?.definition?.fields?.map(f => f.uid) ?? []),
+        ...(node?.definition?.metadata?.map(f => f.uid) ?? []),
+        ...(node?.definition?.others?.map(f => f.uid) ?? []),
+        node?.definition?.issuer?.uid,
+        node?.definition?.uid,
+      ].filter(u => u !== undefined);
 
-    let ids: string[] = [
-      ...getIds(ns),
-    ]
+    let ids: string[] = [...getIds(ns)];
 
     ns?.apps?.forEach(app => {
-      ids = ids.concat(getIds(app))
+      ids = ids.concat(getIds(app));
 
       app.roles?.forEach(role => {
-        ids = ids.concat(getIds(role))
-      })
-    })
+        ids = ids.concat(getIds(role));
+      });
+    });
 
     ns?.roles?.forEach(role => {
-      ids = ids.concat(getIds(role))
-    })
+      ids = ids.concat(getIds(role));
+    });
 
     this.dgraph.delete(ids);
   }

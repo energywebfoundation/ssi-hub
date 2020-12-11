@@ -26,10 +26,10 @@ import { DIDProcessor } from './did/did.processor';
 import { DIDDGraphRepository } from './did/did.repository';
 
 const redisConfig = {
-        port: parseInt(process.env.REDIS_PORT),
-        host: process.env.REDIS_HOST,
-        password: process.env.REDIS_PASSWORD
-      }
+  port: parseInt(process.env.REDIS_PORT),
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD,
+};
 @Module({
   imports: [
     BullModule.registerQueue({
@@ -41,7 +41,8 @@ const redisConfig = {
       redis: redisConfig,
     }),
     ConfigModule.forRoot(),
-    ScheduleModule.forRoot()],
+    ScheduleModule.forRoot(),
+  ],
   controllers: [
     ClaimController,
     OrganizationController,
@@ -66,7 +67,7 @@ const redisConfig = {
     NatsService,
     DIDService,
     DIDDGraphRepository,
-    ResolverFactory
+    ResolverFactory,
   ],
 })
 export class AppModule {}

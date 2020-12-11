@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import {
-  Claim,
-  ClaimDataMessage,
-  DecodedClaimToken,
-} from './ClaimTypes';
+import { Claim, ClaimDataMessage, DecodedClaimToken } from './ClaimTypes';
 import * as jwt_decode from 'jwt-decode';
 
 const claimQuery = `
@@ -29,7 +25,7 @@ interface QueryFilters {
 
 @Injectable()
 export class ClaimService {
-  constructor(private readonly dgraph: DgraphService){}
+  constructor(private readonly dgraph: DgraphService) {}
 
   /**
    * Handles claims saving and updates
@@ -58,9 +54,7 @@ export class ClaimService {
    * Saves claim to database
    * @param data Raw claim data
    */
-  public async saveClaim({
-    ...data
-  }: ClaimDataMessage): Promise<string> {
+  public async saveClaim({ ...data }: ClaimDataMessage): Promise<string> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const decodedData: DecodedClaimToken = jwt_decode(data.token);
@@ -187,13 +181,13 @@ export class ClaimService {
    * @param id claim ID
    */
   public async removeById(id: string) {
-    const claim = await this.getById(id)
-    if(claim && claim.uid) {
+    const claim = await this.getById(id);
+    if (claim && claim.uid) {
       try {
         this.dgraph.delete(claim.uid);
         return true;
-      } catch(err) {
-        return false
+      } catch (err) {
+        return false;
       }
     }
     return false;
@@ -221,11 +215,12 @@ export class ClaimService {
    * @param namespace target claim namespace
    * @param accepted flag for filtering only accepted claims
    */
-  public async getDidOfClaimsOfnamespace(namespace: string, accepted?: boolean): Promise<string[]> {
-    const filters: string[] = [
-      `eq(claimType, "${namespace}")`
-    ]
-    if(accepted !== undefined) {
+  public async getDidOfClaimsOfnamespace(
+    namespace: string,
+    accepted?: boolean,
+  ): Promise<string[]> {
+    const filters: string[] = [`eq(claimType, "${namespace}")`];
+    if (accepted !== undefined) {
       filters.push(`eq(isAccepted, ${accepted})`);
     }
     const query = `{
@@ -234,11 +229,11 @@ export class ClaimService {
         requester
       }
     }`;
-    const res = await this.dgraph.query(query)
+    const res = await this.dgraph.query(query);
     const json = res.getJson();
 
-    if(json?.data?.length) {
-      return json.data.map(c => c.requester)
+    if (json?.data?.length) {
+      return json.data.map(c => c.requester);
     }
 
     return [];
