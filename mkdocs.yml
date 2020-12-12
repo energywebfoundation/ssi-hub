@@ -1,5 +1,5 @@
 site_name: Cache Server Documentation
 nav:
-    - Home: index.md
-    - Swagger: "http://13.52.78.249:3333/api/"
+    - Home: README.md
+    - Swagger: "https://volta-iam-cacheserver.energyweb.org/api/"
 theme: readthedocs
