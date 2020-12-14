@@ -1,4 +1,4 @@
-ARG IMAGE=node:12.13-alpine 
+ARG IMAGE=node:14.15.1-alpine 
 
 FROM $IMAGE as build
 
@@ -17,7 +17,8 @@ RUN apk add --no-cache curl git py-pip make g++ && \
   ./docker/node-modules-clean.sh && \
   ./bin/node-prune
 
-FROM build as final
+FROM $IMAGE
+RUN apk add --no-cache curl
 COPY --chown=node:node --from=build /app/dist /app/dist
 COPY --chown=node:node --from=build /app/node_modules /app/node_modules
 COPY --chown=node:node --from=build /app/wait-for-db.sh /app/wait-for-db.sh
