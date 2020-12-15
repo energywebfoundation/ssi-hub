@@ -27,7 +27,7 @@
     "docker:start": "docker-compose up -d",
     "docker:watch": "docker-compose up -d && docker-compose logs -f app",
     "docker:down": "docker-compose down -v",
-    "build:docs": "typedoc --out docs --plugin typedoc-plugin-markdown --hideBreadcrumbs true src"
+    "build:docs": "rimraf docs/api && typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs true"
   },
   "dependencies": {
     "@ensdomains/ens": "^0.4.5",
