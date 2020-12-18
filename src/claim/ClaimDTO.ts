@@ -28,7 +28,6 @@ export class ClaimRequest implements ClaimDataMessage {
 }
 
 export class ClaimIssue implements ClaimDataMessage {
-
   constructor(data: ClaimDataMessage) {
     this.id = data.id;
     this.acceptedBy = data.acceptedBy;

@@ -1,10 +1,17 @@
-import { KeyValue, KeyValueAPIDefinition, RecordToKeyValue } from '../Interfaces/Types';
 import { IsOptional, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization, OrgDefinition } from './OrganizationTypes';
 import { RoleDTO } from '../role/RoleDTO';
 import { ApplicationDTO } from '../application/ApplicationDTO';
+import {
+  KeyValue,
+  KeyValueAPIDefinition,
+  RecordToKeyValue,
+} from '../Interfaces/KeyValue';
 
+/**
+ * Interface describing raw data required for creation of Organization DTO
+ */
 export interface CreateOrganizationData {
   name: string;
   namespace: string;
@@ -12,6 +19,9 @@ export interface CreateOrganizationData {
   definition: CreateOrganizationDefinition;
 }
 
+/**
+ * Interface describing raw data required for creation of Organization's Definition DTO
+ */
 export interface CreateOrganizationDefinition {
   orgName: string;
   description?: string;
@@ -20,8 +30,10 @@ export interface CreateOrganizationDefinition {
   others?: Record<string, string>;
 }
 
+/**
+ * Organization's Definition DTO providing validation and API schema for swagger UI
+ */
 export class OrganizationDefinitionDTO implements OrgDefinition {
-
   constructor(data: CreateOrganizationDefinition) {
     this.description = data.description;
     this.logoUrl = data.logoUrl;
@@ -61,26 +73,29 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
 }
 
 interface OrganizationDTOParams {
-  name: string,
-  owner: string,
-  namespace: string,
-  roles?: RoleDTO[]
-  apps?: ApplicationDTO[]
+  name: string;
+  owner: string;
+  namespace: string;
+  roles?: RoleDTO[];
+  apps?: ApplicationDTO[];
 }
 
+/**
+ * Organization DTO providing validation and API schema for swagger UI
+ */
 export class OrganizationDTO implements Organization {
+  public uid?: string;
 
-  public uid?: string
-
-  constructor(data: OrganizationDTOParams, definition: OrganizationDefinitionDTO) {
+  constructor(
+    data: OrganizationDTOParams,
+    definition: OrganizationDefinitionDTO,
+  ) {
     this.name = data.name;
     this.owner = data.owner;
     this.namespace = data.namespace;
 
-    if(data.roles)
-      this.roles = data.roles;
-    if(data.apps)
-      this.apps = data.apps;
+    if (data.roles) this.roles = data.roles;
+    if (data.apps) this.apps = data.apps;
 
     this.definition = definition;
   }

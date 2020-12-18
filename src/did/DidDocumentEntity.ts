@@ -1,6 +1,12 @@
-import { documentFromLogs, mergeLogs } from '@ew-did-registry/did-ethr-resolver';
-import { IDIDDocument, IDIDLogData } from '@ew-did-registry/did-resolver-interface';
-import { IDidStore } from '@ew-did-registry/did-store-interface'
+import {
+  documentFromLogs,
+  mergeLogs,
+} from '@ew-did-registry/did-ethr-resolver';
+import {
+  IDIDDocument,
+  IDIDLogData,
+} from '@ew-did-registry/did-resolver-interface';
+import { IDidStore } from '@ew-did-registry/did-store-interface';
 import { bigNumberify } from 'ethers/utils';
 import { DIDDocumentDTO, IPFSClaimDTO } from './DidDTOs';
 import { DID } from './DidTypes';
@@ -8,15 +14,16 @@ import { DID } from './DidTypes';
 export const DID_DgraphType = 'DIDDocument';
 
 export class DIDDocumentEntity {
-
-  constructor(did: DID, didDocument?: DIDDocumentDTO){
+  constructor(did: DID, didDocument?: DIDDocumentDTO) {
     this.id = did.id;
     if (didDocument) {
       this.logData = parseLogs(didDocument.logs);
-      this.claims = didDocument.claims?.map(c => new IPFSClaimDTO(c.jwt, c.serviceEndpoint, c.uid)) ?? new Array<IPFSClaimDTO>();
+      this.claims =
+        didDocument.claims?.map(
+          c => new IPFSClaimDTO(c.jwt, c.serviceEndpoint, c.uid),
+        ) ?? new Array<IPFSClaimDTO>();
       this.uid = didDocument.uid;
-    }
-    else {
+    } else {
       this.claims = new Array<IPFSClaimDTO>();
       this.uid = '_:new';
     }
@@ -25,7 +32,7 @@ export class DIDDocumentEntity {
       const knownBigNumberProperties = new Set<string>();
       knownBigNumberProperties.add('validity');
       knownBigNumberProperties.add('topBlock');
-  
+
       // Operations on IDIDLogData expect some properties to be BigNumbers
       const bigNumberReviver = (key: string, value) => {
         if (knownBigNumberProperties.has(key) && '_hex' in value) {
@@ -45,14 +52,14 @@ export class DIDDocumentEntity {
   /**
    * Using IDIDLogData so that new log data can be incrementally added
    */
-  private logData: IDIDLogData
+  private logData: IDIDLogData;
 
   /**
    * IPFS Claims corresponding to service endpoint data
    */
   private claims: IPFSClaimDTO[];
 
-  readonly uid: string
+  readonly uid: string;
   readonly 'dgraph.type' = DID_DgraphType;
 
   /**
@@ -70,8 +77,8 @@ export class DIDDocumentEntity {
       logs: serializedLogs,
       claims: this.claims,
       uid: this.uid,
-      'dgraph.type': this['dgraph.type']
-    }
+      'dgraph.type': this['dgraph.type'],
+    };
   }
 
   getLogData(): IDIDLogData {
@@ -107,35 +114,38 @@ export class DIDDocumentEntity {
    * @returns {Map<string, string>} A map of serviceEnpoints to jwt
    */
   getCachedClaimsMap(): Map<string, string> {
-    return new Map(this.claims.map(c => [c.serviceEndpoint, c.jwt]))
+    return new Map(this.claims.map(c => [c.serviceEndpoint, c.jwt]));
   }
 
   /**
    * Caches all claims from IPFS which aren't yet cached
-   * @param resolver 
-   * @param ipfsStore 
+   * @param resolver
+   * @param ipfsStore
    */
   async cacheIPFSClaims(ipfsStore: IDidStore) {
     const resolvedDocument = await this.getResolvedDIDDocument();
     const endpoints = this.getUncachedServiceEndpoints(resolvedDocument);
-    await Promise.all(endpoints.map(async (endpoint) => {
-      const jwt = await ipfsStore.get(endpoint);
-      this.claims.push(new IPFSClaimDTO(jwt, endpoint));
-    }))
+    await Promise.all(
+      endpoints.map(async endpoint => {
+        const jwt = await ipfsStore.get(endpoint);
+        this.claims.push(new IPFSClaimDTO(jwt, endpoint));
+      }),
+    );
   }
 
   /**
    * Gets claims which are present in the targetDocument but not in the entity
-   * @param targetDocument 
+   * @param targetDocument
    * @returns {string[]} serviceEndpoints of missing claims
    */
   private getUncachedServiceEndpoints(targetDocument: IDIDDocument): string[] {
     const cachedClaims = this.getCachedClaimsMap();
     if (!targetDocument.service) {
       return new Array<string>();
-    }
-    else {
-      return targetDocument.service?.filter(s => !cachedClaims.has(s.serviceEndpoint)).map(s => s.serviceEndpoint);
+    } else {
+      return targetDocument.service
+        ?.filter(s => !cachedClaims.has(s.serviceEndpoint))
+        .map(s => s.serviceEndpoint);
     }
   }
 }

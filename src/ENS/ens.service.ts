@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { providers, utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
-import { DefinitionData, KeyValue } from '../Interfaces/Types';
+import { DefinitionData } from '../Interfaces/Types';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../ethers/EnsRegistryFactory';
@@ -41,6 +41,8 @@ export class EnsService {
   ) {
     this.logger = new Logger('ENSService');
     errors.setLogLevel('error');
+
+    // Get config values from .env file
     const ENS_URL = this.config.get<string>('ENS_URL');
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS',
@@ -48,8 +50,9 @@ export class EnsService {
     const ENS_REGISTRY_ADDRESS = this.config.get<string>(
       'ENS_REGISTRY_ADDRESS',
     );
-    this.provider = new providers.JsonRpcProvider(ENS_URL);
 
+    // Connect to smart contracts
+    this.provider = new providers.JsonRpcProvider(ENS_URL);
     this.publicResolver = PublicResolverFactory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
@@ -62,7 +65,10 @@ export class EnsService {
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS');
     if (ensSyncInterval) {
-      const interval = setInterval(() => this.syncENS(), parseInt(ensSyncInterval));
+      const interval = setInterval(
+        () => this.syncENS(),
+        parseInt(ensSyncInterval),
+      );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
 
@@ -72,25 +78,27 @@ export class EnsService {
   }
 
   private async InitEventListeners(): Promise<void> {
-
+    // Register event handler for new Role/App/Org
     this.publicResolver.addListener('TextChanged', async hash => {
       await this.eventHandler(hash);
     });
 
-    this.ensRegistry.addListener('NewOwner', async (node,label,owner) => {
+    // Register event handler for owner change or namespace deletion
+    this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
       const hash = utils.keccak256(node + label.slice(2));
       const namespace = await this.publicResolver.name(hash.toString());
-      if(namespace === "") {
+      if (namespace === '') {
         return;
       }
 
-      if(owner === "0x0000000000000000000000000000000000000000") {
+      // Remove namespace if owner is set to hex zero
+      if (owner === '0x0000000000000000000000000000000000000000') {
         await this.ownerService.deleteNamespace(namespace);
         return;
       }
 
       await this.ownerService.changeOwner(namespace, owner);
-    })
+    });
   }
 
   private async getSubdomains({ domain }: { domain: string }) {
@@ -136,7 +144,9 @@ export class EnsService {
   public async eventHandler(hash: string, name?: string) {
     try {
       const promises = [
+        // get owner did
         this.ensRegistry.owner(hash),
+        // get role data
         this.publicResolver.text(hash, 'metadata'),
       ];
       if (!name) {

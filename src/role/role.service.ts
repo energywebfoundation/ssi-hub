@@ -7,11 +7,12 @@ import { validate } from 'class-validator';
 
 @Injectable()
 export class RoleService {
-  constructor(private readonly dgraph: DgraphService) {
+  constructor(private readonly dgraph: DgraphService) {}
 
-  }
-
-  public async getAll() {
+  /**
+   * retrieves all existing roles
+   */
+  public async getAll(): Promise<{ roles: RoleDTO[] }> {
     const res = await this.dgraph.query(`
     {roles(func: eq(dgraph.type, "Role")) {
       uid
@@ -23,6 +24,10 @@ export class RoleService {
     return res.getJson();
   }
 
+  /**
+   * returns single Role with matching namespace
+   * @param {String} namespace
+   */
   public async getByNamespace(namespace: string): Promise<Role> {
     const res = await this.dgraph.query(
       `
@@ -41,11 +46,20 @@ export class RoleService {
     return json?.Data?.[0];
   }
 
+  /**
+   * return true if role with given namespace exists
+   * @param namespace
+   */
   public async exists(namespace: string) {
     return (await this.getByNamespace(namespace)) !== undefined;
   }
 
-  public async create(data: CreateRoleData) {
+  /**
+   * Method for adding new Role to database
+   * @param data object containing all needed role properties
+   * @return id of newly added Role
+   */
+  public async create(data: CreateRoleData): Promise<string> {
     const orgDefDTO = new RoleDefinitionDTO(data.definition);
     const roleDTO = new RoleDTO(data, orgDefDTO);
 
@@ -65,7 +79,15 @@ export class RoleService {
     return res.getUidsMap().get('new');
   }
 
-  public async updateNamespace(namespace: string, patch: CreateRoleData) {
+  /**
+   * Update existing role with given namespace
+   * @param namespace target role's namespace
+   * @param patch
+   */
+  public async updateNamespace(
+    namespace: string,
+    patch: CreateRoleData,
+  ): Promise<string> {
     const oldData = await this.getByNamespace(namespace);
     if (!oldData) {
       return;
@@ -86,6 +108,11 @@ export class RoleService {
     return oldData.uid;
   }
 
+  /**
+   * extracts names of Organization, Application* and Role* from namespace
+   * * - fragment optional
+   * @param namespace Object with namespace fragments
+   */
   public splitNamespace(namespace: string): NamespaceFragments {
     const fragments: NamespaceFragments = {
       apps: null,
@@ -120,6 +147,11 @@ export class RoleService {
     return fragments;
   }
 
+  /**
+   * returns namespace of Org/App/Role based on given namespace fragment and requested namespace type
+   * @param fragment type of requested namespace
+   * @param fragments namespace fragments object
+   */
   public getNamespaceOf(
     fragment: 'org' | 'app' | 'role' = 'org',
     fragments: NamespaceFragments,

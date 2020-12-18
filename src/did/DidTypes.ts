@@ -10,12 +10,12 @@ export class DID {
   /**
    * A DID in the format of did:ethr:{ethereumAddress}
    */
-  readonly id: string
+  readonly id: string;
 
   validate(id: string) {
     const parts = id.split(':');
     if (parts.length != 3) {
-      throw new Error("DID should consists of 3 components");
+      throw new Error('DID should consists of 3 components');
     }
     if (parts[0] != 'did') {
       throw new Error('DID should begin with "did:"');

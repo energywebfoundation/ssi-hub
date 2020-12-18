@@ -1,11 +1,20 @@
-import { Definition, DGraphObject, KeyValue } from '../Interfaces/Types';
+import { Definition } from '../Interfaces/Types';
+import { KeyValue } from '../Interfaces/KeyValue';
+import { DGraphObject } from '../Interfaces/DGraphObject';
 
+/**
+ * Interface describing raw data required for creation of Role DTO
+ */
 export interface CreateRoleData {
   name: string;
   namespace: string;
   owner: string;
   definition: CreateRoleDefinition;
 }
+
+/**
+ * Interface describing raw data required for creation of Role's Definition DTO
+ */
 export interface CreateRoleDefinition {
   version: string;
   roleType: 'custom';
@@ -23,6 +32,19 @@ export interface CreateRoleDefinition {
   };
 }
 
+/**
+ * Interface describing generic Role model
+ */
+export interface Role extends DGraphObject {
+  name: string;
+  owner: string;
+  namespace: string;
+  definition: RoleDefinition;
+}
+
+/**
+ * Interface describing generic Role's Definition model
+ */
 export interface RoleDefinition extends Definition {
   uid?: string;
   roleType: string;
@@ -31,19 +53,12 @@ export interface RoleDefinition extends Definition {
     fieldType: string;
     label: string;
     validation: string;
-    uid?: string
+    uid?: string;
   }[];
   metadata: KeyValue[];
   issuer: {
     issuerType: string;
     did: string[];
-    uid?: string
+    uid?: string;
   };
-}
-
-export interface Role extends DGraphObject {
-  name: string;
-  owner: string;
-  namespace: string;
-  definition: RoleDefinition;
 }

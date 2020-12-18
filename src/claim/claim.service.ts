@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import {
-  Claim,
-  ClaimDataMessage,
-  DecodedClaimToken,
-} from './ClaimTypes';
+import { Claim, ClaimDataMessage, DecodedClaimToken } from './ClaimTypes';
 import * as jwt_decode from 'jwt-decode';
 
 const claimQuery = `
@@ -29,8 +25,12 @@ interface QueryFilters {
 
 @Injectable()
 export class ClaimService {
-  constructor(private readonly dgraph: DgraphService){}
+  constructor(private readonly dgraph: DgraphService) {}
 
+  /**
+   * Handles claims saving and updates
+   * @param data Raw claim data
+   */
   public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
     const claim: Claim = await this.getById(data.id);
     if (!claim) {
@@ -50,9 +50,11 @@ export class ClaimService {
     }
   }
 
-  public async saveClaim({
-    ...data
-  }: ClaimDataMessage): Promise<string> {
+  /**
+   * Saves claim to database
+   * @param data Raw claim data
+   */
+  public async saveClaim({ ...data }: ClaimDataMessage): Promise<string> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const decodedData: DecodedClaimToken = jwt_decode(data.token);
@@ -78,6 +80,10 @@ export class ClaimService {
     return res.getUidsMap().get('new');
   }
 
+  /**
+   * returns claim with matching ID
+   * @param id claim ID
+   */
   public async getById(id: string): Promise<Claim> {
     const res = await this.dgraph.query(
       `
@@ -93,6 +99,11 @@ export class ClaimService {
     return json.claim[0];
   }
 
+  /**
+   * returns claims with matching parent namespace
+   * eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.app", "user.roles.A.app"
+   * @param namespace target parent namespace
+   */
   async getByParentNamespace(namespace: string) {
     const res = await this.dgraph.query(
       `
@@ -107,6 +118,10 @@ export class ClaimService {
     return res.getJson();
   }
 
+  /**
+   * Get claims requested or issued by user with matching DID
+   * @param did user DID
+   */
   async getByUserDid(did: string) {
     const res = await this.dgraph.query(
       `
@@ -121,8 +136,13 @@ export class ClaimService {
     return res.getJson();
   }
 
+  /**
+   * Get claims issued by user with matching DID
+   * @param did issuer's DID
+   * @param filters additional filters
+   */
   async getByIssuer(did: string, filters: QueryFilters = {}) {
-    const filter = this.getIsAccepterFilter(filters);
+    const filter = this.getFilters(filters);
     const res = await this.dgraph.query(
       `
       query all($did: string) {
@@ -135,8 +155,14 @@ export class ClaimService {
 
     return res.getJson();
   }
+
+  /**
+   * Get claims requested by user with matching DID
+   * @param did requester's DID
+   * @param filters additional filters
+   */
   async getByRequester(did: string, filters: QueryFilters = {}) {
-    const filter = this.getIsAccepterFilter(filters);
+    const filter = this.getFilters(filters);
     const res = await this.dgraph.query(
       `
       query all($did: string) {
@@ -150,20 +176,30 @@ export class ClaimService {
     return res.getJson();
   }
 
+  /**
+   * delete claim with matching ID
+   * @param id claim ID
+   */
   public async removeById(id: string) {
-    const claim = await this.getById(id)
-    if(claim && claim.uid) {
+    const claim = await this.getById(id);
+    if (claim && claim.uid) {
       try {
         this.dgraph.delete(claim.uid);
         return true;
-      } catch(err) {
-        return false
+      } catch (err) {
+        return false;
       }
     }
     return false;
   }
 
-  private getIsAccepterFilter(options: QueryFilters) {
+  /**
+   * Returns dgraph filter string based on passed options object
+   * @param options config object
+   * @return string
+   * @private
+   */
+  private getFilters(options: QueryFilters): string {
     const filters: string[] = [];
     if (options.accepted !== undefined) {
       filters.push(`eq(isAccepted, ${options.accepted})`);
@@ -174,11 +210,17 @@ export class ClaimService {
     return ` @filter(${filters.join(' AND ')}) `;
   }
 
-  public async getDidOfClaimsOfnamespace(namespace: string, accepted?: boolean) {
-    const filters: string[] = [
-      `eq(claimType, "${namespace}")`
-    ]
-    if(accepted !== undefined) {
+  /**
+   * get all DID of requesters of given namespace
+   * @param namespace target claim namespace
+   * @param accepted flag for filtering only accepted claims
+   */
+  public async getDidOfClaimsOfnamespace(
+    namespace: string,
+    accepted?: boolean,
+  ): Promise<string[]> {
+    const filters: string[] = [`eq(claimType, "${namespace}")`];
+    if (accepted !== undefined) {
       filters.push(`eq(isAccepted, ${accepted})`);
     }
     const query = `{
@@ -187,11 +229,11 @@ export class ClaimService {
         requester
       }
     }`;
-    const res = await this.dgraph.query(query)
+    const res = await this.dgraph.query(query);
     const json = res.getJson();
 
-    if(json?.data?.length) {
-      return json.data.map(c => c.requester)
+    if (json?.data?.length) {
+      return json.data.map(c => c.requester);
     }
 
     return [];

@@ -7,14 +7,12 @@ import { RoleDTO } from '../role/RoleDTO';
 
 @Controller('owner')
 export class OwnerController {
-  constructor(
-    private ownerService: OwnerService
-  ) {}
+  constructor(private ownerService: OwnerService) {}
 
   @Get('/:owner/roles')
   @ApiTags('Ownership')
   @ApiOperation({
-    summary: "Returns Array or Roles owned by given DID",
+    summary: 'Returns Array or Roles owned by given DID',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -27,7 +25,7 @@ export class OwnerController {
   @Get('/:owner/apps')
   @ApiTags('Ownership')
   @ApiOperation({
-    summary: "Returns Array or Applications owned by given DID",
+    summary: 'Returns Array or Applications owned by given DID',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -40,7 +38,7 @@ export class OwnerController {
   @Get('/:owner/orgs')
   @ApiTags('Ownership')
   @ApiOperation({
-    summary: "Returns Array or Organizations owned by given DID",
+    summary: 'Returns Array or Organizations owned by given DID',
   })
   @ApiResponse({
     status: HttpStatus.OK,

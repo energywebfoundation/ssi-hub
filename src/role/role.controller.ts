@@ -5,18 +5,16 @@ import { RoleDTO } from './RoleDTO';
 
 @Controller('role')
 export class RoleController {
-  constructor(
-    private roleService: RoleService,
-  ) {}
+  constructor(private roleService: RoleService) {}
 
   @Get()
   @ApiTags('Roles')
   @ApiOperation({
-    summary: "Returns Array or Roles",
+    summary: 'Returns Array or Roles',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: [RoleDTO]
+    type: [RoleDTO],
   })
   public async getAll() {
     return await this.roleService.getAll();
@@ -25,12 +23,12 @@ export class RoleController {
   @Get('/:namespace')
   @ApiTags('Roles')
   @ApiOperation({
-    summary: "Returns Role with given namespace",
+    summary: 'Returns Role with given namespace',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: RoleDTO,
-    description: "Role with matching Id"
+    description: 'Role with matching Id',
   })
   public async getById(@Param('namespace') namespace: string) {
     return await this.roleService.getByNamespace(namespace);
@@ -39,11 +37,11 @@ export class RoleController {
   @Get('/:namespace/exists')
   @ApiTags('Roles')
   @ApiOperation({
-    summary: "Returns if Role exists",
+    summary: 'Returns if Role exists',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: Boolean
+    type: Boolean,
   })
   public async exists(@Param('namespace') namespace: string) {
     return await this.roleService.exists(namespace);

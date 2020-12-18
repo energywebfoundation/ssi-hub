@@ -11,7 +11,7 @@ export class ApplicationController {
   @Get()
   @ApiTags('Application')
   @ApiOperation({
-    summary: "Returns Array or Apps",
+    summary: 'Returns Array or Apps',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -24,7 +24,7 @@ export class ApplicationController {
   @Get('/:namespace')
   @ApiTags('Application')
   @ApiOperation({
-    summary: "Returns App with given namespace",
+    summary: 'Returns App with given namespace',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -37,12 +37,12 @@ export class ApplicationController {
   @Get('/:namespace/exists')
   @ApiTags('Application')
   @ApiOperation({
-    summary: "Returns if App exists",
+    summary: 'Returns if App exists',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: Boolean,
-    description: "Application with matching Id"
+    description: 'Application with matching Id',
   })
   public async exists(@Param('namespace') namespace: string) {
     return await this.applicationService.exists(namespace);
@@ -51,12 +51,12 @@ export class ApplicationController {
   @Get('/:namespace/roles')
   @ApiTags('Application')
   @ApiOperation({
-    summary: "Returns Array of Roles of an App",
+    summary: 'Returns Array of Roles of an App',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: [RoleDTO],
-    description: "Roles connected with App namespace"
+    description: 'Roles connected with App namespace',
   })
   public async getRolesByAppId(@Param('namespace') namespace: string) {
     return await this.applicationService.getRoles(namespace);
