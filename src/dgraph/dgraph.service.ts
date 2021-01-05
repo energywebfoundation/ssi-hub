@@ -37,6 +37,7 @@ export class DgraphService {
         parentNamespace
         isAccepted
         createdAt
+        isRejected
       }
       
       type RoleIssuer {
@@ -138,6 +139,7 @@ export class DgraphService {
       
       token: string .
       isAccepted: bool .
+      isRejected: bool .
       createdAt: string .
       token: string .
       issuedToken: string .
