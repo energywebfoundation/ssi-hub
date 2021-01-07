@@ -9,6 +9,7 @@ import {
 import { ApiQuery, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NamespaceService } from './namespace.service';
 import { OrganizationDTO } from '../organization/OrganizationDTO';
+import { NamespaceEntities } from './namespace.types';
 
 @Controller('namespace')
 export class NamespaceController {
@@ -32,18 +33,26 @@ export class NamespaceController {
   @ApiOperation({
     summary: 'Search Org/App/Role by namespace',
   })
+  @ApiQuery({
+    name: 'type',
+    required: true,
+    enum: NamespaceEntities,
+  })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: [OrganizationDTO],
+    isArray: true,
   })
-  public async search(@Param('search') search: string) {
+  public async search(
+    @Param('search') search: string,
+    @Query('type') type: NamespaceEntities,
+  ) {
     if (search.length < 3) {
       throw new HttpException(
         'Search phrase too short (min 3 characters)',
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.namespaceService.searchByText(search);
+    return await this.namespaceService.searchByText(search, type);
   }
 
   @Get('/:namespace')
@@ -51,7 +60,7 @@ export class NamespaceController {
   @ApiQuery({
     name: 'types',
     type: [String],
-    enum: ['App', 'Org', 'Role'],
+    enum: NamespaceEntities,
     isArray: true,
     required: false,
   })

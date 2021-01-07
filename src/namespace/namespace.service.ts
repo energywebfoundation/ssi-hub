@@ -3,6 +3,7 @@ import { DgraphService } from '../dgraph/dgraph.service';
 import { Organization } from '../organization/OrganizationTypes';
 import { Application } from '../application/ApplicationTypes';
 import { Role } from '../role/RoleTypes';
+import { NamespaceEntities } from './namespace.types';
 
 const expand = `
       expand(_all_) {
@@ -53,14 +54,25 @@ export class NamespaceService {
    */
   public async searchByText(
     text: string,
-  ): Promise<(Application | Organization)[]> {
-    const res = await this.dgraph.query(`{
-       data(func: match(namespace, "${text}", 32)) @filter(eq(dgraph.type, ["App", "Org"])) {
-          uid
-          ${expand}
-       }
-    }`);
-    const json = res.getJson() as { data: (Application | Organization)[] };
+    type: NamespaceEntities,
+  ): Promise<(Application | Organization | Role)[]> {
+    const res = await this.dgraph.query(
+      `query all($name: string, $type: string) {
+        data(
+          func: type($type))
+          @filter(
+            regexp(namespace, /${text}/i) OR
+            regexp(name, /${text}/i)
+          ) {
+              uid
+              ${expand}
+        }
+      }`,
+      { $type: type },
+    );
+    const json = res.getJson() as {
+      data: (Application | Organization | Role)[];
+    };
 
     return json.data;
   }

@@ -133,7 +133,7 @@ export class DgraphService {
       }
       
       name: string @index(exact) .
-      owner: string @index(exact) .
+      owner: string @index(exact, trigram) .
       namespace: string @index(term, trigram) .
       definition: uid .
       roles: [uid] .
