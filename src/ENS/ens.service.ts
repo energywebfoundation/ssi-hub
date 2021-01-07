@@ -135,7 +135,7 @@ export class EnsService {
     const subdomains: Record<string, null> = {};
     for (const name of foundDomains) {
       const nameArray = name.split('.').reverse();
-      if (nameArray.length <= role.length) return;
+      if (nameArray.length <= role.length) continue;
       subdomains[nameArray[role.length]] = null;
     }
     return Object.keys(subdomains);
@@ -343,7 +343,7 @@ export class EnsService {
                 `${role}.${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
               );
             } catch (err) {
-              this.logger.error(err);
+              this.logger.error(err.message);
               return;
             }
           }
@@ -369,22 +369,22 @@ export class EnsService {
                     `${role}.${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
                   );
                 } catch (err) {
-                  this.logger.error(err);
+                  this.logger.error(err.message);
                   return;
                 }
               }
             } catch (err) {
-              this.logger.error(err);
+              this.logger.error(err.message);
               return;
             }
           }
         } catch (err) {
-          this.logger.error(err);
+          this.logger.error(err.message);
           return;
         }
       }
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(err.message);
       return;
     }
     this.logger.debug('finished sync');

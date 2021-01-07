@@ -1,6 +1,6 @@
 enable_cron_backup:
 	crontab -l > newcron
-	echo "*/30 * * * * cd /app && make backup" >> newcron
+	echo "0 */12 * * * cd /app && make backup" >> newcron
 	crontab newcron
 	rm newcron
 
