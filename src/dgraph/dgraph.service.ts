@@ -101,9 +101,9 @@ export class DgraphService {
       roleType: string .
       roleName: string .
       
-      description: string .
+      description: string @index(trigram) .
       logoUrl: string .
-      websiteUrl: string .
+      websiteUrl: string @index(trigram) .
       others: [uid] .
       appName: string .
       orgName: string .
@@ -133,9 +133,9 @@ export class DgraphService {
       }
       
       name: string @index(exact) .
-      owner: string @index(exact, trigram) .
+      owner: string @index(exact) .
       namespace: string @index(term, trigram) .
-      definition: uid .
+      definition: uid @reverse .
       roles: [uid] .
       apps: [uid] .
       

@@ -54,26 +54,68 @@ export class NamespaceService {
    */
   public async searchByText(
     text: string,
-    type: NamespaceEntities,
+    type?: NamespaceEntities,
   ): Promise<(Application | Organization | Role)[]> {
-    const res = await this.dgraph.query(
-      `query all($name: string, $type: string) {
+    const directNamespacesPromise = this.dgraph.query(
+      `{
         data(
-          func: type($type))
+          func: ${type ? `type(${type})` : 'has(namespace)'})
           @filter(
             regexp(namespace, /${text}/i) OR
             regexp(name, /${text}/i)
           ) {
-              uid
-              ${expand}
+            uid
+            name
+            definition {
+              expand(_all_)
+            }
+            owner
+            namespace
         }
       }`,
       { $type: type },
     );
-    const json = res.getJson() as {
+    const reverseNamespacesPromise = await this.dgraph.query(
+      `{
+      data(func: ${
+        type ? `type(${type}Definition)` : 'has(description)'
+      }) @filter(regexp(websiteUrl, /${text}/) OR regexp(description, /${text}/) AND has(~definition)) {
+        ~definition {
+          uid
+          name
+          definition {
+            expand(_all_)
+          }
+          owner
+          namespace
+        }
+      }
+      }`,
+    );
+    const [
+      directNamespacesResponse,
+      reverseNamespacesResponse,
+    ] = await Promise.all([directNamespacesPromise, reverseNamespacesPromise]);
+    const reverseNamespaces = reverseNamespacesResponse.getJson() as {
+      data: {
+        '~definition': (Application | Organization | Role)[];
+      }[];
+    };
+    const namespaces = reverseNamespaces.data.reduce(
+      (acc, { '~definition': def }) => {
+        acc.push(...def);
+        return acc;
+      },
+      [] as (Application | Organization | Role)[],
+    );
+    const { data: directNamespaces } = directNamespacesResponse.getJson() as {
       data: (Application | Organization | Role)[];
     };
-
-    return json.data;
+    const unique: Record<string, Application | Organization | Role> = {};
+    for (const { uid, ...rest } of [...directNamespaces, ...namespaces]) {
+      if (unique[uid]) continue;
+      unique[uid] = { uid, ...rest };
+    }
+    return Object.values(unique);
   }
 }

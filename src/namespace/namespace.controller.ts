@@ -35,7 +35,7 @@ export class NamespaceController {
   })
   @ApiQuery({
     name: 'type',
-    required: true,
+    required: false,
     enum: NamespaceEntities,
   })
   @ApiResponse({
@@ -44,7 +44,7 @@ export class NamespaceController {
   })
   public async search(
     @Param('search') search: string,
-    @Query('type') type: NamespaceEntities,
+    @Query('type') type?: NamespaceEntities,
   ) {
     if (search.length < 3) {
       throw new HttpException(
