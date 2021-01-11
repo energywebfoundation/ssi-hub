@@ -27,4 +27,3 @@ RUN chmod +x /app/wait-for-db.sh
 
 ENV NODE_ENV=production
 
-USER node

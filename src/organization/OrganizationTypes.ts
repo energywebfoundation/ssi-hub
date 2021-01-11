@@ -1,4 +1,3 @@
-import { Definition } from '../Interfaces/Types';
 import { Role } from '../role/RoleTypes';
 import { Application } from '../application/ApplicationTypes';
 import { KeyValue } from '../Interfaces/KeyValue';
@@ -7,7 +6,7 @@ import { DGraphObject } from '../Interfaces/DGraphObject';
 /**
  * Interface describing generic Organization model
  */
-export interface OrgDefinition extends Definition {
+export interface OrgDefinition extends DGraphObject {
   orgName: string;
   description?: string;
   websiteUrl?: string;

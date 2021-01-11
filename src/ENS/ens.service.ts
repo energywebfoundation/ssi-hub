@@ -18,6 +18,7 @@ import { CreateApplicationDefinition } from '../application/ApplicationDTO';
 import { CreateRoleDefinition } from '../role/RoleTypes';
 import { namehash } from '../ethers/utils';
 import { OwnerService } from '../owner/owner.service';
+import { DgraphService } from '../dgraph/dgraph.service';
 
 enum ENSNamespaceTypes {
   Roles = 'roles',
@@ -38,6 +39,7 @@ export class EnsService {
     private organizationService: OrganizationService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private config: ConfigService,
+    private dgraph: DgraphService,
   ) {
     this.logger = new Logger('ENSService');
     errors.setLogLevel('error');
@@ -71,10 +73,13 @@ export class EnsService {
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
-
-    this.InitEventListeners();
-    this.loadNamespaces();
-    this.syncENS();
+    const setup = async () => {
+      await this.dgraph.fixDgraph();
+      await this.InitEventListeners();
+      await this.loadNamespaces();
+      await this.syncENS();
+    };
+    setup();
   }
 
   private async InitEventListeners(): Promise<void> {
@@ -343,8 +348,8 @@ export class EnsService {
                 `${role}.${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
               );
             } catch (err) {
-              this.logger.error(err.message);
-              return;
+              this.logger.error(JSON.stringify(err));
+              continue;
             }
           }
           for (const app of applications) {
@@ -369,23 +374,22 @@ export class EnsService {
                     `${role}.${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
                   );
                 } catch (err) {
-                  this.logger.error(err.message);
-                  return;
+                  this.logger.error(JSON.stringify(err));
+                  continue;
                 }
               }
             } catch (err) {
-              this.logger.error(err.message);
-              return;
+              this.logger.error(JSON.stringify(err));
+              continue;
             }
           }
         } catch (err) {
-          this.logger.error(err.message);
-          return;
+          this.logger.error(JSON.stringify(err));
+          continue;
         }
       }
     } catch (err) {
-      this.logger.error(err.message);
-      return;
+      this.logger.error(JSON.stringify(err));
     }
     this.logger.debug('finished sync');
   }

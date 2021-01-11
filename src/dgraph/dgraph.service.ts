@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import { ConfigService } from '@nestjs/config';
 import { Policy } from 'cockatiel';
+import { promisify } from 'util';
+import * as fs from 'fs';
 
 @Injectable()
 export class DgraphService {
@@ -178,7 +180,7 @@ export class DgraphService {
    */
   public async mutate(data: unknown) {
     const instance = await this.getInstance();
-    const txn = await instance.newTxn();
+    const txn = instance.newTxn();
     const mu = new Mutation();
     mu.setSetJson(data);
     mu.setCommitNow(true);
@@ -190,16 +192,12 @@ export class DgraphService {
    * @param ids ID or array of IDs
    */
   public async delete(ids: string | string[]) {
-    let json;
-    if (Array.isArray(ids)) {
-      json = ids.map(uid => ({ uid }));
-    } else {
-      json = [{ uid: ids }];
-    }
     const instance = await this.getInstance();
-    const txn = await instance.newTxn();
+    const txn = instance.newTxn();
     const mu = new Mutation();
-    mu.setDeleteJson(json);
+    mu.setDeleteJson(
+      Array.isArray(ids) ? ids.map(uid => ({ uid })) : [{ uid: ids }],
+    );
     mu.setCommitNow(true);
     return txn.mutate(mu);
   }
@@ -250,6 +248,47 @@ export class DgraphService {
 
       return this._instance;
     });
+  }
+
+  private async dropDB() {
+    const op = new Operation();
+    op.setDropAll(true);
+    await this._instance.alter(op);
+  }
+
+  async fixDgraph() {
+    const claims = await this.query(`
+    {
+      claims(func: type(Claim)) {
+        uid
+        id
+        requester
+        claimIssuer
+        claimType
+        token
+        issuedToken
+        parentNamespace
+        isAccepted
+        createdAt
+        acceptedBy
+        dgraph.type
+      }
+    }
+    `);
+    const data = claims.getJson();
+    const writeFileWithPromise = promisify(fs.writeFile);
+    const readFileWithPromise = promisify(fs.readFile);
+
+    await writeFileWithPromise('claims.json', JSON.stringify(data));
+    console.log('saved claims');
+    await this.dropDB();
+    console.log('db dropped');
+    await this.migrate();
+    console.log('Migration after dump completed');
+    const readData = await readFileWithPromise('claims.json');
+    const { claims: save } = JSON.parse(readData.toString());
+    await this.mutate(save);
+    console.log('claims restored');
   }
 
   /**
