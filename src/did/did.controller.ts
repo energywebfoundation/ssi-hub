@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { Queue } from 'bull';
 import { NotFoundInterceptor } from 'src/interceptors/not-found.interceptor';
-import { DIDService } from './did.service';
+import { DIDService, upsert_queue_channel } from './did.service';
 import { DID } from './DidTypes';
 
 @Controller('DID')
@@ -93,6 +93,6 @@ export class DIDController {
   @HttpCode(202)
   public async upsertById(@Param('id') id: string) {
     this.logger.debug(`queueing upsert for ${id}`);
-    await this.didQueue.add('refreshDocument', id);
+    await this.didQueue.add(upsert_queue_channel, id);
   }
 }

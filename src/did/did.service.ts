@@ -21,14 +21,15 @@ import { DID } from './DidTypes';
 import { BigNumber, bigNumberify } from 'ethers/utils';
 import { DIDDGraphRepository } from './did.repository';
 
+export const upsert_queue_channel = 'upsertDocument';
+export const refresh_queue_channel = 'refreshDocument';
+
 @Injectable()
 export class DIDService {
   private readonly logger: Logger;
   private readonly provider: providers.JsonRpcProvider;
   private readonly didRegistry: EthereumDidRegistry;
   private readonly ipfsStore: IDidStore;
-  private readonly upsert_queue_channel = 'upsertDocument';
-  private readonly refresh_queue_channel = 'refreshDocument';
 
   constructor(
     private readonly config: ConfigService,
@@ -82,7 +83,7 @@ export class DIDService {
         // Only refreshing a DID that is already cached.
         // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
         if (didDocEntity) {
-          await this.didQueue.add(this.refresh_queue_channel, did);
+          await this.didQueue.add(refresh_queue_channel, did);
         }
       },
     );
@@ -92,7 +93,7 @@ export class DIDService {
     this.logger.log(`Beginning sync of DID Documents`);
     const cachedDIDs = await this.didRepository.queryAllDIDs();
     cachedDIDs.forEach(async did => {
-      await this.didQueue.add(this.refresh_queue_channel, did.id);
+      await this.didQueue.add(refresh_queue_channel, did.id);
     });
   }
 
@@ -125,12 +126,21 @@ export class DIDService {
   public async upsertCachedDocument(did: DID): Promise<void> {
     try {
       this.logger.log(`upserting cached document for did: ${did.id}`);
-      const didEntity =
-        (await this.didRepository.queryById(did)) ?? new DIDDocumentEntity(did);
+      let didEntity = (await this.didRepository.queryById(did)); // TODO: Improve logic so don't need to mutate
+      let newDoc = false;
+      if (!didEntity) {
+          didEntity = new DIDDocumentEntity(did);
+          newDoc = true;
+      }
       const logs = await this.readNewLogsFromChain(didEntity);
-      didEntity.updateLogData(logs);
-      didEntity.cacheIPFSClaims(this.ipfsStore);
-      await this.didRepository.saveDocument(didEntity.getDTO());
+      if (logs) { // TODO: need more sophisticated way of detecting if there are new logs (maybe add method to didLib?) 
+        didEntity.updateLogData(logs);
+        didEntity.cacheIPFSClaims(this.ipfsStore);
+        await this.didRepository.saveDocument(didEntity.getDTO());
+      }
+      else if (newDoc) {
+        await this.didRepository.saveDocument(didEntity.getDTO());
+      }
     } catch (err) {
       this.logger.error(
         `upserting cached document for did: ${did.id} threw error: ${err}`,
