@@ -17,13 +17,18 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ClaimDataMessage, NATS_EXCHANGE_TOPIC } from './ClaimTypes';
+import {
+  IClaimIssuance,
+  IClaimRejection,
+  IClaimRequest,
+  NATS_EXCHANGE_TOPIC,
+} from './ClaimTypes';
 import { NatsService } from '../nats/nats.service';
 import { v4 as uuid } from 'uuid';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { validate } from 'class-validator';
-import { ClaimIssue, ClaimRequest } from './ClaimDTO';
+import { ClaimIssue, ClaimRejection, ClaimRequest } from './ClaimDTO';
 
 @Controller('claim')
 export class ClaimController {
@@ -36,7 +41,7 @@ export class ClaimController {
   ) {
     this.logger = new Logger('ClaimController');
     this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
-      this.logger.debug(`saving ${data}`);
+      this.logger.debug(`Got message ${data}`);
       await this.claimQueue.add('save', data);
     });
   }
@@ -54,9 +59,9 @@ export class ClaimController {
   })
   public async postIssuerClaim(
     @Param('did') did: string,
-    @Body() data: ClaimDataMessage,
+    @Body() data: IClaimIssuance,
   ) {
-    const claimData: ClaimDataMessage = {
+    const claimData: IClaimIssuance = {
       ...data,
       acceptedBy: did,
     };
@@ -79,6 +84,10 @@ export class ClaimController {
   @Post('/request/:did')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
+  @ApiBody({
+    type: ClaimRequest,
+    description: 'Claim data object, containing id and issuedToken',
+  })
   @ApiOperation({
     summary: 'registers new claim request',
     description:
@@ -91,10 +100,10 @@ export class ClaimController {
   })
   public async postRequesterClaim(
     @Param('did') did: string,
-    @Body() data: ClaimDataMessage,
+    @Body() data: IClaimRequest,
   ) {
     const id = uuid();
-    const claimData: ClaimDataMessage = {
+    const claimData: IClaimRequest = {
       ...data,
       id,
     };
@@ -108,8 +117,7 @@ export class ClaimController {
     }
 
     const payload = JSON.stringify(claimData);
-    this.logger.debug(`publishing claims request ${payload}`);
-    this.nats.connection.publish(did, payload);
+    this.logger.debug(`publishing claims rejection ${payload} from ${did}`);
     data.claimIssuer.map(issuerDid => {
       this.nats.connection.publish(
         `${issuerDid}.${NATS_EXCHANGE_TOPIC}`,
@@ -117,6 +125,43 @@ export class ClaimController {
       );
     });
     return id;
+  }
+
+  @Post('/reject/:did')
+  @ApiExcludeEndpoint()
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'rejects claim request',
+  })
+  @ApiBody({
+    type: ClaimRejection,
+    description: 'Claim data object',
+  })
+  @ApiResponse({
+    status: 200,
+  })
+  public async postClaimRejection(
+    @Param('did') did: string,
+    @Body() data: IClaimRejection,
+  ) {
+    const claimData: IClaimRejection = {
+      ...data,
+    };
+
+    const claimDTO = new ClaimRejection(claimData);
+
+    const err = await validate(claimDTO);
+
+    if (err.length > 0) {
+      return err;
+    }
+
+    const payload = JSON.stringify(claimData);
+    this.logger.debug(`publishing claims rejection ${payload} from ${did}`);
+    this.nats.connection.publish(
+      `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
+      payload,
+    );
   }
 
   @Get('/:id')

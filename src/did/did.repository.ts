@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DIDDocumentEntity, DID_DgraphType } from './DidDocumentEntity';
 import { DID } from './DidTypes';
 import { DIDDocumentDTO } from './DidDTOs';
-import { DgraphService } from 'src/dgraph/dgraph.service';
+import { DgraphService } from '../dgraph/dgraph.service';
 
 @Injectable()
 export class DIDDGraphRepository {

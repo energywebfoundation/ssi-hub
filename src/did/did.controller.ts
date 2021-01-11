@@ -16,7 +16,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Queue } from 'bull';
-import { NotFoundInterceptor } from 'src/interceptors/not-found.interceptor';
+import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
 import { DID } from './DidTypes';
 
