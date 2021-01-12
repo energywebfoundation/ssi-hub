@@ -3,5 +3,5 @@
  */
 export interface DGraphObject {
   uid?: string;
-  'dgraph.type'?: string;
+  'dgraph.type': string;
 }

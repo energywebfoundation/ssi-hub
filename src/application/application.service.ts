@@ -99,7 +99,6 @@ export class ApplicationService {
 
     const queryData = {
       uid: '_:new',
-      type: 'app',
       ...appDTO,
     };
 
@@ -122,7 +121,10 @@ export class ApplicationService {
       return;
     }
 
-    const appDefDTO = new ApplicationDefinitionDTO(patch.definition);
+    const appDefDTO = new ApplicationDefinitionDTO({
+      ...patch.definition,
+      uid: oldData.definition.uid,
+    });
     const appDTO = new ApplicationDTO(patch, appDefDTO);
 
     const err = await validate(appDTO);

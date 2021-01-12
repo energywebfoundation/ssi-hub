@@ -1,4 +1,3 @@
-import { Definition } from '../Interfaces/Types';
 import { Role } from '../role/RoleTypes';
 import { KeyValue } from '../Interfaces/KeyValue';
 import { DGraphObject } from '../Interfaces/DGraphObject';
@@ -17,7 +16,7 @@ export interface Application extends DGraphObject {
 /**
  * Interface describing generic Application's Definition model
  */
-export interface AppDefinition extends Definition {
+export interface AppDefinition extends DGraphObject {
   appName: string;
   description?: string;
   websiteUrl?: string;

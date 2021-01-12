@@ -12,6 +12,7 @@ import {
  */
 export class RoleDefinitionDTO implements RoleDefinition {
   constructor(data: RoleDTODefinitionData) {
+    this.uid = data.uid;
     this.metadata = RecordToKeyValue(data.metadata);
     this.roleName = data.roleName;
     this.fields = data?.fields?.map(f => {
@@ -23,6 +24,11 @@ export class RoleDefinitionDTO implements RoleDefinition {
     this.issuer['dgraph.type'] = 'RoleIssuer';
     this.roleType = data.roleType;
   }
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  uid?: string;
 
   @IsOptional()
   @IsArray()
@@ -69,6 +75,7 @@ interface RoleDTOData {
 }
 
 interface RoleDTODefinitionData {
+  uid?: string;
   metadata: Record<string, string>;
   roleName: string;
   fields: { fieldType: string; label: string; validation: string }[];

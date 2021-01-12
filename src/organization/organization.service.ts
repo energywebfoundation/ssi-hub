@@ -125,7 +125,6 @@ export class OrganizationService {
 
     const queryData = {
       uid: '_:new',
-      type: 'org',
       ...orgDTO,
     };
 
@@ -148,7 +147,11 @@ export class OrganizationService {
       return;
     }
 
-    const orgDefDTO = new OrganizationDefinitionDTO(patch.definition);
+    const orgDefDTO = new OrganizationDefinitionDTO({
+      ...patch.definition,
+      uid: oldData.definition.uid,
+    });
+
     const orgDTO = new OrganizationDTO(patch, orgDefDTO);
 
     const err = await validate(orgDTO);

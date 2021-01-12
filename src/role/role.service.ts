@@ -93,7 +93,11 @@ export class RoleService {
       return;
     }
 
-    const roleDefDTO = new RoleDefinitionDTO(patch.definition);
+    const roleDefDTO = new RoleDefinitionDTO({
+      ...patch.definition,
+      uid: oldData.definition.uid,
+    });
+
     const roleDTO = new RoleDTO(patch, roleDefDTO);
 
     roleDTO.definition = roleDefDTO;
