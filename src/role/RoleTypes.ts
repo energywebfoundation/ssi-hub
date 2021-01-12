@@ -1,4 +1,3 @@
-import { Definition } from '../Interfaces/Types';
 import { KeyValue } from '../Interfaces/KeyValue';
 import { DGraphObject } from '../Interfaces/DGraphObject';
 
@@ -45,8 +44,7 @@ export interface Role extends DGraphObject {
 /**
  * Interface describing generic Role's Definition model
  */
-export interface RoleDefinition extends Definition {
-  uid?: string;
+export interface RoleDefinition extends DGraphObject {
   roleType: string;
   roleName: string;
   fields: {

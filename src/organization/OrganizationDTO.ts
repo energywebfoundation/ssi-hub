@@ -23,6 +23,7 @@ export interface CreateOrganizationData {
  * Interface describing raw data required for creation of Organization's Definition DTO
  */
 export interface CreateOrganizationDefinition {
+  uid?: string;
   orgName: string;
   description?: string;
   websiteUrl?: string;
@@ -35,12 +36,18 @@ export interface CreateOrganizationDefinition {
  */
 export class OrganizationDefinitionDTO implements OrgDefinition {
   constructor(data: CreateOrganizationDefinition) {
+    this.uid = data.uid;
     this.description = data.description;
     this.logoUrl = data.logoUrl;
     this.websiteUrl = data.websiteUrl;
     this.others = RecordToKeyValue(data.others);
     this.orgName = data.orgName;
   }
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  uid?: string;
 
   @IsOptional()
   @IsString()

@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { Claim, ClaimDataMessage, DecodedClaimToken } from './ClaimTypes';
+import {
+  Claim,
+  IClaimIssuance,
+  IClaimRejection,
+  IClaimRequest,
+  DecodedClaimToken,
+} from './ClaimTypes';
 import * as jwt_decode from 'jwt-decode';
 
 const claimQuery = `
@@ -31,13 +37,24 @@ export class ClaimService {
    * Handles claims saving and updates
    * @param data Raw claim data
    */
-  public async saveOrUpdate(data: ClaimDataMessage): Promise<string> {
+  public async saveOrUpdate(
+    data: IClaimIssuance | IClaimRejection | IClaimRequest,
+  ): Promise<string> {
     const claim: Claim = await this.getById(data.id);
-    if (!claim) {
+    if (!claim && 'token' in data) {
       return await this.saveClaim(data);
     }
+    if (claim && !claim.isAccepted && 'isRejected' in data) {
+      const patch: Claim = {
+        ...claim,
+        isRejected: data.isRejected,
+        uid: claim.uid,
+      };
+      await this.dgraph.mutate(patch);
+      return claim.uid;
+    }
 
-    if (claim && data.issuedToken) {
+    if (claim && !claim.isRejected && 'issuedToken' in data) {
       const patch: Claim = {
         ...claim,
         issuedToken: data.issuedToken,
@@ -54,7 +71,7 @@ export class ClaimService {
    * Saves claim to database
    * @param data Raw claim data
    */
-  public async saveClaim({ ...data }: ClaimDataMessage): Promise<string> {
+  public async saveClaim(data: IClaimRequest): Promise<string> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const decodedData: DecodedClaimToken = jwt_decode(data.token);
@@ -70,6 +87,7 @@ export class ClaimService {
       ...data,
       id: data.id,
       isAccepted: false,
+      isRejected: false,
       createdAt: Date.now().toString(),
       claimType: decodedData.claimData.claimType,
       parentNamespace: parent,

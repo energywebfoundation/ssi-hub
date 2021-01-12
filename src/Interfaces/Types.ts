@@ -2,12 +2,6 @@ import { CreateOrganizationDefinition } from '../organization/OrganizationDTO';
 import { CreateApplicationDefinition } from '../application/ApplicationDTO';
 import { CreateRoleDefinition } from '../role/RoleTypes';
 
-export interface Definition {
-  appName?: string;
-  orgName?: string;
-  roleName?: string;
-}
-
 export type DefinitionData =
   | CreateOrganizationDefinition
   | CreateApplicationDefinition

@@ -1,9 +1,9 @@
-import { ClaimDataMessage } from './ClaimTypes';
-import { IsArray, IsString } from 'class-validator';
+import { IClaimIssuance, IClaimRejection, IClaimRequest } from './ClaimTypes';
+import { IsArray, IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ClaimRequest implements ClaimDataMessage {
-  constructor(data: ClaimDataMessage) {
+export class ClaimRequest implements IClaimRequest {
+  constructor(data: IClaimRequest) {
     this.id = data.id;
     this.claimIssuer = data.claimIssuer;
     this.requester = data.requester;
@@ -27,14 +27,13 @@ export class ClaimRequest implements ClaimDataMessage {
   token: string;
 }
 
-export class ClaimIssue implements ClaimDataMessage {
-  constructor(data: ClaimDataMessage) {
+export class ClaimIssue implements IClaimIssuance {
+  constructor(data: IClaimIssuance) {
     this.id = data.id;
     this.acceptedBy = data.acceptedBy;
     this.claimIssuer = data.claimIssuer;
     this.issuedToken = data.issuedToken;
     this.requester = data.requester;
-    this.token = data.token;
   }
 
   @IsString()
@@ -56,8 +55,29 @@ export class ClaimIssue implements ClaimDataMessage {
   @IsString()
   @ApiProperty()
   requester: string;
+}
+
+export class ClaimRejection implements IClaimRejection {
+  constructor(data: IClaimRejection) {
+    this.id = data.id;
+    this.claimIssuer = data.claimIssuer;
+    this.requester = data.requester;
+    this.isRejected = data.isRejected;
+  }
 
   @IsString()
   @ApiProperty()
-  token: string;
+  id: string;
+
+  @IsArray()
+  @ApiProperty()
+  claimIssuer: string[];
+
+  @IsString()
+  @ApiProperty()
+  requester: string;
+
+  @IsBoolean()
+  @ApiProperty()
+  isRejected: boolean;
 }

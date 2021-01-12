@@ -22,6 +22,7 @@ export interface CreateApplicationData {
  * Interface describing raw data required for creation of Application's Definition DTO
  */
 export interface CreateApplicationDefinition {
+  uid?: string;
   appName: string;
   description?: string;
   websiteUrl?: string;
@@ -34,12 +35,18 @@ export interface CreateApplicationDefinition {
  */
 export class ApplicationDefinitionDTO implements AppDefinition {
   constructor(data: CreateApplicationDefinition) {
+    this.uid = data.uid;
     this.description = data.description;
     this.logoUrl = data.logoUrl;
     this.websiteUrl = data.websiteUrl;
     this.others = RecordToKeyValue(data.others);
     this.appName = data.appName;
   }
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  uid?: string;
 
   @IsOptional()
   @IsString()
