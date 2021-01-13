@@ -93,27 +93,29 @@ export class RoleService {
       return;
     }
 
-    const newFields = patch.definition.fields.map(field => {
-      const oldField = oldData.definition.fields.find(
-        ({ label }) => label === field.label,
-      );
-      if (oldField) {
-        return {
-          uid: oldField.uid,
-          ...field,
-        };
-      }
-      return field;
-    });
+    const newFields =
+      Array.isArray(patch.definition.fields) &&
+      patch.definition.fields.map(field => {
+        const oldField =
+          Array.isArray(oldData.definition.fields) &&
+          oldData.definition.fields.find(({ label }) => label === field.label);
+        if (oldField) {
+          return {
+            uid: oldField.uid,
+            ...field,
+          };
+        }
+        return field;
+      });
 
     const roleDefDTO = new RoleDefinitionDTO({
       ...patch.definition,
       uid: oldData.definition.uid,
       issuer: {
-        uid: oldData.definition.issuer.uid,
+        uid: oldData.definition.issuer?.uid,
         ...patch.definition.issuer,
       },
-      fields: newFields,
+      fields: newFields || undefined,
     });
 
     const roleDTO = new RoleDTO(patch, roleDefDTO);

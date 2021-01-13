@@ -167,7 +167,7 @@ export class EnsService {
 
       await this.createRole({ data, namespace, owner });
     } catch (err) {
-      this.logger.debug(err);
+      this.logger.debug(JSON.stringify(err));
       return;
     }
   }

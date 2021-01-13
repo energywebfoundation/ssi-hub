@@ -76,7 +76,7 @@ export class OrganizationDefinitionDTO implements OrgDefinition {
     type: 'array',
     items: KeyValueAPIDefinition,
   })
-  others: KeyValue[] = [];
+  others?: KeyValue[] = [];
 
   readonly 'dgraph.type' = 'OrgDefinition';
 }

@@ -43,12 +43,17 @@ export class RoleDefinitionDTO implements RoleDefinition {
       },
     },
   })
-  fields: { fieldType: string; label: string; validation: string }[];
+  fields?: {
+    fieldType: string;
+    label: string;
+    validation: string;
+    uid?: string;
+  }[];
 
   @IsOptional()
   @IsArray()
   @ApiProperty(KeyValueAPIDefinition)
-  metadata: KeyValue[];
+  metadata?: KeyValue[];
 
   issuer: { issuerType: string; did: string[]; roleName: string; uid?: string };
 
@@ -76,9 +81,9 @@ interface RoleDTOData {
 
 interface RoleDTODefinitionData {
   uid?: string;
-  metadata: Record<string, string>;
+  metadata?: Record<string, string>;
   roleName: string;
-  fields: { fieldType: string; label: string; validation: string }[];
+  fields?: { fieldType: string; label: string; validation: string }[];
   version: string;
   issuer: { issuerType: string; did: string[]; roleName: string };
   roleType: string;

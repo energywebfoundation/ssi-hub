@@ -18,12 +18,12 @@ export interface CreateRoleDefinition {
   version: string;
   roleType: 'custom';
   roleName: string;
-  fields: {
+  fields?: {
     fieldType: string;
     label: string;
     validation: string;
   }[];
-  metadata: Record<string, string>;
+  metadata?: Record<string, string>;
   issuer: {
     uid?: string;
     issuerType: string;
@@ -48,13 +48,13 @@ export interface Role extends DGraphObject {
 export interface RoleDefinition extends DGraphObject {
   roleType: string;
   roleName: string;
-  fields: {
+  fields?: {
     fieldType: string;
     label: string;
     validation: string;
     uid?: string;
   }[];
-  metadata: KeyValue[];
+  metadata?: KeyValue[];
   issuer: {
     issuerType: string;
     did: string[];
