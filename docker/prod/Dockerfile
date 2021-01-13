@@ -25,7 +25,7 @@ COPY --chown=node:node --from=build /app/wait-for-db.sh /app/wait-for-db.sh
 
 RUN chmod +x /app/wait-for-db.sh
 
-USER node
+# USER node
 
 ENV NODE_ENV=production
 

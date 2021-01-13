@@ -122,6 +122,7 @@ export class ApplicationService {
       return;
     }
     const newOthers =
+      patch.definition.others &&
       !Array.isArray(patch.definition.others) &&
       RecordToKeyValue(patch.definition.others).map(other => {
         const oldOther = oldData.definition.others.find(

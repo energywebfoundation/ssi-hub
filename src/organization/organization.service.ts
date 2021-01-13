@@ -149,6 +149,7 @@ export class OrganizationService {
     }
 
     const newOthers =
+      patch.definition.others &&
       !Array.isArray(patch.definition.others) &&
       RecordToKeyValue(patch.definition.others).map(other => {
         const oldOther = oldData.definition.others.find(
