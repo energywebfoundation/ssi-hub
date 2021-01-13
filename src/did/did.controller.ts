@@ -69,8 +69,8 @@ export class DIDController {
         this.logger.log(
           `Requested document for did: ${id} not cached. Queuing cache request.`,
         );
-        //Not awaiting result of add because it does not affect result returned to client
-        this.didQueue.add('refreshDocument', id);
+        // awaiting refresh so that subsequent calls don't duplicate cached DID Document
+        await this.didService.refreshCachedDocument(did);
       }
 
       this.logger.debug(`Retrieved document for did: ${id}`);
