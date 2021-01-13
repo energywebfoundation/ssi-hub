@@ -25,6 +25,7 @@ export interface CreateRoleDefinition {
   }[];
   metadata: Record<string, string>;
   issuer: {
+    uid?: string;
     issuerType: string;
     did: string[];
     roleName: string;

@@ -74,6 +74,7 @@ export class EnsService {
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
     const setup = async () => {
+      await this.dgraph.fixDgraph();
       await this.InitEventListeners();
       await this.loadNamespaces();
       await this.syncENS();

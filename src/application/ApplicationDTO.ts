@@ -27,7 +27,7 @@ export interface CreateApplicationDefinition {
   description?: string;
   websiteUrl?: string;
   logoUrl?: string;
-  others?: Record<string, string>;
+  others?: Record<string, string> | KeyValue[];
 }
 
 /**
@@ -39,7 +39,9 @@ export class ApplicationDefinitionDTO implements AppDefinition {
     this.description = data.description;
     this.logoUrl = data.logoUrl;
     this.websiteUrl = data.websiteUrl;
-    this.others = RecordToKeyValue(data.others);
+    this.others = Array.isArray(data.others)
+      ? data.others
+      : RecordToKeyValue(data.others);
     this.appName = data.appName;
   }
 

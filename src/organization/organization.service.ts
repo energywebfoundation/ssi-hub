@@ -7,6 +7,7 @@ import {
   OrganizationDTO,
 } from './OrganizationDTO';
 import { validate } from 'class-validator';
+import { RecordToKeyValue } from 'src/Interfaces/KeyValue';
 
 @Injectable()
 export class OrganizationService {
@@ -147,9 +148,25 @@ export class OrganizationService {
       return;
     }
 
+    const newOthers =
+      !Array.isArray(patch.definition.others) &&
+      RecordToKeyValue(patch.definition.others).map(other => {
+        const oldOther = oldData.definition.others.find(
+          ({ key }) => other.key === key,
+        );
+        if (oldOther) {
+          return {
+            uid: oldOther.uid,
+            ...other,
+          };
+        }
+        return other;
+      });
+
     const orgDefDTO = new OrganizationDefinitionDTO({
       ...patch.definition,
       uid: oldData.definition.uid,
+      others: newOthers,
     });
 
     const orgDTO = new OrganizationDTO(patch, orgDefDTO);

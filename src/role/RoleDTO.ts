@@ -50,7 +50,7 @@ export class RoleDefinitionDTO implements RoleDefinition {
   @ApiProperty(KeyValueAPIDefinition)
   metadata: KeyValue[];
 
-  issuer: { issuerType: string; did: string[]; roleName: string };
+  issuer: { issuerType: string; did: string[]; roleName: string; uid?: string };
 
   @IsString()
   @ApiProperty()
