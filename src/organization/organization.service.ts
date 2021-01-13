@@ -147,7 +147,9 @@ export class OrganizationService {
     if (!oldData) {
       return;
     }
-
+    // Assuming that "others" data from Blockchain is an object and data from db is an array.
+    // Therefore, we assume that data which is not in an Array is data from Blockchain.
+    // This means that it needs to have its uid mapped so as to not duplicate records.
     const newOthers =
       patch.definition.others &&
       !Array.isArray(patch.definition.others) &&
