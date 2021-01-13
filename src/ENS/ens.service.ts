@@ -74,6 +74,7 @@ export class EnsService {
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
     const setup = async () => {
+      await this.dgraph.fixDgraph();
       await this.InitEventListeners();
       await this.loadNamespaces();
       await this.syncENS();
@@ -166,7 +167,7 @@ export class EnsService {
 
       await this.createRole({ data, namespace, owner });
     } catch (err) {
-      this.logger.debug(err);
+      this.logger.debug(JSON.stringify(err));
       return;
     }
   }

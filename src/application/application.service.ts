@@ -8,6 +8,7 @@ import {
 } from './ApplicationDTO';
 import { validate } from 'class-validator';
 import { Application } from './ApplicationTypes';
+import { RecordToKeyValue } from 'src/Interfaces/KeyValue';
 
 const baseQueryFields = `
 uid
@@ -120,10 +121,25 @@ export class ApplicationService {
     if (!oldData) {
       return;
     }
-
+    const newOthers =
+      patch.definition.others &&
+      !Array.isArray(patch.definition.others) &&
+      RecordToKeyValue(patch.definition.others).map(other => {
+        const oldOther = oldData.definition.others.find(
+          ({ key }) => other.key === key,
+        );
+        if (oldOther) {
+          return {
+            uid: oldOther.uid,
+            ...other,
+          };
+        }
+        return other;
+      });
     const appDefDTO = new ApplicationDefinitionDTO({
       ...patch.definition,
       uid: oldData.definition.uid,
+      others: newOthers,
     });
     const appDTO = new ApplicationDTO(patch, appDefDTO);
 
