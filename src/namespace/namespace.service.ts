@@ -54,44 +54,65 @@ export class NamespaceService {
    */
   public async searchByText(
     text: string,
-    type?: NamespaceEntities,
+    types?: NamespaceEntities[],
   ): Promise<(Application | Organization | Role)[]> {
-    const directNamespacesPromise = this.dgraph.query(
-      `{
+    const { typeDefinitionFilters, typeFilters } = (types || []).reduce(
+      (filters, type, index) => {
+        if (index > 0) {
+          filters.typeFilters += ` OR `;
+          filters.typeDefinitionFilters += ` OR `;
+        }
+        filters.typeFilters += `type(${type})`;
+        filters.typeDefinitionFilters += `type(${type}Definition)`;
+        return filters;
+      },
+      { typeFilters: '', typeDefinitionFilters: '' } as {
+        typeFilters: string;
+        typeDefinitionFilters: string;
+      },
+    );
+    const typeQuery = `{
         data(
-          func: ${type ? `type(${type})` : 'has(namespace)'})
+          func: has(namespace))
           @filter(
-            regexp(namespace, /${text}/i) OR
-            regexp(name, /${text}/i)
+            ${typeFilters ? `(${typeFilters}) AND` : ''}
+            (regexp(namespace, /${text}/i) OR
+            regexp(name, /${text}/i))
           ) {
             uid
             name
             definition {
+              uid
               expand(_all_)
             }
             owner
             namespace
         }
-      }`,
-      { $type: type },
-    );
-    const reverseNamespacesPromise = await this.dgraph.query(
-      `{
-      data(func: ${
-        type ? `type(${type}Definition)` : 'has(description)'
-      }) @filter(regexp(websiteUrl, /${text}/) OR regexp(description, /${text}/) AND has(~definition)) {
+      }`;
+
+    const directNamespacesPromise = this.dgraph.query(typeQuery);
+
+    const typeDefinitionQuery = `{
+      data(func:has(description)) 
+        @filter(
+          ${typeDefinitionFilters ? `(${typeDefinitionFilters}) AND` : ''}
+          (regexp(websiteUrl, /${text}/) OR regexp(description, /${text}/))
+          AND has(~definition)
+        ) {
         ~definition {
           uid
           name
           definition {
+            uid
             expand(_all_)
           }
           owner
           namespace
         }
       }
-      }`,
-    );
+      }`;
+
+    const reverseNamespacesPromise = this.dgraph.query(typeDefinitionQuery);
     const [
       directNamespacesResponse,
       reverseNamespacesResponse,

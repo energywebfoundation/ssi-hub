@@ -10,6 +10,8 @@ import { ApiQuery, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NamespaceService } from './namespace.service';
 import { OrganizationDTO } from '../organization/OrganizationDTO';
 import { NamespaceEntities } from './namespace.types';
+import { SearchDTO } from './namespace.dto';
+import { validate } from 'class-validator';
 
 @Controller('namespace')
 export class NamespaceController {
@@ -34,9 +36,11 @@ export class NamespaceController {
     summary: 'Search Org/App/Role by namespace',
   })
   @ApiQuery({
-    name: 'type',
+    name: 'types',
     required: false,
     enum: NamespaceEntities,
+    isArray: true,
+    type: [String],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -44,7 +48,7 @@ export class NamespaceController {
   })
   public async search(
     @Param('search') search: string,
-    @Query('type') type?: NamespaceEntities,
+    @Query('types') types?: NamespaceEntities[],
   ) {
     if (search.length < 3) {
       throw new HttpException(
@@ -52,7 +56,15 @@ export class NamespaceController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.namespaceService.searchByText(search, type);
+    const searchByData = new SearchDTO({ search, types });
+    const validationErrors = await validate(searchByData);
+    if (validationErrors.length > 0) {
+      return validationErrors;
+    }
+    return await this.namespaceService.searchByText(
+      searchByData.search,
+      searchByData.types,
+    );
   }
 
   @Get('/:namespace')
