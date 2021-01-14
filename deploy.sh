@@ -9,7 +9,7 @@ export IAM_CACHE_SERVER_IMAGE=$4
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $IAM_CACHE_SERVER_IMAGE
 
 # Creating backup
-make backup
+make backup-ci
 
 # Stopping docker compose
 docker-compose stop

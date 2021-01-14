@@ -8,7 +8,12 @@ backup:
 	/usr/bin/docker-compose exec -T dgraph curl http://localhost:8080/admin/export
 	/usr/bin/docker cp -a dgraph_alpha:/dgraph/export/. ./db_dumps
 	/usr/bin/docker-compose exec -T dgraph rm -rf export
-	find ./db_dumps/* -type d -ctime +7 -exec rm -rf {} \;
+	find ./db_dumps/* -type d -ctime +2 -exec rm -rf {} \;
+
+backup-ci:
+	/usr/bin/docker-compose exec -T dgraph curl http://localhost:8080/admin/export
+	/usr/bin/docker cp -a dgraph_alpha:/dgraph/export/. ./db_dumps
+	/usr/bin/docker-compose exec -T dgraph rm -rf export
 
 restore:
 	FOLDER=$$(ls -t db_dumps | head -1); \
