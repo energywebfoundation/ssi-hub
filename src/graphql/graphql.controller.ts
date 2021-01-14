@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { DgraphService } from '../dgraph/dgraph.service';
-import * as rawBody from 'raw-body';
+import rawBody from 'raw-body';
 
 export const PlainBody = createParamDecorator(
   async (_, context: ExecutionContext) => {
