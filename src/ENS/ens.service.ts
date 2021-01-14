@@ -19,12 +19,7 @@ import { CreateRoleDefinition } from '../role/RoleTypes';
 import { namehash } from '../ethers/utils';
 import { OwnerService } from '../owner/owner.service';
 import { DgraphService } from '../dgraph/dgraph.service';
-
-enum ENSNamespaceTypes {
-  Roles = 'roles',
-  Application = 'apps',
-  Organization = 'org',
-}
+import chunk from 'lodash.chunk';
 
 @Injectable()
 export class EnsService {
@@ -66,7 +61,8 @@ export class EnsService {
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS');
-    const ENS_SYNC_ENABLED = this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
+    const ENS_SYNC_ENABLED =
+      this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
     if (ensSyncInterval && ENS_SYNC_ENABLED) {
       const interval = setInterval(
         () => this.syncENS(),
@@ -109,7 +105,7 @@ export class EnsService {
     });
   }
 
-  private async getSubdomains({ domain }: { domain: string }) {
+  private async getAllNamespaces() {
     const ensInterface = new utils.Interface(ensResolverContract);
     const Event = this.publicResolver.filters.TextChanged(
       null,
@@ -123,30 +119,16 @@ export class EnsService {
       topics: [...(Event.topics as string[])],
     };
     const logs = await this.provider.getLogs(filter);
-    const rawLogs = logs.map(log => {
-      const parsedLog = ensInterface.parseLog(log);
-      return parsedLog.values;
-    });
     const domains = await Promise.all(
-      rawLogs.map(async ({ node }) => {
+      logs.map(log => {
+        const parsedLog = ensInterface.parseLog(log);
+        const { node } = parsedLog.values;
         return this.publicResolver.name(node);
       }),
     );
-    const uniqDomains: Record<string, unknown> = {};
-    for (const item of domains) {
-      if (item && item.endsWith(domain) && !uniqDomains[item]) {
-        uniqDomains[item] = null;
-      }
-    }
-    const foundDomains = Object.keys(uniqDomains);
-    const role = domain.split('.');
-    const subdomains: Record<string, null> = {};
-    for (const name of foundDomains) {
-      const nameArray = name.split('.').reverse();
-      if (nameArray.length <= role.length) continue;
-      subdomains[nameArray[role.length]] = null;
-    }
-    return Object.keys(subdomains);
+
+    const uniqDomains = [...new Set(domains)];
+    return uniqDomains;
   }
 
   public async eventHandler(hash: string, name?: string) {
@@ -328,71 +310,18 @@ export class EnsService {
   async syncENS() {
     this.logger.debug('started sync');
     try {
-      const organizations = await this.getSubdomains({ domain: 'iam.ewc' });
-      for (const org of organizations) {
-        try {
-          const hash = namehash(`${org}.iam.ewc`);
-          await this.eventHandler(hash, `${org}.iam.ewc`);
-          const [roles, applications] = await Promise.all([
-            this.getSubdomains({
-              domain: `${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
-            }),
-            this.getSubdomains({
-              domain: `${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
-            }),
-          ]);
-          for (const role of roles) {
-            try {
-              const hash = namehash(
-                `${role}.${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
-              );
-              await this.eventHandler(
-                hash,
-                `${role}.${ENSNamespaceTypes.Roles}.${org}.iam.ewc`,
-              );
-            } catch (err) {
-              this.logger.error(JSON.stringify(err));
-              continue;
-            }
-          }
-          for (const app of applications) {
-            try {
-              const hash = namehash(
-                `${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
-              );
-              await this.eventHandler(
-                hash,
-                `${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
-              );
-              const roles = await this.getSubdomains({
-                domain: `${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
-              });
-              for (const role of roles) {
-                try {
-                  const hash = namehash(
-                    `${role}.${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
-                  );
-                  await this.eventHandler(
-                    hash,
-                    `${role}.${ENSNamespaceTypes.Roles}.${app}.${ENSNamespaceTypes.Application}.${org}.iam.ewc`,
-                  );
-                } catch (err) {
-                  this.logger.error(JSON.stringify(err));
-                  continue;
-                }
-              }
-            } catch (err) {
-              this.logger.error(JSON.stringify(err));
-              continue;
-            }
-          }
-        } catch (err) {
-          this.logger.error(JSON.stringify(err));
-          continue;
-        }
+      const namespaces = await this.getAllNamespaces();
+      const chunks = chunk(namespaces, 50);
+      for (const part of chunks) {
+        await Promise.allSettled(
+          part.map(item => {
+            const hash = namehash(item);
+            return this.eventHandler(hash, item);
+          }),
+        );
       }
     } catch (err) {
-      this.logger.error(JSON.stringify(err));
+      this.logger.error(err.toString());
     }
     this.logger.debug('finished sync');
   }
