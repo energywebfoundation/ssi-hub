@@ -59,7 +59,8 @@ export class DIDService {
     const didDocSyncInteral = this.config.get<string>(
       'DIDDOC_SYNC_INTERVAL_IN_MS',
     );
-    if (didDocSyncInteral) {
+    const DID_SYNC_ENABLED = this.config.get<string>('DID_SYNC_ENABLED') !== 'false';
+    if (didDocSyncInteral && DID_SYNC_ENABLED) {
       const interval = setInterval(
         () => this.syncDocuments(),
         parseInt(didDocSyncInteral),

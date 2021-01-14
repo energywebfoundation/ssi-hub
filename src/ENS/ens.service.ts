@@ -66,17 +66,21 @@ export class EnsService {
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>('ENS_SYNC_INTERVAL_IN_MS');
-    if (ensSyncInterval) {
+    const ENS_SYNC_ENABLED = this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
+    if (ensSyncInterval && ENS_SYNC_ENABLED) {
       const interval = setInterval(
         () => this.syncENS(),
         parseInt(ensSyncInterval),
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
+
     const setup = async () => {
       await this.InitEventListeners();
       await this.loadNamespaces();
-      await this.syncENS();
+      if (ENS_SYNC_ENABLED) {
+        await this.syncENS();
+      }
     };
     setup();
   }
