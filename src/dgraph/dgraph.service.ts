@@ -130,6 +130,7 @@ export class DgraphService {
         definition
         apps
         roles
+        parentOrg
       }
       
       name: string @index(exact) .
@@ -138,6 +139,7 @@ export class DgraphService {
       definition: uid @reverse .
       roles: [uid] .
       apps: [uid] .
+      parentOrg: uid @reverse .
       
       token: string .
       isAccepted: bool .

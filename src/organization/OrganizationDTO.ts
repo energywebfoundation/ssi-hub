@@ -17,6 +17,7 @@ export interface CreateOrganizationData {
   namespace: string;
   owner: string;
   definition: CreateOrganizationDefinition;
+  parentOrg?: Organization;
 }
 
 /**
@@ -87,6 +88,7 @@ interface OrganizationDTOParams {
   namespace: string;
   roles?: RoleDTO[];
   apps?: ApplicationDTO[];
+  parentOrg?: Organization;
 }
 
 /**
@@ -107,6 +109,7 @@ export class OrganizationDTO implements Organization {
     if (data.apps) this.apps = data.apps;
 
     this.definition = definition;
+    this.parentOrg = data.parentOrg;
   }
 
   @ValidateNested()
@@ -131,6 +134,11 @@ export class OrganizationDTO implements Organization {
   @IsArray()
   @ApiProperty()
   apps: ApplicationDTO[] = [];
+
+  @ApiProperty()
+  @ValidateNested()
+  @IsOptional()
+  parentOrg?: Organization;
 
   readonly 'dgraph.type' = 'Org';
 }

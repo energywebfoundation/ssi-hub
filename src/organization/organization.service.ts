@@ -16,15 +16,22 @@ export class OrganizationService {
   /**
    * retrieves all existing organizations
    */
-  public async getAll() {
+  public async getAll(onlySubOrgs: boolean) {
     const res = await this.dgraph.query(`
-    query all($i: string){
-      Data(func: eq(dgraph.type, "Org")) {
+    {
+      Data(func: type(Org)) ${onlySubOrgs ? '@filter(has(parentOrg))' : ''} {
         uid
         name
         namespace
         owner
         definition ${roleDefinitionFullQuery}
+        parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
       }
     }`);
     return res.getJson();
@@ -92,6 +99,13 @@ export class OrganizationService {
         namespace
         owner
         definition ${roleDefinitionFullQuery}
+        parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
       }
     }`,
       { $i: namespace },
@@ -154,7 +168,7 @@ export class OrganizationService {
       patch.definition.others &&
       !Array.isArray(patch.definition.others) &&
       RecordToKeyValue(patch.definition.others).map(other => {
-        const oldOther = oldData.definition.others.find(
+        const oldOther = oldData.definition.others?.find(
           ({ key }) => other.key === key,
         );
         if (oldOther) {
@@ -172,7 +186,10 @@ export class OrganizationService {
       others: newOthers,
     });
 
-    const orgDTO = new OrganizationDTO(patch, orgDefDTO);
+    const orgDTO = new OrganizationDTO(
+      { ...patch, parentOrg: oldData.parentOrg },
+      orgDefDTO,
+    );
 
     const err = await validate(orgDTO);
 
@@ -242,5 +259,27 @@ export class OrganizationService {
     }
 
     await this.dgraph.delete(org.uid);
+  }
+
+  public async getSubOrgByParentNamespace(namespace: string) {
+    const res = await this.dgraph.query(
+      `
+    query all($i: string){
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
+        ~parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
+      }
+    }`,
+      { $i: namespace },
+    );
+    const json = res.getJson() as {
+      Data: { '~parentOrg': OrganizationDTO[] }[];
+    };
+    return json?.Data?.[0]?.['~parentOrg'] || [];
   }
 }

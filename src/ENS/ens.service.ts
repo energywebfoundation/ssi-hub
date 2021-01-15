@@ -146,18 +146,75 @@ export class EnsService {
       const [owner, data, namespace = name] = await Promise.all(promises);
 
       if (!namespace || !owner || !data) {
-        this.logger.debug(`Role not supported ${name || namespace || hash}`);
+        this.logger.debug(`Role not supported ${name || owner || hash}`);
         return;
       }
 
-      await this.createRole({ data, namespace, owner });
+      await this.syncNamespace({ data, namespace, owner });
     } catch (err) {
-      this.logger.debug(JSON.stringify(err));
+      this.logger.debug(err.toString());
       return;
     }
   }
 
-  public async createRole({
+  getNamespaceType({
+    namespace,
+    metadata,
+  }: {
+    namespace: string;
+    metadata: {
+      orgName?: string;
+      appName?: string;
+      roleName?: string;
+      roleType?: string;
+    };
+  }): {
+    type: 'Org' | 'App' | 'Role' | 'NotSupported';
+    name?: string;
+    orgNamespace?: string;
+    appNamespace?: string;
+  } {
+    const [name, parent, ...rest] = namespace.split('.');
+    if (metadata.orgName) {
+      return {
+        type: 'Org',
+        name,
+        orgNamespace:
+          parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
+      };
+    }
+    if (metadata.appName) {
+      if (parent === 'apps') {
+        return {
+          name,
+          type: 'App',
+          orgNamespace: rest.join('.'),
+        };
+      }
+    }
+
+    if (metadata.roleName) {
+      if (metadata.roleType.toLowerCase() === 'app') {
+        return {
+          name,
+          type: 'Role',
+          appNamespace: rest.join('.'),
+        };
+      }
+      if (metadata.roleType.toLowerCase() === 'org') {
+        return {
+          name,
+          type: 'Role',
+          orgNamespace: rest.join('.'),
+        };
+      }
+    }
+    return {
+      type: 'NotSupported',
+    };
+  }
+
+  public async syncNamespace({
     data,
     namespace,
     owner,
@@ -170,82 +227,80 @@ export class EnsService {
     try {
       metadata = JSON.parse(data);
     } catch (err) {
-      this.logger.debug('invalid metadata json: ', data);
-
+      this.logger.debug('Metadata not parsable: ' + data);
       return;
     }
-    const namespaceFragments = this.roleService.splitNamespace(namespace);
+    const { type, appNamespace, name, orgNamespace } = this.getNamespaceType({
+      metadata,
+      namespace,
+    });
+    if (type === 'NotSupported') {
+      this.logger.debug(
+        'Metadata or namespace not supported for ' + namespace + ': ' + data,
+      );
+      return;
+    }
 
-    const orgNamespace = this.roleService.getNamespaceOf(
-      'org',
-      namespaceFragments,
+    const organization = await this.organizationService.getByNamespace(
+      orgNamespace,
     );
-    const appNamespace = this.roleService.getNamespaceOf(
-      'app',
-      namespaceFragments,
-    );
-    const roleNamespace = this.roleService.getNamespaceOf(
-      'role',
-      namespaceFragments,
-    );
+    const orgId = organization?.uid;
 
-    const orgData = metadata as CreateOrganizationDefinition;
-
-    if (orgData.orgName && orgNamespace) {
-      const orgExists = await this.organizationService.exists(orgNamespace);
+    if (type === 'Org') {
+      const orgExists = await this.organizationService.exists(namespace);
       if (!orgExists) {
         await this.organizationService.create({
-          name: namespaceFragments.org,
-          definition: orgData,
+          name,
+          definition: metadata as CreateOrganizationDefinition,
           namespace,
           owner,
+          parentOrg: orgId ? organization : undefined,
         });
-        this.logger.debug(`created organization for ${orgNamespace}`);
+        this.logger.debug(
+          `created ${
+            orgId ? 'sub organization' : 'organization'
+          } for ${namespace}`,
+        );
         return;
       }
-      await this.organizationService.updateNamespace(orgNamespace, {
-        name: namespaceFragments.org,
-        definition: orgData,
+      await this.organizationService.updateNamespace(namespace, {
+        name,
+        definition: metadata as CreateOrganizationDefinition,
         namespace,
         owner,
       });
-      this.logger.debug(`Org updated: ${orgNamespace}`);
+      this.logger.debug(`${orgId ? 'SubOrg' : 'Org'} updated: ${namespace}`);
       return;
     }
 
-    const org = await this.organizationService.getByNamespace(orgNamespace);
-    const orgId = org?.uid;
-
-    const appData = metadata as CreateApplicationDefinition;
-
-    if (appData.appName && appNamespace) {
-      const appExists = await this.applicationService.exists(appNamespace);
+    if (type === 'App') {
+      const appExists = await this.applicationService.exists(namespace);
       if (orgId && !appExists) {
         const newAppId = await this.applicationService.create({
-          name: namespaceFragments.apps,
-          definition: appData,
+          name,
+          definition: metadata as CreateApplicationDefinition,
           namespace,
           owner,
         });
         await this.organizationService.addApp(orgId, newAppId);
         this.logger.debug(
-          `created app for ${appNamespace} and added to ${orgNamespace}`,
+          `created app for ${namespace} and added to ${orgNamespace}`,
         );
         return;
       }
       if (!orgId) {
         this.logger.debug(
-          `Organization for application not exists ${appNamespace}`,
+          `Organization for application not exists ${namespace}`,
         );
         return;
       }
-      await this.applicationService.updateNamespace(appNamespace, {
-        name: namespaceFragments.apps,
-        definition: appData,
+      await this.applicationService.updateNamespace(namespace, {
+        name,
+        definition: metadata as CreateApplicationDefinition,
         namespace,
         owner,
       });
-      this.logger.debug(`App updated: ${appNamespace}`);
+      this.logger.debug(`App updated: ${namespace}`);
       return;
     }
 
@@ -254,11 +309,11 @@ export class EnsService {
 
     const roleData = metadata as CreateRoleDefinition;
 
-    if (roleData.roleName && roleNamespace) {
-      const roleExists = await this.roleService.exists(roleNamespace);
+    if (type === 'Role') {
+      const roleExists = await this.roleService.exists(namespace);
       if ((orgId || appId) && !roleExists) {
         const roleId = await this.roleService.create({
-          name: namespaceFragments.roles,
+          name,
           definition: roleData,
           namespace,
           owner,
@@ -266,29 +321,29 @@ export class EnsService {
         if (appId) {
           await this.applicationService.addRole(appId, roleId);
           this.logger.debug(
-            `created role ${roleNamespace} and added to app ${appNamespace}`,
+            `created role ${namespace} and added to app ${appNamespace}`,
           );
         } else if (orgId) {
           await this.organizationService.addRole(orgId, roleId);
           this.logger.debug(
-            `created role ${roleNamespace} and added to org ${orgNamespace}`,
+            `created role ${namespace} and added to org ${orgNamespace}`,
           );
         }
         return;
       }
       if (!orgId && !appId) {
         this.logger.debug(
-          `App or organization for role does not exists: ${roleNamespace}`,
+          `App or organization for role does not exists: ${namespace}`,
         );
         return;
       }
-      await this.roleService.updateNamespace(roleNamespace, {
-        name: namespaceFragments.roles,
+      await this.roleService.updateNamespace(namespace, {
+        name,
         definition: roleData,
         namespace,
         owner,
       });
-      this.logger.debug(`Role updated: ${roleNamespace}`);
+      this.logger.debug(`Role updated: ${namespace}`);
       return;
     }
     this.logger.debug(
@@ -299,7 +354,7 @@ export class EnsService {
   private async loadNamespaces() {
     const create = async (namespace: string, data: string) => {
       const owner = await this.ensRegistry.owner(namehash(namespace));
-      await this.createRole({ data, namespace, owner });
+      await this.syncNamespace({ data, namespace, owner });
     };
 
     await Promise.all(
