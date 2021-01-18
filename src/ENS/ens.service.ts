@@ -157,7 +157,7 @@ export class EnsService {
     }
   }
 
-  getNamespaceType({
+  getNamespaceInfo({
     namespace,
     metadata,
   }: {
@@ -230,7 +230,7 @@ export class EnsService {
       this.logger.debug('Metadata not parsable: ' + data);
       return;
     }
-    const { type, appNamespace, name, orgNamespace } = this.getNamespaceType({
+    const { type, appNamespace, name, orgNamespace } = this.getNamespaceInfo({
       metadata,
       namespace,
     });
