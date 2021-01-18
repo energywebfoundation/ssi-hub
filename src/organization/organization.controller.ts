@@ -25,7 +25,7 @@ export class OrganizationController {
     description:
       '**true** - shows only sub orgs <br> **false** - show all orgs',
   })
-  public async getAll(@Query('onlySubOrgs') onlySubOrgs: boolean) {
+  public async getAll(@Query('onlySubOrgs') onlySubOrgs?: 'true' | 'false') {
     return await this.organizationService.getAll(onlySubOrgs);
   }
 

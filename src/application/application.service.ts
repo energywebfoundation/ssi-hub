@@ -28,7 +28,7 @@ export class ApplicationService {
   public async getAll() {
     const res = await this.dgraph.query(`
     query all($i: string){
-      Data(func: @filter(type(App))) {
+      Data(func: type(App)) {
         ${baseQueryFields}
       }
     }`);

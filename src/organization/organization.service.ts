@@ -16,10 +16,12 @@ export class OrganizationService {
   /**
    * retrieves all existing organizations
    */
-  public async getAll(onlySubOrgs: boolean) {
-    const res = await this.dgraph.query(`
+  public async getAll(onlySubOrgs?: 'true' | 'false') {
+    const query = `
     {
-      Data(func: type(Org)) ${onlySubOrgs ? '@filter(has(parentOrg))' : ''} {
+      Data(func: type(Org)) ${
+        onlySubOrgs === 'true' ? '@filter(has(parentOrg))' : ''
+      } {
         uid
         name
         namespace
@@ -33,7 +35,8 @@ export class OrganizationService {
           definition ${roleDefinitionFullQuery}
         }
       }
-    }`);
+    }`;
+    const res = await this.dgraph.query(query);
     return res.getJson();
   }
 
@@ -187,7 +190,7 @@ export class OrganizationService {
     });
 
     const orgDTO = new OrganizationDTO(
-      { ...patch, parentOrg: oldData.parentOrg },
+      { parentOrg: oldData.parentOrg, ...patch },
       orgDefDTO,
     );
 
