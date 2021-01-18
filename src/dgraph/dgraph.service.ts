@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import { ConfigService } from '@nestjs/config';
 import { Policy } from 'cockatiel';
@@ -6,7 +6,7 @@ import { promisify } from 'util';
 import * as fs from 'fs';
 
 @Injectable()
-export class DgraphService {
+export class DgraphService implements OnModuleInit {
   /**
    * returns promise of active connection instance
    * @private
@@ -21,9 +21,11 @@ export class DgraphService {
   private _instance: DgraphClient;
   private _stub: DgraphClientStub;
 
-  constructor(private configService: ConfigService) {
-    this.createInstance();
+  async onModuleInit() {
+    await this.createInstance();
   }
+
+  constructor(private configService: ConfigService) {}
 
   /**
    * Method for updating dgraph schemas, triggers every time after initial server startup

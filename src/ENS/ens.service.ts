@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { providers, utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
@@ -22,7 +22,7 @@ import { DgraphService } from '../dgraph/dgraph.service';
 import chunk from 'lodash.chunk';
 
 @Injectable()
-export class EnsService {
+export class EnsService implements OnApplicationBootstrap {
   private publicResolver: PublicResolver;
   private ensRegistry: EnsRegistry;
   private provider: providers.JsonRpcProvider;
@@ -70,11 +70,17 @@ export class EnsService {
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
+  }
 
+  onApplicationBootstrap() {
+    const ENS_SYNC_ENABLED =
+      this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
     const setup = async () => {
+      await this.dgraph.fixDgraph();
       await this.InitEventListeners();
       await this.loadNamespaces();
       if (ENS_SYNC_ENABLED) {
+        await this.syncENS();
         await this.syncENS();
       }
     };
