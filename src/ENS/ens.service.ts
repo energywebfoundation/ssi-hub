@@ -18,7 +18,6 @@ import { CreateApplicationDefinition } from '../application/ApplicationDTO';
 import { CreateRoleDefinition } from '../role/RoleTypes';
 import { namehash } from '../ethers/utils';
 import { OwnerService } from '../owner/owner.service';
-import { DgraphService } from '../dgraph/dgraph.service';
 import chunk from 'lodash.chunk';
 
 @Injectable()
@@ -34,7 +33,6 @@ export class EnsService implements OnApplicationBootstrap {
     private organizationService: OrganizationService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private config: ConfigService,
-    private dgraph: DgraphService,
   ) {
     this.logger = new Logger('ENSService');
     errors.setLogLevel('error');
@@ -76,11 +74,9 @@ export class EnsService implements OnApplicationBootstrap {
     const ENS_SYNC_ENABLED =
       this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
     const setup = async () => {
-      await this.dgraph.fixDgraph();
       await this.InitEventListeners();
       await this.loadNamespaces();
       if (ENS_SYNC_ENABLED) {
-        await this.syncENS();
         await this.syncENS();
       }
     };
