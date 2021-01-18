@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import { ConfigService } from '@nestjs/config';
 import { Policy } from 'cockatiel';
@@ -6,7 +6,7 @@ import { promisify } from 'util';
 import * as fs from 'fs';
 
 @Injectable()
-export class DgraphService {
+export class DgraphService implements OnModuleInit {
   /**
    * returns promise of active connection instance
    * @private
@@ -21,9 +21,11 @@ export class DgraphService {
   private _instance: DgraphClient;
   private _stub: DgraphClientStub;
 
-  constructor(private configService: ConfigService) {
-    this.createInstance();
+  async onModuleInit() {
+    await this.createInstance();
   }
+
+  constructor(private configService: ConfigService) {}
 
   /**
    * Method for updating dgraph schemas, triggers every time after initial server startup
@@ -130,14 +132,16 @@ export class DgraphService {
         definition
         apps
         roles
+        parentOrg
       }
       
       name: string @index(exact) .
       owner: string @index(exact) .
-      namespace: string @index(term, trigram) .
+      namespace: string @index(trigram, exact, term) .
       definition: uid @reverse .
       roles: [uid] .
       apps: [uid] .
+      parentOrg: uid @reverse .
       
       token: string .
       isAccepted: bool .
@@ -150,7 +154,7 @@ export class DgraphService {
       requester: string @index(exact) .
       claimType: string @index(exact) .
       parentNamespace: string @index(exact) .
-      type: string @index(exact) .
+      type: string .
       id: string @index(exact) .
 
       type DIDDocument {

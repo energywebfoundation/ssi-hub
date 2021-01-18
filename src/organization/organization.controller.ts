@@ -1,6 +1,6 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrganizationDTO } from './OrganizationDTO';
 import { ApplicationDTO } from '../application/ApplicationDTO';
 import { RoleDTO } from '../role/RoleDTO';
@@ -19,8 +19,14 @@ export class OrganizationController {
     type: [OrganizationDTO],
     description: 'Array of existing Organizations',
   })
-  public async getAll() {
-    return await this.organizationService.getAll();
+  @ApiQuery({
+    name: 'onlySubOrgs',
+    required: false,
+    description:
+      '**true** - shows only sub orgs <br> **false** - show all orgs',
+  })
+  public async getAll(@Query('onlySubOrgs') onlySubOrgs?: 'true' | 'false') {
+    return await this.organizationService.getAll(onlySubOrgs);
   }
 
   @Get('/:namespace')
@@ -76,5 +82,19 @@ export class OrganizationController {
   })
   public async getRolesByOrgId(@Param('namespace') namespace: string) {
     return await this.organizationService.getRoles(namespace);
+  }
+
+  @Get('/:namespace/suborgs')
+  @ApiTags('Organization')
+  @ApiOperation({
+    summary: 'Returns Array of Sub Organizations of an Organization',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: [RoleDTO],
+    description: 'Sub Organizations connected with Org namespace',
+  })
+  public async getSubOrgs(@Param('namespace') namespace: string) {
+    return await this.organizationService.getSubOrgByParentNamespace(namespace);
   }
 }

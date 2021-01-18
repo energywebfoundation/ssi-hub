@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { NamespaceFragments, RoleDefinitionDTO, RoleDTO } from './RoleDTO';
+import { RoleDefinitionDTO, RoleDTO } from './RoleDTO';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import { CreateRoleData, Role } from './RoleTypes';
 import { validate } from 'class-validator';
@@ -14,7 +14,7 @@ export class RoleService {
    */
   public async getAll(): Promise<{ roles: RoleDTO[] }> {
     const res = await this.dgraph.query(`
-    {roles(func: eq(dgraph.type, "Role")) {
+    {roles(func: type(Role)) {
       uid
       name
       namespace
@@ -32,7 +32,7 @@ export class RoleService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Role")) {
+      Data(func: eq(namespace, $i)) @filter(type(Role)) {
         uid
         name
         namespace
@@ -130,77 +130,5 @@ export class RoleService {
     await this.dgraph.mutate(data);
 
     return oldData.uid;
-  }
-
-  /**
-   * extracts names of Organization, Application* and Role* from namespace
-   * * - fragment optional
-   * @param namespace Object with namespace fragments
-   */
-  public splitNamespace(namespace: string): NamespaceFragments {
-    const fragments: NamespaceFragments = {
-      apps: null,
-      roles: null,
-      org: null,
-      ewc: null,
-    };
-
-    const nsf = namespace.split('.').reverse();
-
-    // 0 - ewc
-    // 1 - .iam
-    fragments.ewc = nsf[1];
-    // 2 - ORGNAME
-    fragments.org = nsf[2];
-    // 3 - .apps. * or .roles.
-
-    if (nsf[3] === 'roles' && nsf[4]) {
-      fragments.roles = nsf[4];
-      return fragments;
-    }
-
-    if (nsf[3] === 'apps' && nsf[4]) {
-      fragments.apps = nsf[4];
-
-      // 5 - .roles. *
-      if (nsf[5] === 'roles' && nsf[6]) {
-        fragments.roles = nsf[6];
-      }
-    }
-
-    return fragments;
-  }
-
-  /**
-   * returns namespace of Org/App/Role based on given namespace fragment and requested namespace type
-   * @param fragment type of requested namespace
-   * @param fragments namespace fragments object
-   */
-  public getNamespaceOf(
-    fragment: 'org' | 'app' | 'role' = 'org',
-    fragments: NamespaceFragments,
-  ): string {
-    let namespace = `${fragments.org}.${fragments.ewc}.ewc`;
-
-    //special case for role with organization
-    if (fragment === 'role' && fragments.org && !fragments.apps) {
-      return `${fragments.roles}.roles.${namespace}`;
-    }
-
-    if (fragment === 'app' || fragment === 'role') {
-      if (fragments.apps === null) {
-        return null;
-      }
-      namespace = `${fragments.apps}.apps.${namespace}`;
-    }
-
-    if (fragment === 'role') {
-      if (fragments.roles === null) {
-        return null;
-      }
-      namespace = `${fragments.roles}.roles.${namespace}`;
-    }
-
-    return namespace;
   }
 }

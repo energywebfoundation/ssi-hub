@@ -16,17 +16,27 @@ export class OrganizationService {
   /**
    * retrieves all existing organizations
    */
-  public async getAll() {
-    const res = await this.dgraph.query(`
-    query all($i: string){
-      Data(func: eq(dgraph.type, "Org")) {
+  public async getAll(onlySubOrgs?: 'true' | 'false') {
+    const query = `
+    {
+      Data(func: type(Org)) ${
+        onlySubOrgs === 'true' ? '@filter(has(parentOrg))' : ''
+      } {
         uid
         name
         namespace
         owner
         definition ${roleDefinitionFullQuery}
+        parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
       }
-    }`);
+    }`;
+    const res = await this.dgraph.query(query);
     return res.getJson();
   }
 
@@ -38,9 +48,9 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Org")) {
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
         namespace
-        apps @filter(eq(dgraph.type, "App")) {
+        apps @filter(type(App)) {
           name
           namespace
           owner
@@ -62,9 +72,9 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Org")) {
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
         namespace
-        roles @filter(eq(dgraph.type, "Role")) {
+        roles @filter(type(Role)) {
           name
           namespace
           owner
@@ -86,12 +96,19 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Org")) {
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
         uid
         name
         namespace
         owner
         definition ${roleDefinitionFullQuery}
+        parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
       }
     }`,
       { $i: namespace },
@@ -154,7 +171,7 @@ export class OrganizationService {
       patch.definition.others &&
       !Array.isArray(patch.definition.others) &&
       RecordToKeyValue(patch.definition.others).map(other => {
-        const oldOther = oldData.definition.others.find(
+        const oldOther = oldData.definition.others?.find(
           ({ key }) => other.key === key,
         );
         if (oldOther) {
@@ -172,7 +189,10 @@ export class OrganizationService {
       others: newOthers,
     });
 
-    const orgDTO = new OrganizationDTO(patch, orgDefDTO);
+    const orgDTO = new OrganizationDTO(
+      { parentOrg: oldData.parentOrg, ...patch },
+      orgDefDTO,
+    );
 
     const err = await validate(orgDTO);
 
@@ -242,5 +262,27 @@ export class OrganizationService {
     }
 
     await this.dgraph.delete(org.uid);
+  }
+
+  public async getSubOrgByParentNamespace(namespace: string) {
+    const res = await this.dgraph.query(
+      `
+    query all($i: string){
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
+        ~parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
+      }
+    }`,
+      { $i: namespace },
+    );
+    const json = res.getJson() as {
+      Data: { '~parentOrg': OrganizationDTO[] }[];
+    };
+    return json?.Data?.[0]?.['~parentOrg'] || [];
   }
 }

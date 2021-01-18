@@ -52,25 +52,25 @@ export class EnsTestService {
   constructor(private ensService: EnsService) {}
 
   public async testOrgAppRole() {
-    await this.ensService.createRole({
+    await this.ensService.syncNamespace({
       data: ORG_MOCK_DATA,
       namespace: 'onion.iam.ewc',
       owner: 'onion',
     });
 
-    await this.ensService.createRole({
+    await this.ensService.syncNamespace({
       data: ROLE_MOCK_DATA,
       namespace: 'admin.roles.onion.iam.ewc',
       owner: 'carrot',
     });
 
-    await this.ensService.createRole({
+    await this.ensService.syncNamespace({
       data: APP_MOCK_DATA,
       namespace: 'onionapp.apps.onion.iam.ewc',
       owner: 'onion',
     });
 
-    await this.ensService.createRole({
+    await this.ensService.syncNamespace({
       data: ROLE_MOCK_DATA,
       namespace: 'test.roles.onionapp.apps.onion.iam.ewc',
       owner: 'carrot',
