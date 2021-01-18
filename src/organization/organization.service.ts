@@ -45,9 +45,9 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Org")) {
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
         namespace
-        apps @filter(eq(dgraph.type, "App")) {
+        apps @filter(type(App)) {
           name
           namespace
           owner
@@ -69,9 +69,9 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Org")) {
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
         namespace
-        roles @filter(eq(dgraph.type, "Role")) {
+        roles @filter(type(Role)) {
           name
           namespace
           owner
@@ -93,7 +93,7 @@ export class OrganizationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Org")) {
+      Data(func: eq(namespace, $i)) @filter(type(Org)) {
         uid
         name
         namespace

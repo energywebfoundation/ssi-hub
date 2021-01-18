@@ -135,7 +135,7 @@ export class DgraphService {
       
       name: string @index(exact) .
       owner: string @index(exact) .
-      namespace: string @index(term, trigram) .
+      namespace: string @index(trigram, exact) .
       definition: uid @reverse .
       roles: [uid] .
       apps: [uid] .
@@ -152,7 +152,7 @@ export class DgraphService {
       requester: string @index(exact) .
       claimType: string @index(exact) .
       parentNamespace: string @index(exact) .
-      type: string @index(exact) .
+      type: string .
       id: string @index(exact) .
 
       type DIDDocument {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { NamespaceFragments, RoleDefinitionDTO, RoleDTO } from './RoleDTO';
+import { RoleDefinitionDTO, RoleDTO } from './RoleDTO';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import { CreateRoleData, Role } from './RoleTypes';
 import { validate } from 'class-validator';
@@ -14,7 +14,7 @@ export class RoleService {
    */
   public async getAll(): Promise<{ roles: RoleDTO[] }> {
     const res = await this.dgraph.query(`
-    {roles(func: eq(dgraph.type, "Role")) {
+    {roles(func: type(Role)) {
       uid
       name
       namespace
@@ -32,7 +32,7 @@ export class RoleService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "Role")) {
+      Data(func: eq(namespace, $i)) @filter(type(Role)) {
         uid
         name
         namespace

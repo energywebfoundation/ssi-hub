@@ -254,7 +254,7 @@ export class EnsService {
           definition: metadata as CreateOrganizationDefinition,
           namespace,
           owner,
-          parentOrg: orgId ? organization : undefined,
+          parentOrg: organization || undefined,
         });
         this.logger.debug(
           `created ${

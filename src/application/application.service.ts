@@ -28,7 +28,7 @@ export class ApplicationService {
   public async getAll() {
     const res = await this.dgraph.query(`
     query all($i: string){
-      Data(func: eq(dgraph.type, "App")) {
+      Data(func: @filter(type(App))) {
         ${baseQueryFields}
       }
     }`);
@@ -43,7 +43,7 @@ export class ApplicationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "App")) {
+      Data(func: eq(namespace, $i)) @filter(type(App)) {
         namespace
         roles @filter(eq(dgraph.type, "Role")) {
           ${baseQueryFields}
@@ -64,7 +64,7 @@ export class ApplicationService {
     const res = await this.dgraph.query(
       `
     query all($i: string){
-      Data(func: eq(namespace, $i)) @filter(eq(dgraph.type, "App")) {
+      Data(func: eq(namespace, $i)) @filter(type(App)) {
         ${baseQueryFields}
       }
     }`,

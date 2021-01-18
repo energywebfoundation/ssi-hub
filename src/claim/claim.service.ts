@@ -144,7 +144,7 @@ export class ClaimService {
     const res = await this.dgraph.query(
       `
       query all($did: string) {
-        claim(func: eq(type, "claim")) @filter(eq(issuedToken, $did) OR eq(requester, $did)) {
+        claim(func: type(Claim) @filter(eq(issuedToken, $did) OR eq(requester, $did)) {
           ${claimQuery}
         }
       }`,
