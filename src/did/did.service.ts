@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory';
 import { EthereumDidRegistry } from '../ethers/EthereumDidRegistry';
-import * as jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import { providers } from 'ethers';
 import { DIDDocumentEntity } from './DidDocumentEntity';
 import { ResolverFactory } from './ResolverFactory';
