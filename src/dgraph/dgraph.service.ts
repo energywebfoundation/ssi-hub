@@ -3,7 +3,7 @@ import { DgraphClient, DgraphClientStub, Mutation, Operation } from 'dgraph-js';
 import { ConfigService } from '@nestjs/config';
 import { Policy } from 'cockatiel';
 import { promisify } from 'util';
-import * as fs from 'fs';
+import fs from 'fs';
 
 @Injectable()
 export class DgraphService implements OnModuleInit {

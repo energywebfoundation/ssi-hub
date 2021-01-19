@@ -7,7 +7,7 @@ import {
   IClaimRequest,
   DecodedClaimToken,
 } from './ClaimTypes';
-import * as jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 
 const claimQuery = `
   uid
