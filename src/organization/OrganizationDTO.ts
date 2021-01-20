@@ -140,5 +140,8 @@ export class OrganizationDTO implements Organization {
   @IsOptional()
   parentOrg?: Organization;
 
+  @IsOptional()
+  subOrgs?: Organization[];
+
   readonly 'dgraph.type' = 'Org';
 }

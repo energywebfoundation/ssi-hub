@@ -38,5 +38,5 @@ lerna-debug.log*
 .env
 
 # Using either dev or prod docker-compose file
-docker.compose.yml
+docker-compose.yml
 db_dumps
