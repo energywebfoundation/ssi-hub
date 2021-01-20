@@ -22,6 +22,7 @@ export class OrganizationController {
   @ApiQuery({
     name: 'onlySubOrgs',
     required: false,
+    type: Boolean,
     description:
       '**true** - shows only sub orgs <br> **false** - show all orgs',
   })
@@ -91,7 +92,7 @@ export class OrganizationController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: [RoleDTO],
+    type: [OrganizationDTO],
     description: 'Sub Organizations connected with Org namespace',
   })
   public async getSubOrgs(@Param('namespace') namespace: string) {

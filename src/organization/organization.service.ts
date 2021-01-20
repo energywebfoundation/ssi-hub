@@ -34,6 +34,13 @@ export class OrganizationService {
           owner
           definition ${roleDefinitionFullQuery}
         }
+        subOrgs: ~parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
       }
     }`;
     const res = await this.dgraph.query(query);
@@ -103,6 +110,13 @@ export class OrganizationService {
         owner
         definition ${roleDefinitionFullQuery}
         parentOrg {
+          uid
+          name
+          namespace
+          owner
+          definition ${roleDefinitionFullQuery}
+        }
+        subOrgs: ~parentOrg {
           uid
           name
           namespace
@@ -269,7 +283,7 @@ export class OrganizationService {
       `
     query all($i: string){
       Data(func: eq(namespace, $i)) @filter(type(Org)) {
-        ~parentOrg {
+        subOrgs: ~parentOrg {
           uid
           name
           namespace
@@ -281,8 +295,8 @@ export class OrganizationService {
       { $i: namespace },
     );
     const json = res.getJson() as {
-      Data: { '~parentOrg': OrganizationDTO[] }[];
+      Data: { subOrgs: OrganizationDTO[] }[];
     };
-    return json?.Data?.[0]?.['~parentOrg'] || [];
+    return json?.Data?.[0]?.['subOrgs'] || [];
   }
 }
