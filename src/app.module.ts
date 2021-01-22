@@ -24,6 +24,9 @@ import { DIDService } from './did/did.service';
 import { ResolverFactory } from './did/ResolverFactory';
 import { DIDProcessor } from './did/did.processor';
 import { DIDDGraphRepository } from './did/did.repository';
+import { LoginController } from './auth/login.controller';
+import { AuthStrategy } from './auth/login.strategy';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -52,6 +55,7 @@ const redisConfig = {
     OwnerController,
     NamespaceController,
     DIDController,
+    LoginController,
   ],
   providers: [
     claimProcessor,
@@ -68,6 +72,8 @@ const redisConfig = {
     DIDService,
     DIDDGraphRepository,
     ResolverFactory,
+    AuthStrategy,
+    JwtStrategy,
   ],
 })
 export class AppModule {}

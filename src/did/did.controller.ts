@@ -7,19 +7,24 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOperation,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Queue } from 'bull';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
 import { DID } from './DidTypes';
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('DID')
 export class DIDController {
   private readonly logger: Logger;

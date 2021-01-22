@@ -7,9 +7,11 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiExcludeEndpoint,
   ApiOperation,
@@ -29,7 +31,10 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { validate } from 'class-validator';
 import { ClaimIssue, ClaimRejection, ClaimRequest } from './ClaimDTO';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('claim')
 export class ClaimController {
   private readonly logger: Logger;
