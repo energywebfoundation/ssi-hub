@@ -19,6 +19,7 @@ const claimQuery = `
   issuedToken
   parentNamespace
   isAccepted
+  isRejected
   createdAt
   acceptedBy
   type
