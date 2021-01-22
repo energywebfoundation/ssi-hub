@@ -11,7 +11,9 @@ async function bootstrap() {
     .setTitle('API')
     .setDescription('Cache Server API documentation')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
+
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 

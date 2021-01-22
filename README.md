@@ -20,6 +20,7 @@ $ cp docker-compose.prod.yml docker.compose.yml
 ```bash
 $ npm install
 $ npm run docker:build
+$ npm run generate:jwtkeys
 ```
 
 ## Running the app
