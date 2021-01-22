@@ -1,0 +1,6 @@
+node_modules
+db_dumps
+config
+dist
+docs
+editors

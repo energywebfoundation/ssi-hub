@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 services:
   app:
@@ -7,8 +7,8 @@ services:
       context: .
       dockerfile: ./docker/dev/Dockerfile
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/app
+      - /app/node_modules
     ports:
       - ${NESTJS_PORT}:${NESTJS_PORT}
       - 9229:9229
@@ -54,14 +54,14 @@ services:
     container_name: nats
     image: synadia/nats-server:nightly
     volumes:
-       - ./config/:/etc/nats
+      - ./config/:/etc/nats
     command: "-c /etc/nats/nats.conf"
     networks:
       - main
     ports:
-      - '4222:4222'
-      - '8222:8222'
-      - '9222:9222'
+      - "4222:4222"
+      - "8222:8222"
+      - "9222:9222"
   redis:
     container_name: redis
     image: redis:${REDIS_VERSION}

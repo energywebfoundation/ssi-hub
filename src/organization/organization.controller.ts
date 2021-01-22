@@ -1,10 +1,26 @@
-import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { OrganizationDTO } from './OrganizationDTO';
 import { ApplicationDTO } from '../application/ApplicationDTO';
 import { RoleDTO } from '../role/RoleDTO';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('org')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}
