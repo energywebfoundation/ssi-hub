@@ -105,6 +105,21 @@ export class EnsService implements OnApplicationBootstrap {
 
       await this.ownerService.changeOwner(namespace, owner);
     });
+
+    this.ensRegistry.addListener('Transfer', async (node, owner) => {
+      const namespace = await this.publicResolver.name(node.toString());
+      if (namespace === '') {
+        return;
+      }
+
+      // Remove namespace if owner is set to hex zero
+      if (owner === '0x0000000000000000000000000000000000000000') {
+        await this.ownerService.deleteNamespace(namespace);
+        return;
+      }
+
+      await this.ownerService.changeOwner(namespace, owner);
+    });
   }
 
   private async getAllNamespaces() {
