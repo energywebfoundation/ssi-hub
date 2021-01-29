@@ -3,7 +3,7 @@ version: "3.4"
 services:
   app:
     container_name: app
-    image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:latest
+    image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
     command: "sh /app/wait-for-db.sh $DGRAPH_HEALTH_CHECK_ENDPOINT node /app/dist/src/main.js"
     ports:
       - ${NESTJS_PORT}:${NESTJS_PORT}
