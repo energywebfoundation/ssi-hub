@@ -62,15 +62,15 @@ export class DIDController {
       );
       const did = new DID(id);
       const includeClaims = includeClaimsString === 'true';
-      const didDocument = await this.didService.getById(did, includeClaims);
+      let didDocument = await this.didService.getById(did, includeClaims);
 
-      // If DID document isn't in the cache, queue cache so that it can be retrieved on subsequent calls
       if (!didDocument) {
         this.logger.log(
           `Requested document for did: ${id} not cached. Queuing cache request.`,
         );
         // awaiting refresh so that subsequent calls don't duplicate cached DID Document
         await this.didService.refreshCachedDocument(did);
+        didDocument = await this.didService.getById(did, includeClaims);
       }
 
       this.logger.debug(`Retrieved document for did: ${id}`);
