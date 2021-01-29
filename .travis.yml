@@ -15,18 +15,19 @@ services:
 before_install:
   # VARIABLES
   - export AWS_REGION=us-east-1
-  - export IAM_CACHE_SERVER_IMAGE=$DOCKER_REGISTRY/$DOCKER_REPOSITORY
+  - export AWS_ECR_REPOSITORY=$DOCKER_REGISTRY/$DOCKER_REPOSITORY
+  - export DOCKER_TAG=$TRAVIS_COMMIT
 
 install:
   # INSTALL AWSCLI
   - if ! [ -x "$(command -v aws)" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" ; unzip awscliv2.zip ; sudo ./aws/install ; rm -rf ./aws; rm awscliv2.zip; fi
   # BUILD NESTJS APP
-  - docker build -t $IAM_CACHE_SERVER_IMAGE:$TRAVIS_COMMIT -t $IAM_CACHE_SERVER_IMAGE:latest -f ./docker/prod/Dockerfile .
+  - docker build -t $AWS_ECR_REPOSITORY:$DOCKER_TAG -t $AWS_ECR_REPOSITORY:latest -f ./docker/prod/Dockerfile .
   # LOGIN TO ECR
-  - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $IAM_CACHE_SERVER_IMAGE
+  - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPOSITORY
   # PUSH IMAGES TO REGISTRY
-  - docker push $IAM_CACHE_SERVER_IMAGE:$TRAVIS_COMMIT
-  - docker push $IAM_CACHE_SERVER_IMAGE:latest
+  - docker push $AWS_ECR_REPOSITORY:$DOCKER_TAG
+  - docker push $AWS_ECR_REPOSITORY:latest
   - docker logout
 
 script:
@@ -42,7 +43,7 @@ before_deploy:
 
 deploy:
   provider: script
-  script: ssh -i deploy_rsa -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "cd $APP_DIRECTORY; bash ./deploy.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $AWS_REGION $IAM_CACHE_SERVER_IMAGE"
+  script: ssh -i deploy_rsa -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "cd $APP_DIRECTORY; bash ./deploy.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $AWS_REGION $AWS_ECR_REPOSITORY"
   skip_cleanup: true
   on:
     all_branches: true
