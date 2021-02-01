@@ -1,0 +1,6 @@
+site_name: IAM Cache Server
+nav:
+    - Home: index.md
+    - Swagger: "https://volta-iam-cacheserver.energyweb.org/api/"
+    - "Code Docs": api/globals.md
+theme: readthedocs

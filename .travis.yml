@@ -1,0 +1,49 @@
+os: linux
+
+branches:
+  only:
+    - develop
+    - master
+
+language: node_js
+
+dist: bionic
+
+services:
+  - docker
+
+before_install:
+  # VARIABLES
+  - export AWS_REGION=us-east-1
+  - export AWS_ECR_REPOSITORY=$DOCKER_REGISTRY/$DOCKER_REPOSITORY
+  - export DOCKER_TAG=$TRAVIS_COMMIT
+
+install:
+  # INSTALL AWSCLI
+  - if ! [ -x "$(command -v aws)" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" ; unzip awscliv2.zip ; sudo ./aws/install ; rm -rf ./aws; rm awscliv2.zip; fi
+  # BUILD NESTJS APP
+  - docker build -t $AWS_ECR_REPOSITORY:$DOCKER_TAG -t $AWS_ECR_REPOSITORY:latest -f ./docker/prod/Dockerfile .
+  # LOGIN TO ECR
+  - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPOSITORY
+  # PUSH IMAGES TO REGISTRY
+  - docker push $AWS_ECR_REPOSITORY:$DOCKER_TAG
+  - docker push $AWS_ECR_REPOSITORY:latest
+  - docker logout
+
+script:
+  - echo 'No tests provided'
+
+before_deploy:
+  # DECRYPT SSH KEY
+  - openssl aes-256-cbc -K $encrypted_db2095f63ba3_key -iv $encrypted_db2095f63ba3_iv -in deploy_rsa.enc -out deploy_rsa -d
+  - chmod 600 deploy_rsa
+  # CREATE NEW .ENV FILE
+  - envsubst < .env.ci > .env.ci.dist
+  - scp -i deploy_rsa -o StrictHostKeyChecking=no .env.ci.dist docker-compose.prod.yml deploy.sh makefile $SERVER_USER@$SERVER_HOST:$APP_DIRECTORY/
+
+deploy:
+  provider: script
+  script: ssh -i deploy_rsa -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "cd $APP_DIRECTORY; bash ./deploy.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $AWS_REGION $AWS_ECR_REPOSITORY"
+  skip_cleanup: true
+  on:
+    all_branches: true

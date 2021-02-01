@@ -1,6 +1,8 @@
 # compiled output
 /dist
 /node_modules
+/src/ethers
+.env
 
 # Logs
 logs
@@ -32,3 +34,9 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+.env
+
+# Using either dev or prod docker-compose file
+docker-compose.yml
+db_dumps

@@ -1,0 +1,64 @@
+version: "3.4"
+
+services:
+  app:
+    container_name: app
+    image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
+    command: "sh /app/wait-for-db.sh $DGRAPH_HEALTH_CHECK_ENDPOINT node /app/dist/src/main.js"
+    ports:
+      - ${NESTJS_PORT}:${NESTJS_PORT}
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - main
+    depends_on:
+      - dgraph
+      - zero
+      - nats
+  zero:
+    container_name: dgraph_zero
+    image: dgraph/dgraph:${DGRAPH_VERSION}
+    volumes:
+      - dgraph:/dgraph
+    restart: unless-stopped
+    command: dgraph zero --my=zero:5080
+    networks:
+      - main
+  dgraph:
+    container_name: dgraph_alpha
+    image: dgraph/dgraph:${DGRAPH_VERSION}
+    volumes:
+      - dgraph:/dgraph
+    restart: unless-stopped
+    command: dgraph alpha --my=dgraph:7080 --lru_mb=2048 --zero=zero:5080
+    networks:
+      - main
+  nats:
+    container_name: nats
+    image: synadia/nats-server:nightly
+    command: "-c /etc/nats/nats.conf"
+    restart: unless-stopped
+    networks:
+      - main
+    volumes:
+      - ./config/:/etc/nats
+    ports:
+      - "4222:4222"
+      - "9222:9222"
+  redis:
+    container_name: redis
+    image: redis:${REDIS_VERSION}
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - main
+networks:
+  main:
+
+volumes:
+  dgraph:

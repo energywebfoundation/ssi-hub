@@ -8,14 +8,15 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const options = new DocumentBuilder()
-    .setTitle('Cache server API')
-    .setDescription('')
+    .setTitle('API')
+    .setDescription('Cache Server API documentation')
     .setVersion('1.0')
-    .addTag('cache')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  app.enableCors();
+
+  await app.listen(process.env.NESTJS_PORT);
 }
 bootstrap();
