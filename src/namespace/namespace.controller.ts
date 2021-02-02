@@ -5,24 +5,16 @@ import {
   HttpStatus,
   Param,
   Query,
-  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiQuery,
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiQuery, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NamespaceService } from './namespace.service';
 import { OrganizationDTO } from '../organization/OrganizationDTO';
 import { NamespaceEntities } from './namespace.types';
 import { SearchDTO } from './namespace.dto';
 import { validate } from 'class-validator';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Auth } from '../auth/auth.decorator';
 
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@Auth()
 @Controller('namespace')
 export class NamespaceController {
   constructor(private namespaceService: NamespaceService) {}

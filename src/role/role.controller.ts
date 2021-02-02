@@ -1,16 +1,10 @@
-import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
 import { RoleService } from './role.service';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleDTO } from './RoleDTO';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Auth } from 'src/auth/auth.decorator';
 
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@Auth()
 @Controller('role')
 export class RoleController {
   constructor(private roleService: RoleService) {}
