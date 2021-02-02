@@ -1,17 +1,11 @@
-import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
 import { ApplicationService } from './application.service';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleDTO } from '../role/RoleDTO';
 import { ApplicationDTO } from './ApplicationDTO';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Auth } from '../auth/auth.decorator';
 
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@Auth()
 @Controller('app')
 export class ApplicationController {
   constructor(private applicationService: ApplicationService) {}

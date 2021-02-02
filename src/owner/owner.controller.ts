@@ -1,18 +1,12 @@
-import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OwnerService } from './owner.service';
 import { ApplicationDTO } from '../application/ApplicationDTO';
 import { OrganizationDTO } from '../organization/OrganizationDTO';
 import { RoleDTO } from '../role/RoleDTO';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Auth } from '../auth/auth.decorator';
 
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@Auth()
 @Controller('owner')
 export class OwnerController {
   constructor(private ownerService: OwnerService) {}

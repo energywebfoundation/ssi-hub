@@ -10,11 +10,15 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .setTitle('API')
     .setDescription('Cache Server API documentation')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+    .setVersion('1.0');
 
-  const document = SwaggerModule.createDocument(app, options);
+  if (process.env.ENABLE_AUTH === 'true') {
+    options.addBearerAuth();
+  }
+
+  const builtOptions = options.build();
+
+  const document = SwaggerModule.createDocument(app, builtOptions);
   SwaggerModule.setup('api', app, document);
 
   app.enableCors();
