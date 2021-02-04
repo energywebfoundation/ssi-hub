@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -178,8 +179,11 @@ export class ClaimController {
   @Delete('/:id')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
-  public async removeById(@Param('id') id: string) {
-    return await this.claimService.removeById(id);
+  public async removeById(
+    @Param('id') id: string,
+    @Req() req: { user: { did: string } },
+  ) {
+    return await this.claimService.removeById(id, req?.user?.did);
   }
 
   @Get('/parent/:namespace')

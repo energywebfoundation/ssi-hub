@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import {
   Claim,
@@ -199,17 +199,18 @@ export class ClaimService {
    * delete claim with matching ID
    * @param id claim ID
    */
-  public async removeById(id: string) {
+  public async removeById(id: string, currentUser?: string) {
     const claim = await this.getById(id);
-    if (claim && claim.uid) {
-      try {
-        this.dgraph.delete(claim.uid);
-        return true;
-      } catch (err) {
-        return false;
-      }
+    if (
+      (currentUser && claim.requester !== currentUser) ||
+      claim.isAccepted ||
+      claim.isRejected
+    ) {
+      throw new ForbiddenException();
     }
-    return false;
+    if (claim && claim.uid) {
+      await this.dgraph.delete(claim.uid);
+    }
   }
 
   /**
