@@ -182,4 +182,17 @@ export class ApplicationService {
 
     return id;
   }
+
+  /**
+   * removes App with matching namespace
+   * @param namespace
+   */
+  public async remove(namespace: string) {
+    const app = await this.getByNamespace(namespace);
+    if (!app) {
+      return;
+    }
+
+    await this.dgraph.delete(app.uid);
+  }
 }

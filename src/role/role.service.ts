@@ -131,4 +131,17 @@ export class RoleService {
 
     return oldData.uid;
   }
+
+  /**
+   * removes Role with matching namespace
+   * @param namespace
+   */
+  public async remove(namespace: string) {
+    const role = await this.getByNamespace(namespace);
+    if (!role) {
+      return;
+    }
+
+    await this.dgraph.delete(role.uid);
+  }
 }
