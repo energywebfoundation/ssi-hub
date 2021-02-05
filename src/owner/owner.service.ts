@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import { Role } from '../role/RoleTypes';
@@ -7,7 +7,10 @@ import { Application } from '../application/ApplicationTypes';
 
 @Injectable()
 export class OwnerService {
-  constructor(private readonly dgraph: DgraphService) {}
+  private logger: Logger;
+  constructor(private readonly dgraph: DgraphService) {
+    this.logger = new Logger('OwnerService');
+  }
 
   /**
    * returns Roles owned by given user
@@ -37,15 +40,27 @@ export class OwnerService {
    * @param type
    * @private
    */
-  private async getTypeByOwner(owner: string, type: string) {
+  private async getTypeByOwner(owner: string, type: 'App' | 'Org' | 'Role') {
     const res = await this.dgraph.query(`
-    {${type.toLocaleLowerCase()}s(func: eq(owner, "${owner}")) @filter(eq(dgraph.type, "${type}")) {
+    {${type.toLocaleLowerCase()}s(func: eq(owner, "${owner}")) @filter(type(${type})) {
       uid
       name
-      dgraph.type
       owner
       namespace
       definition ${roleDefinitionFullQuery}
+      ${
+        type === 'Org'
+          ? `
+      subOrgs: ~parentOrg {
+        uid
+        name
+        namespace
+        owner
+        definition ${roleDefinitionFullQuery}
+      }
+      `
+          : ''
+      }
     }}`);
     return res.getJson();
   }
@@ -106,7 +121,7 @@ export class OwnerService {
       ids = ids.concat(getIds(role));
     });
 
-    this.dgraph.delete(ids);
+    await this.dgraph.delete(ids);
   }
 
   /**

@@ -20,6 +20,8 @@ import { namehash } from '../ethers/utils';
 import { OwnerService } from '../owner/owner.service';
 import chunk from 'lodash.chunk';
 
+const emptyAddress = '0x'.padEnd(42, '0');
+
 @Injectable()
 export class EnsService implements OnApplicationBootstrap {
   private publicResolver: PublicResolver;
@@ -98,7 +100,7 @@ export class EnsService implements OnApplicationBootstrap {
       }
 
       // Remove namespace if owner is set to hex zero
-      if (owner === '0x0000000000000000000000000000000000000000') {
+      if (owner === emptyAddress) {
         await this.ownerService.deleteNamespace(namespace);
         return;
       }
@@ -113,7 +115,7 @@ export class EnsService implements OnApplicationBootstrap {
       }
 
       // Remove namespace if owner is set to hex zero
-      if (owner === '0x0000000000000000000000000000000000000000') {
+      if (owner === emptyAddress) {
         await this.ownerService.deleteNamespace(namespace);
         return;
       }
@@ -264,6 +266,15 @@ export class EnsService implements OnApplicationBootstrap {
     const orgId = organization?.uid;
 
     if (type === 'Org') {
+      if (owner === emptyAddress) {
+        await this.organizationService.remove(namespace);
+        this.logger.debug(
+          `Removed ${
+            orgId ? 'sub organization' : 'organization'
+          } for ${namespace}`,
+        );
+        return;
+      }
       const orgExists = await this.organizationService.exists(namespace);
       if (!orgExists) {
         await this.organizationService.create({
@@ -274,7 +285,7 @@ export class EnsService implements OnApplicationBootstrap {
           parentOrg: organization || undefined,
         });
         this.logger.debug(
-          `created ${
+          `Created ${
             orgId ? 'sub organization' : 'organization'
           } for ${namespace}`,
         );
@@ -292,6 +303,11 @@ export class EnsService implements OnApplicationBootstrap {
     }
 
     if (type === 'App') {
+      if (owner === emptyAddress) {
+        await this.applicationService.remove(namespace);
+        this.logger.debug(`Removed app for ${namespace}`);
+        return;
+      }
       const appExists = await this.applicationService.exists(namespace);
       if (orgId && !appExists) {
         const newAppId = await this.applicationService.create({
@@ -302,7 +318,7 @@ export class EnsService implements OnApplicationBootstrap {
         });
         await this.organizationService.addApp(orgId, newAppId);
         this.logger.debug(
-          `created app for ${namespace} and added to ${orgNamespace}`,
+          `Created app for ${namespace} and added to ${orgNamespace}`,
         );
         return;
       }
@@ -328,6 +344,11 @@ export class EnsService implements OnApplicationBootstrap {
     const roleData = metadata as CreateRoleDefinition;
 
     if (type === 'Role') {
+      if (owner === emptyAddress) {
+        await this.roleService.remove(namespace);
+        this.logger.debug(`Removed role for ${namespace}`);
+        return;
+      }
       const roleExists = await this.roleService.exists(namespace);
       if ((orgId || appId) && !roleExists) {
         const roleId = await this.roleService.create({
