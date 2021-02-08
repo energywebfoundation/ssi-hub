@@ -21,7 +21,14 @@ export interface CreateRoleDefinition {
   fields?: {
     fieldType: string;
     label: string;
-    validation: string;
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string;
+    minValue?: number;
+    maxValue?: number;
+    minDate?: Date;
+    maxDate?: Date;
   }[];
   metadata?: Record<string, string>;
   issuer: {
@@ -51,7 +58,14 @@ export interface RoleDefinition extends DGraphObject {
   fields?: {
     fieldType: string;
     label: string;
-    validation: string;
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string;
+    minValue?: number;
+    maxValue?: number;
+    minDate?: Date;
+    maxDate?: Date;
     uid?: string;
   }[];
   metadata?: KeyValue[];

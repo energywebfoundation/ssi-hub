@@ -39,15 +39,29 @@ export class RoleDefinitionDTO implements RoleDefinition {
       properties: {
         type: { type: 'string' },
         label: { type: 'string' },
-        validation: { type: 'string' },
+        required: { type: 'boolean' },
+        minLength: { type: 'integer' },
+        maxLength: { type: 'integer' },
+        pattern: { type: 'string' },
+        minValue: { type: 'integer' },
+        maxValue: { type: 'integer' },
+        minDate: { type: 'string', format: 'date' },
+        maxDate: { type: 'string', format: 'date' },
       },
     },
   })
   fields?: {
     fieldType: string;
     label: string;
-    validation: string;
     uid?: string;
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string;
+    minValue?: number;
+    maxValue?: number;
+    minDate?: Date;
+    maxDate?: Date;
   }[];
 
   @IsOptional()
@@ -83,7 +97,18 @@ interface RoleDTODefinitionData {
   uid?: string;
   metadata?: Record<string, string>;
   roleName: string;
-  fields?: { fieldType: string; label: string; validation: string }[];
+  fields?: {
+    fieldType: string;
+    label: string;
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string;
+    minValue?: number;
+    maxValue?: number;
+    minDate?: Date;
+    maxDate?: Date;
+  }[];
   version: string;
   issuer: { issuerType: string; did: string[]; roleName: string };
   roleType: string;

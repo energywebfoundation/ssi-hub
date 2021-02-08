@@ -64,12 +64,26 @@ export class DgraphService implements OnModuleInit {
       type Field {
         fieldType
         label
-        validation
+        required
+        minLength
+        maxLength
+        pattern
+        minValue
+        maxValue
+        minDate
+        maxDate
       }
       
       fieldType: string .
       label: string .
-      validation: string .
+      required: bool .
+      minLength: int .
+      maxLength: int .
+      pattern: string .
+      minValue: int .
+      maxValue: int .
+      minDate: dateTime .
+      maxDate: dateTime .
       
       type RoleDefinition {
         version
