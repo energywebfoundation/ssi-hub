@@ -36,7 +36,14 @@ export const roleDefinitionFullQuery = `
     uid
     fieldType
     label
-    validation
+    required
+    minLength
+    maxLength
+    pattern
+    minValue
+    maxValue
+    minDate
+    maxDate
   }
   metadata {
     uid
