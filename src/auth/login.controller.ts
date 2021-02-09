@@ -1,6 +1,6 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { LoginGuard } from './login.guard';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { ApiBody } from '@nestjs/swagger';
 
 @Controller()
@@ -18,7 +18,10 @@ export class LoginController {
     },
   })
   @Post('login')
-  async login(@Req() req: Request) {
-    return { token: req.user as string };
+  async login(@Req() req: Request, @Res() res: Response) {
+    res.cookie('token', req.user, {
+      httpOnly: true,
+    });
+    return res.send({ token: req.user });
   }
 }
