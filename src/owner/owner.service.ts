@@ -30,8 +30,8 @@ export class OwnerService {
    * returns Orgs owned by given user
    * @param owner Owner DID
    */
-  public async getOrgsByOwner(owner: string) {
-    return this.getTypeByOwner(owner, 'Org');
+  public async getOrgsByOwner(owner: string, excludeSubOrgs?: string) {
+    return this.getTypeByOwner(owner, 'Org', excludeSubOrgs);
   }
 
   /**
@@ -40,9 +40,17 @@ export class OwnerService {
    * @param type
    * @private
    */
-  private async getTypeByOwner(owner: string, type: 'App' | 'Org' | 'Role') {
+  private async getTypeByOwner(
+    owner: string,
+    type: 'App' | 'Org' | 'Role',
+    excludeSubOrgs?: string,
+  ) {
     const res = await this.dgraph.query(`
-    {${type.toLocaleLowerCase()}s(func: eq(owner, "${owner}")) @filter(type(${type})) {
+    {${type.toLocaleLowerCase()}s(func: eq(owner, "${owner}")) @filter(type(${type}) ${
+      type === 'Org' && excludeSubOrgs === 'true'
+        ? 'AND NOT has(parentOrg)'
+        : ''
+    }) {
       uid
       name
       owner

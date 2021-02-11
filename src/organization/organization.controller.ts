@@ -100,4 +100,20 @@ export class OrganizationController {
   public async getSubOrgs(@Param('namespace') namespace: string) {
     return await this.organizationService.getSubOrgByParentNamespace(namespace);
   }
+
+  @Get('/:namespace/hierarchy')
+  @ApiTags('Organization')
+  @ApiOperation({
+    summary: 'Returns Organization with all nested suborgs',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: [OrganizationDTO],
+    description: 'Sub Organizations connected with Org namespace',
+  })
+  public async getOrgHierarchy(@Param('namespace') namespace: string) {
+    return await this.organizationService.getOrganizationNestedSubOrgs(
+      namespace,
+    );
+  }
 }
