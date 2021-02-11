@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import {
@@ -8,10 +8,44 @@ import {
 } from './OrganizationDTO';
 import { validate } from 'class-validator';
 import { RecordToKeyValue } from 'src/Interfaces/KeyValue';
+import { Organization } from './OrganizationTypes';
 
 @Injectable()
 export class OrganizationService {
   constructor(private readonly dgraph: DgraphService) {}
+
+  private async getOrgDefinitionByUid(uid: string) {
+    const query = `
+    {
+      definitions(func: uid(${uid})) @filter(type(OrgDefinition))
+      ${roleDefinitionFullQuery}
+    }
+    `;
+    const res = await this.dgraph.query(query);
+    const { definitions } = res.getJson() as {
+      definitions: OrganizationDefinitionDTO[];
+    };
+    const definition = definitions[0];
+    if (!definition) {
+      return {
+        uid,
+      } as OrganizationDefinitionDTO;
+    }
+    return definition;
+  }
+
+  private getDefinitionForOrgs(orgs?: Organization[]) {
+    return (
+      orgs &&
+      Promise.all(
+        orgs.map(async org => ({
+          ...org,
+          definition: await this.getOrgDefinitionByUid(org.definition.uid),
+          subOrgs: await this.getDefinitionForOrgs(org.subOrgs),
+        })),
+      )
+    );
+  }
 
   /**
    * retrieves all existing organizations
@@ -298,5 +332,26 @@ export class OrganizationService {
       Data: { subOrgs: OrganizationDTO[] }[];
     };
     return json?.Data?.[0]?.['subOrgs'] || [];
+  }
+
+  public async getOrganizationNestedSubOrgs(namespace: string) {
+    const res = await this.dgraph.query(`
+    {
+      orgs(func: eq(namespace, "${namespace}")) @filter(type(Org)) @recurse(depth: 20, loop: true) {
+        uid
+        name
+        owner
+        namespace
+        definition
+        subOrgs: ~parentOrg
+    }
+  }`);
+    const response = res.getJson() as { orgs: OrganizationDTO[] };
+    const orgs = await this.getDefinitionForOrgs(response.orgs);
+    const org = orgs[0];
+    if (!org) {
+      throw new NotFoundException();
+    }
+    return org;
   }
 }

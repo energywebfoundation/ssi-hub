@@ -25,4 +25,5 @@ export interface Organization extends DGraphObject {
   apps: Application[];
   roles: Role[];
   parentOrg?: Organization;
+  subOrgs?: Organization[];
 }

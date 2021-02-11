@@ -1,5 +1,5 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OwnerService } from './owner.service';
 import { ApplicationDTO } from '../application/ApplicationDTO';
 import { OrganizationDTO } from '../organization/OrganizationDTO';
@@ -42,11 +42,21 @@ export class OwnerController {
   @ApiOperation({
     summary: 'Returns Array or Organizations owned by given DID',
   })
+  @ApiQuery({
+    name: 'excludeSubOrgs',
+    required: false,
+    type: Boolean,
+    description:
+      '**true** - shows only main orgs <br> **false** - show all orgs',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     type: [OrganizationDTO],
   })
-  public async getOrgs(@Param('owner') owner: string) {
-    return await this.ownerService.getOrgsByOwner(owner);
+  public async getOrgs(
+    @Param('owner') owner: string,
+    @Query('excludeSubOrgs') excludeSubOrgs: string,
+  ) {
+    return await this.ownerService.getOrgsByOwner(owner, excludeSubOrgs);
   }
 }
