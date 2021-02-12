@@ -39,7 +39,8 @@ before_deploy:
   - chmod 600 deploy_rsa
   # CREATE NEW .ENV FILE
   - envsubst < .env.ci > .env.ci.dist
-  - scp -i deploy_rsa -o StrictHostKeyChecking=no .env.ci.dist docker-compose.prod.yml deploy.sh makefile $SERVER_USER@$SERVER_HOST:$APP_DIRECTORY/
+  - mv makefile.prod makefile
+  - scp -i deploy_rsa -o StrictHostKeyChecking=no -r .env.ci.dist ./universal-resolver docker-compose.prod.yml deploy.sh makefile $SERVER_USER@$SERVER_HOST:$APP_DIRECTORY/
 
 deploy:
   provider: script
