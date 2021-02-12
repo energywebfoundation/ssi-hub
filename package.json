@@ -24,8 +24,9 @@
     "build:typechain:resolver": "typechain --target ethers-v4 --outDir src/ethers './node_modules/@ensdomains/resolver/build/contracts/PublicResolver.json'",
     "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
     "docker:build": "docker-compose build app",
-    "docker:start": "docker-compose up -d",
-    "docker:watch": "docker-compose up -d && docker-compose logs -f app",
+    "docker:start:app": "docker-compose up -d",
+    "docker:start:resolver": "make start-universal-resolver",
+    "docker:watch": "npm run docker:start:app && docker-compose logs -f app",
     "docker:down": "docker-compose down -v",
     "build:docs": "rimraf docs/api && typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs true",
     "generate:jwtkeys": "openssl genrsa -out private.pem 2048 && openssl rsa -in private.pem -pubout > public.pem"
