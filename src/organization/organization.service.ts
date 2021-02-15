@@ -206,20 +206,27 @@ export class OrganizationService {
    */
   public async updateNamespace(
     namespace: string,
-    patch: CreateOrganizationData,
+    {
+      parentOrg: { uid: parentUid } = {} as Organization,
+      definition,
+      name,
+      namespace: patchNamespace,
+      owner,
+    }: CreateOrganizationData,
   ): Promise<string> {
-    const oldData = await this.getByNamespace(namespace);
-    if (!oldData) {
+    const { uid, definition: oldDefinition } =
+      (await this.getByNamespace(namespace)) || {};
+    if (!uid) {
       return;
     }
     // Assuming that "others" data from Blockchain is an object and data from db is an array.
     // Therefore, we assume that data which is not in an Array is data from Blockchain.
     // This means that it needs to have its uid mapped so as to not duplicate records.
     const newOthers =
-      patch.definition.others &&
-      !Array.isArray(patch.definition.others) &&
-      RecordToKeyValue(patch.definition.others).map(other => {
-        const oldOther = oldData.definition.others?.find(
+      definition.others &&
+      !Array.isArray(definition.others) &&
+      RecordToKeyValue(definition.others).map(other => {
+        const oldOther = oldDefinition.others?.find(
           ({ key }) => other.key === key,
         );
         if (oldOther) {
@@ -232,15 +239,23 @@ export class OrganizationService {
       });
 
     const orgDefDTO = new OrganizationDefinitionDTO({
-      ...patch.definition,
-      uid: oldData.definition.uid,
+      ...definition,
       others: newOthers,
     });
 
     const orgDTO = new OrganizationDTO(
-      { parentOrg: oldData.parentOrg, ...patch },
+      {
+        parentOrg: { uid: parentUid } as OrganizationDTO,
+        name,
+        namespace: patchNamespace,
+        owner,
+      },
       orgDefDTO,
     );
+
+    if (!parentUid) {
+      delete orgDTO.parentOrg;
+    }
 
     const err = await validate(orgDTO);
 
@@ -250,13 +265,13 @@ export class OrganizationService {
     }
 
     const data = {
-      uid: oldData.uid,
+      uid,
       ...orgDTO,
     };
 
     await this.dgraph.mutate(data);
 
-    return oldData.uid;
+    return uid;
   }
 
   /**
