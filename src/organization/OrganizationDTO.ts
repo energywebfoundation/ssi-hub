@@ -18,6 +18,7 @@ export interface CreateOrganizationData {
   owner: string;
   definition: CreateOrganizationDefinition;
   parentOrg?: Organization;
+  subOrgs?: Organization[];
 }
 
 /**
