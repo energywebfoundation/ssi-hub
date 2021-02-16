@@ -1,13 +1,69 @@
 import { Injectable } from '@nestjs/common';
+import { IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { RoleDefinitionDTO, RoleDTO } from './RoleDTO';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import { CreateRoleData, Role } from './RoleTypes';
 import { validate } from 'class-validator';
+import { DIDService } from 'src/did/did.service';
+import { DID } from 'src/did/DidTypes';
 
 @Injectable()
 export class RoleService {
-  constructor(private readonly dgraph: DgraphService) {}
+  constructor(
+    private readonly dgraph: DgraphService,
+    private didService: DIDService,
+  ) {}
+
+  private async verifyRole({
+    namespace,
+    issuer,
+    version,
+  }: {
+    namespace?: string;
+    issuer: string;
+    version?: string;
+  }) {
+    if (!namespace) return null;
+
+    const { definition: role } = (await this.getByNamespace(namespace)) || {};
+    if (!role) {
+      return null;
+    }
+
+    if (version && role.version !== version) {
+      return null;
+    }
+
+    if (role.issuer?.issuerType === 'DID') {
+      if (
+        Array.isArray(role.issuer?.did) &&
+        role.issuer?.did.includes(issuer)
+      ) {
+        return {
+          name: role.roleName,
+          namespace,
+        };
+      }
+      return null;
+    }
+
+    if (role.issuer?.issuerType === 'Role') {
+      const issuerDID = new DID(issuer);
+      const { service: issuerClaims } = await this.didService.getById(
+        issuerDID,
+        true,
+      );
+      const issuerRoles = issuerClaims.map(c => c.claimType);
+      if (issuerRoles.includes(role.issuer.roleName)) {
+        return {
+          name: role.roleName,
+          namespace,
+        };
+      }
+    }
+    return null;
+  }
 
   /**
    * retrieves all existing roles
@@ -143,5 +199,24 @@ export class RoleService {
     }
 
     await this.dgraph.delete(role.uid);
+  }
+
+  public async verifyUserRoles(did: string) {
+    const user = new DID(did);
+    const { service } = await this.didService.getById(user, true);
+    const verifiedRoles = await Promise.all(
+      ((service as unknown) as (IServiceEndpoint & {
+        claimType?: string;
+        claimTypeVersion?: string;
+        iss: string;
+      })[]).map(({ iss, claimTypeVersion, claimType }) =>
+        this.verifyRole({
+          issuer: iss,
+          namespace: claimType,
+          version: claimTypeVersion,
+        }),
+      ),
+    );
+    return verifiedRoles.filter(Boolean);
   }
 }

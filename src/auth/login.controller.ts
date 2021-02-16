@@ -1,11 +1,29 @@
-import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { LoginGuard } from './login.guard';
-import { CookieOptions, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { ApiBody } from '@nestjs/swagger';
-import useragent from 'useragent';
+import { TokenService } from './token.service';
+import { CookiesServices } from './cookies.service';
+import { ConfigService } from '@nestjs/config';
+import { RoleService } from 'src/role/role.service';
 
 @Controller()
 export class LoginController {
+  constructor(
+    private tokenService: TokenService,
+    private cookiesServices: CookiesServices,
+    private configService: ConfigService,
+    private roleService: RoleService,
+  ) {}
+
   @UseGuards(LoginGuard)
   @ApiBody({
     required: true,
@@ -20,17 +38,84 @@ export class LoginController {
   })
   @Post('login')
   async login(@Req() req: Request, @Res() res: Response) {
-    const cookiesOptions: CookieOptions = {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-    };
-    const { family, major } = useragent.parse(req.headers['user-agent']) || {};
-    if (family === 'Chrome' && +major >= 51 && +major <= 66) {
-      delete cookiesOptions.sameSite;
-      delete cookiesOptions.secure;
+    const { did, verifiedRoles } =
+      (req.user as {
+        did: string;
+        verifiedRoles: { name: string; namespace: string }[];
+      }) || {};
+
+    if (!did) {
+      throw new UnauthorizedException();
     }
-    res.cookie('token', req.user, cookiesOptions);
-    return res.send({ token: req.user });
+
+    const cookiesOptions = this.cookiesServices.getCookiesOptionBasedOnUserAgent(
+      req.headers['user-agent'],
+    );
+
+    const [token, refreshToken] = await Promise.all([
+      this.tokenService.generateAccessToken({ did, verifiedRoles }),
+      this.tokenService.generateRefreshToken({
+        userDid: did,
+      }),
+    ]);
+
+    res.cookie(
+      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
+      token,
+      cookiesOptions,
+    );
+
+    res.cookie(
+      this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
+      refreshToken,
+      cookiesOptions,
+    );
+
+    return res.send({ token, refreshToken });
+  }
+
+  @Get('refresh_token')
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
+    const refreshTokenString =
+      req.cookies[this.configService.get<string>('JWT_REFRESH_TOKEN_NAME')];
+
+    if (!refreshTokenString) {
+      throw new UnauthorizedException();
+    }
+
+    const { userDid, tokenId } =
+      (await this.tokenService.verifyRefreshToken(refreshTokenString)) || {};
+
+    const verifiedRoles = await this.roleService.verifyUserRoles(userDid);
+
+    if (!tokenId || !userDid) {
+      throw new UnauthorizedException();
+    }
+
+    const cookiesOptions = this.cookiesServices.getCookiesOptionBasedOnUserAgent(
+      req.headers['user-agent'],
+    );
+
+    const [token, refreshToken] = await Promise.all([
+      this.tokenService.generateAccessToken({ did: userDid, verifiedRoles }),
+      this.tokenService.generateRefreshToken({
+        userDid,
+      }),
+      this.tokenService.invalidateRefreshToken(tokenId),
+    ]);
+
+    res.cookie(
+      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
+      token,
+      cookiesOptions,
+    );
+
+    res.cookie(
+      this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
+      refreshToken,
+      cookiesOptions,
+    );
+
+    return res.send({ token, refreshToken });
   }
 }
