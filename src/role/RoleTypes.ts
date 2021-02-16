@@ -73,5 +73,7 @@ export interface RoleDefinition extends DGraphObject {
     issuerType: string;
     did: string[];
     uid?: string;
+    roleName?: string;
   };
+  version: string;
 }

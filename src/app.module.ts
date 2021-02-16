@@ -1,3 +1,5 @@
+import fs from 'fs';
+import { promisify } from 'util';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DgraphService } from './dgraph/dgraph.service';
@@ -11,7 +13,7 @@ import { ApplicationService } from './application/application.service';
 import { RoleService } from './role/role.service';
 import { EnsService } from './ENS/ens.service';
 import { GraphqlController } from './graphql/graphql.controller';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OwnerController } from './owner/owner.controller';
 import { OwnerService } from './owner/owner.service';
 import { NamespaceController } from './namespace/namespace.controller';
@@ -27,6 +29,12 @@ import { DIDDGraphRepository } from './did/did.repository';
 import { LoginController } from './auth/login.controller';
 import { AuthStrategy } from './auth/login.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { TokenService } from './auth/token.service';
+import { RefreshTokenRepository } from './auth/refreshToken.repository';
+import { CookiesServices } from './auth/cookies.service';
+
+const readFile = promisify(fs.readFile);
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -45,6 +53,28 @@ const redisConfig = {
     }),
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const [publicKey, privateKey] = await Promise.all([
+          readFile(configService.get<string>('JWT_PUBLIC_KEY')),
+          readFile(configService.get<string>('JWT_PRIVATE_KEY')),
+        ]);
+
+        return {
+          privateKey,
+          publicKey,
+          signOptions: {
+            algorithm: 'RS256',
+            expiresIn: configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES_IN'),
+          },
+          verifyOptions: {
+            algorithms: ['RS256'],
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
   ],
   controllers: [
     ClaimController,
@@ -74,6 +104,9 @@ const redisConfig = {
     ResolverFactory,
     AuthStrategy,
     JwtStrategy,
+    TokenService,
+    RefreshTokenRepository,
+    CookiesServices,
   ],
 })
 export class AppModule {}
