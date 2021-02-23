@@ -16,13 +16,13 @@ export class DIDProcessor {
   public async processDIDDocumentUpsert(job: Job<string>) {
     this.logger.log(`processing cache upsert for ${job.data}`);
     const did = new DID(job.data);
-    this.didService.upsertCachedDocument(did);
+    await this.didService.upsertCachedDocument(did);
   }
 
   @Process('refreshDocument')
   public async processDIDDocumentRefresh(job: Job<string>) {
     this.logger.log(`processing cache refresh for ${job.data}`);
     const did = new DID(job.data);
-    this.didService.refreshCachedDocument(did);
+    await this.didService.refreshCachedDocument(did);
   }
 }
