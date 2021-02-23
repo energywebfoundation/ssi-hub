@@ -6,7 +6,7 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory';
@@ -35,6 +35,7 @@ export class DIDService {
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly resolverFactory: ResolverFactory,
     private readonly didRepository: DIDDGraphRepository,
+    private readonly httpService: HttpService,
     @InjectQueue('dids') private readonly didQueue: Queue<string>,
   ) {
     this.logger = new Logger('DIDService');
@@ -59,7 +60,8 @@ export class DIDService {
     const didDocSyncInteral = this.config.get<string>(
       'DIDDOC_SYNC_INTERVAL_IN_MS',
     );
-    const DID_SYNC_ENABLED = this.config.get<string>('DID_SYNC_ENABLED') !== 'false';
+    const DID_SYNC_ENABLED =
+      this.config.get<string>('DID_SYNC_ENABLED') !== 'false';
     if (didDocSyncInteral && DID_SYNC_ENABLED) {
       const interval = setInterval(
         () => this.syncDocuments(),
@@ -158,6 +160,13 @@ export class DIDService {
         `refreshing cached document for did: ${did.id} threw error: ${err}`,
       );
     }
+  }
+
+  public async getDIDDocumentFromUniversalResolver(did: string) {
+    const { data } = await this.httpService
+      .get(`${this.config.get<string>('UNIVERSAL_RESOLVER_URL')}/${did}`)
+      .toPromise();
+    return data.didDocument;
   }
 
   /**
