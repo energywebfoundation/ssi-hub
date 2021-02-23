@@ -34,10 +34,10 @@ export class DIDController {
   }
 
   /**
-   * Retrieves a cached DID Document
+   * Retrieves a cached DID Document. If not in cache, retrieves from blockchain.
    * @param id The DID to retrieve
    * @param includeClaimsString true/false string as to whether or not to return full claim data
-   * @returns A DID Document representation which optionally includes full claims. Returns 404 if not in cache.
+   * @returns A DID Document representation which optionally includes full claims.
    */
   @Get('/:did')
   @ApiTags('DID')
@@ -45,7 +45,7 @@ export class DIDController {
     summary: 'Retrieves a cached DID Document',
     description:
       'Returns a resolved DID Document, optionally with full claim data. \n' +
-      'If DID Document is not yet cached, 404 is returned and request to cache is queued',
+      'If DID Document is not yet cached, it is retrieved from the blockchain',
   })
   @ApiQuery({
     name: 'includeClaims',
