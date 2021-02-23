@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { promisify } from 'util';
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DgraphService } from './dgraph/dgraph.service';
 import { ClaimController } from './claim/claim.controller';
@@ -75,6 +75,7 @@ const redisConfig = {
       },
       inject: [ConfigService],
     }),
+    HttpModule,
   ],
   controllers: [
     ClaimController,

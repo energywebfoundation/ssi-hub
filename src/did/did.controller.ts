@@ -59,11 +59,18 @@ export class DIDController {
     @Query('includeClaims') includeClaimsString: string,
   ) {
     try {
+      const includeClaims = includeClaimsString === 'true';
       this.logger.log(
-        `Retrieving document for did: ${id} with includeClaims: ${includeClaimsString}`,
+        `Retrieving document for did: ${id} ${
+          includeClaims ? 'with claims' : ''
+        }`,
       );
       const did = new DID(id);
-      const includeClaims = includeClaimsString === 'true';
+
+      if (did.method !== 'ethr') {
+        return this.didService.getDIDDocumentFromUniversalResolver(did.id);
+      }
+
       let didDocument = await this.didService.getById(did, includeClaims);
 
       if (!didDocument) {
