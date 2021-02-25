@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { providers, utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
@@ -19,6 +19,7 @@ import { CreateRoleDefinition } from '../role/RoleTypes';
 import { namehash } from '../ethers/utils';
 import { OwnerService } from '../owner/owner.service';
 import chunk from 'lodash.chunk';
+import { Logger } from '../logger/logger.service';
 
 const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -27,7 +28,6 @@ export class EnsService implements OnApplicationBootstrap {
   private publicResolver: PublicResolver;
   private ensRegistry: EnsRegistry;
   private provider: providers.JsonRpcProvider;
-  private logger: Logger;
   constructor(
     private ownerService: OwnerService,
     private roleService: RoleService,
@@ -35,8 +35,9 @@ export class EnsService implements OnApplicationBootstrap {
     private organizationService: OrganizationService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private config: ConfigService,
+    private readonly logger: Logger,
   ) {
-    this.logger = new Logger('ENSService');
+    this.logger.setContext(EnsService.name);
     errors.setLogLevel('error');
 
     // Get config values from .env file
@@ -86,42 +87,46 @@ export class EnsService implements OnApplicationBootstrap {
   }
 
   private async InitEventListeners(): Promise<void> {
+    try {
+      this.publicResolver.addListener('TextChanged', async hash => {
+        await this.eventHandler(hash);
+      });
+
+      // Register event handler for owner change or namespace deletion
+      this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
+        const hash = utils.keccak256(node + label.slice(2));
+        const namespace = await this.publicResolver.name(hash.toString());
+        if (namespace === '') {
+          return;
+        }
+
+        // Remove namespace if owner is set to hex zero
+        if (owner === emptyAddress) {
+          await this.ownerService.deleteNamespace(namespace);
+          return;
+        }
+
+        await this.ownerService.changeOwner(namespace, owner);
+      });
+
+      this.ensRegistry.addListener('Transfer', async (node, owner) => {
+        const namespace = await this.publicResolver.name(node.toString());
+        if (namespace === '') {
+          return;
+        }
+
+        // Remove namespace if owner is set to hex zero
+        if (owner === emptyAddress) {
+          await this.ownerService.deleteNamespace(namespace);
+          return;
+        }
+
+        await this.ownerService.changeOwner(namespace, owner);
+      });
+    } catch (err) {
+      this.logger.error(err);
+    }
     // Register event handler for new Role/App/Org
-    this.publicResolver.addListener('TextChanged', async hash => {
-      await this.eventHandler(hash);
-    });
-
-    // Register event handler for owner change or namespace deletion
-    this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
-      const hash = utils.keccak256(node + label.slice(2));
-      const namespace = await this.publicResolver.name(hash.toString());
-      if (namespace === '') {
-        return;
-      }
-
-      // Remove namespace if owner is set to hex zero
-      if (owner === emptyAddress) {
-        await this.ownerService.deleteNamespace(namespace);
-        return;
-      }
-
-      await this.ownerService.changeOwner(namespace, owner);
-    });
-
-    this.ensRegistry.addListener('Transfer', async (node, owner) => {
-      const namespace = await this.publicResolver.name(node.toString());
-      if (namespace === '') {
-        return;
-      }
-
-      // Remove namespace if owner is set to hex zero
-      if (owner === emptyAddress) {
-        await this.ownerService.deleteNamespace(namespace);
-        return;
-      }
-
-      await this.ownerService.changeOwner(namespace, owner);
-    });
   }
 
   private async getAllNamespaces() {
@@ -171,7 +176,7 @@ export class EnsService implements OnApplicationBootstrap {
 
       await this.syncNamespace({ data, namespace, owner });
     } catch (err) {
-      this.logger.debug(err.toString());
+      this.logger.error(err);
       return;
     }
   }
@@ -415,7 +420,7 @@ export class EnsService implements OnApplicationBootstrap {
         );
       }
     } catch (err) {
-      this.logger.error(err.toString());
+      this.logger.error(err);
     }
     this.logger.debug('finished sync');
   }

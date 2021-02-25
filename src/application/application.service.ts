@@ -8,14 +8,14 @@ import {
 } from './ApplicationDTO';
 import { validate } from 'class-validator';
 import { Application } from './ApplicationTypes';
-import { RecordToKeyValue } from 'src/Interfaces/KeyValue';
+import { RecordToKeyValue } from '../Interfaces/KeyValue';
 
 const baseQueryFields = `
-uid
-name
-namespace
-owner
-definition ${roleDefinitionFullQuery}
+  uid
+  name
+  namespace
+  owner
+  definition ${roleDefinitionFullQuery}
 `;
 
 @Injectable()

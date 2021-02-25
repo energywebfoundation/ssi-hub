@@ -1,11 +1,19 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleDTO } from '../role/RoleDTO';
 import { ApplicationDTO } from './ApplicationDTO';
 import { Auth } from '../auth/auth.decorator';
+import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 
 @Auth()
+@UseInterceptors(SentryErrorInterceptor)
 @Controller('app')
 export class ApplicationController {
   constructor(private applicationService: ApplicationService) {}

@@ -13,7 +13,7 @@ import { ApiBody } from '@nestjs/swagger';
 import { TokenService } from './token.service';
 import { CookiesServices } from './cookies.service';
 import { ConfigService } from '@nestjs/config';
-import { RoleService } from 'src/role/role.service';
+import { RoleService } from '../role/role.service';
 
 @Controller()
 export class LoginController {
