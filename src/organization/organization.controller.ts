@@ -1,12 +1,21 @@
-import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrganizationDTO } from './OrganizationDTO';
 import { ApplicationDTO } from '../application/ApplicationDTO';
 import { RoleDTO } from '../role/RoleDTO';
 import { Auth } from '../auth/auth.decorator';
+import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 
 @Auth()
+@UseInterceptors(SentryErrorInterceptor)
 @Controller('org')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}

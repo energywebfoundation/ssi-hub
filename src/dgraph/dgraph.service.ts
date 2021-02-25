@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Policy } from 'cockatiel';
 import { promisify } from 'util';
 import fs from 'fs';
+import { Logger } from '../logger/logger.service';
 
 @Injectable()
 export class DgraphService implements OnModuleInit {
@@ -25,7 +26,12 @@ export class DgraphService implements OnModuleInit {
     await this.createInstance();
   }
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private readonly logger: Logger,
+  ) {
+    this.logger.setContext(DgraphService.name);
+  }
 
   /**
    * Method for updating dgraph schemas, triggers every time after initial server startup
@@ -191,7 +197,7 @@ export class DgraphService implements OnModuleInit {
     const op = new Operation();
     op.setSchema(schema);
     await this._instance.alter(op);
-    console.log('Migration completed');
+    this.logger.info('Migration completed');
   }
 
   /**
@@ -254,7 +260,7 @@ export class DgraphService implements OnModuleInit {
       .delay(1000);
     return await policy.execute(async () => {
       clientStub = new DgraphClientStub(DB_HOST);
-      console.log('connection successfuly');
+      this.logger.info('Connection to Dgraph established');
 
       this._stub = clientStub;
 
@@ -263,7 +269,7 @@ export class DgraphService implements OnModuleInit {
       try {
         await this.migrate();
       } catch (err) {
-        console.log(err);
+        this.logger.error(err);
       }
 
       return this._instance;
@@ -300,15 +306,15 @@ export class DgraphService implements OnModuleInit {
     const readFileWithPromise = promisify(fs.readFile);
 
     await writeFileWithPromise('claims.json', JSON.stringify(data));
-    console.log('saved claims');
+    this.logger.info('Claims saved');
     await this.dropDB();
-    console.log('db dropped');
+    this.logger.info('Dgraph db dropped');
     await this.migrate();
-    console.log('Migration after dump completed');
+    this.logger.info('Migration after dump completed');
     const readData = await readFileWithPromise('claims.json');
     const { claims: save } = JSON.parse(readData.toString());
     await this.mutate(save);
-    console.log('claims restored');
+    this.logger.info('Claims restored');
   }
 
   /**

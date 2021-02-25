@@ -5,6 +5,8 @@ services:
     container_name: app
     image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
     command: "sh /app/wait-for-db.sh $DGRAPH_HEALTH_CHECK_ENDPOINT node /app/dist/src/main.js"
+    volumes:
+      - ./logs:${LOGS_DIRECTORY}
     ports:
       - ${NESTJS_PORT}:${NESTJS_PORT}
     restart: unless-stopped

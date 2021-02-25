@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NamespaceService } from './namespace.service';
@@ -13,8 +14,10 @@ import { NamespaceEntities } from './namespace.types';
 import { SearchDTO } from './namespace.dto';
 import { validate } from 'class-validator';
 import { Auth } from '../auth/auth.decorator';
+import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 
 @Auth()
+@UseInterceptors(SentryErrorInterceptor)
 @Controller('namespace')
 export class NamespaceController {
   constructor(private namespaceService: NamespaceService) {}

@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  Logger,
   Param,
   Post,
   Query,
@@ -16,21 +15,23 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Queue } from 'bull';
+import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
+import { Logger } from '../logger/logger.service';
 import { Auth } from '../auth/auth.decorator';
 import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
 import { DID } from './DidTypes';
 
 @Auth()
+@UseInterceptors(SentryErrorInterceptor)
 @Controller('DID')
 export class DIDController {
-  private readonly logger: Logger;
-
   constructor(
     private readonly didService: DIDService,
     @InjectQueue('dids') private readonly didQueue: Queue<string>,
+    private readonly logger: Logger,
   ) {
-    this.logger = new Logger('DIDController');
+    this.logger.setContext(DIDController.name);
   }
 
   /**
@@ -58,37 +59,31 @@ export class DIDController {
     @Param('did') id: string,
     @Query('includeClaims') includeClaimsString: string,
   ) {
-    try {
-      const includeClaims = includeClaimsString === 'true';
-      this.logger.log(
-        `Retrieving document for did: ${id} ${
-          includeClaims ? 'with claims' : ''
-        }`,
-      );
-      const did = new DID(id);
+    const includeClaims = includeClaimsString === 'true';
+    this.logger.info(
+      `Retrieving document for did: ${id} ${
+        includeClaims ? 'with claims' : ''
+      }`,
+    );
+    const did = new DID(id);
 
-      if (did.method !== 'ethr') {
-        return this.didService.getDIDDocumentFromUniversalResolver(did.id);
-      }
-
-      let didDocument = await this.didService.getById(did, includeClaims);
-
-      if (!didDocument) {
-        this.logger.log(
-          `Requested document for did: ${id} not cached. Queuing cache request.`,
-        );
-        // awaiting refresh so that subsequent calls don't duplicate cached DID Document
-        await this.didService.refreshCachedDocument(did);
-        didDocument = await this.didService.getById(did, includeClaims);
-      }
-
-      this.logger.debug(`Retrieved document for did: ${id}`);
-      return didDocument;
-    } catch (err) {
-      this.logger.error(
-        `Retrieving document for did: ${id} threw error: ${err}`,
-      );
+    if (did.method !== 'ethr') {
+      return this.didService.getDIDDocumentFromUniversalResolver(did.id);
     }
+
+    let didDocument = await this.didService.getById(did, includeClaims);
+
+    if (!didDocument) {
+      this.logger.info(
+        `Requested document for did: ${id} not cached. Queuing cache request.`,
+      );
+      // awaiting refresh so that subsequent calls don't duplicate cached DID Document
+      await this.didService.refreshCachedDocument(did);
+      didDocument = await this.didService.getById(did, includeClaims);
+    }
+
+    this.logger.debug(`Retrieved document for did: ${id}`);
+    return didDocument;
   }
 
   /**

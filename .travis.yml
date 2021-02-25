@@ -17,12 +17,13 @@ before_install:
   - export AWS_REGION=us-east-1
   - export AWS_ECR_REPOSITORY=$DOCKER_REGISTRY/$DOCKER_REPOSITORY
   - export DOCKER_TAG=$TRAVIS_COMMIT
+  - export SENTRY_RELEASE=$TRAVIS_COMMIT
 
 install:
   # INSTALL AWSCLI
   - if ! [ -x "$(command -v aws)" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" ; unzip awscliv2.zip ; sudo ./aws/install ; rm -rf ./aws; rm awscliv2.zip; fi
   # BUILD NESTJS APP
-  - docker build -t $AWS_ECR_REPOSITORY:$DOCKER_TAG -t $AWS_ECR_REPOSITORY:latest -f ./docker/prod/Dockerfile .
+  - docker build --build-arg SENTRY_RELEASE --build-arg SENTRY_AUTH_TOKEN -t $AWS_ECR_REPOSITORY:$DOCKER_TAG -t $AWS_ECR_REPOSITORY:latest -f ./docker/prod/Dockerfile .
   # LOGIN TO ECR
   - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPOSITORY
   # PUSH IMAGES TO REGISTRY

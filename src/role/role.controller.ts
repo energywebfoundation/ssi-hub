@@ -1,10 +1,18 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { RoleService } from './role.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleDTO } from './RoleDTO';
-import { Auth } from 'src/auth/auth.decorator';
+import { Auth } from '../auth/auth.decorator';
+import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 
 @Auth()
+@UseInterceptors(SentryErrorInterceptor)
 @Controller('role')
 export class RoleController {
   constructor(private roleService: RoleService) {}

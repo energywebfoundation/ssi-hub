@@ -5,8 +5,8 @@ import { RoleDefinitionDTO, RoleDTO } from './RoleDTO';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
 import { CreateRoleData, Role } from './RoleTypes';
 import { validate } from 'class-validator';
-import { DIDService } from 'src/did/did.service';
-import { DID } from 'src/did/DidTypes';
+import { DIDService } from '../did/did.service';
+import { DID } from '../did/DidTypes';
 
 @Injectable()
 export class RoleService {

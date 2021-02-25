@@ -3,11 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Post,
   Query,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -31,18 +31,20 @@ import { Queue } from 'bull';
 import { validate } from 'class-validator';
 import { ClaimIssue, ClaimRejection, ClaimRequest } from './ClaimDTO';
 import { Auth } from '../auth/auth.decorator';
+import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
+import { Logger } from '../logger/logger.service';
 
 @Auth()
+@UseInterceptors(SentryErrorInterceptor)
 @Controller('claim')
 export class ClaimController {
-  private readonly logger: Logger;
-
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
     @InjectQueue('claims') private claimQueue: Queue<string>,
+    private readonly logger: Logger,
   ) {
-    this.logger = new Logger('ClaimController');
+    this.logger.setContext(ClaimController.name);
     this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
       this.logger.debug(`Got message ${data}`);
       await this.claimQueue.add('save', data);

@@ -1,28 +1,37 @@
 import { Process, Processor } from '@nestjs/bull';
-import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
+import { Logger } from '../logger/logger.service';
 import { DIDService } from './did.service';
 import { DID } from './DidTypes';
 
 @Processor('dids')
 export class DIDProcessor {
-  private readonly logger: Logger;
-
-  constructor(private readonly didService: DIDService) {
-    this.logger = new Logger('DIDProcessor');
+  constructor(
+    private readonly didService: DIDService,
+    private readonly logger: Logger,
+  ) {
+    this.logger.setContext(DIDProcessor.name);
   }
 
   @Process('upsertDocument')
   public async processDIDDocumentUpsert(job: Job<string>) {
-    this.logger.log(`processing cache upsert for ${job.data}`);
-    const did = new DID(job.data);
-    await this.didService.upsertCachedDocument(did);
+    try {
+      this.logger.debug(`processing cache upsert for ${job.data}`);
+      const did = new DID(job.data);
+      await this.didService.upsertCachedDocument(did);
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 
   @Process('refreshDocument')
   public async processDIDDocumentRefresh(job: Job<string>) {
-    this.logger.log(`processing cache refresh for ${job.data}`);
-    const did = new DID(job.data);
-    await this.didService.refreshCachedDocument(did);
+    try {
+      this.logger.debug(`processing cache refresh for ${job.data}`);
+      const did = new DID(job.data);
+      await this.didService.refreshCachedDocument(did);
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 }
