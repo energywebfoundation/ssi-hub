@@ -1,6 +1,7 @@
 import {
   CallHandler,
   ExecutionContext,
+  HttpStatus,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
@@ -13,12 +14,11 @@ export class NotFoundInterceptor implements NestInterceptor {
     {
       return next.handle().pipe(
         tap(data => {
-          const notFoundHTTPcode = 404;
           if (data === null)
             context
               .switchToHttp()
               .getResponse()
-              .status(notFoundHTTPcode);
+              .status(HttpStatus.NOT_FOUND);
         }),
       );
     }

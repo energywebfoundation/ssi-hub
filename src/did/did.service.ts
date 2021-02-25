@@ -6,7 +6,7 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory';
@@ -20,10 +20,10 @@ import { Queue } from 'bull';
 import { DID } from './DidTypes';
 import { BigNumber, bigNumberify } from 'ethers/utils';
 import { DIDDGraphRepository } from './did.repository';
+import { Logger } from '../logger/logger.service';
 
 @Injectable()
 export class DIDService {
-  private readonly logger: Logger;
   private readonly provider: providers.JsonRpcProvider;
   private readonly didRegistry: EthereumDidRegistry;
   private readonly ipfsStore: IDidStore;
@@ -37,8 +37,9 @@ export class DIDService {
     private readonly didRepository: DIDDGraphRepository,
     private readonly httpService: HttpService,
     @InjectQueue('dids') private readonly didQueue: Queue<string>,
+    private readonly logger: Logger,
   ) {
-    this.logger = new Logger('DIDService');
+    this.logger.setContext(DIDService.name);
 
     const IPFS_URL = this.config.get<string>('IPFS_URL');
     this.ipfsStore = new DidStore(IPFS_URL);
@@ -76,7 +77,7 @@ export class DIDService {
     this.didRegistry.addListener(
       DIDAttributeChanged,
       async (owner, hash, value) => {
-        this.logger.log(
+        this.logger.info(
           `${DIDAttributeChanged} event received for owner: ${owner}`,
         );
         const did = `did:${Methods.Erc1056}:${owner}`;
@@ -92,7 +93,7 @@ export class DIDService {
   }
 
   private async syncDocuments() {
-    this.logger.log(`Beginning sync of DID Documents`);
+    this.logger.debug(`Beginning sync of DID Documents`);
     const cachedDIDs = await this.didRepository.queryAllDIDs();
     cachedDIDs.forEach(async did => {
       await this.didQueue.add(this.refresh_queue_channel, did.id);
@@ -127,7 +128,7 @@ export class DIDService {
    */
   public async upsertCachedDocument(did: DID): Promise<void> {
     try {
-      this.logger.log(`upserting cached document for did: ${did.id}`);
+      this.logger.debug(`Upserting cached document for did: ${did.id}`);
       const didEntity =
         (await this.didRepository.queryById(did)) ?? new DIDDocumentEntity(did);
       const logs = await this.readNewLogsFromChain(didEntity);
@@ -135,9 +136,7 @@ export class DIDService {
       didEntity.cacheIPFSClaims(this.ipfsStore);
       await this.didRepository.saveDocument(didEntity.getDTO());
     } catch (err) {
-      this.logger.error(
-        `upserting cached document for did: ${did.id} threw error: ${err}`,
-      );
+      this.logger.error(err);
     }
   }
 
@@ -148,7 +147,7 @@ export class DIDService {
    */
   public async refreshCachedDocument(did: DID): Promise<void> {
     try {
-      this.logger.log(`refreshing cached document for did: ${did.id}`);
+      this.logger.info(`refreshing cached document for did: ${did.id}`);
       const didEntity =
         (await this.didRepository.queryById(did)) ?? new DIDDocumentEntity(did);
       const logs = await this.readAllLogsFromChain(didEntity);
@@ -156,9 +155,7 @@ export class DIDService {
       await didEntity.cacheIPFSClaims(this.ipfsStore);
       await this.didRepository.saveDocument(didEntity.getDTO());
     } catch (err) {
-      this.logger.error(
-        `refreshing cached document for did: ${did.id} threw error: ${err}`,
-      );
+      this.logger.error(err);
     }
   }
 

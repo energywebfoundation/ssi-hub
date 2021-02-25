@@ -7,7 +7,7 @@ import {
   OrganizationDTO,
 } from './OrganizationDTO';
 import { validate } from 'class-validator';
-import { RecordToKeyValue } from 'src/Interfaces/KeyValue';
+import { RecordToKeyValue } from '../Interfaces/KeyValue';
 import { Organization } from './OrganizationTypes';
 
 @Injectable()

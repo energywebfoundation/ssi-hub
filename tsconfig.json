@@ -6,13 +6,12 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
+    "target": "es2019",
+    "outDir": "dist",
     "incremental": true,
     "resolveJsonModule": true,
+    "moduleResolution": "node",
     "esModuleInterop": true,
-    "lib": ["ES2018", "ES2019", "ES2020"]
+    "lib": ["ES2020"]
   }
 }

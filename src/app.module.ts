@@ -33,6 +33,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { TokenService } from './auth/token.service';
 import { RefreshTokenRepository } from './auth/refreshToken.repository';
 import { CookiesServices } from './auth/cookies.service';
+import { SentryService } from './sentry/sentry.service';
+import { Logger } from './logger/logger.service';
 
 const readFile = promisify(fs.readFile);
 
@@ -108,6 +110,8 @@ const redisConfig = {
     TokenService,
     RefreshTokenRepository,
     CookiesServices,
+    SentryService,
+    Logger,
   ],
 })
 export class AppModule {}
