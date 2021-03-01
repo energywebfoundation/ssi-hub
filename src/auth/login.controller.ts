@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -9,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { LoginGuard } from './login.guard';
 import { Request, Response } from 'express';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import { TokenService } from './token.service';
 import { CookiesServices } from './cookies.service';
 import { ConfigService } from '@nestjs/config';
@@ -74,10 +75,16 @@ export class LoginController {
     return res.send({ token, refreshToken });
   }
 
+  @ApiQuery({ name: 'refresh_token', required: false })
   @Get('refresh_token')
-  async refreshToken(@Req() req: Request, @Res() res: Response) {
+  async refreshToken(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('refresh_token') refresh_token?: string,
+  ) {
     const refreshTokenString =
-      req.cookies[this.configService.get<string>('JWT_REFRESH_TOKEN_NAME')];
+      req.cookies[this.configService.get<string>('JWT_REFRESH_TOKEN_NAME')] ||
+      refresh_token;
 
     if (!refreshTokenString) {
       throw new UnauthorizedException();

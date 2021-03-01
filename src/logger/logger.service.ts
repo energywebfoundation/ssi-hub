@@ -53,7 +53,6 @@ export class Logger extends NestLogger implements LoggerService {
   }
 
   error(error: any, trace?: string, context: string = this.context) {
-    console.log(JSON.stringify(error));
     this.sentryService.captureException(error);
     if (error instanceof Error) {
       const { message, stack, ...meta } = error;
