@@ -50,4 +50,9 @@ export const roleDefinitionFullQuery = `
     key
     value
   }
+  enrolmentPreconditions {
+    uid
+    type
+    conditions
+  }
 }`;

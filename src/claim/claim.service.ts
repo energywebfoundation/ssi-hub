@@ -8,6 +8,8 @@ import {
   DecodedClaimToken,
 } from './ClaimTypes';
 import jwt_decode from 'jwt-decode';
+import { RoleService } from '../role/role.service';
+import { Logger } from '../logger/logger.service';
 
 const claimQuery = `
   uid
@@ -32,7 +34,13 @@ interface QueryFilters {
 
 @Injectable()
 export class ClaimService {
-  constructor(private readonly dgraph: DgraphService) {}
+  constructor(
+    private readonly dgraph: DgraphService,
+    private readonly roleService: RoleService,
+    private readonly logger: Logger,
+  ) {
+    this.logger.setContext(ClaimService.name);
+  }
 
   /**
    * Handles claims saving and updates
@@ -43,7 +51,20 @@ export class ClaimService {
   ): Promise<string> {
     const claim: Claim = await this.getById(data.id);
     if (!claim && 'token' in data) {
-      return await this.saveClaim(data);
+      try {
+        const {
+          claimData: { claimType },
+        }: DecodedClaimToken = jwt_decode(data.token);
+        const user = data.requester;
+        await this.roleService.verifyEnrolmentPrecondition({
+          claimType,
+          userDID: user,
+        });
+        return this.saveClaim(data);
+      } catch (err) {
+        this.logger.error(err);
+      }
+      return;
     }
     if (claim && !claim.isAccepted && 'isRejected' in data) {
       const patch: Claim = {
