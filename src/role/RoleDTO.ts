@@ -23,6 +23,12 @@ export class RoleDefinitionDTO implements RoleDefinition {
     this.issuer = data.issuer;
     this.issuer['dgraph.type'] = 'RoleIssuer';
     this.roleType = data.roleType;
+    this.enrolmentPreconditions = data?.enrolmentPreconditions?.map(
+      condition => ({
+        ...condition,
+        'dgraph.type': 'EnrolmentPrecondition',
+      }),
+    );
   }
 
   @IsOptional()
@@ -71,6 +77,14 @@ export class RoleDefinitionDTO implements RoleDefinition {
 
   issuer: { issuerType: string; did: string[]; roleName: string; uid?: string };
 
+  @IsOptional()
+  @IsArray()
+  enrolmentPreconditions: {
+    type: string;
+    conditions: string[];
+    'dgraph.type': string;
+  }[];
+
   @IsString()
   @ApiProperty()
   roleName: string;
@@ -112,6 +126,11 @@ interface RoleDTODefinitionData {
   version: string;
   issuer: { issuerType: string; did: string[]; roleName: string };
   roleType: string;
+  enrolmentPreconditions?: {
+    type: string;
+    conditions: string[];
+    'dgraph.type': string;
+  }[];
 }
 
 /**

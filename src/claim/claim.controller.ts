@@ -122,7 +122,7 @@ export class ClaimController {
     }
 
     const payload = JSON.stringify(claimData);
-    this.logger.debug(`publishing claims rejection ${payload} from ${did}`);
+    this.logger.debug(`publishing claims request ${payload} from ${did}`);
     data.claimIssuer.map(issuerDid => {
       this.nats.connection.publish(
         `${issuerDid}.${NATS_EXCHANGE_TOPIC}`,
