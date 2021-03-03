@@ -79,6 +79,14 @@ export class DgraphService implements OnModuleInit {
         minDate
         maxDate
       }
+
+      type EnrolmentPrecondition {
+        type
+        condition
+      }
+
+      type: string .
+      condition: [string] .
       
       fieldType: string .
       label: string .
@@ -98,6 +106,7 @@ export class DgraphService implements OnModuleInit {
         fields
         metadata
         issuer
+        enrolmentPreconditions
       }
       
       type AppDefinition {
@@ -129,6 +138,7 @@ export class DgraphService implements OnModuleInit {
       others: [uid] .
       appName: string .
       orgName: string .
+      enrolmentPreconditions: [uid] .
       
       type Role {
         name
@@ -174,7 +184,6 @@ export class DgraphService implements OnModuleInit {
       requester: string @index(exact) .
       claimType: string @index(exact) .
       parentNamespace: string @index(exact) .
-      type: string .
       id: string @index(exact) .
 
       type DIDDocument {

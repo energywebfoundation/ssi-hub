@@ -37,6 +37,11 @@ export interface CreateRoleDefinition {
     did: string[];
     roleName: string;
   };
+  enrolmentPreconditions?: {
+    type: string;
+    conditions: string[];
+    'dgraph.type': string;
+  }[];
 }
 
 /**
@@ -76,4 +81,10 @@ export interface RoleDefinition extends DGraphObject {
     roleName?: string;
   };
   version: string;
+  enrolmentPreconditions?: {
+    type: string;
+    conditions: string[];
+    'dgraph.type': string;
+    uid?: string;
+  }[];
 }

@@ -164,6 +164,23 @@ export class RoleService {
         return field;
       });
 
+    const newPreconditions =
+      Array.isArray(patch.definition.enrolmentPreconditions) &&
+      patch.definition.enrolmentPreconditions.map(condition => {
+        const oldCondition =
+          Array.isArray(oldData.definition.enrolmentPreconditions) &&
+          oldData.definition.enrolmentPreconditions.find(
+            ({ type }) => condition.type === type,
+          );
+        if (oldCondition) {
+          return {
+            uid: oldCondition.uid,
+            ...condition,
+          };
+        }
+        return condition;
+      });
+
     const roleDefDTO = new RoleDefinitionDTO({
       ...patch.definition,
       uid: oldData.definition.uid,
@@ -172,6 +189,7 @@ export class RoleService {
         ...patch.definition.issuer,
       },
       fields: newFields || undefined,
+      enrolmentPreconditions: newPreconditions || undefined,
     });
 
     const roleDTO = new RoleDTO(patch, roleDefDTO);
@@ -218,5 +236,41 @@ export class RoleService {
       ),
     );
     return verifiedRoles.filter(Boolean);
+  }
+
+  public async verifyEnrolmentPrecondition({
+    userDID,
+    claimType,
+  }: {
+    userDID: string;
+    claimType: string;
+  }) {
+    const [didDocument, role] = await Promise.all([
+      this.didService.getById(new DID(userDID), true),
+      this.getByNamespace(claimType),
+    ]);
+
+    if (!role) {
+      throw new Error(`There is no created role for ${claimType} namespace`);
+    }
+
+    const {
+      definition: { enrolmentPreconditions },
+    } = role;
+
+    if (!enrolmentPreconditions || enrolmentPreconditions.length < 1) return;
+    for (const { type, conditions } of enrolmentPreconditions) {
+      if (type === 'role') {
+        const conditionMet = didDocument.service.some(
+          ({ claimType }) =>
+            claimType && conditions.includes(claimType as string),
+        );
+        if (!conditionMet) {
+          throw new Error(
+            `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}`,
+          );
+        }
+      }
+    }
   }
 }
