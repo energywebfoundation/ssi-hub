@@ -18,7 +18,7 @@ import { SentryService } from '../sentry/sentry.service';
 export class Logger extends NestLogger implements LoggerService {
   public readonly logger: WinstonLogger;
   constructor(
-    private readonly configService: ConfigService,
+    configService: ConfigService,
     private readonly sentryService: SentryService,
   ) {
     super();

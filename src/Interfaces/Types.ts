@@ -1,6 +1,6 @@
-import { CreateOrganizationDefinition } from '../organization/OrganizationDTO';
-import { CreateApplicationDefinition } from '../application/ApplicationDTO';
-import { CreateRoleDefinition } from '../role/RoleTypes';
+import { CreateOrganizationDefinition } from '../organization/organization.dto';
+import { CreateApplicationDefinition } from '../application/application.dto';
+import { CreateRoleDefinition } from '../role/role.types';
 
 export type DefinitionData =
   | CreateOrganizationDefinition

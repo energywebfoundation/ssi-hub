@@ -1,5 +1,5 @@
-import { Role } from '../role/RoleTypes';
-import { Application } from '../application/ApplicationTypes';
+import { Role } from '../role/role.types';
+import { Application } from '../application/application.types';
 import { KeyValue } from '../Interfaces/KeyValue';
 import { DGraphObject } from '../Interfaces/DGraphObject';
 
