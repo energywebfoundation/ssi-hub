@@ -13,13 +13,13 @@ import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory
 import { EthereumDidRegistry } from '../ethers/EthereumDidRegistry';
 import jwt_decode from 'jwt-decode';
 import { providers } from 'ethers';
-import { DIDDocumentEntity } from './DidDocumentEntity';
+import { DIDDocumentEntity } from './didDocument.entity';
 import { ResolverFactory } from './ResolverFactory';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { DID } from './DidTypes';
+import { DID } from './did.types';
 import { BigNumber, bigNumberify } from 'ethers/utils';
-import { DIDDGraphRepository } from './did.repository';
+import { DIDRepository } from './did.repository';
 import { Logger } from '../logger/logger.service';
 
 @Injectable()
@@ -27,14 +27,13 @@ export class DIDService {
   private readonly provider: providers.JsonRpcProvider;
   private readonly didRegistry: EthereumDidRegistry;
   private readonly ipfsStore: IDidStore;
-  private readonly upsert_queue_channel = 'upsertDocument';
   private readonly refresh_queue_channel = 'refreshDocument';
 
   constructor(
     private readonly config: ConfigService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly resolverFactory: ResolverFactory,
-    private readonly didRepository: DIDDGraphRepository,
+    private readonly didRepository: DIDRepository,
     private readonly httpService: HttpService,
     @InjectQueue('dids') private readonly didQueue: Queue<string>,
     private readonly logger: Logger,
@@ -58,15 +57,15 @@ export class DIDService {
     this.InitEventListeners();
 
     // Using setInterval so that interval can be set dynamically from config
-    const didDocSyncInteral = this.config.get<string>(
+    const didDocSyncInterval = this.config.get<string>(
       'DIDDOC_SYNC_INTERVAL_IN_MS',
     );
     const DID_SYNC_ENABLED =
       this.config.get<string>('DID_SYNC_ENABLED') !== 'false';
-    if (didDocSyncInteral && DID_SYNC_ENABLED) {
+    if (didDocSyncInterval && DID_SYNC_ENABLED) {
       const interval = setInterval(
         () => this.syncDocuments(),
-        parseInt(didDocSyncInteral),
+        parseInt(didDocSyncInterval),
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
@@ -74,22 +73,19 @@ export class DIDService {
 
   private async InitEventListeners(): Promise<void> {
     const DIDAttributeChanged = 'DIDAttributeChanged';
-    this.didRegistry.addListener(
-      DIDAttributeChanged,
-      async (owner, hash, value) => {
-        this.logger.info(
-          `${DIDAttributeChanged} event received for owner: ${owner}`,
-        );
-        const did = `did:${Methods.Erc1056}:${owner}`;
-        const didObject = new DID(did);
-        const didDocEntity = await this.didRepository.queryById(didObject);
-        // Only refreshing a DID that is already cached.
-        // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
-        if (didDocEntity) {
-          await this.didQueue.add(this.refresh_queue_channel, did);
-        }
-      },
-    );
+    this.didRegistry.addListener(DIDAttributeChanged, async owner => {
+      this.logger.info(
+        `${DIDAttributeChanged} event received for owner: ${owner}`,
+      );
+      const did = `did:${Methods.Erc1056}:${owner}`;
+      const didObject = new DID(did);
+      const didDocEntity = await this.didRepository.queryById(didObject);
+      // Only refreshing a DID that is already cached.
+      // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
+      if (didDocEntity) {
+        await this.didQueue.add(this.refresh_queue_channel, did);
+      }
+    });
   }
 
   private async syncDocuments() {

@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "lib": ["ES2020"]
+    "lib": ["ES2020"],
+    "noUnusedLocals": true
   }
 }

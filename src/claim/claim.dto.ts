@@ -1,4 +1,4 @@
-import { IClaimIssuance, IClaimRejection, IClaimRequest } from './ClaimTypes';
+import { IClaimIssuance, IClaimRejection, IClaimRequest } from './claim.types';
 import { IsArray, IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 

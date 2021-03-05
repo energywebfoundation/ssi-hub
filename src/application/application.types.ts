@@ -1,4 +1,4 @@
-import { Role } from '../role/RoleTypes';
+import { Role } from '../role/role.types';
 import { KeyValue } from '../Interfaces/KeyValue';
 import { DGraphObject } from '../Interfaces/DGraphObject';
 

@@ -20,7 +20,7 @@ import { Logger } from '../logger/logger.service';
 import { Auth } from '../auth/auth.decorator';
 import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
-import { DID } from './DidTypes';
+import { DID } from './did.types';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)

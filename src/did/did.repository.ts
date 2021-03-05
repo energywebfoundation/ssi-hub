@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { DIDDocumentEntity, DID_DgraphType } from './DidDocumentEntity';
-import { DID } from './DidTypes';
-import { DIDDocumentDTO } from './DidDTOs';
+import { DIDDocumentEntity, DID_DgraphType } from './didDocument.entity';
+import { DID } from './did.types';
+import { DIDDocumentDTO } from './did.dto';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { Logger } from '../logger/logger.service';
 
 @Injectable()
-export class DIDDGraphRepository {
+export class DIDRepository {
   constructor(
     private readonly dgraph: DgraphService,
     private readonly logger: Logger,
   ) {
-    this.logger.setContext(DIDDGraphRepository.name);
+    this.logger.setContext(DIDRepository.name);
   }
 
   public async saveDocument(documentDTO: DIDDocumentDTO): Promise<string> {

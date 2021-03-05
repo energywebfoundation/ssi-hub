@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OwnerService } from './owner.service';
-import { ApplicationDTO } from '../application/ApplicationDTO';
-import { OrganizationDTO } from '../organization/OrganizationDTO';
-import { RoleDTO } from '../role/RoleDTO';
+import { ApplicationDTO } from '../application/application.dto';
+import { OrganizationDTO } from '../organization/organization.dto';
+import { RoleDTO } from '../role/role.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 
