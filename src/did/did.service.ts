@@ -12,12 +12,12 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumDidRegistryFactory } from '../ethers/EthereumDidRegistryFactory';
 import { EthereumDidRegistry } from '../ethers/EthereumDidRegistry';
 import jwt_decode from 'jwt-decode';
-import { providers } from 'ethers';
+import { providers, utils } from 'ethers';
 import { DIDDocumentEntity } from './didDocument.entity';
 import { ResolverFactory } from './ResolverFactory';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { DID } from './did.types';
+import { DID, DIDJob } from './did.types';
 import { BigNumber, bigNumberify } from 'ethers/utils';
 import { DIDRepository } from './did.repository';
 import { Logger } from '../logger/logger.service';
@@ -35,7 +35,7 @@ export class DIDService {
     private readonly resolverFactory: ResolverFactory,
     private readonly didRepository: DIDRepository,
     private readonly httpService: HttpService,
-    @InjectQueue('dids') private readonly didQueue: Queue<string>,
+    @InjectQueue('dids') private readonly didQueue: Queue<DIDJob>,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(DIDService.name);
@@ -83,7 +83,7 @@ export class DIDService {
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
-        await this.didQueue.add(this.refresh_queue_channel, did);
+        await this.didQueue.add(this.refresh_queue_channel, { did });
       }
     });
   }
@@ -92,7 +92,7 @@ export class DIDService {
     this.logger.debug(`Beginning sync of DID Documents`);
     const cachedDIDs = await this.didRepository.queryAllDIDs();
     cachedDIDs.forEach(async did => {
-      await this.didQueue.add(this.refresh_queue_channel, did.id);
+      await this.didQueue.add(this.refresh_queue_channel, { did: did.id });
     });
   }
 
@@ -198,7 +198,7 @@ export class DIDService {
    * @param {DIDDocumentEntity} documentEntity Document entity which contains the full claim data
    * @param {IDIDDocument} resolvedDocument Resolved document to enhance
    */
-  private async enhanceWithClaims(
+  async enhanceWithClaims(
     documentEntity: DIDDocumentEntity,
     resolvedDocument: IDIDDocument,
   ) {

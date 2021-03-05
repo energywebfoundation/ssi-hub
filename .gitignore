@@ -39,4 +39,7 @@ lerna-debug.log*
 
 # Using either dev or prod docker-compose file
 docker-compose.yml
+
 db_dumps
+private.pem
+public.pem

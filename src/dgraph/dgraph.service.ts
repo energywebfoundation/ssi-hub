@@ -189,11 +189,14 @@ export class DgraphService implements OnModuleInit {
       type DIDDocument {
         id
         logs
+        owner
+        offeredTo
         claims
       }
 
       logs: string .
       claims: [uid] .
+      offeredTo: string .
 
       type IPFSClaim {
         serviceEndpoint

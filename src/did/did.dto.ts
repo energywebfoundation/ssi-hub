@@ -15,6 +15,10 @@ export interface DIDDocumentDTO extends DGraphObject {
   logs: string;
 
   claims: IPFSClaimDTO[];
+
+  owner?: string;
+
+  offeredTo?: string;
 }
 
 /**

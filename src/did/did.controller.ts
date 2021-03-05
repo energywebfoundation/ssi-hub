@@ -21,6 +21,7 @@ import { Auth } from '../auth/auth.decorator';
 import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
 import { DID } from './did.types';
+import { AssetService } from './asset/asset.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -28,6 +29,7 @@ import { DID } from './did.types';
 export class DIDController {
   constructor(
     private readonly didService: DIDService,
+    private readonly assetService: AssetService,
     @InjectQueue('dids') private readonly didQueue: Queue<string>,
     private readonly logger: Logger,
   ) {
@@ -98,5 +100,19 @@ export class DIDController {
   public async upsertById(@Param('id') id: string) {
     this.logger.debug(`queueing upsert for ${id}`);
     await this.didQueue.add('refreshDocument', id);
+  }
+
+  @Get('/assets/owner/:owner')
+  @ApiTags('DID')
+  @HttpCode(202)
+  public async getAssetsByOwner(@Param('owner') owner: string) {
+    return this.assetService.getAssetsByOwner(owner);
+  }
+
+  @Get('/assets/offered_to/:offered_to')
+  @ApiTags('DID')
+  @HttpCode(202)
+  public async getAssetsByOfferedTo(@Param('offered_to') offeredTo: string) {
+    return this.assetService.getAssetsByOwner(offeredTo);
   }
 }

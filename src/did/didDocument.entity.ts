@@ -16,6 +16,8 @@ export const DID_DgraphType = 'DIDDocument';
 export class DIDDocumentEntity {
   constructor(did: DID, didDocument?: DIDDocumentDTO) {
     this.id = did.id;
+    this.owner = did.owner;
+    this.offeredTo = did.offeredTo;
     if (didDocument) {
       this.logData = parseLogs(didDocument.logs);
       this.claims =
@@ -62,23 +64,33 @@ export class DIDDocumentEntity {
   readonly uid: string;
   readonly 'dgraph.type' = DID_DgraphType;
 
+  readonly owner?: string;
+  readonly offeredTo?: string;
+
   /**
    * Resolves a DIDDocument from the entity's logs
    * @returns {IDIDDocument} Resolved DID Document
    */
   async getResolvedDIDDocument(): Promise<IDIDDocument> {
-    return await documentFromLogs(this.id, Array(this.logData));
+    return documentFromLogs(this.id, Array(this.logData));
   }
 
   getDTO(): DIDDocumentDTO {
     const serializedLogs = JSON.stringify(this.logData);
-    return {
+    const dto: DIDDocumentDTO = {
       id: this.id,
       logs: serializedLogs,
       claims: this.claims,
       uid: this.uid,
       'dgraph.type': this['dgraph.type'],
     };
+    if (this.owner) {
+      dto.owner = this.owner;
+    }
+    if (this.offeredTo) {
+      dto.offeredTo = this.offeredTo;
+    }
+    return dto;
   }
 
   getLogData(): IDIDLogData {

@@ -29,6 +29,8 @@ export class DIDRepository {
           id
           logs
           uid
+          owner
+          offeredTo
           claims {
             serviceEndpoint
             jwt
