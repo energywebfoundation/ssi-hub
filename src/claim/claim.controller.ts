@@ -23,13 +23,13 @@ import {
   IClaimRejection,
   IClaimRequest,
   NATS_EXCHANGE_TOPIC,
-} from './ClaimTypes';
+} from './claim.types';
 import { NatsService } from '../nats/nats.service';
 import { v4 as uuid } from 'uuid';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { validate } from 'class-validator';
-import { ClaimIssue, ClaimRejection, ClaimRequest } from './ClaimDTO';
+import { ClaimIssue, ClaimRejection, ClaimRequest } from './claim.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';

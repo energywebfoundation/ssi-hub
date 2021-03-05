@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiQuery, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NamespaceService } from './namespace.service';
-import { OrganizationDTO } from '../organization/OrganizationDTO';
+import { OrganizationDTO } from '../organization/organization.dto';
 import { NamespaceEntities } from './namespace.types';
 import { SearchDTO } from './namespace.dto';
 import { validate } from 'class-validator';

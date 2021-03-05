@@ -1,6 +1,6 @@
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role, RoleDefinition } from './RoleTypes';
+import { Role, RoleDefinition } from './role.types';
 import {
   KeyValue,
   KeyValueAPIDefinition,

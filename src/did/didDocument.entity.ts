@@ -8,8 +8,8 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
 import { bigNumberify } from 'ethers/utils';
-import { DIDDocumentDTO, IPFSClaimDTO } from './DidDTOs';
-import { DID } from './DidTypes';
+import { DIDDocumentDTO, IPFSClaimDTO } from './did.dto';
+import { DID } from './did.types';
 
 export const DID_DgraphType = 'DIDDocument';
 

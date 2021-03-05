@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { RoleDTO } from './RoleDTO';
+import { RoleDTO } from './role.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 

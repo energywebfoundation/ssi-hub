@@ -1,7 +1,8 @@
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsArray, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { AppDefinition, Application } from './ApplicationTypes';
-import { RoleDTO } from '../role/RoleDTO';
+import { Organization, OrgDefinition } from './organization.types';
+import { RoleDTO } from '../role/role.dto';
+import { ApplicationDTO } from '../application/application.dto';
 import {
   KeyValue,
   KeyValueAPIDefinition,
@@ -9,21 +10,23 @@ import {
 } from '../Interfaces/KeyValue';
 
 /**
- * Interface describing raw data required for creation of Application DTO
+ * Interface describing raw data required for creation of Organization DTO
  */
-export interface CreateApplicationData {
+export interface CreateOrganizationData {
   name: string;
   namespace: string;
   owner: string;
-  definition: CreateApplicationDefinition;
+  definition: CreateOrganizationDefinition;
+  parentOrg?: Organization;
+  subOrgs?: Organization[];
 }
 
 /**
- * Interface describing raw data required for creation of Application's Definition DTO
+ * Interface describing raw data required for creation of Organization's Definition DTO
  */
-export interface CreateApplicationDefinition {
+export interface CreateOrganizationDefinition {
   uid?: string;
-  appName: string;
+  orgName: string;
   description?: string;
   websiteUrl?: string;
   logoUrl?: string;
@@ -31,10 +34,10 @@ export interface CreateApplicationDefinition {
 }
 
 /**
- * Application's Definition DTO providing validation and API schema for swagger UI
+ * Organization's Definition DTO providing validation and API schema for swagger UI
  */
-export class ApplicationDefinitionDTO implements AppDefinition {
-  constructor(data: CreateApplicationDefinition) {
+export class OrganizationDefinitionDTO implements OrgDefinition {
+  constructor(data: CreateOrganizationDefinition) {
     this.uid = data.uid;
     this.description = data.description;
     this.logoUrl = data.logoUrl;
@@ -42,7 +45,7 @@ export class ApplicationDefinitionDTO implements AppDefinition {
     this.others = Array.isArray(data.others)
       ? data.others
       : RecordToKeyValue(data.others);
-    this.appName = data.appName;
+    this.orgName = data.orgName;
   }
 
   @IsOptional()
@@ -67,7 +70,7 @@ export class ApplicationDefinitionDTO implements AppDefinition {
 
   @IsString()
   @ApiProperty()
-  appName: string;
+  orgName: string;
 
   @IsOptional()
   @IsArray()
@@ -77,41 +80,42 @@ export class ApplicationDefinitionDTO implements AppDefinition {
   })
   others?: KeyValue[] = [];
 
-  readonly 'dgraph.type' = 'AppDefinition';
+  readonly 'dgraph.type' = 'OrgDefinition';
 }
 
-/**
- * interface describing required params for creating Application DTO instance
- */
-interface ApplicationDTOParams {
+interface OrganizationDTOParams {
   name: string;
   owner: string;
   namespace: string;
   roles?: RoleDTO[];
+  apps?: ApplicationDTO[];
+  parentOrg?: Organization;
 }
 
 /**
- * Application DTO providing validation and API schema for swagger UI
+ * Organization DTO providing validation and API schema for swagger UI
  */
-export class ApplicationDTO implements Application {
+export class OrganizationDTO implements Organization {
   public uid?: string;
 
   constructor(
-    data: ApplicationDTOParams,
-    definition: ApplicationDefinitionDTO,
+    data: OrganizationDTOParams,
+    definition: OrganizationDefinitionDTO,
   ) {
     this.name = data.name;
     this.owner = data.owner;
     this.namespace = data.namespace;
 
     if (data.roles) this.roles = data.roles;
+    if (data.apps) this.apps = data.apps;
 
     this.definition = definition;
+    this.parentOrg = data.parentOrg;
   }
 
   @ValidateNested()
   @ApiProperty()
-  definition: ApplicationDefinitionDTO;
+  definition: OrganizationDefinitionDTO;
 
   @IsString()
   @ApiProperty()
@@ -126,8 +130,19 @@ export class ApplicationDTO implements Application {
   namespace: string;
 
   @IsArray()
-  @ApiProperty()
   roles: RoleDTO[] = [];
 
-  readonly 'dgraph.type' = 'App';
+  @IsArray()
+  @ApiProperty()
+  apps: ApplicationDTO[] = [];
+
+  @ApiProperty()
+  @ValidateNested()
+  @IsOptional()
+  parentOrg?: Organization;
+
+  @IsOptional()
+  subOrgs?: Organization[];
+
+  readonly 'dgraph.type' = 'Org';
 }

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { RoleDefinitionDTO, RoleDTO } from './RoleDTO';
+import { RoleDefinitionDTO, RoleDTO } from './role.dto';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
-import { CreateRoleData, Role } from './RoleTypes';
+import { CreateRoleData, Role } from './role.types';
 import { validate } from 'class-validator';
 import { DIDService } from '../did/did.service';
-import { DID } from '../did/DidTypes';
+import { DID } from '../did/did.types';
 
 @Injectable()
 export class RoleService {

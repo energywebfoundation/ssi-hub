@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { Organization } from '../organization/OrganizationTypes';
-import { Application } from '../application/ApplicationTypes';
-import { Role } from '../role/RoleTypes';
+import { Organization } from '../organization/organization.types';
+import { Application } from '../application/application.types';
+import { Role } from '../role/role.types';
 import { NamespaceEntities } from './namespace.types';
 
 const expand = `

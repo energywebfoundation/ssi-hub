@@ -5,9 +5,9 @@ import {
   ApplicationDefinitionDTO,
   ApplicationDTO,
   CreateApplicationData,
-} from './ApplicationDTO';
+} from './application.dto';
 import { validate } from 'class-validator';
-import { Application } from './ApplicationTypes';
+import { Application } from './application.types';
 import { RecordToKeyValue } from '../Interfaces/KeyValue';
 
 const baseQueryFields = `

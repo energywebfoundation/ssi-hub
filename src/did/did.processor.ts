@@ -2,7 +2,7 @@ import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Logger } from '../logger/logger.service';
 import { DIDService } from './did.service';
-import { DID } from './DidTypes';
+import { DID } from './did.types';
 
 @Processor('dids')
 export class DIDProcessor {

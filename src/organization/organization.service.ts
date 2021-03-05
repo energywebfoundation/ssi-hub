@@ -5,10 +5,10 @@ import {
   CreateOrganizationData,
   OrganizationDefinitionDTO,
   OrganizationDTO,
-} from './OrganizationDTO';
+} from './organization.dto';
 import { validate } from 'class-validator';
 import { RecordToKeyValue } from '../Interfaces/KeyValue';
-import { Organization } from './OrganizationTypes';
+import { Organization } from './organization.types';
 
 @Injectable()
 export class OrganizationService {

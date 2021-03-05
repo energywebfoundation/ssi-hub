@@ -6,7 +6,7 @@ import {
   IClaimRejection,
   IClaimRequest,
   DecodedClaimToken,
-} from './ClaimTypes';
+} from './claim.types';
 import jwt_decode from 'jwt-decode';
 import { RoleService } from '../role/role.service';
 import { Logger } from '../logger/logger.service';

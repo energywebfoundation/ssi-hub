@@ -1,16 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
 import { roleDefinitionFullQuery } from '../Interfaces/Types';
-import { Role } from '../role/RoleTypes';
-import { Organization } from '../organization/OrganizationTypes';
-import { Application } from '../application/ApplicationTypes';
+import { Role } from '../role/role.types';
+import { Organization } from '../organization/organization.types';
+import { Application } from '../application/application.types';
 
 @Injectable()
 export class OwnerService {
-  private logger: Logger;
-  constructor(private readonly dgraph: DgraphService) {
-    this.logger = new Logger('OwnerService');
-  }
+  constructor(private readonly dgraph: DgraphService) {}
 
   /**
    * returns Roles owned by given user
