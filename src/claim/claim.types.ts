@@ -1,4 +1,4 @@
-import { DGraphObject } from '../Interfaces/DGraphObject';
+import { DGraphObject } from '../interfaces/DGraphObject';
 
 export const NATS_EXCHANGE_TOPIC = 'claim.exchange';
 

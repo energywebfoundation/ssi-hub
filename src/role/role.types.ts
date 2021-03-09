@@ -1,5 +1,5 @@
-import { KeyValue } from '../Interfaces/KeyValue';
-import { DGraphObject } from '../Interfaces/DGraphObject';
+import { KeyValue } from '../interfaces/KeyValue';
+import { DGraphObject } from '../interfaces/DGraphObject';
 
 /**
  * Interface describing raw data required for creation of Role DTO

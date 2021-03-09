@@ -1,7 +1,7 @@
 import { Role } from '../role/role.types';
 import { Application } from '../application/application.types';
-import { KeyValue } from '../Interfaces/KeyValue';
-import { DGraphObject } from '../Interfaces/DGraphObject';
+import { KeyValue } from '../interfaces/KeyValue';
+import { DGraphObject } from '../interfaces/DGraphObject';
 
 /**
  * Interface describing generic Organization model
