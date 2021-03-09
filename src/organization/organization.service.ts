@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { roleDefinitionFullQuery } from '../Interfaces/Types';
+import { roleDefinitionFullQuery } from '../interfaces/Types';
 import {
   CreateOrganizationData,
   OrganizationDefinitionDTO,
   OrganizationDTO,
 } from './organization.dto';
 import { validate } from 'class-validator';
-import { RecordToKeyValue } from '../Interfaces/KeyValue';
+import { RecordToKeyValue } from '../interfaces/KeyValue';
 import { Organization } from './organization.types';
 
 @Injectable()

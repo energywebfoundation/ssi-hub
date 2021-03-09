@@ -5,7 +5,7 @@ import {
   KeyValue,
   KeyValueAPIDefinition,
   RecordToKeyValue,
-} from '../Interfaces/KeyValue';
+} from '../interfaces/KeyValue';
 
 /**
  * Role's Definition DTO providing validation and API schema for swagger UI

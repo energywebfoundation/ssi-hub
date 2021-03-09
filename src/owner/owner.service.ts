@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { roleDefinitionFullQuery } from '../Interfaces/Types';
+import { roleDefinitionFullQuery } from '../interfaces/Types';
 import { Role } from '../role/role.types';
 import { Organization } from '../organization/organization.types';
 import { Application } from '../application/application.types';
