@@ -82,11 +82,11 @@ export class DgraphService implements OnModuleInit {
 
       type EnrolmentPrecondition {
         type
-        condition
+        conditions
       }
 
       type: string .
-      condition: [string] .
+      conditions: [string] .
       
       fieldType: string .
       label: string .
@@ -275,11 +275,7 @@ export class DgraphService implements OnModuleInit {
 
       this._instance = new DgraphClient(clientStub);
 
-      try {
-        await this.migrate();
-      } catch (err) {
-        this.logger.error(err);
-      }
+      await this.migrate();
 
       return this._instance;
     });
