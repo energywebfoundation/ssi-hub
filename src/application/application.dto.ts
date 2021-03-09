@@ -6,7 +6,7 @@ import {
   KeyValue,
   KeyValueAPIDefinition,
   RecordToKeyValue,
-} from '../Interfaces/KeyValue';
+} from '../interfaces/KeyValue';
 
 /**
  * Interface describing raw data required for creation of Application DTO

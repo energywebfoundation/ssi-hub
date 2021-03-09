@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DgraphService } from '../dgraph/dgraph.service';
-import { roleDefinitionFullQuery } from '../Interfaces/Types';
+import { roleDefinitionFullQuery } from '../interfaces/Types';
 import {
   ApplicationDefinitionDTO,
   ApplicationDTO,
@@ -8,7 +8,7 @@ import {
 } from './application.dto';
 import { validate } from 'class-validator';
 import { Application } from './application.types';
-import { RecordToKeyValue } from '../Interfaces/KeyValue';
+import { RecordToKeyValue } from '../interfaces/KeyValue';
 
 const baseQueryFields = `
   uid
