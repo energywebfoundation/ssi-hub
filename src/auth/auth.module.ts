@@ -13,6 +13,7 @@ import { RefreshTokenRepository } from './refreshToken.repository';
 import { TokenService } from './token.service';
 import { RoleModule } from '../role/role.module';
 import { JwtStrategy } from './jwt.strategy';
+import { AuthStrategy } from './login.strategy';
 
 const readFile = promisify(fs.readFile);
 
@@ -52,6 +53,7 @@ const readFile = promisify(fs.readFile);
     RefreshTokenRepository,
     TokenService,
     JwtStrategy,
+    AuthStrategy,
   ],
   exports: [JwtAuthGuard, JwtStrategy],
 })
