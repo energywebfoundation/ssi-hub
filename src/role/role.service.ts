@@ -260,7 +260,7 @@ export class RoleService {
 
     if (!enrolmentPreconditions || enrolmentPreconditions.length < 1) return;
     for (const { type, conditions } of enrolmentPreconditions) {
-      if (type === 'role') {
+      if (type === 'role' && conditions) {
         const conditionMet = didDocument.service.some(
           ({ claimType }) =>
             claimType && conditions.includes(claimType as string),
