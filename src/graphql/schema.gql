@@ -1,0 +1,176 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type RoleDefinitionSchema {
+  roleType: String!
+  roleName: String!
+  fields: [FieldsSchema!]
+  metadata: JSONObject
+  issuer: IssuerSchema!
+  version: String!
+  enrolmentPreconditions: [EnrolmentPreconditionSchema!]
+}
+
+"""JSONObject custom scalar type"""
+scalar JSONObject
+
+type FieldsSchema {
+  fieldType: String!
+  label: String!
+  required: Boolean
+  minLength: Float
+  maxLength: Float
+  pattern: String
+  minValue: Float
+  maxValue: Float
+  minDate: DateTime
+  maxDate: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type IssuerSchema {
+  issuerType: String!
+  did: [String!]!
+  roleName: String
+}
+
+type EnrolmentPreconditionSchema {
+  type: String!
+  conditions: [String!]!
+}
+
+type Role {
+  id: ID!
+  name: String!
+  namespace: String!
+  owner: String!
+  definition: RoleDefinitionSchema!
+}
+
+type ApplicationDefinitionSchema {
+  description: String
+  websiteUrl: String
+  logoUrl: String
+  others: JSONObject
+  appName: String!
+}
+
+type Application {
+  id: ID!
+  name: String!
+  owner: String!
+  namespace: String!
+  definition: ApplicationDefinitionSchema!
+  roles: [Role!]!
+}
+
+type OrganizationDefinitionSchema {
+  description: String
+  websiteUrl: String
+  logoUrl: String
+  others: JSONObject
+  orgName: String!
+}
+
+type Organization {
+  id: ID!
+  name: String!
+  namespace: String!
+  owner: String!
+  definition: OrganizationDefinitionSchema!
+  apps: [Application!]!
+  subOrgs: [Organization!]!
+  roles: [Role!]!
+}
+
+type AuthenticationSchema {
+  block: Int
+  publicKey: String!
+  type: String!
+  validity: Int!
+}
+
+type ProofSchema {
+  created: String!
+  creator: String!
+  signatureValue: String!
+  type: String!
+}
+
+type PublicKeySchema {
+  block: Int
+  controller: String!
+  ethereumAddress: String
+  id: String!
+  publicKeyBase58: String
+  publicKeyBase64: String
+  publicKeyHex: String
+  publicKeyJwk: String
+  publicKeyMultibase: String
+  publicKeyPem: String
+  type: String
+  validity: Int
+}
+
+type ClaimSchema {
+  block: Int
+  claimType: String
+  claimTypeVersion: String
+  description: String!
+  hash: String!
+  id: String!
+  profile: JSONObject
+  serviceEndpoint: String!
+  type: String!
+  validity: Int!
+}
+
+type DIDDocumentSchema {
+  service: [ClaimSchema!]
+  authentication: [AuthenticationSchema!]!
+  created: String
+  delegates: [String!]
+  id: ID!
+  proof: ProofSchema
+  publicKey: [PublicKeySchema!]!
+  updated: String
+}
+
+type Claim {
+  id: String!
+  requester: String!
+  claimIssuer: [String!]!
+  claimType: String!
+  claimTypeVersion: String!
+  token: String!
+  issuedToken: String
+  isAccepted: Boolean!
+  createdAt: DateTime!
+  acceptedBy: String
+  isRejected: Boolean
+  parentNamespace: String!
+}
+
+type Query {
+  application(namespace: String!): Application!
+  applications(owner: String!): [Application!]!
+  organization(namespace: String!): Organization!
+  organizations(owner: String!): [Organization!]!
+  role(namespace: String!): Role!
+  roles(owner: String!): [Role!]!
+  didDocument(did: String!): DIDDocumentSchema!
+  claim(id: String!): Claim!
+  claimsByParentNamespace(namespace: String!): [Claim!]!
+  claimsByUser(parentNamespace: String, accepted: Boolean, user: String!): [Claim!]!
+  claimsByIssuer(parentNamespace: String, accepted: Boolean, issuer: String!): [Claim!]!
+  claimsByRequester(parentNamespace: String, accepted: Boolean, requester: String!): [Claim!]!
+}
+
+type Mutation {
+  deleteClaim(id: String!): Boolean!
+}

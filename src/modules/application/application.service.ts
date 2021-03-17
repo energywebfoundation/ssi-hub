@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from './application.entity';
 import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
-import { emptyAddress } from '../../shared/constants';
+import { emptyAddress } from '../../common/constants';
 import { OrganizationService } from '../organization/organization.service';
 
 @Injectable()
@@ -23,7 +23,9 @@ export class ApplicationService {
    * @param {String} namespace
    */
   public async getByNamespace(namespace: string): Promise<Application> {
-    return this.applicationRepository.findOne({ where: { namespace } });
+    return this.applicationRepository.findOne({
+      where: { namespace },
+    });
   }
 
   /**

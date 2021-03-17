@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DIDController } from './did.controller';
 import { DIDEntity } from './did.entity';
 import { DIDProcessor } from './did.processor';
+import { DIDResolver } from './did.resolver';
 import { DIDService } from './did.service';
 import { ResolverFactory } from './ResolverFactory';
 
@@ -23,7 +24,7 @@ const redisConfig = {
     TypeOrmModule.forFeature([DIDEntity]),
   ],
   controllers: [DIDController],
-  providers: [DIDService, ResolverFactory, DIDProcessor],
+  providers: [DIDService, ResolverFactory, DIDProcessor, DIDResolver],
   exports: [DIDService],
 })
 export class DIDModule {}

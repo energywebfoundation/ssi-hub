@@ -6,6 +6,7 @@ import { RoleModule } from '../role/role.module';
 import { ClaimController } from './claim.controller';
 import { Claim } from './claim.entity';
 import { ClaimProcessor } from './claim.processor';
+import { ClaimResolver } from './claim.resolver';
 import { ClaimService } from './claim.service';
 
 const redisConfig = {
@@ -25,6 +26,6 @@ const redisConfig = {
     RoleModule,
   ],
   controllers: [ClaimController],
-  providers: [ClaimService, ClaimProcessor, TypeOrmModule],
+  providers: [ClaimService, ClaimProcessor, TypeOrmModule, ClaimResolver],
 })
 export class ClaimModule {}

@@ -3,7 +3,7 @@ import { OrganizationDefinitionDTO, OrganizationDTO } from './organization.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
-import { emptyAddress } from '../../shared/constants';
+import { emptyAddress } from '../../common/constants';
 import { Logger } from '../logger/logger.service';
 
 @Injectable()

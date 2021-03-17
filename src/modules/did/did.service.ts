@@ -11,7 +11,6 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumDidRegistryFactory } from '../../ethers/EthereumDidRegistryFactory';
 import { EthereumDidRegistry } from '../../ethers/EthereumDidRegistry';
-import jwt_decode from 'jwt-decode';
 import { providers } from 'ethers';
 import { DIDDocumentEntity } from './didDocument.entity';
 import { ResolverFactory } from './ResolverFactory';
@@ -23,6 +22,7 @@ import { Logger } from '../logger/logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DIDEntity } from './did.entity';
 import { Repository } from 'typeorm';
+import jwt from 'jsonwebtoken';
 
 @Injectable()
 export class DIDService {
@@ -109,9 +109,14 @@ export class DIDService {
     did: DID,
     enhanceWithClaims = false,
   ): Promise<IDIDDocument> {
-    const cachedDIDDocument = await this.didRepository.findOne(did.id);
+    let cachedDIDDocument = await this.didRepository.findOne(did.id);
     if (!cachedDIDDocument) {
-      return null;
+      this.logger.info(
+        `Requested document for did: ${did.id} not cached. Queuing cache request.`,
+      );
+      // awaiting refresh so that subsequent calls don't duplicate cached DID Document
+      await this.refreshCachedDocument(did);
+      cachedDIDDocument = await this.didRepository.findOne(did.id);
     }
     const didEntity = new DIDDocumentEntity(did, cachedDIDDocument);
     const resolvedDocument = await didEntity.getResolvedDIDDocument();
@@ -223,9 +228,7 @@ export class DIDService {
           );
           return service;
         }
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const { claimData, ...claimRest } = jwt_decode(cachedClaim) as {
+        const { claimData, ...claimRest } = jwt.decode(cachedClaim) as {
           claimData: Record<string, string>;
         };
         return {
