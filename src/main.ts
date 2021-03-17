@@ -25,7 +25,12 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   // add security middleware
-  app.use(helmet());
+  app.use(
+    helmet({
+      /// https://github.com/graphql/graphql-playground/issues/1283#issuecomment-703631091
+      contentSecurityPolicy: false,
+    }),
+  );
 
   // add cookie parser to read jwt token cookie
   app.use(cookieParser());

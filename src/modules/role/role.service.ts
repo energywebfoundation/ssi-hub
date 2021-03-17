@@ -6,7 +6,7 @@ import { DID } from '../did/did.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
-import { emptyAddress } from '../../shared/constants';
+import { emptyAddress } from '../../common/constants';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';

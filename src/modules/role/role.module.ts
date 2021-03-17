@@ -5,6 +5,7 @@ import { DIDModule } from '../did/did.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { RoleController } from './role.controller';
 import { Role } from './role.entity';
+import { RoleResolver } from './role.resolver';
 import { RoleService } from './role.service';
 
 @Module({
@@ -15,7 +16,7 @@ import { RoleService } from './role.service';
     OrganizationModule,
   ],
   controllers: [RoleController],
-  providers: [RoleService],
+  providers: [RoleService, RoleResolver],
   exports: [RoleService, TypeOrmModule, ApplicationModule, OrganizationModule],
 })
 export class RoleModule {}

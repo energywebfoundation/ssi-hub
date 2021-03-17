@@ -16,7 +16,7 @@ import {
   Issuer,
   RoleDefinition,
 } from './role.types';
-import { BaseEnsEntity } from '../../shared/ENSBaseEntity';
+import { BaseEnsEntity } from '../../common/ENSBaseEntity';
 
 export class FieldsDTO implements Fields {
   static async create(data: Partial<FieldsDTO>) {
