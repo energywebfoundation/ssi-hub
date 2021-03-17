@@ -15,9 +15,15 @@ import { InterceptorsModule } from './modules/interceptors/interceptors.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ENSModule } from './modules/ens/ens.module';
 import { getDBConfig } from './db/config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { JSONObjectScalar } from './common/json.scalar';
+import { getGraphQlConfig } from './graphql/config';
 
 @Module({
   imports: [
+    GraphQLModule.forRootAsync({
+      useFactory: getGraphQlConfig,
+    }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: getDBConfig,
@@ -40,5 +46,6 @@ import { getDBConfig } from './db/config';
     InterceptorsModule,
     ENSModule,
   ],
+  providers: [JSONObjectScalar],
 })
 export class AppModule {}

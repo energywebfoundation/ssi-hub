@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Query,
-  Req,
   UseInterceptors,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
@@ -26,13 +25,13 @@ import {
 } from './claim.types';
 import { NatsService } from '../nats/nats.service';
 import { v4 as uuid } from 'uuid';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 import { validateOrReject } from 'class-validator';
 import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
+import { User } from '../../common/user.decorator';
+import { IsAcceptedPipe } from '../../common/accepted.pipe';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -41,14 +40,9 @@ export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
-    @InjectQueue('claims') private claimQueue: Queue<string>,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(ClaimController.name);
-    this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
-      this.logger.debug(`Got message ${data}`);
-      await this.claimQueue.add('save', data);
-    });
   }
 
   @Post('/issue/:did')
@@ -169,11 +163,8 @@ export class ClaimController {
   @Delete('/:id')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
-  public async removeById(
-    @Param('id') id: string,
-    @Req() req: { user: { did: string } },
-  ) {
-    return await this.claimService.removeById(id, req?.user?.did);
+  public async removeById(@Param('id') id: string, @User() user?: string) {
+    return await this.claimService.removeById(id, user);
   }
 
   @Get('/parent/:namespace')
@@ -195,8 +186,8 @@ export class ClaimController {
   @ApiOperation({
     summary: 'returns claims Related to given DID',
   })
-  public async getByUserDid(@Param('did') did: string) {
-    return await this.claimService.getByUserDid(did);
+  public async getByUserDid(@Param('did') did: string, @User() user?: string) {
+    return await this.claimService.getByUserDid({ did, currentUser: user });
   }
 
   @Get('/issuer/:did')
@@ -216,13 +207,19 @@ export class ClaimController {
     description: 'filter only claims of given namespace',
   })
   public async getByIssuerDid(
-    @Param('did') did: string,
-    @Query('accepted') accepted: string,
-    @Query('namespace') parentNamespace: string,
+    @Param('did') issuer: string,
+    @Query('accepted', IsAcceptedPipe)
+    accepted?: boolean,
+    @Query('namespace') parentNamespace?: string,
+    @User() user?: string,
   ) {
-    return await this.claimService.getByIssuer(did, {
-      accepted,
-      parentNamespace,
+    return await this.claimService.getByIssuer({
+      issuer,
+      filters: {
+        accepted,
+        parentNamespace,
+      },
+      currentUser: user,
     });
   }
 
@@ -243,13 +240,19 @@ export class ClaimController {
     description: 'filter only claims of given namespace',
   })
   public async getByRequesterDid(
-    @Param('did') did: string,
-    @Query('accepted') accepted: string,
-    @Query('namespace') parentNamespace: string,
+    @Param('did') requester: string,
+    @Query('accepted', IsAcceptedPipe)
+    accepted?: boolean,
+    @Query('namespace') parentNamespace?: string,
+    @User() user?: string,
   ) {
-    return await this.claimService.getByRequester(did, {
-      accepted,
-      parentNamespace,
+    return await this.claimService.getByRequester({
+      requester,
+      filters: {
+        accepted,
+        parentNamespace,
+      },
+      currentUser: user,
     });
   }
 
@@ -265,7 +268,8 @@ export class ClaimController {
   })
   public async getDidsOfNamespace(
     @Param('namespace') namespace: string,
-    @Query('accepted') accepted: string,
+    @Query('accepted', IsAcceptedPipe)
+    accepted?: boolean,
   ) {
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
   }

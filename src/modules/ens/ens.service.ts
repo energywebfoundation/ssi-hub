@@ -67,7 +67,6 @@ export class EnsService {
     }
 
     this.InitEventListeners();
-    this.syncENS();
   }
 
   private InitEventListeners(): void {

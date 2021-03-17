@@ -71,19 +71,7 @@ export class DIDController {
       return this.didService.getDIDDocumentFromUniversalResolver(did.id);
     }
 
-    let didDocument = await this.didService.getById(did, includeClaims);
-
-    if (!didDocument) {
-      this.logger.info(
-        `Requested document for did: ${id} not cached. Queuing cache request.`,
-      );
-      // awaiting refresh so that subsequent calls don't duplicate cached DID Document
-      await this.didService.refreshCachedDocument(did);
-      didDocument = await this.didService.getById(did, includeClaims);
-    }
-
-    this.logger.debug(`Retrieved document for did: ${id}`);
-    return didDocument;
+    return this.didService.getById(did, includeClaims);
   }
 
   /**
