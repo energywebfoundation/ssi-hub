@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { BaseEnsDefinition, BaseEnsEntity } from '../../shared/ENSBaseEntity';
+import { BaseEnsDefinition, BaseEnsEntity } from '../../common/ENSBaseEntity';
 export class OrganizationDefinitionDTO implements BaseEnsDefinition {
   static async create(data: Partial<OrganizationDefinitionDTO>) {
     const dto = new OrganizationDefinitionDTO();

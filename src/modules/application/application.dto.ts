@@ -6,7 +6,7 @@ import {
   validateOrReject,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseEnsDefinition, BaseEnsEntity } from '../../shared/ENSBaseEntity';
+import { BaseEnsDefinition, BaseEnsEntity } from '../../common/ENSBaseEntity';
 
 /**
  * Application's Definition DTO providing validation and API schema for swagger UI

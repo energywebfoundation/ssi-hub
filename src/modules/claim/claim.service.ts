@@ -4,17 +4,20 @@ import {
   IClaimRejection,
   IClaimRequest,
   DecodedClaimToken,
+  NATS_EXCHANGE_TOPIC,
 } from './claim.types';
-import jwt_decode from 'jwt-decode';
 import { RoleService } from '../role/role.service';
 import { Logger } from '../logger/logger.service';
 import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
 import { Claim } from './claim.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-
+import { Brackets, Repository } from 'typeorm';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { NatsService } from '../nats/nats.service';
+import jwt from 'jsonwebtoken';
 interface QueryFilters {
-  accepted?: 'true' | string;
+  accepted?: boolean;
   parentNamespace?: string;
 }
 
@@ -25,8 +28,18 @@ export class ClaimService {
     private readonly logger: Logger,
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
+    @InjectQueue('claims') private readonly claimQueue: Queue<string>,
+    private readonly nats: NatsService,
   ) {
     this.logger.setContext(ClaimService.name);
+    this.initializeExchangeListener();
+  }
+
+  private initializeExchangeListener() {
+    this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
+      this.logger.debug(`Got message ${data}`);
+      await this.claimQueue.add('save', data);
+    });
   }
 
   /**
@@ -35,13 +48,13 @@ export class ClaimService {
    * @return string
    * @private
    */
-  private parseFilters({
-    accepted,
-    parentNamespace,
-  }: QueryFilters): { isAccepted?: boolean; parentNamespace?: string } {
+  private parseFilters({ accepted, parentNamespace }: QueryFilters = {}): {
+    isAccepted?: boolean;
+    parentNamespace?: string;
+  } {
     const filters: { isAccepted?: boolean; parentNamespace?: string } = {};
-    if (accepted) {
-      filters.isAccepted = accepted === 'true';
+    if (accepted !== undefined) {
+      filters.isAccepted = accepted;
     }
     if (parentNamespace) {
       filters.parentNamespace = parentNamespace;
@@ -61,7 +74,7 @@ export class ClaimService {
       if (!claim && 'token' in data) {
         const {
           claimData: { claimType, claimTypeVersion },
-        }: DecodedClaimToken = jwt_decode(data.token);
+        } = jwt.decode(data.token) as DecodedClaimToken;
 
         const dto = await ClaimRequestDTO.create({
           ...data,
@@ -147,12 +160,42 @@ export class ClaimService {
    * Get claims requested or issued by user with matching DID
    * @param did user DID
    */
-  async getByUserDid(did: string) {
-    return this.claimRepository
+  async getByUserDid({
+    did,
+    filters,
+    currentUser,
+  }: {
+    did: string;
+    filters?: QueryFilters;
+    currentUser?: string;
+  }) {
+    const { isAccepted, parentNamespace } = this.parseFilters(filters);
+
+    const qb = this.claimRepository
       .createQueryBuilder()
       .where(':did = ANY ("claimIssuer")', { did })
-      .orWhere(':did = requester', { did })
-      .getMany();
+      .orWhere(':did = requester', { did });
+
+    if (isAccepted !== undefined) {
+      qb.andWhere('"isAccepted" = :isAccepted', {
+        isAccepted,
+      });
+    }
+
+    if (parentNamespace) {
+      qb.andWhere('"parentNamespace" = :namespace', {
+        namespace: parentNamespace,
+      });
+    }
+
+    if (currentUser) {
+      qb.andWhere(new Brackets(query => {
+        query.where(':currentUser = ANY ("claimIssuer")', {
+          currentUser,
+        }).orWhere(':currentUser = requester', { currentUser })
+      }))
+    }
+    return qb.getMany();
   }
 
   /**
@@ -160,19 +203,38 @@ export class ClaimService {
    * @param did issuer's DID
    * @param filters additional filters
    */
-  async getByIssuer(did: string, filters: QueryFilters = {}) {
+  async getByIssuer({
+    issuer,
+    filters = {},
+    currentUser,
+  }: {
+    issuer: string;
+    filters?: QueryFilters;
+    currentUser?: string;
+  }) {
+    const { isAccepted, parentNamespace } = this.parseFilters(filters);
     const qb = this.claimRepository
       .createQueryBuilder()
-      .where(':did = ANY ("claimIssuer")', { did });
+      .where(':issuer = ANY ("claimIssuer")', { issuer });
 
-    if (filters.accepted) {
-      qb.andWhere('"isAccepted" = :accepted', { accepted: filters.accepted });
+    if (isAccepted !== undefined) {
+      qb.andWhere('"isAccepted" = :isAccepted', {
+        isAccepted,
+      });
     }
 
-    if (filters.parentNamespace) {
+    if (parentNamespace) {
       qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: filters.parentNamespace,
+        namespace: parentNamespace,
       });
+    }
+
+    if (currentUser) {
+      qb.andWhere(new Brackets(query => {
+        query.where(':currentUser = ANY ("claimIssuer")', {
+          currentUser,
+        }).orWhere(':currentUser = requester', { currentUser })
+      }))
     }
     return qb.getMany();
   }
@@ -182,11 +244,40 @@ export class ClaimService {
    * @param did requester's DID
    * @param filters additional filters
    */
-  async getByRequester(did: string, filters: QueryFilters = {}) {
-    const parsedFilters = this.parseFilters(filters);
-    return this.claimRepository.find({
-      where: { ...parsedFilters, requester: did },
-    });
+  async getByRequester({
+    requester,
+    filters = {},
+    currentUser,
+  }: {
+    requester: string;
+    filters?: QueryFilters;
+    currentUser?: string;
+  }) {
+    const { isAccepted, parentNamespace } = this.parseFilters(filters);
+    const qb = this.claimRepository
+      .createQueryBuilder()
+      .where(':requester = requester', { requester });
+
+    if (isAccepted !== undefined) {
+      qb.andWhere('"isAccepted" = :isAccepted', {
+        isAccepted,
+      });
+    }
+
+    if (parentNamespace) {
+      qb.andWhere('"parentNamespace" = :namespace', {
+        namespace: parentNamespace,
+      });
+    }
+
+    if (currentUser) {
+      qb.andWhere(new Brackets(query => {
+        query.where(':currentUser = ANY ("claimIssuer")', {
+          currentUser,
+        }).orWhere(':currentUser = requester', { currentUser })
+      }))
+    }
+    return qb.getMany();
   }
 
   /**
@@ -213,7 +304,7 @@ export class ClaimService {
    */
   public async getDidOfClaimsOfNamespace(
     namespace: string,
-    accepted?: string,
+    accepted?: boolean,
   ): Promise<string[]> {
     const parsedFilters = this.parseFilters({ accepted });
     const claims = await this.claimRepository.find({

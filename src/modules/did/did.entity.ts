@@ -7,6 +7,7 @@ export class DIDEntity {
     Object.assign(entity, data);
     return entity;
   }
+
   @PrimaryColumn()
   id: string;
 
