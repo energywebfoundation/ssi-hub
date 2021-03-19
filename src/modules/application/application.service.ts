@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
 import { emptyAddress } from '../../common/constants';
 import { OrganizationService } from '../organization/organization.service';
+import { IAppDefinition } from '@ew-iam/role-definition-client';
 
 @Injectable()
 export class ApplicationService {
@@ -120,7 +121,7 @@ export class ApplicationService {
     owner: string;
     namespace: string;
     parentOrgNamespace: string;
-    metadata: Record<string, unknown>;
+    metadata: IAppDefinition;
     name: string;
   }) {
     if (owner === emptyAddress) {

@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
 import { emptyAddress } from '../../common/constants';
 import { Logger } from '../logger/logger.service';
+import { IOrganizationDefinition } from '@ew-iam/role-definition-client';
 
 @Injectable()
 export class OrganizationService {
@@ -156,7 +157,7 @@ export class OrganizationService {
     owner: string;
     namespace: string;
     parentOrgNamespace: string;
-    metadata: Record<string, unknown>;
+    metadata: IOrganizationDefinition;
     name: string;
   }) {
     if (owner === emptyAddress) {

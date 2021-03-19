@@ -14,6 +14,7 @@ import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
 import { Provider } from '../../common/provider';
+import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainDefinitionReader } from '@ew-iam/role-definition-client'
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -21,6 +22,7 @@ export const emptyAddress = '0x'.padEnd(42, '0');
 export class EnsService {
   private publicResolver: PublicResolver;
   private ensRegistry: EnsRegistry;
+  private roleDefinitionReader: DomainDefinitionReader;
   constructor(
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
@@ -50,6 +52,7 @@ export class EnsService {
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
+    this.roleDefinitionReader = new DomainDefinitionReader(this.publicResolver.address, this.provider);
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>(
@@ -124,7 +127,7 @@ export class EnsService {
     return Array.from(uniqueDomains);
   }
 
-  public async eventHandler({
+  private async eventHandler({
     hash,
     name,
     owner,
@@ -134,9 +137,10 @@ export class EnsService {
     owner?: string;
   }) {
     try {
-      const promises = [
+
+      const promises: Promise<any>[] = [
         // get role data
-        this.publicResolver.text(hash, 'metadata'),
+        this.roleDefinitionReader.read(hash)
       ];
       if (!owner) {
         promises.push(this.ensRegistry.owner(hash));
@@ -162,122 +166,60 @@ export class EnsService {
     }
   }
 
-  getNamespaceInfo({
-    namespace,
-    metadata,
-  }: {
-    namespace: string;
-    metadata: {
-      orgName?: string;
-      appName?: string;
-      roleName?: string;
-      roleType?: string;
-    };
-  }): {
-    type: 'Org' | 'App' | 'Role' | 'NotSupported';
-    name?: string;
-    orgNamespace?: string;
-    appNamespace?: string;
-  } {
-    const [name, parent, ...rest] = namespace.split('.');
-    if (metadata.orgName) {
-      return {
-        type: 'Org',
-        name,
-        orgNamespace:
-          parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
-      };
-    }
-    if (metadata.appName) {
-      if (parent === 'apps') {
-        return {
-          name,
-          type: 'App',
-          orgNamespace: rest.join('.'),
-        };
-      }
-    }
-
-    if (metadata.roleName) {
-      if (metadata.roleType.toLowerCase() === 'app') {
-        return {
-          name,
-          type: 'Role',
-          appNamespace: rest.join('.'),
-        };
-      }
-      if (metadata.roleType.toLowerCase() === 'org') {
-        return {
-          name,
-          type: 'Role',
-          orgNamespace: rest.join('.'),
-        };
-      }
-    }
-    return {
-      type: 'NotSupported',
-    };
-  }
-
   public async syncNamespace({
     data,
     namespace,
     owner,
   }: {
-    data: string;
+    data: IRoleDefinition | IOrganizationDefinition | IAppDefinition;
     namespace: string;
     owner: string;
   }) {
-    let metadata: Record<string, unknown>;
-    try {
-      metadata = JSON.parse(data);
-    } catch (err) {
-      this.logger.debug('Metadata not parsable: ' + data);
-      return;
-    }
-    const { type, appNamespace, name, orgNamespace } = this.getNamespaceInfo({
-      metadata,
-      namespace,
-    });
-    if (type === 'NotSupported') {
-      this.logger.debug(
-        'Metadata or namespace not supported for ' + namespace + ': ' + data,
-      );
-      return;
-    }
+    const [name, parent, ...rest] = namespace.split('.');
 
-    if (type === 'Org') {
+    if (DomainDefinitionReader.isOrgDefinition(data)) {
       return this.organizationService.handleOrgSyncWithEns({
-        metadata,
+        metadata: data,
         namespace,
         owner,
         name,
-        parentOrgNamespace: orgNamespace,
+        parentOrgNamespace: parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
       });
+    }
+    if (DomainDefinitionReader.isAppDefinition(data)) {
+      if (parent === 'apps') {
+        return this.applicationService.handleAppSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          parentOrgNamespace: rest.join('.'),
+        });
+      }
+    }
+    if (DomainDefinitionReader.isRoleDefinition(data)) {
+      if (data.roleType.toLowerCase() === 'app') {
+        return this.roleService.handleRoleSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          appNamespace: rest.join('.')
+        });
+      }
+      if (data.roleType.toLowerCase() === 'org') {
+        return this.roleService.handleRoleSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          orgNamespace: rest.join('.')
+        });
+      }
     }
 
-    if (type === 'App') {
-      return this.applicationService.handleAppSyncWithEns({
-        metadata,
-        namespace,
-        owner,
-        name,
-        parentOrgNamespace: orgNamespace,
-      });
-    }
-
-    if (type === 'Role') {
-      return this.roleService.handleRoleSyncWithEns({
-        metadata,
-        namespace,
-        owner,
-        name,
-        appNamespace,
-        orgNamespace,
-      });
-    }
     this.logger.debug(
-      `Bailed: Data not supported ${namespace}, ${JSON.stringify(metadata)}`,
+      `Bailed: Data not supported ${namespace}, ${JSON.stringify(data)}`,
     );
   }
 

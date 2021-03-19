@@ -9,6 +9,7 @@ import { emptyAddress } from '../../common/constants';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
+import { IRoleDefinition } from '@ew-iam/role-definition-client';
 
 @Injectable()
 export class RoleService {
@@ -232,7 +233,7 @@ export class RoleService {
     namespace: string;
     orgNamespace?: string;
     appNamespace?: string;
-    metadata: Record<string, unknown>;
+    metadata: IRoleDefinition;
     name: string;
   }) {
     if (owner === emptyAddress) {
