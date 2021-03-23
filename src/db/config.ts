@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
@@ -12,7 +13,7 @@ export const getDBConfig = (configService: ConfigService) => {
     username: configService.get<string>('DB_USERNAME'),
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
-    migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+    migrations: [path.join(__dirname + '/..') + '/migrations/**/*{.ts,.js}'],
     cli: { migrationsDir: 'src/migrations' },
     migrationsRun: true,
     migrationsTableName: 'migrations_iam_cache_server',
