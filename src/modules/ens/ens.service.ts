@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { providers, utils, errors } from 'ethers';
+import { utils, errors } from 'ethers';
 import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
@@ -13,6 +13,7 @@ import { EnsRegistry } from '../../ethers/EnsRegistry';
 import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
+import { Provider } from '../../common/provider';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -20,7 +21,6 @@ export const emptyAddress = '0x'.padEnd(42, '0');
 export class EnsService {
   private publicResolver: PublicResolver;
   private ensRegistry: EnsRegistry;
-  private provider: providers.JsonRpcProvider;
   constructor(
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
@@ -28,12 +28,12 @@ export class EnsService {
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly config: ConfigService,
     private readonly logger: Logger,
+    private readonly provider: Provider,
   ) {
     this.logger.setContext(EnsService.name);
     errors.setLogLevel('error');
 
     // Get config values from .env file
-    const ENS_URL = this.config.get<string>('ENS_URL');
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS',
     );
@@ -42,7 +42,6 @@ export class EnsService {
     );
 
     // Connect to smart contracts
-    this.provider = new providers.JsonRpcProvider(ENS_URL);
     this.publicResolver = PublicResolverFactory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
@@ -65,7 +64,6 @@ export class EnsService {
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
-
     this.InitEventListeners();
   }
 
@@ -108,16 +106,22 @@ export class EnsService {
       topics: [...(Event.topics as string[])],
     };
     const logs = await this.provider.getLogs(filter);
-    const domains = await Promise.all(
-      logs.map(log => {
-        const parsedLog = ensInterface.parseLog(log);
-        const { node } = parsedLog.values;
-        return this.publicResolver.name(node);
-      }),
-    );
+    const chunks = chunk(logs, 50);
+    const uniqueDomains = new Set<string>();
+    for (const chunk of chunks) {
+      await Promise.all(
+        chunk.map(async log => {
+          const parsedLog = ensInterface.parseLog(log);
+          const { node } = parsedLog.values;
+          const name = await this.publicResolver.name(node);
+          if (name) {
+            uniqueDomains.add(name);
+          }
+        }),
+      );
+    }
 
-    const uniqDomains = [...new Set(domains)];
-    return uniqDomains;
+    return Array.from(uniqueDomains);
   }
 
   public async eventHandler({
@@ -284,7 +288,7 @@ export class EnsService {
       const chunks = chunk(namespaces, 10);
       for (const part of chunks) {
         await Promise.allSettled(
-          part.map(item => {
+          part.map((item: string) => {
             const hash = namehash(item);
             return this.eventHandler({ hash, name: item });
           }),

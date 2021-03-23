@@ -18,12 +18,11 @@ services:
     networks:
       - main
     depends_on:
-      - dgraph
-      - zero
       - nats
-      - ratel
+      - redis
       - postgres
   postgres:
+    container_name: postgres
     image: postgres:12-alpine
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -34,34 +33,6 @@ services:
       - main
     ports:
       - 5432:5432
-  zero:
-    container_name: dgraph_zero
-    image: dgraph/dgraph:${DGRAPH_VERSION}
-    volumes:
-      - dgraph:/dgraph
-    restart: on-failure
-    command: dgraph zero --my=zero:5080
-    networks:
-      - main
-  dgraph:
-    container_name: dgraph_alpha
-    image: dgraph/dgraph:${DGRAPH_VERSION}
-    volumes:
-      - dgraph:/dgraph
-    restart: on-failure
-    ports:
-      - 8080:8080
-    command: dgraph alpha --my=dgraph:7080 --lru_mb=2048 --zero=zero:5080
-    networks:
-      - main
-  ratel:
-    container_name: dgraph_ratel
-    image: dgraph/dgraph:${DGRAPH_VERSION}
-    volumes:
-      - dgraph:/dgraph
-    ports:
-      - 8000:8000
-    command: dgraph-ratel
   nats:
     container_name: nats
     image: synadia/nats-server:nightly

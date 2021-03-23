@@ -7,7 +7,7 @@ export const getGraphQlConfig = (
   const isProduction = configService.get<string>('NODE_ENV') === 'production';
   return {
     playground: true,
-    // Generate graphql schema for dev to store it repo
+    // Generate graphql schema for dev to store it in repo
     autoSchemaFile: isProduction ? true : 'src/graphql/schema.gql',
     cors: true,
     introspection: true,

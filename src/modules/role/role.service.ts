@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
 import { RoleDTO } from './role.dto';
 import { DIDService } from '../did/did.service';
-import { DID } from '../did/did.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
@@ -122,8 +121,7 @@ export class RoleService {
   }
 
   public async verifyUserRoles(did: string) {
-    const user = new DID(did);
-    const { service } = await this.didService.getById(user, true);
+    const { service } = await this.didService.getById(did);
     const verifiedRoles = await Promise.all(
       ((service as unknown) as (IServiceEndpoint & {
         claimType?: string;
@@ -148,7 +146,7 @@ export class RoleService {
     claimType: string;
   }) {
     const [didDocument, role] = await Promise.all([
-      this.didService.getById(new DID(userDID), true),
+      this.didService.getById(userDID),
       this.getByNamespace(claimType),
     ]);
 
@@ -210,11 +208,7 @@ export class RoleService {
     }
 
     if (role.issuer?.issuerType === 'Role') {
-      const issuerDID = new DID(issuer);
-      const { service: issuerClaims } = await this.didService.getById(
-        issuerDID,
-        true,
-      );
+      const { service: issuerClaims } = await this.didService.getById(issuer);
       const issuerRoles = issuerClaims.map(c => c.claimType);
       if (issuerRoles.includes(role.issuer.roleName)) {
         return {
