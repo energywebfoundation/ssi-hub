@@ -31,7 +31,7 @@ import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { User } from '../../common/user.decorator';
-import { IsAcceptedPipe } from '../../common/accepted.pipe';
+import { BooleanPipe } from '../../common/boolean.pipe';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -208,7 +208,7 @@ export class ClaimController {
   })
   public async getByIssuerDid(
     @Param('did') issuer: string,
-    @Query('accepted', IsAcceptedPipe)
+    @Query('accepted', BooleanPipe)
     accepted?: boolean,
     @Query('namespace') parentNamespace?: string,
     @User() user?: string,
@@ -241,7 +241,7 @@ export class ClaimController {
   })
   public async getByRequesterDid(
     @Param('did') requester: string,
-    @Query('accepted', IsAcceptedPipe)
+    @Query('accepted', BooleanPipe)
     accepted?: boolean,
     @Query('namespace') parentNamespace?: string,
     @User() user?: string,
@@ -268,7 +268,7 @@ export class ClaimController {
   })
   public async getDidsOfNamespace(
     @Param('namespace') namespace: string,
-    @Query('accepted', IsAcceptedPipe)
+    @Query('accepted', BooleanPipe)
     accepted?: boolean,
   ) {
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);

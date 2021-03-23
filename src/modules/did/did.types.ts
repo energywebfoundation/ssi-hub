@@ -18,3 +18,8 @@ export class DID {
   readonly id: string;
   readonly method: 'ethr' | string;
 }
+
+export const getDIDFromAddress = (address: string) => `did:ethr:${address}`;
+
+export const ADD_DID_DOC_QUEUE_NAME = 'addDIDDocument';
+export const UPDATE_DID_DOC_QUEUE_NAME = 'refreshDIDDocument';
