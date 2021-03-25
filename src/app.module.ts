@@ -22,6 +22,7 @@ import { getGraphQlConfig } from './graphql/config';
 @Module({
   imports: [
     GraphQLModule.forRootAsync({
+      inject: [ConfigService],
       useFactory: getGraphQlConfig,
     }),
     TypeOrmModule.forRootAsync({
