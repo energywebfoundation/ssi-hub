@@ -18,6 +18,7 @@ services:
       - dgraph
       - zero
       - nats
+      - redis
   zero:
     container_name: dgraph_zero
     image: dgraph/dgraph:${DGRAPH_VERSION}
