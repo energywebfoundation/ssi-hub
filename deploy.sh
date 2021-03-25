@@ -8,9 +8,6 @@ export AWS_ECR_REPOSITORY=$4
 # Login to docker registry
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPOSITORY
 
-# Creating backup
-make backup-ci
-
 # Stopping docker compose
 docker-compose stop
 
