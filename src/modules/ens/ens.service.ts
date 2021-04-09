@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { providers, utils, errors } from 'ethers';
+import { utils, errors } from 'ethers';
 import { abi as publicResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
@@ -15,6 +15,7 @@ import { EnsRegistry } from '../../ethers/EnsRegistry';
 import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
+import { Provider } from '../../common/provider';
 import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainReader } from '@energyweb/iam-contracts'
 import { abi as domainNotifierContract } from '@energyweb/iam-contracts/build/contracts/DomainNotifier.json'
 
@@ -25,7 +26,7 @@ export class EnsService {
   private publicResolver: PublicResolver;
   private domainNotifer: DomainNotifier
   private ensRegistry: EnsRegistry;
-  private roleDefinitionReader: DomainDefinitionReader;
+  private domainReader: DomainReader;
   constructor(
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
@@ -62,7 +63,7 @@ export class EnsService {
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
-    this.roleDefinitionReader = new DomainReader(this.provider);
+    this.domainReader = new DomainReader(this.provider);
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>(
@@ -120,14 +121,6 @@ export class EnsService {
       address: textChangedEvent.address,
       topics: [...(textChangedEvent.topics as string[])],
     };
-    const publicResolverLogs = await this.provider.getLogs(textChangedFilter);
-    const publicResolverDomains = await Promise.all(
-      publicResolverLogs.map(log => {
-        const parsedLog = publicResolverInterface.parseLog(log);
-        const { node } = parsedLog.values;
-        return this.publicResolver.name(node);
-      }),
-    );
 
     // Get all namespaces from DomainNotifier.
     const domainNotifierInterface = new utils.Interface(domainNotifierContract);
@@ -135,17 +128,16 @@ export class EnsService {
       fromBlock: 0,
       toBlock: 'latest',
       address: this.domainNotifer.address,
-      topics: [...(textChangedEvent.topics as string[])],
     };
 
     const uniqueDomains = new Set<string>();
 
-    const logs = await this.provider.getLogs(filter);
+    const logs = await this.provider.getLogs(textChangedFilter);
     const chunks = chunk(logs, 50);
     for (const chunk of chunks) {
       await Promise.all(
         chunk.map(async log => {
-          const parsedLog = ensInterface.parseLog(log);
+          const parsedLog = publicResolverInterface.parseLog(log);
           const { node } = parsedLog.values;
           const name = await this.publicResolver.name(node);
           if (name) {
@@ -155,13 +147,13 @@ export class EnsService {
       );
     }
 
-    const domainNotifierLogs = await this.provider.getLogs(textChangedFilter);
+    const domainNotifierLogs = await this.provider.getLogs(domainNotifierFilter);
     await Promise.all(
       domainNotifierLogs.map(log => {
         const parsedLog = domainNotifierInterface.parseLog(log);
         const { node } = parsedLog.values;
         try {
-          const name = this.domainReader.name(node);
+          const name = this.domainReader.readName(node);
           if (name) {
             uniqueDomains.add(name);
           }
@@ -171,6 +163,8 @@ export class EnsService {
         }
       }),
     );
+
+    return Array.from(uniqueDomains);
   }
 
   private async eventHandler({
@@ -186,7 +180,7 @@ export class EnsService {
 
       const promises: Promise<any>[] = [
         // get role data
-        this.roleDefinitionReader.read(hash)
+        this.domainReader.read(hash)
       ];
       if (!owner) {
         promises.push(this.ensRegistry.owner(hash));

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
 import { emptyAddress } from '../../common/constants';
 import { Logger } from '../logger/logger.service';
-import { IOrganizationDefinition } from '@ew-iam/role-definition-client';
+import { IOrganizationDefinition } from '@energyweb/iam-contracts';
 
 @Injectable()
 export class OrganizationService {

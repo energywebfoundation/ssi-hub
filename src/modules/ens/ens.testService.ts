@@ -1,4 +1,4 @@
-import { IAppDefinition, IOrganizationDefinition, IRoleDefinition } from '@ew-iam/role-definition-client';
+import { IAppDefinition, IOrganizationDefinition, IRoleDefinition } from '@energyweb/iam-contracts';
 import { Injectable } from '@nestjs/common';
 import { EnsService } from './ens.service';
 

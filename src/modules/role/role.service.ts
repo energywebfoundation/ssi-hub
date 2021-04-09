@@ -9,7 +9,7 @@ import { emptyAddress } from '../../common/constants';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
-import { IRoleDefinition } from '@ew-iam/role-definition-client';
+import { IRoleDefinition } from '@energyweb/iam-contracts';
 
 @Injectable()
 export class RoleService {
