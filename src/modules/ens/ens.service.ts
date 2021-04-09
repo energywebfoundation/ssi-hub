@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { utils, errors } from 'ethers';
-import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
+import { providers, utils, errors } from 'ethers';
+import { abi as publicResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
 import { ApplicationService } from '../application/application.service';
@@ -9,18 +9,21 @@ import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../../ethers/EnsRegistryFactory';
 import { ConfigService } from '@nestjs/config';
 import { PublicResolver } from '../../ethers/PublicResolver';
+import { DomainNotifier } from '../../ethers/DomainNotifier';
+import { DomainNotifierFactory } from '../../ethers/DomainNotifierFactory';
 import { EnsRegistry } from '../../ethers/EnsRegistry';
 import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
-import { Provider } from '../../common/provider';
-import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainDefinitionReader } from '@ew-iam/role-definition-client'
+import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainReader } from '@energyweb/iam-contracts'
+import { abi as domainNotifierContract } from '@energyweb/iam-contracts/build/contracts/DomainNotifier.json'
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
 @Injectable()
 export class EnsService {
   private publicResolver: PublicResolver;
+  private domainNotifer: DomainNotifier
   private ensRegistry: EnsRegistry;
   private roleDefinitionReader: DomainDefinitionReader;
   constructor(
@@ -39,6 +42,9 @@ export class EnsService {
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS',
     );
+    const DOMAIN_NOTIFIER_ADDRESS = this.config.get<string>(
+      'DOMAIN_NOTIFIER_ADDRESS',
+    );
     const ENS_REGISTRY_ADDRESS = this.config.get<string>(
       'ENS_REGISTRY_ADDRESS',
     );
@@ -48,11 +54,15 @@ export class EnsService {
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
     );
+    this.domainNotifer = DomainNotifierFactory.connect(
+      DOMAIN_NOTIFIER_ADDRESS,
+      this.provider
+    )
     this.ensRegistry = EnsRegistryFactory.connect(
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
-    this.roleDefinitionReader = new DomainDefinitionReader(this.publicResolver.address, this.provider);
+    this.roleDefinitionReader = new DomainReader(this.provider);
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>(
@@ -96,21 +106,42 @@ export class EnsService {
   }
 
   private async getAllNamespaces() {
-    const ensInterface = new utils.Interface(ensResolverContract);
-    const Event = this.publicResolver.filters.TextChanged(
+    // Get all namespaces from PublicResolver.
+    // Role/App/Org definitions were initially stored as text value in PublicResolver
+    const publicResolverInterface = new utils.Interface(publicResolverContract);
+    const textChangedEvent = this.publicResolver.filters.TextChanged(
       null,
       'metadata',
       null,
     );
-    const filter = {
+    const textChangedFilter = {
       fromBlock: 0,
       toBlock: 'latest',
-      address: Event.address,
-      topics: [...(Event.topics as string[])],
+      address: textChangedEvent.address,
+      topics: [...(textChangedEvent.topics as string[])],
     };
+    const publicResolverLogs = await this.provider.getLogs(textChangedFilter);
+    const publicResolverDomains = await Promise.all(
+      publicResolverLogs.map(log => {
+        const parsedLog = publicResolverInterface.parseLog(log);
+        const { node } = parsedLog.values;
+        return this.publicResolver.name(node);
+      }),
+    );
+
+    // Get all namespaces from DomainNotifier.
+    const domainNotifierInterface = new utils.Interface(domainNotifierContract);
+    const domainNotifierFilter = {
+      fromBlock: 0,
+      toBlock: 'latest',
+      address: this.domainNotifer.address,
+      topics: [...(textChangedEvent.topics as string[])],
+    };
+
+    const uniqueDomains = new Set<string>();
+
     const logs = await this.provider.getLogs(filter);
     const chunks = chunk(logs, 50);
-    const uniqueDomains = new Set<string>();
     for (const chunk of chunks) {
       await Promise.all(
         chunk.map(async log => {
@@ -124,7 +155,22 @@ export class EnsService {
       );
     }
 
-    return Array.from(uniqueDomains);
+    const domainNotifierLogs = await this.provider.getLogs(textChangedFilter);
+    await Promise.all(
+      domainNotifierLogs.map(log => {
+        const parsedLog = domainNotifierInterface.parseLog(log);
+        const { node } = parsedLog.values;
+        try {
+          const name = this.domainReader.name(node);
+          if (name) {
+            uniqueDomains.add(name);
+          }
+        }
+        catch (error) {
+          this.logger.warn(error)
+        }
+      }),
+    );
   }
 
   private async eventHandler({
@@ -177,7 +223,7 @@ export class EnsService {
   }) {
     const [name, parent, ...rest] = namespace.split('.');
 
-    if (DomainDefinitionReader.isOrgDefinition(data)) {
+    if (DomainReader.isOrgDefinition(data)) {
       return this.organizationService.handleOrgSyncWithEns({
         metadata: data,
         namespace,
@@ -186,7 +232,7 @@ export class EnsService {
         parentOrgNamespace: parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
       });
     }
-    if (DomainDefinitionReader.isAppDefinition(data)) {
+    if (DomainReader.isAppDefinition(data)) {
       if (parent === 'apps') {
         return this.applicationService.handleAppSyncWithEns({
           metadata: data,
@@ -197,7 +243,7 @@ export class EnsService {
         });
       }
     }
-    if (DomainDefinitionReader.isRoleDefinition(data)) {
+    if (DomainReader.isRoleDefinition(data)) {
       if (data.roleType.toLowerCase() === 'app') {
         return this.roleService.handleRoleSyncWithEns({
           metadata: data,
