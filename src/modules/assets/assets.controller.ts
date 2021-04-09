@@ -22,13 +22,13 @@ import { Order } from './assets.types';
 @ApiTags('Assets')
 @Controller('assets')
 export class AssetsController {
-  constructor(private readonly assetsService: AssetsService) {}
+  constructor(private readonly assetsService: AssetsService) { }
 
   @Get(':id')
   async getByID(@Param('id') id: string, @User() currentUser?: string) {
     const asset = await this.assetsService.getById(id);
     if (
-      currentUser &&
+      currentUser && asset &&
       asset.offeredTo !== currentUser &&
       asset.owner !== currentUser
     ) {
