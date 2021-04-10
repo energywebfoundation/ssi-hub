@@ -79,9 +79,11 @@ export class EnsService {
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
     this.InitEventListeners();
+    this.syncENS();
   }
 
   private InitEventListeners(): void {
+    // Register event handler for legacy PublicResolver definitions
     this.publicResolver.addListener('TextChanged', async hash => {
       const namespace = await this.publicResolver.name(hash.toString());
       if (!namespace) return;
@@ -103,6 +105,13 @@ export class EnsService {
       if (!namespace) return;
 
       this.eventHandler({ hash: node, name: namespace, owner });
+    });
+
+    // Register event handler for domain definition updates
+    this.domainNotifer.addListener('DomainUpdated', async node => {
+      const namespace = await this.domainReader.readName(node.toString());
+      if (!namespace) return;
+      await this.eventHandler({ hash: node, name: namespace });
     });
   }
 
