@@ -17,6 +17,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { JWT } from '@ew-did-registry/jwt';
+import { Keys } from '@ew-did-registry/keys';
 import {
   IClaimIssuance,
   IClaimRejection,
@@ -32,6 +34,7 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 import { Logger } from '../logger/logger.service';
 import { User } from '../../common/user.decorator';
 import { BooleanPipe } from '../../common/boolean.pipe';
+import { AssetsService } from '../assets/assets.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -41,6 +44,7 @@ export class ClaimController {
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
     private readonly logger: Logger,
+    private readonly assetService: AssetsService,
   ) {
     this.logger.setContext(ClaimController.name);
   }
@@ -102,6 +106,15 @@ export class ClaimController {
       ...data,
       id,
     };
+    const jwt = new JWT(new Keys());
+    const { requester, token } = data;
+    const { sub } = jwt.decode(token);
+    const ownedAssets = await this.assetService.getByOwner(requester);
+    if (requester !== sub &&
+      !ownedAssets.some((a) => a.document.id === sub)
+    ) {
+      throw new Error("Claim requester not authorized to request for subject");
+    }
 
     const claimDTO = ClaimRequestDTO.create(claimData);
 
