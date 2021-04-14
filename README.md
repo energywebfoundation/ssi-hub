@@ -33,6 +33,24 @@ $ npm run docker:watch
 $ npm run docker:start
 ```
 
+### Cookies
+
+Note that when running in dev, you can change the cookie policy in 
+`cookies.service.ts` from 
+```
+sameSite: 'none',
+secure: true
+```
+to
+```
+sameSite: 'strict',
+secure: false,
+```
+
+In this way, an app hosted on `localhost` (assuming the cache-server is also served on localhost)
+will store the authentication cookies even if the requests aren't sent over a
+secure connection.
+
 ## Test
 
 ```bash
