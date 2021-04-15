@@ -7,6 +7,8 @@ import {
   Post,
   Query,
   UseInterceptors,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -113,7 +115,7 @@ export class ClaimController {
     if (requester !== sub &&
       !ownedAssets.some((a) => a.document.id === sub)
     ) {
-      throw new Error("Claim requester not authorized to request for subject");
+      throw new HttpException("Claim requester not authorized to request for subject", HttpStatus.FORBIDDEN);
     }
 
     const claimDTO = ClaimRequestDTO.create(claimData);
