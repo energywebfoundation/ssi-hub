@@ -75,10 +75,16 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
+    const { sub } = new JWT(new Keys()).decode(data.issuedToken);
+
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(
       `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
       payload,
+    );
+    this.nats.connection.publish(
+      `${sub}.${NATS_EXCHANGE_TOPIC}`,
+      payload
     );
   }
 
@@ -103,11 +109,6 @@ export class ClaimController {
     @Param('did') did: string,
     @Body() data: IClaimRequest,
   ) {
-    const id = uuid();
-    const claimData: IClaimRequest = {
-      ...data,
-      id,
-    };
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
     const { sub } = jwt.decode(token);
@@ -117,6 +118,12 @@ export class ClaimController {
     ) {
       throw new HttpException("Claim requester not authorized to request for subject", HttpStatus.FORBIDDEN);
     }
+
+    const id = uuid();
+    const claimData: IClaimRequest = {
+      ...data,
+      id,
+    };
 
     const claimDTO = ClaimRequestDTO.create(claimData);
 
