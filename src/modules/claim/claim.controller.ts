@@ -255,6 +255,39 @@ export class ClaimController {
       currentUser: user,
     });
   }
+  
+  @Get('/subject/:did')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns claims for given subject',
+  })
+  @ApiQuery({
+    name: 'accepted',
+    required: false,
+    description:
+      '**true** - show only accepted <br> **false** - show only pending',
+  })
+  @ApiQuery({
+    name: 'namespace',
+    required: false,
+    description: 'filter only claims of given namespace',
+  })
+  public async getBySubject(
+    @Param('did') subject: string,
+    @Query('accepted', BooleanPipe)
+    accepted?: boolean,
+    @Query('namespace') parentNamespace?: string,
+    @User() user?: string,
+  ) {
+    return await this.claimService.getBySubject({
+      subject,
+      filters: {
+        accepted,
+        parentNamespace,
+      },
+      currentUser: user,
+    });
+  }
 
   @Get('/did/:namespace')
   @ApiQuery({

@@ -281,6 +281,46 @@ export class ClaimService {
   }
 
   /**
+   * Get claims issued for given subject
+   * @param did subjects's DID
+   * @param filters additional filters
+   */
+  async getBySubject({
+    subject,
+    filters = {},
+    currentUser,
+  }: {
+    subject: string;
+    filters?: QueryFilters;
+    currentUser?: string;
+  }) {
+    const { isAccepted, parentNamespace } = this.parseFilters(filters);
+    const qb = this.claimRepository
+      .createQueryBuilder();
+
+    if (isAccepted !== undefined) {
+      qb.andWhere('"isAccepted" = :isAccepted', {
+        isAccepted,
+      });
+    }
+
+    if (parentNamespace) {
+      qb.andWhere('"parentNamespace" = :namespace', {
+        namespace: parentNamespace,
+      });
+    }
+
+    if (currentUser) {
+      qb.andWhere(new Brackets(query => {
+        query.where(':currentUser = ANY ("claimIssuer")', {
+          currentUser,
+        }).orWhere(':currentUser = requester', { currentUser })
+      }))
+    }
+    return (await qb.getMany()).filter((claim) => claim.subject === subject);
+  }
+
+  /**
    * delete claim with matching ID
    * @param id claim ID
    */

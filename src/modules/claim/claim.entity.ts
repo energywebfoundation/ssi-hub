@@ -1,6 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn, AfterLoad } from 'typeorm';
 import { IClaim } from './claim.types';
+import { JWT } from '@ew-did-registry/jwt';
+import { Keys } from '@ew-did-registry/keys';
 
 @ObjectType()
 @Entity()
@@ -10,6 +12,12 @@ export class Claim implements IClaim {
     Object.assign(entity, data);
     return entity;
   }
+  
+  @AfterLoad()
+  init() {
+    const jwt = new JWT(new Keys());
+    this.subject = jwt.decode(this.token).sub as string;
+  }
 
   @Field()
   @PrimaryColumn()
@@ -18,6 +26,8 @@ export class Claim implements IClaim {
   @Field()
   @Column()
   requester: string;
+  
+  subject: string;
 
   @Field(() => [String])
   @Column('text', { array: true })
