@@ -19,5 +19,6 @@ import { AssetsEventSubscriber } from './assets.subscriber';
     AssetsEventSubscriber,
   ],
   controllers: [AssetsController],
+  exports: [AssetsService]
 })
-export class AssetsModule {}
+export class AssetsModule { }

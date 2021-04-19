@@ -45,8 +45,8 @@ export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
+    private readonly assetsService: AssetsService,
     private readonly logger: Logger,
-    private readonly assetService: AssetsService,
   ) {
     this.logger.setContext(ClaimController.name);
   }
@@ -112,7 +112,7 @@ export class ClaimController {
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
     const { sub } = jwt.decode(token);
-    const ownedAssets = await this.assetService.getByOwner(requester);
+    const ownedAssets = await this.assetsService.getByOwner(requester);
     if (requester !== sub &&
       !ownedAssets.some((a) => a.document.id === sub)
     ) {
