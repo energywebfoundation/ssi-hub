@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { utils, errors } from 'ethers';
-import { abi as publicResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
 import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
 import { ApplicationService } from '../application/application.service';
@@ -16,8 +15,7 @@ import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
 import { Provider } from '../../common/provider';
-import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainReader } from '@energyweb/iam-contracts'
-import { abi as domainNotifierContract } from '@energyweb/iam-contracts/build/contracts/DomainNotifier.json'
+import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainReader, getSubdomains } from '@energyweb/iam-contracts'
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -116,64 +114,15 @@ export class EnsService {
   }
 
   private async getAllNamespaces() {
-    // Get all namespaces from PublicResolver.
-    // Role/App/Org definitions were initially stored as text value in PublicResolver
-    const publicResolverInterface = new utils.Interface(publicResolverContract);
-    const textChangedEvent = this.publicResolver.filters.TextChanged(
-      null,
-      'metadata',
-      null,
-    );
-    const textChangedFilter = {
-      fromBlock: 0,
-      toBlock: 'latest',
-      address: textChangedEvent.address,
-      topics: [...(textChangedEvent.topics as string[])],
-    };
-
-    // Get all namespaces from DomainNotifier.
-    const domainNotifierInterface = new utils.Interface(domainNotifierContract);
-    const domainNotifierFilter = {
-      fromBlock: 0,
-      toBlock: 'latest',
-      address: this.domainNotifer.address,
-    };
-
-    const uniqueDomains = new Set<string>();
-
-    const logs = await this.provider.getLogs(textChangedFilter);
-    const chunks = chunk(logs, 50);
-    for (const chunk of chunks) {
-      await Promise.all(
-        chunk.map(async log => {
-          const parsedLog = publicResolverInterface.parseLog(log);
-          const { node } = parsedLog.values;
-          const name = await this.publicResolver.name(node);
-          if (name) {
-            uniqueDomains.add(name);
-          }
-        }),
-      );
-    }
-
-    const domainNotifierLogs = await this.provider.getLogs(domainNotifierFilter);
-    await Promise.all(
-      domainNotifierLogs.map(log => {
-        const parsedLog = domainNotifierInterface.parseLog(log);
-        const { node } = parsedLog.values;
-        try {
-          const name = this.domainReader.readName(node);
-          if (name) {
-            uniqueDomains.add(name);
-          }
-        }
-        catch (error) {
-          this.logger.warn(error)
-        }
-      }),
-    );
-
-    return Array.from(uniqueDomains);
+    const domains = await getSubdomains({
+      domain: 'iam.ewc',
+      ensRegistry: this.ensRegistry,
+      domainNotifier: this.domainNotifer,
+      domainReader: this.domainReader,
+      publicResolver: this.publicResolver,
+      mode: "ALL"
+    })
+    return domains;
   }
 
   private async eventHandler({
@@ -210,7 +159,7 @@ export class EnsService {
         owner: namespaceOwner,
       });
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(`Error syncing namespace ${name}, owner ${owner}, ${err}`);
       return;
     }
   }
