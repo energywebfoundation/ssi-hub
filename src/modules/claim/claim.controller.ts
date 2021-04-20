@@ -7,6 +7,8 @@ import {
   Post,
   Query,
   UseInterceptors,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -17,6 +19,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { JWT } from '@ew-did-registry/jwt';
+import { Keys } from '@ew-did-registry/keys';
 import {
   IClaimIssuance,
   IClaimRejection,
@@ -32,6 +36,7 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 import { Logger } from '../logger/logger.service';
 import { User } from '../../common/user.decorator';
 import { BooleanPipe } from '../../common/boolean.pipe';
+import { AssetsService } from '../assets/assets.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -40,6 +45,7 @@ export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
+    private readonly assetsService: AssetsService,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(ClaimController.name);
@@ -69,10 +75,16 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
+    const { sub } = new JWT(new Keys()).decode(data.issuedToken);
+
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(
       `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
       payload,
+    );
+    this.nats.connection.publish(
+      `${sub}.${NATS_EXCHANGE_TOPIC}`,
+      payload
     );
   }
 
@@ -97,6 +109,16 @@ export class ClaimController {
     @Param('did') did: string,
     @Body() data: IClaimRequest,
   ) {
+    const jwt = new JWT(new Keys());
+    const { requester, token } = data;
+    const { sub } = jwt.decode(token);
+    const ownedAssets = await this.assetsService.getByOwner(requester);
+    if (requester !== sub &&
+      !ownedAssets.some((a) => a.document.id === sub)
+    ) {
+      throw new HttpException("Claim requester not authorized to request for subject", HttpStatus.FORBIDDEN);
+    }
+
     const id = uuid();
     const claimData: IClaimRequest = {
       ...data,
