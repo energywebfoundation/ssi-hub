@@ -71,7 +71,7 @@ export class AssetsEventSubscriber {
     this.logger.debug(
       `${eventToSave.type} event for ${
         eventToSave.assetId
-      } handled: ${JSON.stringify(saved)}`,
+      } saved: ${JSON.stringify(saved)}`,
     );
 
     this.nats.connection.publish(
@@ -95,7 +95,7 @@ export class AssetsEventSubscriber {
     this.logger.debug(
       `${eventToSave.type} event for ${
         eventToSave.assetId
-      } handled: ${JSON.stringify(saved)}`,
+      } saved: ${JSON.stringify(saved)}`,
     );
 
     this.nats.connection.publish(
@@ -122,7 +122,7 @@ export class AssetsEventSubscriber {
     this.logger.debug(
       `${eventToSave.type} event for ${
         eventToSave.assetId
-      } handled: ${JSON.stringify(saved)}`,
+      } saved: ${JSON.stringify(saved)}`,
     );
 
     this.nats.connection.publish(
@@ -149,7 +149,7 @@ export class AssetsEventSubscriber {
     this.logger.debug(
       `${eventToSave.type} event for ${
         eventToSave.assetId
-      } handled: ${JSON.stringify(saved)}`,
+      } saved: ${JSON.stringify(saved)}`,
     );
 
     this.nats.connection.publish(
