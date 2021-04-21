@@ -5,12 +5,15 @@ import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
 import { AssetsHistory } from './assets.entity';
 import { AssetEvent, AssetHistoryEventType } from './assets.event';
+import { NatsService } from '../nats/nats.service';
+import { NATS_EXCHANGE_TOPIC } from '../claim/claim.types';
 
 @Injectable()
 export class AssetsEventSubscriber {
   constructor(
     @InjectRepository(AssetsHistory)
     private readonly historyRepository: Repository<AssetsHistory>,
+    private readonly nats: NatsService,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(AssetsEventSubscriber.name);
@@ -70,6 +73,11 @@ export class AssetsEventSubscriber {
         eventToSave.assetId
       } handled: ${JSON.stringify(saved)}`,
     );
+
+    this.nats.connection.publish(
+      `${eventToSave.relatedTo}.${NATS_EXCHANGE_TOPIC}`,
+      JSON.stringify(eventToSave)
+    );
   }
 
   @OnEvent(AssetHistoryEventType.ASSET_OFFERED)
@@ -88,6 +96,11 @@ export class AssetsEventSubscriber {
       `${eventToSave.type} event for ${
         eventToSave.assetId
       } handled: ${JSON.stringify(saved)}`,
+    );
+
+    this.nats.connection.publish(
+      `${eventToSave.relatedTo}.${NATS_EXCHANGE_TOPIC}`,
+      JSON.stringify(eventToSave)
     );
   }
 
@@ -111,6 +124,11 @@ export class AssetsEventSubscriber {
         eventToSave.assetId
       } handled: ${JSON.stringify(saved)}`,
     );
+
+    this.nats.connection.publish(
+      `${eventToSave.relatedTo}.${NATS_EXCHANGE_TOPIC}`,
+      JSON.stringify(eventToSave)
+    );
   }
 
   @OnEvent(AssetHistoryEventType.ASSET_OFFER_REJECTED)
@@ -132,6 +150,11 @@ export class AssetsEventSubscriber {
       `${eventToSave.type} event for ${
         eventToSave.assetId
       } handled: ${JSON.stringify(saved)}`,
+    );
+
+    this.nats.connection.publish(
+      `${eventToSave.relatedTo}.${NATS_EXCHANGE_TOPIC}`,
+      JSON.stringify(eventToSave)
     );
   }
 }
