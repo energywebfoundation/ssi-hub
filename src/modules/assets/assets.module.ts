@@ -8,9 +8,10 @@ import { Asset, AssetsHistory } from './assets.entity';
 import { AssetResolver } from './assets.resolver';
 import { AssetsService } from './assets.service';
 import { AssetsEventSubscriber } from './assets.subscriber';
+import { NatsModule } from '../nats/nats.module';
 
 @Module({
-  imports: [DIDModule, TypeOrmModule.forFeature([Asset, AssetsHistory])],
+  imports: [DIDModule, TypeOrmModule.forFeature([Asset, AssetsHistory]), NatsModule],
   providers: [
     AssetsService,
     AssetResolver,
