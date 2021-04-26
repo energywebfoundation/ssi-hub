@@ -51,7 +51,7 @@ export class AssetsEventSubscriber {
     if (publish) {
       this.nats.connection.publish(
         `${event.relatedTo}.${NATS_EXCHANGE_TOPIC}`,
-        JSON.stringify(event)
+        JSON.stringify({ ...event, type })
       );
     }
   }
