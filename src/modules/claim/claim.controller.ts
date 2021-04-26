@@ -28,7 +28,6 @@ import {
   NATS_EXCHANGE_TOPIC,
 } from './claim.types';
 import { NatsService } from '../nats/nats.service';
-import { v4 as uuid } from 'uuid';
 import { validateOrReject } from 'class-validator';
 import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
 import { Auth } from '../auth/auth.decorator';
@@ -119,10 +118,9 @@ export class ClaimController {
       throw new HttpException("Claim requester not authorized to request for subject", HttpStatus.FORBIDDEN);
     }
 
-    const id = uuid();
     const claimData: IClaimRequest = {
+      id: ClaimService.idOfClaim(data),
       ...data,
-      id,
     };
 
     const claimDTO = ClaimRequestDTO.create(claimData);
@@ -137,7 +135,7 @@ export class ClaimController {
         payload,
       );
     });
-    return id;
+    return claimData.id;
   }
 
   @Post('/reject/:did')
@@ -277,7 +275,7 @@ export class ClaimController {
       currentUser: user,
     });
   }
-  
+
   @Get('/subject/:did')
   @ApiTags('Claims')
   @ApiOperation({
