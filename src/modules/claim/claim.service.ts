@@ -16,10 +16,13 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { NatsService } from '../nats/nats.service';
 import jwt from 'jsonwebtoken';
+import { v5 } from 'uuid';
 interface QueryFilters {
   accepted?: boolean;
   parentNamespace?: string;
 }
+
+const UUID_NAMESPACE = "5193850c-2367-4ec4-8c22-95dfbd4a2880";
 
 @Injectable()
 export class ClaimService {
@@ -119,6 +122,7 @@ export class ClaimService {
       .join('.');
 
     const claim = Claim.create({
+      id: ClaimService.idOfClaim(data),
       ...data,
       parentNamespace: parent,
     });
@@ -351,5 +355,11 @@ export class ClaimService {
       where: [{ ...parsedFilters, claimType: namespace }],
     });
     return claims.map(claim => claim.requester);
+  }
+
+  static idOfClaim(claimReq: IClaimRequest) {
+    const { token, claimType: role, claimTypeVersion: version } = claimReq;
+    const { sub: subject } = jwt.decode(token);
+    return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
   }
 }
