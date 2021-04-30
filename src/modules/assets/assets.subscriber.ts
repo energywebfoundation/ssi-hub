@@ -41,7 +41,7 @@ export class AssetsEventSubscriber {
       return;
     }
 
-    const saved = await this.historyRepository.save(event);
+    const saved = await this.historyRepository.save({...event, type});
     this.logger.debug(
       `${type} event for ${
       event.assetId
