@@ -152,7 +152,7 @@ export class AssetsService {
 
     if (ASSETS_SYNC_ENABLED && ASSETS_SYNC_INTERVAL) {
       const interval = setInterval(
-        this.syncAssets,
+        this.syncAssets.bind(this),
         +ASSETS_SYNC_INTERVAL * 3600000,
       );
       this.schedulerRegistry.addInterval('Assets Sync', interval);
@@ -160,7 +160,7 @@ export class AssetsService {
 
     if (ASSETS_SYNC_ENABLED && ASSETS_HISTORY_SYNC_INTERVAL) {
       const interval = setInterval(
-        this.syncAssetEvents,
+        this.syncAssetEvents.bind(this),
         +ASSETS_HISTORY_SYNC_INTERVAL * 3600000,
       );
       this.schedulerRegistry.addInterval('Assets Events Sync', interval);
