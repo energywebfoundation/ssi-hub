@@ -167,8 +167,13 @@ export class DIDService {
   }
 
   public async getDIDDocumentFromUniversalResolver(did: string) {
+    const universalResolverUrl = this.config.get<string>('UNIVERSAL_RESOLVER_URL');
+    if (!universalResolverUrl) {
+      throw new Error("universal resolver url not set");
+    }
+    const stripTrailingSlash = (s: string) => s.replace(/\/$/, ""); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
     const { data } = await this.httpService
-      .get(`${this.config.get<string>('UNIVERSAL_RESOLVER_URL')}/${did}`)
+      .get(`${stripTrailingSlash(universalResolverUrl)}/${did}`)
       .toPromise();
     return data.didDocument;
   }
