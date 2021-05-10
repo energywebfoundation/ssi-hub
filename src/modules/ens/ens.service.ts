@@ -107,7 +107,7 @@ export class EnsService {
 
     // Register event handler for domain definition updates
     this.domainNotifer.addListener('DomainUpdated', async node => {
-      const namespace = await this.domainReader.readName(node.toString());
+      const namespace = await this.domainReader.readName(node);
       if (!namespace) return;
       await this.eventHandler({ hash: node, name: namespace });
     });
