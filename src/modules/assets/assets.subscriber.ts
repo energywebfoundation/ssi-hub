@@ -71,9 +71,9 @@ export class AssetsEventSubscriber {
     this.handleAssetEvent(event, AssetHistoryEventType.ASSET_OFFERED);
   }
 
-  @OnEvent(AssetHistoryEventType.ASSET_TRANSFERRED)
+  @OnEvent(AssetHistoryEventType.OFFERED_FROM)
   async handleAssetTransferredEvent(event: AssetEvent) {
-    this.handleAssetEvent(event, AssetHistoryEventType.ASSET_TRANSFERRED);
+    this.handleAssetEvent(event, AssetHistoryEventType.OFFERED_FROM);
   }
 
   @OnEvent(AssetHistoryEventType.ASSET_OFFER_REJECTED)

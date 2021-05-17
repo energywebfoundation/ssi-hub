@@ -310,7 +310,7 @@ export class AssetsService {
         this.assetsRepository.save(update);
 
         this.eventEmitter.emit(
-          AssetHistoryEventType.ASSET_TRANSFERRED,
+          AssetHistoryEventType.OFFERED_FROM,
           AssetEvent.create({
             assetId: assetDID,
             at: numberedAt,
@@ -490,7 +490,7 @@ export class AssetsService {
           timestamp: new Date(at.toNumber() * 1000).toISOString(),
           assetId: assetDID,
           relatedTo: getDIDFromAddress(previousOwner || firstOwner),
-          type: AssetHistoryEventType.ASSET_TRANSFERRED,
+          type: AssetHistoryEventType.OFFERED_FROM,
         }),
       });
       this.logger.debug(`### ASSET ${assetDID} EVENTS SYNC FINISHED ###`);
