@@ -49,6 +49,15 @@ export class ClaimController {
   ) {
     this.logger.setContext(ClaimController.name);
   }
+  
+  @Get('/')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns all claims for all DID',
+  })
+  public async getAllClaims() {
+    return await this.claimService.getAllClaims();
+  }
 
   @Post('/issue/:did')
   @ApiExcludeEndpoint()

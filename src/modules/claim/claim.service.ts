@@ -140,6 +140,13 @@ export class ClaimService {
     const updatedClaim = Claim.create({ ...claim, ...data, isAccepted: true });
     return this.claimRepository.save(updatedClaim);
   }
+  
+  /**
+   * returns all claims
+   */
+   public async getAllClaims(): Promise<Claim[]> {
+    return this.claimRepository.find();
+  }
 
   /**
    * returns claim with matching ID
