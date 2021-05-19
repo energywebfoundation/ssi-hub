@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { Provider } from '../../common/provider';
 import { IdentityManager } from '../../ethers/IdentityManager';
 import { IdentityManagerFactory } from '../../ethers/IdentityManagerFactory';
@@ -106,8 +106,12 @@ export class AssetsService {
       .createQueryBuilder('asset')
       .leftJoin('asset.history', 'assets_history')
       .leftJoinAndSelect('asset.document', 'did_document_entity')
-      .where('assets_history.relatedTo = :owner', { owner })
+      .where('assets_history.emittedBy = :owner', { owner })
       .andWhere('asset.owner != :owner', { owner })
+      .andWhere(new Brackets((qb) => {
+        qb.where('assets_history.type = :asset_transferred', { asset_transferred: AssetHistoryEventType.ASSET_TRANSFERRED })
+          .orWhere('assets_history.type = :asset_created', { asset_created: AssetHistoryEventType.ASSET_CREATED })
+      }))
       .getMany();
   }
 
