@@ -228,16 +228,15 @@ export class ClaimController {
   })
   public async getByIssuerDid(
     @Param('did') issuer: string,
-    @Query('accepted', BooleanPipe)
-    accepted?: boolean,
-    @Query('namespace') parentNamespace?: string,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
     @User() user?: string,
   ) {
     return await this.claimService.getByIssuer({
       issuer,
       filters: {
-        accepted,
-        parentNamespace,
+        isAccepted,
+        namespace,
       },
       currentUser: user,
     });
@@ -249,7 +248,7 @@ export class ClaimController {
     summary: 'returns claims for Requester with given DID',
   })
   @ApiQuery({
-    name: 'accepted',
+    name: 'isAccepted',
     required: false,
     description:
       '**true** - show only accepted <br> **false** - show only pending',
@@ -261,16 +260,15 @@ export class ClaimController {
   })
   public async getByRequesterDid(
     @Param('did') requester: string,
-    @Query('accepted', BooleanPipe)
-    accepted?: boolean,
-    @Query('namespace') parentNamespace?: string,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
     @User() user?: string,
   ) {
     return await this.claimService.getByRequester({
       requester,
       filters: {
-        accepted,
-        parentNamespace,
+        isAccepted,
+        namespace,
       },
       currentUser: user,
     });
@@ -282,7 +280,7 @@ export class ClaimController {
     summary: 'returns claims for given subject',
   })
   @ApiQuery({
-    name: 'accepted',
+    name: 'iAccepted',
     required: false,
     description:
       '**true** - show only accepted <br> **false** - show only pending',
@@ -294,16 +292,15 @@ export class ClaimController {
   })
   public async getBySubject(
     @Param('did') subject: string,
-    @Query('accepted', BooleanPipe)
-    accepted?: boolean,
-    @Query('namespace') parentNamespace?: string,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
     @User() user?: string,
   ) {
     return await this.claimService.getBySubject({
       subject,
       filters: {
-        accepted,
-        parentNamespace,
+        isAccepted,
+        namespace,
       },
       currentUser: user,
     });

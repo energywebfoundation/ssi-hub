@@ -18,8 +18,8 @@ import { NatsService } from '../nats/nats.service';
 import jwt from 'jsonwebtoken';
 import { v5 } from 'uuid';
 interface QueryFilters {
-  accepted?: boolean;
-  parentNamespace?: string;
+  isAccepted?: boolean;
+  namespace?: string;
 }
 
 const UUID_NAMESPACE = "5193850c-2367-4ec4-8c22-95dfbd4a2880";
@@ -47,20 +47,17 @@ export class ClaimService {
 
   /**
    * Returns dgraph filter string based on passed options object
-   * @param options config object
-   * @return string
+   * @param options QueryFilters
+   * @return QueryFilters
    * @private
    */
-  private parseFilters({ accepted, parentNamespace }: QueryFilters = {}): {
-    isAccepted?: boolean;
-    parentNamespace?: string;
-  } {
-    const filters: { isAccepted?: boolean; parentNamespace?: string } = {};
-    if (accepted !== undefined) {
-      filters.isAccepted = accepted;
+  private parseFilters({ isAccepted, namespace }: QueryFilters): QueryFilters {
+    const filters: QueryFilters = {};
+    if (isAccepted !== undefined) {
+      filters.isAccepted = isAccepted;
     }
-    if (parentNamespace) {
-      filters.parentNamespace = parentNamespace;
+    if (namespace) {
+      filters.namespace = namespace;
     }
     return filters;
   }
@@ -124,7 +121,7 @@ export class ClaimService {
     const claim = Claim.create({
       id: ClaimService.idOfClaim(data),
       ...data,
-      parentNamespace: parent,
+      namespace: parent,
     });
     return this.claimRepository.save(claim);
   }
@@ -156,7 +153,7 @@ export class ClaimService {
    */
   async getByParentNamespace(namespace: string) {
     return this.claimRepository.find({
-      where: { parentNamespace: namespace },
+      where: { namespace },
     });
   }
 
@@ -166,15 +163,13 @@ export class ClaimService {
    */
   async getByUserDid({
     did,
-    filters,
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     did: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const { isAccepted, parentNamespace } = this.parseFilters(filters);
-
     const qb = this.claimRepository
       .createQueryBuilder()
       .where(':did = ANY ("claimIssuer")', { did })
@@ -186,9 +181,9 @@ export class ClaimService {
       });
     }
 
-    if (parentNamespace) {
-      qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: parentNamespace,
+    if (namespace) {
+      qb.andWhere('"namespace" = :namespace', {
+        namespace,
       });
     }
 
@@ -209,14 +204,13 @@ export class ClaimService {
    */
   async getByIssuer({
     issuer,
-    filters = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     issuer: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const { isAccepted, parentNamespace } = this.parseFilters(filters);
     const qb = this.claimRepository
       .createQueryBuilder()
       .where(':issuer = ANY ("claimIssuer")', { issuer });
@@ -227,9 +221,9 @@ export class ClaimService {
       });
     }
 
-    if (parentNamespace) {
-      qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: parentNamespace,
+    if (namespace) {
+      qb.andWhere('"namespace" = :namespace', {
+        namespace,
       });
     }
 
@@ -250,14 +244,13 @@ export class ClaimService {
    */
   async getByRequester({
     requester,
-    filters = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     requester: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const { isAccepted, parentNamespace } = this.parseFilters(filters);
     const qb = this.claimRepository
       .createQueryBuilder()
       .where(':requester = requester', { requester });
@@ -268,9 +261,9 @@ export class ClaimService {
       });
     }
 
-    if (parentNamespace) {
-      qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: parentNamespace,
+    if (namespace) {
+      qb.andWhere('"namespace" = :namespace', {
+        namespace,
       });
     }
 
@@ -291,14 +284,13 @@ export class ClaimService {
    */
   async getBySubject({
     subject,
-    filters = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     subject: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const { isAccepted, parentNamespace } = this.parseFilters(filters);
     const qb = this.claimRepository
       .createQueryBuilder();
 
@@ -308,9 +300,9 @@ export class ClaimService {
       });
     }
 
-    if (parentNamespace) {
-      qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: parentNamespace,
+    if (namespace) {
+      qb.andWhere('"namespace" = :namespace', {
+        namespace,
       });
     }
 
@@ -344,13 +336,13 @@ export class ClaimService {
   /**
    * get all DID of requesters of given namespace
    * @param namespace target claim namespace
-   * @param accepted flag for filtering only accepted claims
+   * @param isAccepted flag for filtering only accepted claims
    */
   public async getDidOfClaimsOfNamespace(
     namespace: string,
-    accepted?: boolean,
+    isAccepted?: boolean,
   ): Promise<string[]> {
-    const parsedFilters = this.parseFilters({ accepted });
+    const parsedFilters = this.parseFilters({ isAccepted });
     const claims = await this.claimRepository.find({
       where: [{ ...parsedFilters, claimType: namespace }],
     });

@@ -67,5 +67,5 @@ export class Claim implements IClaim {
 
   @Field()
   @Column()
-  parentNamespace: string;
+  namespace: string;
 }
