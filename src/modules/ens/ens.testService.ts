@@ -27,7 +27,7 @@ export const APP_MOCK_DATA: IAppDefinition = {
 };
 
 export const ROLE_MOCK_DATA: IRoleDefinition = {
-  version: '1',
+  version: 1,
   roleType: 'custom',
   roleName: 'admin',
   fields: [

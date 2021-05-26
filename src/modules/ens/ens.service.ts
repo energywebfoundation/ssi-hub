@@ -15,7 +15,7 @@ import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
 import { Provider } from '../../common/provider';
-import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainReader, getSubdomains } from '@energyweb/iam-contracts'
+import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainReader, DomainHierarchy, ResolverContractType } from '@energyweb/iam-contracts'
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -25,6 +25,8 @@ export class EnsService {
   private domainNotifer: DomainNotifier
   private ensRegistry: EnsRegistry;
   private domainReader: DomainReader;
+  private domainHierarchy: DomainHierarchy;
+
   constructor(
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
@@ -38,8 +40,14 @@ export class EnsService {
     errors.setLogLevel('error');
 
     // Get config values from .env file
+    const CHAIN_ID = parseInt(this.config.get<string>(
+      'CHAIN_ID',
+    ));
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS',
+    );
+    const RESOLVER_V1_ADDRESS = this.config.get<string>(
+      'RESOLVER_V1_ADDRESS',
     );
     const DOMAIN_NOTIFIER_ADDRESS = this.config.get<string>(
       'DOMAIN_NOTIFIER_ADDRESS',
@@ -61,7 +69,20 @@ export class EnsService {
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
-    this.domainReader = new DomainReader(this.provider);
+    this.domainReader = new DomainReader({
+      ensRegistryAddress: ENS_REGISTRY_ADDRESS,
+      provider: this.provider
+    });
+    this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: RESOLVER_V1_ADDRESS, type: ResolverContractType.RoleDefinitionResolver_v1 });
+    this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: PUBLIC_RESOLVER_ADDRESS, type: ResolverContractType.PublicResolver });
+
+    this.domainHierarchy = new DomainHierarchy({
+      domainReader: this.domainReader,
+      ensRegistry: this.ensRegistry,
+      provider: this.provider,
+      domainNotifierAddress: DOMAIN_NOTIFIER_ADDRESS,
+      publicResolverAddress: PUBLIC_RESOLVER_ADDRESS
+    });
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>(
@@ -114,12 +135,8 @@ export class EnsService {
   }
 
   private async getAllNamespaces() {
-    const domains = await getSubdomains({
+    const domains = await this.domainHierarchy.getSubdomainsUsingResolver({
       domain: 'iam.ewc',
-      ensRegistry: this.ensRegistry,
-      domainNotifier: this.domainNotifer,
-      domainReader: this.domainReader,
-      publicResolver: this.publicResolver,
       mode: "ALL"
     })
     return domains;
@@ -138,7 +155,7 @@ export class EnsService {
 
       const promises: Promise<any>[] = [
         // get role data
-        this.domainReader.read(hash)
+        this.domainReader.read({ node: hash })
       ];
       if (!owner) {
         promises.push(this.ensRegistry.owner(hash));
