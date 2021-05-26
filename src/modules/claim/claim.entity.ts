@@ -27,6 +27,7 @@ export class Claim implements IClaim {
   @Column()
   requester: string;
   
+  @Column()
   subject: string;
 
   @Field(() => [String])
