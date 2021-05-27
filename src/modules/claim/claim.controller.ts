@@ -9,6 +9,8 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -36,6 +38,7 @@ import { Logger } from '../logger/logger.service';
 import { User } from '../../common/user.decorator';
 import { BooleanPipe } from '../../common/boolean.pipe';
 import { AssetsService } from '../assets/assets.service';
+import { DIDsQuery } from './claim.entity';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -325,5 +328,22 @@ export class ClaimController {
     accepted?: boolean,
   ) {
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
+  }
+
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Get('/by/subjects')
+  @ApiQuery({
+    name: 'dids',
+    required: true,
+    description: 'DIDs whose claims are being requested',
+  })
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns claims requested for given DIDs',
+  })
+  public async getBySubjects(
+    @Query() { subjects }: DIDsQuery
+  ) {
+    return this.claimService.getBySubjects(subjects);
   }
 }
