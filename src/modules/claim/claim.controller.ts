@@ -333,7 +333,7 @@ export class ClaimController {
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get('/by/subjects')
   @ApiQuery({
-    name: 'dids',
+    name: 'subjects',
     required: true,
     description: 'DIDs whose claims are being requested',
   })
