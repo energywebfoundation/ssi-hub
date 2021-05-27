@@ -1,6 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, CreateDateColumn, Entity, PrimaryColumn, AfterLoad } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 import { IClaim } from './claim.types';
+import { IsArray } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
 
@@ -9,14 +11,10 @@ import { Keys } from '@ew-did-registry/keys';
 export class Claim implements IClaim {
   static create(data: Partial<Claim>): Claim {
     const entity = new Claim();
+    const jwt = new JWT(new Keys());
+    data.subject = jwt.decode(data.token).sub as string;
     Object.assign(entity, data);
     return entity;
-  }
-  
-  @AfterLoad()
-  init() {
-    const jwt = new JWT(new Keys());
-    this.subject = jwt.decode(this.token).sub as string;
   }
 
   @Field()
@@ -69,4 +67,10 @@ export class Claim implements IClaim {
   @Field()
   @Column()
   parentNamespace: string;
+}
+
+export class DIDsQuery {
+  @IsArray()
+  @Transform((value: string) => value.split(','))
+  subjects: string[];
 }

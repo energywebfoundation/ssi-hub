@@ -150,6 +150,18 @@ export class ClaimService {
   }
 
   /**
+   * returns claims requested for given DIDs
+   * @param subjects claim subjects DIDs
+   */
+  public async getBySubjects(subjects: string[]): Promise<Claim[]> {
+    for (const subject of subjects) {
+      this.logger.debug(subject, 'claims for subject');
+    }
+    const qb = this.claimRepository.createQueryBuilder("claim");
+    return qb.where('claim.subject IN (:...subjects)', { subjects }).getMany();
+  }
+
+  /**
    * returns claims with matching parent namespace
    * eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.app", "user.roles.A.app"
    * @param namespace target parent namespace
