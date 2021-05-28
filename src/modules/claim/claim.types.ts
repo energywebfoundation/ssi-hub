@@ -36,5 +36,5 @@ export interface IClaim {
   isAccepted: boolean;
   acceptedBy?: string;
   isRejected?: boolean;
-  parentNamespace: string;
+  namespace: string;
 }
