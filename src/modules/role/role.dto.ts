@@ -1,7 +1,7 @@
 import {
   IsArray,
   IsBoolean,
-  IsDateString,
+  IsDate,
   IsDefined,
   IsNumber,
   IsObject,
@@ -64,12 +64,12 @@ export class FieldsDTO implements Fields {
   maxValue?: number;
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @ApiProperty()
   minDate?: Date;
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @ApiProperty()
   maxDate?: Date;
 }
