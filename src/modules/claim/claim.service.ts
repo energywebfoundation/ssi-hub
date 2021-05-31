@@ -17,6 +17,7 @@ import { Queue } from 'bull';
 import { NatsService } from '../nats/nats.service';
 import jwt from 'jsonwebtoken';
 import { v5 } from 'uuid';
+import { AssetsService } from '../assets/assets.service';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -31,6 +32,7 @@ export class ClaimService {
     private readonly logger: Logger,
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
+    private readonly assetService: AssetsService,
     @InjectQueue('claims') private readonly claimQueue: Queue<string>,
     private readonly nats: NatsService,
   ) {
@@ -150,12 +152,41 @@ export class ClaimService {
    * returns claims requested for given DIDs
    * @param subjects claim subjects DIDs
    */
-  public async getBySubjects(subjects: string[]): Promise<Claim[]> {
-    for (const subject of subjects) {
-      this.logger.debug(subject, 'claims for subject');
-    }
+  public async getBySubjects(
+    { subjects, filters: { isAccepted, namespace } = {}, currentUser }:
+      { subjects: string[], filters?: QueryFilters, currentUser?: string }
+  ): Promise<Claim[]> {
     const qb = this.claimRepository.createQueryBuilder("claim");
-    return qb.where('claim.subject IN (:...subjects)', { subjects }).getMany();
+    qb.where('claim.subject IN (:...subjects)', { subjects });
+
+    if (currentUser) {
+      const ownedAssets = await this.assetService.getByOwner(currentUser);
+      const offeredAssets = await this.assetService.getByOfferedTo(currentUser);
+
+      qb.andWhere(new Brackets(query => {
+        query.where(':currentUser = ANY (claim.claimIssuer)', {
+          currentUser,
+        })
+          .orWhere('claim.subject = :currentUser', { currentUser })
+          .orWhere('claim.requester = :currentUser ', { currentUser })
+          .orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets })
+          .orWhere('claim.subject IN (:...offeredAssets)', { offeredAssets })
+      }));
+    }
+
+    if (isAccepted !== undefined) {
+      qb.andWhere('claim.isAccepted = :isAccepted', {
+        isAccepted,
+      });
+    }
+
+    if (namespace) {
+      qb.andWhere('claim.namespace = :namespace', {
+        namespace,
+      });
+    }
+
+    return qb.getMany();
   }
 
   /**
@@ -296,36 +327,14 @@ export class ClaimService {
    */
   async getBySubject({
     subject,
-    filters: { isAccepted, namespace } = {},
+    filters,
     currentUser,
   }: {
     subject: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const qb = this.claimRepository
-      .createQueryBuilder();
-
-    if (isAccepted !== undefined) {
-      qb.andWhere('"isAccepted" = :isAccepted', {
-        isAccepted,
-      });
-    }
-
-    if (namespace) {
-      qb.andWhere('"namespace" = :namespace', {
-        namespace,
-      });
-    }
-
-    if (currentUser) {
-      qb.andWhere(new Brackets(query => {
-        query.where(':currentUser = ANY ("claimIssuer")', {
-          currentUser,
-        }).orWhere(':currentUser = requester', { currentUser })
-      }))
-    }
-    return (await qb.getMany()).filter((claim) => claim.subject === subject);
+    return this.getBySubjects({ subjects: [subject], filters, currentUser });
   }
 
   /**

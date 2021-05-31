@@ -338,9 +338,17 @@ export class ClaimController {
   @ApiOperation({
     summary: 'returns claims requested for given DIDs',
   })
+
   public async getBySubjects(
-    @Query() { subjects }: DIDsQuery
+    @Query() { subjects }: DIDsQuery,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
+    @User() user?: string,
   ) {
-    return this.claimService.getBySubjects(subjects);
+    return this.claimService.getBySubjects({
+      subjects,
+      filters: { isAccepted, namespace },
+      currentUser: user
+    });
   }
 }
