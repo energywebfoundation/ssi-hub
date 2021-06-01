@@ -8,14 +8,21 @@ import { OrganizationService } from '../organization/organization.service';
 import { EnsRegistryFactory } from '../../ethers/EnsRegistryFactory';
 import { ConfigService } from '@nestjs/config';
 import { PublicResolver } from '../../ethers/PublicResolver';
-import { DomainNotifier } from '../../ethers/DomainNotifier';
-import { DomainNotifierFactory } from '../../ethers/DomainNotifierFactory';
 import { EnsRegistry } from '../../ethers/EnsRegistry';
 import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
 import { Provider } from '../../common/provider';
-import { IRoleDefinition, IAppDefinition, IOrganizationDefinition, DomainReader, DomainHierarchy, ResolverContractType } from '@energyweb/iam-contracts'
+import {
+  IRoleDefinition,
+  IAppDefinition,
+  IOrganizationDefinition,
+  DomainReader,
+  DomainHierarchy,
+  ResolverContractType,
+  DomainNotifier__factory,
+} from '@energyweb/iam-contracts';
+import type { DomainNotifier } from "@energyweb/iam-contracts/dist/ethers-v4/DomainNotifier";
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -61,7 +68,7 @@ export class EnsService {
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
     );
-    this.domainNotifer = DomainNotifierFactory.connect(
+    this.domainNotifer = DomainNotifier__factory.connect(
       DOMAIN_NOTIFIER_ADDRESS,
       this.provider
     )
