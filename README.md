@@ -5,15 +5,33 @@
 
 ```bash
 # development
+$ git checkout develop
 $ cp .env.dist .env
 $ cp docker-compose.dev.yml docker.compose.yml
 ```
 
 ```bash
 # production mode
+$ git checkout master
 $ cp .env.dist .env
 $ cp docker-compose.prod.yml docker.compose.yml
 ```
+
+### Populate env file for development
+
+The following values can be used in the `.env` file
+#### DB Config
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=password
+DB_NAME=dev
+
+#### Redis
+REDIS_VERSION=6.0.8 
+REDIS_PASSWORD="password"
+REDIS_PORT=6379
+REDIS_HOST=localhost
 
 ## Installation
 
