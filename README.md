@@ -7,21 +7,25 @@
 # development
 $ git checkout develop
 $ cp .env.dist .env
-$ cp docker-compose.dev.yml docker.compose.yml
+$ cp docker-compose.dev.yml docker-compose.yml
 ```
 
 ```bash
 # production mode
 $ git checkout master
 $ cp .env.dist .env
-$ cp docker-compose.prod.yml docker.compose.yml
+$ cp docker-compose.prod.yml docker-compose.yml
 ```
 
 ### Populate env file for development
 
 The following values can be used in the `.env` file
+
+#### NESTJS CONFIG
+NESTJS_PORT=
+
 #### DB Config
-DB_HOST=localhost
+DB_HOST=postgres
 DB_PORT=5432
 DB_USERNAME=postgres
 DB_PASSWORD=password
@@ -31,7 +35,12 @@ DB_NAME=dev
 REDIS_VERSION=6.0.8 
 REDIS_PASSWORD="password"
 REDIS_PORT=6379
-REDIS_HOST=localhost
+REDIS_HOST=redis
+
+#### NATS.IO CONFIG
+NATS_VERSION=2.1.8
+NATS_CLIENTS_URL=nats:4222
+
 
 ## Installation
 
@@ -42,6 +51,10 @@ $ npm run generate:jwtkeys
 ```
 
 ## Running the app
+
+### Populate env file for development
+
+The values from .env.dev can be used to run locally
 
 ```bash
 # development
