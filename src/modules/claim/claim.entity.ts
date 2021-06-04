@@ -55,6 +55,9 @@ export class Claim implements IClaim {
   @Column({ nullable: true })
   subjectAgreement?: string;
 
+  @Column({ nullable: true })
+  onChainProof?: string;
+
   @Field({ nullable: true })
   @Column({ nullable: true })
   issuedToken?: string | null;

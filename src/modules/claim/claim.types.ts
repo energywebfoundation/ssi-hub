@@ -39,6 +39,7 @@ export interface IClaim {
   registrationTypes: RegistrationTypes[];
   token: string;
   subjectAgreement?: string;
+  onChainProof?: string;
   issuedToken?: string;
   isAccepted: boolean;
   acceptedBy?: string;
