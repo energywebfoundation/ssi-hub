@@ -2,7 +2,8 @@ FROM node:12.13-alpine As development
 
 WORKDIR /app
 
-RUN apk add --no-cache bash curl openssl python make g++ && npm prune && \
+RUN apk add --no-cache bash curl openssl python make g++ && \
+  curl -sfL https://install.goreleaser.com/github.com/tuananh/node-prune.sh | sh && \
   npm install node-dev -g && npm cache clean --force
 
 COPY package*.json ./
