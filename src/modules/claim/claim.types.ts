@@ -38,6 +38,7 @@ export interface IClaim {
   claimTypeVersion: string;
   registrationTypes: RegistrationTypes[];
   token: string;
+  subjectAgreement?: string;
   issuedToken?: string;
   isAccepted: boolean;
   acceptedBy?: string;
