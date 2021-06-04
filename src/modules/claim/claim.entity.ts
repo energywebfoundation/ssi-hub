@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
-import { IClaim } from './claim.types';
+import { IClaim, RegistrationTypes } from './claim.types';
 import { IsArray } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { JWT } from '@ew-did-registry/jwt';
@@ -24,7 +24,7 @@ export class Claim implements IClaim {
   @Field()
   @Column()
   requester: string;
-  
+
   @Column()
   subject: string;
 
@@ -35,6 +35,14 @@ export class Claim implements IClaim {
   @Field()
   @Column()
   claimType: string;
+
+  @Column({
+    type: 'enum',
+    array: true,
+    enum: RegistrationTypes,
+    default: [RegistrationTypes.OffChain]
+  })
+  registrationTypes: RegistrationTypes[]
 
   @Field()
   @Column()
