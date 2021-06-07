@@ -25,13 +25,21 @@ export type DecodedClaimToken = {
   claimData: { claimType: string; claimTypeVersion: string };
 };
 
+export enum RegistrationTypes {
+  OffChain = "RegistrationTypes::OffChain",
+  OnChain = "RegistrationTypes::OnChain"
+}
+
 export interface IClaim {
   id: string;
   requester: string;
   claimIssuer: string[];
   claimType: string;
   claimTypeVersion: string;
+  registrationTypes: RegistrationTypes[];
   token: string;
+  subjectAgreement?: string;
+  onChainProof?: string;
   issuedToken?: string;
   isAccepted: boolean;
   acceptedBy?: string;
