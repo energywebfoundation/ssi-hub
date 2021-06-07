@@ -9,6 +9,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ClaimRequestDTO implements IClaimRequest {
   static async create(data: Partial<ClaimRequestDTO>) {
+    data.claimTypeVersion = data.claimTypeVersion.toString();
     const dto = new ClaimRequestDTO();
     Object.assign(dto, data);
     await validateOrReject(dto, { whitelist: true });
