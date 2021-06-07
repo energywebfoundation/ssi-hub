@@ -2,6 +2,7 @@ import { IClaimIssuance, IClaimRejection, IClaimRequest } from './claim.types';
 import {
   IsArray,
   IsBoolean,
+  IsNumberString,
   IsString,
   validateOrReject,
 } from 'class-validator';
@@ -9,7 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ClaimRequestDTO implements IClaimRequest {
   static async create(data: Partial<ClaimRequestDTO>) {
-    data.claimTypeVersion = data.claimTypeVersion.toString();
+    data.claimTypeVersion = data.claimTypeVersion.toString().split('.')[0];
     const dto = new ClaimRequestDTO();
     Object.assign(dto, data);
     await validateOrReject(dto, { whitelist: true });
@@ -36,7 +37,9 @@ export class ClaimRequestDTO implements IClaimRequest {
   @ApiProperty()
   claimType: string;
 
-  @IsString()
+  // Use number string validation because iam-client-lib is passing in number version
+  // Is advantageous to have versions be numbers to enable comparisons
+  @IsNumberString()
   @ApiProperty()
   claimTypeVersion: string;
 }
