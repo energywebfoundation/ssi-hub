@@ -160,17 +160,21 @@ export class ClaimService {
     qb.where('claim.subject IN (:...subjects)', { subjects });
 
     if (currentUser) {
-      const ownedAssets = await this.assetService.getByOwner(currentUser);
-      const offeredAssets = await this.assetService.getByOfferedTo(currentUser);
+      const ownedAssets = (await this.assetService.getByOwner(currentUser)).map((a) => a.id);
+      const offeredAssets = (await this.assetService.getByOfferedTo(currentUser)).map((a) => a.id);
 
       qb.andWhere(new Brackets(query => {
         query.where(':currentUser = ANY (claim.claimIssuer)', {
           currentUser,
         })
           .orWhere('claim.subject = :currentUser', { currentUser })
-          .orWhere('claim.requester = :currentUser ', { currentUser })
-          .orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets })
-          .orWhere('claim.subject IN (:...offeredAssets)', { offeredAssets })
+          .orWhere('claim.requester = :currentUser ', { currentUser });
+        if (ownedAssets.length > 0) {
+          query.orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets });
+        }
+        if (offeredAssets.length > 0) {
+          query.orWhere('claim.subject IN (:...offeredAssets)', { offeredAssets });
+        }
       }));
     }
 
