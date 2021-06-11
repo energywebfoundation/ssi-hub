@@ -12,8 +12,8 @@ export class Claim implements IClaim {
   static create(data: Partial<Claim>): Claim {
     const entity = new Claim();
     const jwt = new JWT(new Keys());
-    data.subject = jwt.decode(data.token).sub as string;
-    Object.assign(entity, data);
+    const { sub, expiry } = jwt.decode(data.token) as { sub: string, expiry: string };
+    Object.assign(entity, { subject: sub, expiry });
     return entity;
   }
 
@@ -47,6 +47,9 @@ export class Claim implements IClaim {
   @Field()
   @Column()
   claimTypeVersion: string;
+
+  @Column({ nullable: true })
+  expiry?: number;
 
   @Field()
   @Column()
