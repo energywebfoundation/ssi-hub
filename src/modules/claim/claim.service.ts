@@ -366,11 +366,11 @@ export class ClaimService {
   private async rolesByIssuer(issuer: string, namespace?: string): Promise<Role[]> {
     const rolesOfIssuer = (await this.getBySubject({ subject: issuer, filters: { isAccepted: true } }))
       .map((r) => r.claimType);
-    return (await this.roleService.getAll())
-      .filter((r: Role) => !namespace || r.namespace === namespace)
+    const roles = (await this.roleService.getAll())
       .filter(
         (r) => r.definition.issuer.did?.includes(issuer) || rolesOfIssuer.includes(r.definition.issuer.roleName)
       );
+    return namespace ? roles.filter((r: Role) => r.namespace === namespace) : roles;
   }
 
   private async filterUserRelatedClaims(currentUser: string, qb: SelectQueryBuilder<Claim>) {
