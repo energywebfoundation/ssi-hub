@@ -8,6 +8,7 @@ import { Claim } from './claim.entity';
 import { ClaimProcessor } from './claim.processor';
 import { ClaimResolver } from './claim.resolver';
 import { ClaimService } from './claim.service';
+import { AssetsModule } from '../assets/assets.module';
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -24,6 +25,7 @@ const redisConfig = {
     }),
     NatsModule,
     RoleModule,
+    AssetsModule
   ],
   controllers: [ClaimController],
   providers: [ClaimService, ClaimProcessor, TypeOrmModule, ClaimResolver],

@@ -7,6 +7,10 @@ import {
   Post,
   Query,
   UseInterceptors,
+  HttpException,
+  HttpStatus,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -17,6 +21,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { JWT } from '@ew-did-registry/jwt';
+import { Keys } from '@ew-did-registry/keys';
 import {
   IClaimIssuance,
   IClaimRejection,
@@ -24,14 +30,15 @@ import {
   NATS_EXCHANGE_TOPIC,
 } from './claim.types';
 import { NatsService } from '../nats/nats.service';
-import { v4 as uuid } from 'uuid';
 import { validateOrReject } from 'class-validator';
 import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { User } from '../../common/user.decorator';
-import { IsAcceptedPipe } from '../../common/accepted.pipe';
+import { BooleanPipe } from '../../common/boolean.pipe';
+import { AssetsService } from '../assets/assets.service';
+import { DIDsQuery } from './claim.entity';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -40,6 +47,7 @@ export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
     private readonly nats: NatsService,
+    private readonly assetsService: AssetsService,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(ClaimController.name);
@@ -69,10 +77,16 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
+    const { sub } = new JWT(new Keys()).decode(data.issuedToken);
+
     const payload = JSON.stringify(claimData);
     this.nats.connection.publish(
       `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
       payload,
+    );
+    this.nats.connection.publish(
+      `${sub}.${NATS_EXCHANGE_TOPIC}`,
+      payload
     );
   }
 
@@ -97,10 +111,19 @@ export class ClaimController {
     @Param('did') did: string,
     @Body() data: IClaimRequest,
   ) {
-    const id = uuid();
+    const jwt = new JWT(new Keys());
+    const { requester, token } = data;
+    const { sub } = jwt.decode(token);
+    const ownedAssets = await this.assetsService.getByOwner(requester);
+    if (requester !== sub &&
+      !ownedAssets.some((a) => a.document.id === sub)
+    ) {
+      throw new HttpException("Claim requester not authorized to request for subject", HttpStatus.FORBIDDEN);
+    }
+
     const claimData: IClaimRequest = {
+      id: ClaimService.idOfClaim(data),
       ...data,
-      id,
     };
 
     const claimDTO = ClaimRequestDTO.create(claimData);
@@ -115,7 +138,7 @@ export class ClaimController {
         payload,
       );
     });
-    return id;
+    return claimData.id;
   }
 
   @Post('/reject/:did')
@@ -208,16 +231,15 @@ export class ClaimController {
   })
   public async getByIssuerDid(
     @Param('did') issuer: string,
-    @Query('accepted', IsAcceptedPipe)
-    accepted?: boolean,
-    @Query('namespace') parentNamespace?: string,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
     @User() user?: string,
   ) {
     return await this.claimService.getByIssuer({
       issuer,
       filters: {
-        accepted,
-        parentNamespace,
+        isAccepted,
+        namespace,
       },
       currentUser: user,
     });
@@ -229,7 +251,7 @@ export class ClaimController {
     summary: 'returns claims for Requester with given DID',
   })
   @ApiQuery({
-    name: 'accepted',
+    name: 'isAccepted',
     required: false,
     description:
       '**true** - show only accepted <br> **false** - show only pending',
@@ -241,16 +263,47 @@ export class ClaimController {
   })
   public async getByRequesterDid(
     @Param('did') requester: string,
-    @Query('accepted', IsAcceptedPipe)
-    accepted?: boolean,
-    @Query('namespace') parentNamespace?: string,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
     @User() user?: string,
   ) {
     return await this.claimService.getByRequester({
       requester,
       filters: {
-        accepted,
-        parentNamespace,
+        isAccepted,
+        namespace,
+      },
+      currentUser: user,
+    });
+  }
+
+  @Get('/subject/:did')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns claims for given subject',
+  })
+  @ApiQuery({
+    name: 'iAccepted',
+    required: false,
+    description:
+      '**true** - show only accepted <br> **false** - show only pending',
+  })
+  @ApiQuery({
+    name: 'namespace',
+    required: false,
+    description: 'filter only claims of given namespace',
+  })
+  public async getBySubject(
+    @Param('did') subject: string,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
+    @User() user?: string,
+  ) {
+    return await this.claimService.getBySubject({
+      subject,
+      filters: {
+        isAccepted,
+        namespace,
       },
       currentUser: user,
     });
@@ -268,9 +321,34 @@ export class ClaimController {
   })
   public async getDidsOfNamespace(
     @Param('namespace') namespace: string,
-    @Query('accepted', IsAcceptedPipe)
+    @Query('accepted', BooleanPipe)
     accepted?: boolean,
   ) {
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
+  }
+
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Get('/by/subjects')
+  @ApiQuery({
+    name: 'subjects',
+    required: true,
+    description: 'DIDs whose claims are being requested',
+  })
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns claims requested for given DIDs',
+  })
+
+  public async getBySubjects(
+    @Query() { subjects }: DIDsQuery,
+    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
+    @Query('namespace') namespace?: string,
+    @User() user?: string,
+  ) {
+    return this.claimService.getBySubjects({
+      subjects,
+      filters: { isAccepted, namespace },
+      currentUser: user
+    });
   }
 }

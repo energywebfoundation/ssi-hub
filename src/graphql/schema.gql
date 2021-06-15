@@ -92,7 +92,7 @@ type AuthenticationSchema {
   block: Int
   publicKey: String!
   type: String!
-  validity: Int!
+  validity: JSONObject!
 }
 
 type ProofSchema {
@@ -114,28 +114,28 @@ type PublicKeySchema {
   publicKeyMultibase: String
   publicKeyPem: String
   type: String
-  validity: Int
+  validity: JSONObject
 }
 
 type ClaimSchema {
   block: Int
   claimType: String
   claimTypeVersion: String
-  description: String!
+  description: String
   hash: String!
-  id: String!
+  id: String
   profile: JSONObject
   serviceEndpoint: String!
-  type: String!
-  validity: Int!
+  type: String
+  validity: JSONObject
 }
 
-type DIDDocumentSchema {
+type DIDDocumentEntity {
+  id: ID!
   service: [ClaimSchema!]
   authentication: [AuthenticationSchema!]!
   created: String
   delegates: [String!]
-  id: ID!
   proof: ProofSchema
   publicKey: [PublicKeySchema!]!
   updated: String
@@ -153,22 +153,58 @@ type Claim {
   createdAt: DateTime!
   acceptedBy: String
   isRejected: Boolean
-  parentNamespace: String!
+  namespace: String!
+}
+
+type Asset {
+  id: ID!
+  owner: String!
+  offeredTo: String
+  createdAt: String!
+  updatedAt: String!
+  document: DIDDocumentEntity!
+}
+
+type AssetsHistory {
+  id: ID!
+  emittedBy: String!
+  relatedTo: String
+  type: String!
+  at: Float!
+  timestamp: String!
 }
 
 type Query {
+  role(namespace: String!): Role!
+  roles(owner: String!): [Role!]!
+  didDocument(did: String!): DIDDocumentEntity!
   application(namespace: String!): Application!
   applications(owner: String!): [Application!]!
   organization(namespace: String!): Organization!
   organizations(owner: String!): [Organization!]!
-  role(namespace: String!): Role!
-  roles(owner: String!): [Role!]!
-  didDocument(did: String!): DIDDocumentSchema!
+  asset(id: String!): Asset!
+  getAssetsByOwner(owner: String!): [Asset!]!
+  getAssetsByPreviousOwner(owner: String!): [Asset!]!
+  getAssetsByOfferedTo(offeredTo: String!): [Asset!]!
+  getAssetHistory(type: AssetHistoryEventType, order: Order, skip: Int = 0, take: Int = 10, id: String!): [AssetsHistory!]!
   claim(id: String!): Claim!
   claimsByParentNamespace(namespace: String!): [Claim!]!
   claimsByUser(parentNamespace: String, accepted: Boolean, user: String!): [Claim!]!
   claimsByIssuer(parentNamespace: String, accepted: Boolean, issuer: String!): [Claim!]!
   claimsByRequester(parentNamespace: String, accepted: Boolean, requester: String!): [Claim!]!
+}
+
+enum AssetHistoryEventType {
+  ASSET_CREATED
+  ASSET_OFFERED
+  ASSET_OFFER_CANCELED
+  ASSET_TRANSFERRED
+  ASSET_OFFER_REJECTED
+}
+
+enum Order {
+  ASC
+  DESC
 }
 
 type Mutation {

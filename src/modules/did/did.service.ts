@@ -11,47 +11,55 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumDidRegistryFactory } from '../../ethers/EthereumDidRegistryFactory';
 import { EthereumDidRegistry } from '../../ethers/EthereumDidRegistry';
-import { providers } from 'ethers';
-import { DIDDocumentEntity } from './didDocument.entity';
-import { ResolverFactory } from './ResolverFactory';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { DID } from './did.types';
-import { BigNumber, bigNumberify } from 'ethers/utils';
+import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
+import { utils } from 'ethers';
 import { Logger } from '../logger/logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DIDEntity } from './did.entity';
+import { DIDDocumentEntity, IClaim } from './did.entity';
 import { Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
+import { Provider } from '../../common/provider';
+import {
+  documentFromLogs,
+  mergeLogs,
+  Resolver,
+  ethrReg,
+} from '@ew-did-registry/did-ethr-resolver';
+
+const { bigNumberify } = utils;
 
 @Injectable()
 export class DIDService {
-  private readonly provider: providers.JsonRpcProvider;
   private readonly didRegistry: EthereumDidRegistry;
   private readonly ipfsStore: IDidStore;
-  private readonly refresh_queue_channel = 'refreshDocument';
-
+  private readonly resolver: Resolver;
   constructor(
     private readonly config: ConfigService,
     private readonly schedulerRegistry: SchedulerRegistry,
-    private readonly resolverFactory: ResolverFactory,
     private readonly httpService: HttpService,
     @InjectQueue('dids') private readonly didQueue: Queue<string>,
     private readonly logger: Logger,
-    @InjectRepository(DIDEntity)
-    private readonly didRepository: Repository<DIDEntity>,
+    @InjectRepository(DIDDocumentEntity)
+    private readonly didRepository: Repository<DIDDocumentEntity>,
+    private readonly provider: Provider,
   ) {
     this.logger.setContext(DIDService.name);
 
     const IPFS_URL = this.config.get<string>('IPFS_URL');
     this.ipfsStore = new DidStore(IPFS_URL);
 
-    const PROVIDER_URL = this.config.get<string>('ENS_URL');
-    this.provider = new providers.JsonRpcProvider(PROVIDER_URL);
-
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
       'DID_REGISTRY_ADDRESS',
     );
+
+    this.resolver = new Resolver(this.provider, {
+      abi: ethrReg.abi,
+      address: DID_REGISTRY_ADDRESS,
+      method: Methods.Erc1056,
+    });
+
     this.didRegistry = EthereumDidRegistryFactory.connect(
       DID_REGISTRY_ADDRESS,
       this.provider,
@@ -74,74 +82,47 @@ export class DIDService {
     }
   }
 
-  private async InitEventListeners(): Promise<void> {
-    const DIDAttributeChanged = 'DIDAttributeChanged';
-    this.didRegistry.addListener(DIDAttributeChanged, async owner => {
-      this.logger.info(
-        `${DIDAttributeChanged} event received for owner: ${owner}`,
-      );
-      const did = `did:${Methods.Erc1056}:${owner}`;
-      const didObject = new DID(did);
-      const didDocEntity = await this.didRepository.findOne(didObject.id);
-      // Only refreshing a DID that is already cached.
-      // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
-      if (didDocEntity) {
-        await this.didQueue.add(this.refresh_queue_channel, did);
-      }
-    });
-  }
-
-  private async syncDocuments() {
-    this.logger.debug(`Beginning sync of DID Documents`);
-    const cachedDIDs = await this.didRepository.find({ select: ['id'] });
-    cachedDIDs.forEach(async did => {
-      await this.didQueue.add(this.refresh_queue_channel, did.id);
-    });
-  }
-
   /**
    * Retrieves a DID Document for a given DID
    * @param {DID} did DID whose document should be retrieved
    * @param {boolean} enhanceWithClaims
    * @returns {IDIDDocument} Resolved DID Document. Null if no Document is not cached.
    */
-  public async getById(
-    did: DID,
-    enhanceWithClaims = false,
-  ): Promise<IDIDDocument> {
-    let cachedDIDDocument = await this.didRepository.findOne(did.id);
-    if (!cachedDIDDocument) {
-      this.logger.info(
-        `Requested document for did: ${did.id} not cached. Queuing cache request.`,
-      );
-      // awaiting refresh so that subsequent calls don't duplicate cached DID Document
-      await this.refreshCachedDocument(did);
-      cachedDIDDocument = await this.didRepository.findOne(did.id);
-    }
-    const didEntity = new DIDDocumentEntity(did, cachedDIDDocument);
-    const resolvedDocument = await didEntity.getResolvedDIDDocument();
-    if (enhanceWithClaims) {
-      this.enhanceWithClaims(didEntity, resolvedDocument);
-    }
-    return resolvedDocument;
+  public async getById(did: string): Promise<IDIDDocument> {
+    const cachedDIDDocument = await this.didRepository.findOne(did);
+    if (cachedDIDDocument) return cachedDIDDocument;
+
+    this.logger.info(
+      `Requested document for did: ${did} not cached. Queuing cache request.`,
+    );
+
+    return this.addCachedDocument(did);
   }
 
   /**
-   * Insert or update the DID Document cache for a given DID.
+   * Adds the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
    * @param {DID} did
    */
-  public async upsertCachedDocument(did: DID): Promise<void> {
+  public async addCachedDocument(did: string) {
     try {
-      this.logger.debug(`Upserting cached document for did: ${did.id}`);
-      const cachedDIDDocument = await this.didRepository.findOne(did.id);
-      const didEntity = cachedDIDDocument
-        ? new DIDDocumentEntity(did, cachedDIDDocument)
-        : new DIDDocumentEntity(did);
-      const logs = await this.readNewLogsFromChain(didEntity);
-      didEntity.updateLogData(logs);
-      didEntity.cacheIPFSClaims(this.ipfsStore);
-      await this.didRepository.save(DIDEntity.create(didEntity.getDTO()));
+      this.logger.debug(`Add cached document for did: ${did}`);
+
+      const logs = await this.getAllLogs(did);
+
+      const updatedDidDocument = this.resolveDocumentFromLogs(did, logs);
+
+      const updatedServices = await this.resolveNotCachedClaims(
+        updatedDidDocument.service,
+      );
+
+      const updatedEntity = DIDDocumentEntity.create({
+        ...updatedDidDocument,
+        service: updatedServices,
+        logs: JSON.stringify(logs),
+      });
+
+      return this.didRepository.save(updatedEntity);
     } catch (err) {
       this.logger.error(err);
     }
@@ -152,83 +133,140 @@ export class DIDService {
    * Also retrieves all claims from IPFS for the document.
    * @param {DID} did
    */
-  public async refreshCachedDocument(did: DID): Promise<void> {
+  public async refreshCachedDocument(did: string) {
     try {
-      this.logger.info(`refreshing cached document for did: ${did.id}`);
-      const cachedDIDDocument = await this.didRepository.findOne(did.id);
-      const didEntity = cachedDIDDocument
-        ? new DIDDocumentEntity(did, cachedDIDDocument)
-        : new DIDDocumentEntity(did);
-      const logs = await this.readAllLogsFromChain(didEntity);
-      didEntity.setLogData(logs);
-      await didEntity.cacheIPFSClaims(this.ipfsStore);
-      const didDoc = DIDEntity.create(didEntity.getDTO());
-      await this.didRepository.save(didDoc);
+      this.logger.info(`refreshing cached document for did: ${did}`);
+      const cachedDIDDocument = await this.didRepository.findOne(did);
+
+      const logs = await this.updateLogs(
+        cachedDIDDocument.id,
+        this.parseLogs(cachedDIDDocument.logs),
+      );
+
+      const updatedDidDocument = this.resolveDocumentFromLogs(
+        cachedDIDDocument.id,
+        logs,
+      );
+
+      const updatedServices = await this.resolveNotCachedClaims(
+        updatedDidDocument.service,
+        cachedDIDDocument.service,
+      );
+
+      const updatedEntity = DIDDocumentEntity.create({
+        ...cachedDIDDocument,
+        ...updatedDidDocument,
+        service: updatedServices,
+        logs: JSON.stringify(logs),
+      });
+
+      return this.didRepository.save(updatedEntity);
     } catch (err) {
       this.logger.error(err);
     }
   }
 
   public async getDIDDocumentFromUniversalResolver(did: string) {
+    const universalResolverUrl = this.config.get<string>('UNIVERSAL_RESOLVER_URL');
+    if (!universalResolverUrl) {
+      throw new Error("universal resolver url not set");
+    }
+    const stripTrailingSlash = (s: string) => s.replace(/\/$/, ""); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
     const { data } = await this.httpService
-      .get(`${this.config.get<string>('UNIVERSAL_RESOLVER_URL')}/${did}`)
+      .get(`${stripTrailingSlash(universalResolverUrl)}/${did}`)
       .toPromise();
     return data.didDocument;
   }
 
+  private async InitEventListeners(): Promise<void> {
+    const DIDAttributeChanged = 'DIDAttributeChanged';
+    this.didRegistry.addListener(DIDAttributeChanged, async address => {
+      const did = `did:${Methods.Erc1056}:${address}`;
+
+      this.logger.info(`${DIDAttributeChanged} event received for did: ${did}`);
+
+      const didObject = new DID(did);
+      const didDocEntity = await this.didRepository.findOne(didObject.id);
+      // Only refreshing a DID that is already cached.
+      // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
+      if (didDocEntity) {
+        await this.didQueue.add(UPDATE_DID_DOC_QUEUE_NAME, did);
+      }
+    });
+  }
+
+  private async syncDocuments() {
+    this.logger.debug(`Beginning sync of DID Documents`);
+    const cachedDIDs = await this.didRepository.find({ select: ['id'] });
+    cachedDIDs.forEach(async did => {
+      await this.didQueue.add(UPDATE_DID_DOC_QUEUE_NAME, did.id);
+    });
+  }
+
+  private parseLogs(logs: string) {
+    const knownBigNumberProperties = new Set<string>();
+    knownBigNumberProperties.add('validity');
+    knownBigNumberProperties.add('topBlock');
+
+    // Operations on IDIDLogData expect some properties to be BigNumbers
+    const bigNumberReviver = (key: string, value) => {
+      if (knownBigNumberProperties.has(key) && '_hex' in value) {
+        return bigNumberify(value['_hex']);
+      }
+      return value;
+    };
+    return JSON.parse(logs, bigNumberReviver) as IDIDLogData;
+  }
+
+  private resolveDocumentFromLogs(id: string, logs: IDIDLogData) {
+    return documentFromLogs(id, [logs]);
+  }
+
   /**
-   * Reads all logs for a given DID that haven't been cached yet
+   * Reads all logs for a given DID that haven't been cached yet and merged them
    * @param documentEntity
    */
-  private async readNewLogsFromChain(
-    documentEntity: DIDDocumentEntity,
+  private async updateLogs(
+    id: string,
+    logs: IDIDLogData,
   ): Promise<IDIDLogData> {
-    if (documentEntity.getLogData()?.topBlock) {
-      const logData = documentEntity.getLogData();
-      const readFromBlock = logData.topBlock.add(1); // Want to read from 1 more than previously last read to
-      const resolver = this.resolverFactory.create();
-      return await resolver.readFromBlock(documentEntity.id, readFromBlock);
-    } else {
-      this.readAllLogsFromChain(documentEntity);
+    if (logs?.topBlock) {
+      const readFromBlock = logs.topBlock.add(1); // Want to read from 1 more than previously last read to
+      const newLogs = await this.resolver.readFromBlock(id, readFromBlock);
+      const mergedLogs = mergeLogs([logs, newLogs]);
+      mergedLogs.topBlock = newLogs.topBlock;
+      return mergedLogs;
     }
+    const newLogs = await this.getAllLogs(id);
+    const mergedLogs = mergeLogs([logs, newLogs]);
+    mergedLogs.topBlock = newLogs.topBlock;
+    return mergedLogs;
   }
 
   /**
-   * Reads all logs for a given DID
+   * Gets all logs for a given DID
    * @param documentEntity
    */
-  private async readAllLogsFromChain(
-    documentEntity: DIDDocumentEntity,
-  ): Promise<IDIDLogData> {
+  private async getAllLogs(id: string): Promise<IDIDLogData> {
     const genesisBlockNumber = 0;
-    const readFromBlock: BigNumber = bigNumberify(genesisBlockNumber);
-    const resolver = this.resolverFactory.create();
-    return await resolver.readFromBlock(documentEntity.id, readFromBlock);
+    const readFromBlock = utils.bigNumberify(genesisBlockNumber);
+    return this.resolver.readFromBlock(id, readFromBlock);
   }
 
-  /**
-   * Enhances a DID Document with full claim data
-   * Remark: The approach of enhancing the IServiceEndpoint structure directly is taken from iam-client-lib
-   * @param {DIDDocumentEntity} documentEntity Document entity which contains the full claim data
-   * @param {IDIDDocument} resolvedDocument Resolved document to enhance
-   */
-  private async enhanceWithClaims(
-    documentEntity: DIDDocumentEntity,
-    resolvedDocument: IDIDDocument,
-  ) {
-    const cachedClaims = documentEntity.getCachedClaimsMap();
+  private resolveNotCachedClaims(
+    services: IServiceEndpoint[],
+    cachedServices: IClaim[] = [],
+  ): Promise<IClaim[]> {
+    return Promise.all(
+      services.map(async ({ serviceEndpoint, ...rest }) => {
+        const cachedService = cachedServices.find(
+          claim => claim.serviceEndpoint === serviceEndpoint,
+        );
+        if (cachedService) return cachedService;
 
-    resolvedDocument.service = resolvedDocument.service?.map(
-      (service: IServiceEndpoint) => {
-        const { serviceEndpoint, ...rest } = service;
-        const cachedClaim = cachedClaims.get(serviceEndpoint);
-        if (!cachedClaim) {
-          this.logger.warn(
-            `claim at service endpoint ${serviceEndpoint} not cached for did: ${documentEntity.id}`,
-          );
-          return service;
-        }
-        const { claimData, ...claimRest } = jwt.decode(cachedClaim) as {
+        const token = await this.ipfsStore.get(serviceEndpoint);
+
+        const { claimData, ...claimRest } = jwt.decode(token) as {
           claimData: Record<string, string>;
         };
         return {
@@ -237,7 +275,7 @@ export class DIDService {
           ...claimData,
           ...claimRest,
         };
-      },
+      }),
     );
   }
 }
