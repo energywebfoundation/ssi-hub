@@ -19,15 +19,18 @@ jobs:
       postgres:
        image: postgres
        env:
+        #DB_USERNAME: ${{secrets.DB_USERNAME}}
         DB_USERNAME: 'postgres'
-        DB_PASSWORD: 'password'
+        #DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+        DB_PASSWORD: 'âssword'
         DB_HOST: 'postgres'  
        ports:
        - 5432:5432
       redis:
         image: redis
         env:
-            REDIS_PASSWORD: 'password'
+            #REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
+            REDIS_PASSWORD: 'passord'
             REDIS_HOST: 'redis'
         ports:
         - 6379:6379
@@ -51,17 +54,14 @@ jobs:
       - name: Docker Build
         run: npm run docker:build
         
-      - name: Starting Nest
-        run: npm run start
-
-      - name: Run unit tests
-        run: npm run test
-        
       - name: Generate keys
         run: npm run generate:jwtkeys
         
-      - name: Run unit tests
+      - name: Running the app on dev environment
+        run: npm run docker:start:app
+
+      - name: Running unit tests
         run: npm run test
         
-      - name: Run e2e tests
+      - name: Runinng end-to-end tests
         run: npm run test:e2e
