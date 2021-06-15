@@ -53,7 +53,7 @@ jobs:
         
       - name: Docker Build
         #run: npm run docker:build
-        run: docker-compose -f "docker-compose.dev.yml" -d
+        run: docker-compose -f "docker-compose.dev.yml" up -d
         
       - name: Generate keys
         run: npm run generate:jwtkeys
