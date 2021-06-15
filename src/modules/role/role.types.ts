@@ -13,7 +13,7 @@ export interface Fields {
 
 export interface Issuer {
   issuerType: string;
-  did: string[];
+  did?: string[];
   roleName?: string;
 }
 

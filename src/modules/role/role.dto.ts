@@ -99,7 +99,8 @@ export class IssuerDTO implements Issuer {
   issuerType: string;
 
   @IsArray()
-  did: string[];
+  @IsOptional()
+  did?: string[];
 
   @IsString()
   @IsOptional()

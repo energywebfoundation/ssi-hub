@@ -39,6 +39,10 @@ export class RoleService {
     return this.roleRepository.find({ where: { owner } });
   }
 
+  public async getAll() {
+    return this.roleRepository.find();
+  }
+
   /**
    * return true if role with given namespace exists
    * @param namespace

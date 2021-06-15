@@ -41,7 +41,7 @@
   "dependencies": {
     "@ensdomains/ens": "^0.4.5",
     "@ensdomains/resolver": "^0.2.4",
-    "@energyweb/iam-contracts": "1.11.1",
+    "@energyweb/iam-contracts": "1.11.2",
     "@ew-did-registry/did-document": "0.5.2-alpha.1041.0",
     "@ew-did-registry/did-ethr-resolver": "0.5.2-alpha.1041.0",
     "@ew-did-registry/did-ipfs-store": "0.5.2-alpha.1041.0",
