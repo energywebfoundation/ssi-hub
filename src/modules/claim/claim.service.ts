@@ -382,7 +382,7 @@ export class ClaimService {
     qb.andWhere(new Brackets(query => {
       query.where('claim.claimType IN (:...rolesByUser)', { rolesByUser })
         .orWhere('claim.subject = :currentUser', { currentUser })
-        .orWhere('claim.requester = :currentUser ', { currentUser });
+        .orWhere('claim.requester = :currentUser', { currentUser });
       if (ownedAssets.length > 0) {
         query.orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets });
       }
