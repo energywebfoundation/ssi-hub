@@ -250,7 +250,7 @@ export class DIDService {
   private async getAllLogs(id: string): Promise<IDIDLogData> {
     const genesisBlockNumber = 0;
     const readFromBlock = utils.bigNumberify(genesisBlockNumber);
-    return this.resolver.readFromBlock(id, readFromBlock);
+    return await this.resolver.readFromBlock(id, readFromBlock);
   }
 
   private resolveNotCachedClaims(
