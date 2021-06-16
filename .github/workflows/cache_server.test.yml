@@ -4,7 +4,7 @@ name: CI
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push or pull request events
   push:
   pull_request:
 
@@ -22,7 +22,7 @@ jobs:
         #DB_USERNAME: ${{secrets.DB_USERNAME}}
         DB_USERNAME: 'postgres'
         #DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-        DB_PASSWORD: 'âssword'
+        DB_PASSWORD: 'password'
         DB_HOST: 'postgres'  
        ports:
        - 5432:5432
@@ -38,8 +38,6 @@ jobs:
       # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-      - name: buiding the project
-        run: echo Testing deploy
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
@@ -53,7 +51,7 @@ jobs:
         
       - name: Docker Build
         #run: npm run docker:build
-        run: docker-compose -f "docker-compose.dev.yml" build
+        run: docker-compose -f "docker-compose.dev.yml" build app
         
       - name: Generate keys
         run: npm run generate:jwtkeys
