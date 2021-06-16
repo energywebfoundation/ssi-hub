@@ -53,13 +53,13 @@ jobs:
         
       - name: Docker Build
         #run: npm run docker:build
-        run: docker-compose -f "docker-compose.dev.yml" up -d
+        run: docker-compose -f "docker-compose.dev.yml" build
         
       - name: Generate keys
         run: npm run generate:jwtkeys
         
       - name: Running the app on dev environment
-        run: npm run docker:start:app
+        run: docker-compose -f "docker-compose.dev.yml" up -d
 
       - name: Running unit tests
         run: npm run test
