@@ -50,7 +50,7 @@ jobs:
         run: npm install
         
       - name: Docker Build
-        run: npm run docker:build
+        run: npm run docker:build -f "docker-compose.dev.yml"
         #run: docker-compose -f "docker-compose.dev.yml" build app
         
       - name: Generate keys
