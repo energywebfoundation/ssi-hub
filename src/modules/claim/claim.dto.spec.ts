@@ -9,6 +9,8 @@ describe('ClaimRequestDTO', () => {
       requester: "0xCdd1a89ca6AA9e63A4eF6DE8e612caFA802138C5",
       token: "somejwt",
       claimType: "myrole.org.iam.ewc",
+      subjectAgreement: "<agreement token>",
+      claimTypeVersion: "1"
     }
   }
 
@@ -38,5 +40,14 @@ describe('ClaimRequestDTO', () => {
     claimRequest.claimTypeVersion = "1.0.0"
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
+  });
+
+  it('should rename from agreement to subjectAgreement', async () => {
+    const claimRequest = getBaseClaimRequest();
+    delete claimRequest.subjectAgreement
+    claimRequest["agreement"] = "<agreement token>"
+    const dto = await ClaimRequestDTO.create(claimRequest)
+    expect(dto).toBeInstanceOf(ClaimRequestDTO)
+    expect(dto.subjectAgreement).toBeDefined();
   });
 });
