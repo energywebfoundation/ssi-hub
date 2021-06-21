@@ -19,18 +19,18 @@ jobs:
       postgres:
        image: postgres
        env:
-        #DB_USERNAME: ${{secrets.DB_USERNAME}}
-        DB_USERNAME: 'postgres'
-        #DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-        DB_PASSWORD: 'password'
+        DB_USERNAME: ${{secrets.DB_USERNAME}}
+        #DB_USERNAME: 'postgres'
+        DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+        #DB_PASSWORD: 'password'
         DB_HOST: 'postgres'  
        ports:
        - 5432:5432
       redis:
         image: redis
         env:
-            #REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
-            REDIS_PASSWORD: 'passord'
+            REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
+            #REDIS_PASSWORD: 'passord'
             REDIS_HOST: 'redis'
         ports:
         - 6379:6379
