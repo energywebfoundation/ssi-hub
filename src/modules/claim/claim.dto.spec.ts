@@ -1,4 +1,5 @@
 import { ClaimRequestDTO } from './claim.dto';
+import { RegistrationTypes } from './claim.types';
 
 describe('ClaimRequestDTO', () => {
 
@@ -10,7 +11,8 @@ describe('ClaimRequestDTO', () => {
       token: "somejwt",
       claimType: "myrole.org.iam.ewc",
       subjectAgreement: "<agreement token>",
-      claimTypeVersion: "1"
+      claimTypeVersion: "1",
+      registrationTypes: []
     }
   }
 
@@ -49,5 +51,49 @@ describe('ClaimRequestDTO', () => {
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
     expect(dto.subjectAgreement).toBeDefined();
+  });
+
+  it('should create if subjectAgreement not provided', async () => {
+    const claimRequest = getBaseClaimRequest();
+    delete claimRequest.subjectAgreement
+    const dto = await ClaimRequestDTO.create(claimRequest)
+    expect(dto).toBeInstanceOf(ClaimRequestDTO)
+  });
+
+  it('should create from off-chain registrationType only', async () => {
+    const claimRequest = getBaseClaimRequest();
+    claimRequest.registrationTypes = [RegistrationTypes.OffChain]
+    const dto = await ClaimRequestDTO.create(claimRequest)
+    expect(dto).toBeInstanceOf(ClaimRequestDTO)
+  });
+
+  it('should create from on-chain registrationType only', async () => {
+    const claimRequest = getBaseClaimRequest();
+    claimRequest.registrationTypes = [RegistrationTypes.OnChain]
+    const dto = await ClaimRequestDTO.create(claimRequest)
+    expect(dto).toBeInstanceOf(ClaimRequestDTO)
+  });
+
+  it('should create from on-chain and off-chain registrationTypes', async () => {
+    const claimRequest = getBaseClaimRequest();
+    claimRequest.registrationTypes = [RegistrationTypes.OffChain, RegistrationTypes.OnChain]
+    const dto = await ClaimRequestDTO.create(claimRequest)
+    expect(dto).toBeInstanceOf(ClaimRequestDTO)
+  });
+
+  // This is so that addition of registrationTypes isn't breaking change
+  it('should create if registrationTypes not provided', async () => {
+    const claimRequest = getBaseClaimRequest();
+    delete claimRequest.registrationTypes
+    const dto = await ClaimRequestDTO.create(claimRequest)
+    expect(dto).toBeInstanceOf(ClaimRequestDTO)
+  });
+
+  it('should fail for unknown registrationType', async () => {
+    const claimRequest = getBaseClaimRequest();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    claimRequest.registrationTypes = ["NotRealRegistrationType"]
+    await expect(ClaimRequestDTO.create(claimRequest)).rejects.toThrow
   });
 });

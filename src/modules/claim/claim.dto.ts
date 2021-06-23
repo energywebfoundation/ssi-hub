@@ -1,7 +1,8 @@
-import { IClaimIssuance, IClaimRejection, IClaimRequest } from './claim.types';
+import { IClaimIssuance, IClaimRejection, IClaimRequest, RegistrationTypes } from './claim.types';
 import {
   IsArray,
   IsBoolean,
+  IsEnum,
   IsNumberString,
   IsOptional,
   IsString,
@@ -17,7 +18,7 @@ export class ClaimRequestDTO implements IClaimRequest {
 
     // iam-client-lib was passing in request with agreement, so rename to subjectAgreement
     // when https://github.com/energywebfoundation/iam-client-lib/pull/199 is merged, should remove
-    dto["agreement"] && delete Object.assign(dto, {["subjectAgreement"]: dto["agreement"] })["agreement"];
+    dto["agreement"] && delete Object.assign(dto, { ["subjectAgreement"]: dto["agreement"] })["agreement"];
 
     await validateOrReject(dto, { whitelist: true });
     return dto;
@@ -49,8 +50,14 @@ export class ClaimRequestDTO implements IClaimRequest {
   @ApiProperty()
   claimTypeVersion: string;
 
+  @IsEnum(RegistrationTypes, { each: true })
+  // Optional so as to not break existing clients. Can be made mandatory in future.
+  @IsOptional()
+  @ApiProperty()
+  registrationTypes: RegistrationTypes[]
+
   @IsString()
-  // Is optional in the event that only an off-chain credential is expected
+  // Is not provided if only an off-chain credential is requested
   @IsOptional()
   @ApiProperty()
   subjectAgreement: string;
