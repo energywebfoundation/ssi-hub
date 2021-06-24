@@ -90,6 +90,11 @@ export class ClaimIssueDTO implements IClaimIssuance {
   @IsString()
   @ApiProperty()
   requester: string;
+  
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  onChainProof?: string;
 }
 
 export class ClaimRejectionDTO implements IClaimRejection {

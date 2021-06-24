@@ -1,9 +1,9 @@
-import { ClaimRequestDTO } from './claim.dto';
+import { ClaimIssueDTO, ClaimRequestDTO } from './claim.dto';
 import { RegistrationTypes } from './claim.types';
 
 describe('ClaimRequestDTO', () => {
 
-  const getBaseClaimRequest: () => Partial<ClaimRequestDTO> = () => {
+  const getBaseClaimIssue: () => Partial<ClaimRequestDTO> = () => {
     return {
       id: "1",
       claimIssuer: ["did:ethr:0x8E23B1a27c5aFf82aE0F498a462BB3f50520B222"],
@@ -17,14 +17,14 @@ describe('ClaimRequestDTO', () => {
   }
 
   it('should create', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     claimRequest.claimTypeVersion = "1"
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
   });
 
   it('should create from number claimTypeVersion', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     // Should be able to convert number to string
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -38,14 +38,14 @@ describe('ClaimRequestDTO', () => {
    * has versions like "1.0.0", "2.0.0", etc
    */
   it('should create from legacy claimTypeVersion', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     claimRequest.claimTypeVersion = "1.0.0"
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
   });
 
   it('should rename from agreement to subjectAgreement', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     delete claimRequest.subjectAgreement
     claimRequest["agreement"] = "<agreement token>"
     const dto = await ClaimRequestDTO.create(claimRequest)
@@ -54,28 +54,28 @@ describe('ClaimRequestDTO', () => {
   });
 
   it('should create if subjectAgreement not provided', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     delete claimRequest.subjectAgreement
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
   });
 
   it('should create from off-chain registrationType only', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     claimRequest.registrationTypes = [RegistrationTypes.OffChain]
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
   });
 
   it('should create from on-chain registrationType only', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     claimRequest.registrationTypes = [RegistrationTypes.OnChain]
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
   });
 
   it('should create from on-chain and off-chain registrationTypes', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     claimRequest.registrationTypes = [RegistrationTypes.OffChain, RegistrationTypes.OnChain]
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
@@ -83,17 +83,46 @@ describe('ClaimRequestDTO', () => {
 
   // This is so that addition of registrationTypes isn't breaking change
   it('should create if registrationTypes not provided', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     delete claimRequest.registrationTypes
     const dto = await ClaimRequestDTO.create(claimRequest)
     expect(dto).toBeInstanceOf(ClaimRequestDTO)
   });
 
   it('should fail for unknown registrationType', async () => {
-    const claimRequest = getBaseClaimRequest();
+    const claimRequest = getBaseClaimIssue();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     claimRequest.registrationTypes = ["NotRealRegistrationType"]
     await expect(ClaimRequestDTO.create(claimRequest)).rejects.toThrow
   });
+});
+
+describe('ClaimIssueDTO', () => {
+  const issuer = "did:ethr:0x8E23B1a27c5aFf82aE0F498a462BB3f50520B222";
+
+  const getBaseClaimIssue: () => Partial<ClaimIssueDTO> = () => {
+    return {
+      id: "1",
+      acceptedBy: issuer,
+      claimIssuer: [issuer],
+      issuedToken: "<issued token>",
+      requester: "did:ethr:0xc56e810fE6715C6c6F0818bb16DAF1fE6A0121e2",
+      onChainProof: "<on chain proof>",
+    }
+  }
+
+  it.only('should create', async () => {
+    const claimIssue = getBaseClaimIssue();
+    const dto = await ClaimIssueDTO.create(claimIssue);
+    expect(dto).toBeInstanceOf(ClaimIssueDTO);
+  });
+  
+  it.only('should create without onChainProof',async () => {
+    const claimIssue = getBaseClaimIssue();
+    delete claimIssue.onChainProof;
+    const dto = await ClaimIssueDTO.create(claimIssue);
+    expect(dto).toBeInstanceOf(ClaimIssueDTO);
+  })
+
 });
