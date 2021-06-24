@@ -90,13 +90,18 @@ export class DIDService {
    */
   public async getById(did: string): Promise<IDIDDocument> {
     const cachedDIDDocument = await this.didRepository.findOne(did);
-    if (cachedDIDDocument) return cachedDIDDocument;
+    if (cachedDIDDocument) {
+      delete cachedDIDDocument.logs;
+      return cachedDIDDocument;
+    }
 
     this.logger.info(
-      `Requested document for did: ${did} not cached. Queuing cache request.`,
+      `Requested document for did: ${did} not cached. Add to cache.`,
     );
 
-    return this.addCachedDocument(did);
+    const entity = await this.addCachedDocument(did);
+    delete entity.logs;
+    return entity;
   }
 
   /**

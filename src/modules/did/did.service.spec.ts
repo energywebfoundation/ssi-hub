@@ -1,3 +1,4 @@
+import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -8,8 +9,11 @@ import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 
+const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
 const MockLogger = {
   log: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
   setContext: jest.fn(),
 };
 const MockObject = {};
@@ -21,19 +25,29 @@ const MockConfigService = {
     return null;
   }),
 };
+let didDocEntity: DIDDocumentEntity;
+let didDoc: IDIDDocument
 const repositoryMockFactory = jest.fn(() => ({
-  findOne: jest.fn(entity => entity),
+  findOne: jest.fn(() => {
+    return didDocEntity;
+  }),
+  save: jest.fn(entity => entity)
 }));
 const queueMockFactory = jest.fn(() => ({
 }));
 jest.mock('@ew-did-registry/did-ipfs-store', () => {
   return {
-    DidStore: jest.fn().mockImplementation(() => { return {} })
+    DidStore: jest.fn(() => { return {} })
   }
 });
 jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
   ...jest.requireActual('@ew-did-registry/did-ethr-resolver') as Record<string, unknown>,
-  Resolver: jest.fn().mockImplementation(() => { return {} })
+  documentFromLogs: jest.fn(() => didDoc),
+  Resolver: jest.fn(() => {
+    return {
+      readFromBlock: jest.fn(() => "<logs>")
+    }
+  })
 }));
 jest.mock('../../ethers/EthereumDidRegistryFactory', () => ({
   EthereumDidRegistryFactory: {
@@ -51,32 +65,45 @@ describe('DidDocumentService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [DIDService,
-        {
-          provide: ConfigService,
-          useValue: MockConfigService
-        },
-        {
-          provide: SchedulerRegistry,
-          useValue: MockObject
-        },
-        {
-          provide: HttpService,
-          useValue: MockObject
-        },
-        {
-          provide: Logger,
-          useValue: MockLogger
-        },
+        { provide: ConfigService, useValue: MockConfigService },
+        { provide: SchedulerRegistry, useValue: MockObject },
+        { provide: HttpService, useValue: MockObject },
+        { provide: Logger, useValue: MockLogger },
         { provide: getQueueToken('dids'), useFactory: queueMockFactory },
         { provide: getRepositoryToken(DIDDocumentEntity), useFactory: repositoryMockFactory },
         { provide: Provider, useValue: MockObject }
       ]
     }).compile();
 
+    didDoc = {
+      id: "<id>",
+      service: [],
+      authentication: [],
+      publicKey: [],
+      created: "<created>",
+      proof: undefined,
+      updated: "<updated>",
+      '@context': "<context>"
+    };
+    didDocEntity = Object.assign(didDoc, { logs: "<logs>" })
     service = module.get<DIDService>(DIDService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  // Would be better done by exact types: https://github.com/Microsoft/TypeScript/issues/12936
+  it('getByID should return only IDIDDocument params from cached document', async () => {
+    const didDoc = await service.getById("<any DID>");
+    expect(didDoc).toBeDefined();
+    expect(didDoc[nameof<DIDDocumentEntity>("logs")]).toBeUndefined();
+  });
+
+  it('getByID should return only IDIDDocument params from non-cached document', async () => {
+    didDocEntity = undefined;
+    const didDoc = await service.getById("<any DID>");
+    expect(didDoc).toBeDefined();
+    expect(didDoc[nameof<DIDDocumentEntity>("logs")]).toBeUndefined();
   });
 });
