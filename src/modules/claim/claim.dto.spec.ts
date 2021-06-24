@@ -1,4 +1,4 @@
-import { ClaimRequestDTO } from './claim.dto';
+import { ClaimIssueDTO, ClaimRequestDTO } from './claim.dto';
 import { RegistrationTypes } from './claim.types';
 
 describe('ClaimRequestDTO', () => {
@@ -95,5 +95,33 @@ describe('ClaimRequestDTO', () => {
     // @ts-ignore
     claimRequest.registrationTypes = ["NotRealRegistrationType"]
     await expect(ClaimRequestDTO.create(claimRequest)).rejects.toThrow
+  });
+});
+
+describe('ClaimIssueDTO', () => {
+  const issuer = "did:ethr:0x8E23B1a27c5aFf82aE0F498a462BB3f50520B222";
+
+  const getBaseClaimIssue: () => Partial<ClaimIssueDTO> = () => {
+    return {
+      id: "1",
+      acceptedBy: issuer,
+      claimIssuer: [issuer],
+      issuedToken: "<issued token>",
+      requester: "did:ethr:0xc56e810fE6715C6c6F0818bb16DAF1fE6A0121e2",
+      onChainProof: "<on chain proof>",
+    }
+  }
+
+  it('should create', async () => {
+    const claimIssue = getBaseClaimIssue();
+    const dto = await ClaimIssueDTO.create(claimIssue);
+    expect(dto).toBeInstanceOf(ClaimIssueDTO);
+  });
+
+  it('should create without onChainProof', async () => {
+    const claimIssue = getBaseClaimIssue();
+    delete claimIssue.onChainProof;
+    const dto = await ClaimIssueDTO.create(claimIssue);
+    expect(dto).toBeInstanceOf(ClaimIssueDTO);
   });
 });
