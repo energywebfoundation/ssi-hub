@@ -1,5 +1,5 @@
 import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { Auth } from '../auth/auth.decorator';
@@ -31,12 +31,6 @@ export class DIDController {
     description:
       'Returns a resolved DID Document, optionally with full claim data. \n' +
       'If DID Document is not yet cached, it is retrieved from the blockchain',
-  })
-  @ApiQuery({
-    name: 'includeClaims',
-    required: false,
-    description:
-      'If true, includes parsed claim JWT data in service endpoint objects',
   })
   @UseInterceptors(NotFoundInterceptor)
   public async getById(@Param('did') id: string) {
