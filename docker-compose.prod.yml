@@ -3,10 +3,15 @@ version: "3.4"
 services:
   app:
     container_name: app
-    image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
+    #image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
+    build:
+      context: .
+      dockerfile: ./docker/dev/Dockerfile
     command: "node /app/dist/main.js"
     volumes:
-      - ./logs:${LOGS_DIRECTORY}
+      #- ./logs:${LOGS_DIRECTORY}
+      - .:/app
+      - /app/node_modules
     ports:
       - ${NESTJS_PORT}:${NESTJS_PORT}
       - "9229:9229"
