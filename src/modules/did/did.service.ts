@@ -83,10 +83,9 @@ export class DIDService {
   }
 
   /**
-   * Retrieves a DID Document for a given DID
-   * @param {DID} did DID whose document should be retrieved
-   * @param {boolean} enhanceWithClaims
-   * @returns {IDIDDocument} Resolved DID Document. Null if no Document is not cached.
+   * Retrieves a DID Document for a given DID. Retrieves from blockchain if not cached.
+   * @param {string} did DID whose document should be retrieved
+   * @returns {IDIDDocument} Resolved DID Document.
    */
   public async getById(did: string): Promise<IDIDDocument> {
     const cachedDIDDocument = await this.didRepository.findOne(did);
@@ -107,7 +106,7 @@ export class DIDService {
   /**
    * Adds the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
-   * @param {DID} did
+   * @param {string} did
    */
   public async addCachedDocument(did: string) {
     try {
@@ -136,7 +135,7 @@ export class DIDService {
   /**
    * Refresh the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
-   * @param {DID} did
+   * @param {string} did
    */
   public async refreshCachedDocument(did: string) {
     try {
