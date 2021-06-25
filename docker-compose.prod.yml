@@ -13,7 +13,7 @@ services:
       - 9229:9229
     restart: unless-stopped
     env_file:
-      - ./.env.dist
+      - .env.dist
     networks:
       - main
     depends_on:
