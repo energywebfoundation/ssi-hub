@@ -40,13 +40,13 @@ jobs:
         run: npm install
         
       - name: Docker Build
-        run: npm run docker:build -f "docker-compose.prod.yml"
+        run: npm run docker:build -f "docker-compose.prod.yml" --env-file ../env.dist
         
       - name: Generate keys
         run: npm run generate:jwtkeys
         
       - name: Running the app
-        run: docker-compose -f "docker-compose.prod.yml" up -d
+        run: docker-compose -f "docker-compose.prod.yml" --env-file ../env.dist up -d
 
       - name: Running unit tests
         run: npm run test
