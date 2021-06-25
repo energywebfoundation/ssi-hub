@@ -25,8 +25,17 @@ const MockConfigService = {
     return null;
   }),
 };
+const didDoc: IDIDDocument = {
+  id: "<id>",
+  service: [],
+  authentication: [],
+  publicKey: [],
+  created: "<created>",
+  proof: undefined,
+  updated: "<updated>",
+  '@context': "<context>"
+};
 let didDocEntity: DIDDocumentEntity;
-let didDoc: IDIDDocument
 const repositoryMockFactory = jest.fn(() => ({
   findOne: jest.fn(() => {
     return didDocEntity;
@@ -75,17 +84,6 @@ describe('DidDocumentService', () => {
       ]
     }).compile();
 
-    didDoc = {
-      id: "<id>",
-      service: [],
-      authentication: [],
-      publicKey: [],
-      created: "<created>",
-      proof: undefined,
-      updated: "<updated>",
-      '@context': "<context>"
-    };
-    didDocEntity = Object.assign(didDoc, { logs: "<logs>" })
     service = module.get<DIDService>(DIDService);
   });
 
@@ -93,17 +91,22 @@ describe('DidDocumentService', () => {
     expect(service).toBeDefined();
   });
 
-  // Would be better done by exact types: https://github.com/Microsoft/TypeScript/issues/12936
   it('getByID should return only IDIDDocument params from cached document', async () => {
-    const didDoc = await service.getById("<any DID>");
-    expect(didDoc).toBeDefined();
-    expect(didDoc[nameof<DIDDocumentEntity>("logs")]).toBeUndefined();
+    didDocEntity = Object.assign({}, didDoc, { logs: "<logs>" })
+    const returnedDoc = await service.getById("<any DID>");
+    checkReturnedDIDDoc(returnedDoc);
   });
 
   it('getByID should return only IDIDDocument params from non-cached document', async () => {
     didDocEntity = undefined;
-    const didDoc = await service.getById("<any DID>");
-    expect(didDoc).toBeDefined();
-    expect(didDoc[nameof<DIDDocumentEntity>("logs")]).toBeUndefined();
+    const returnedDoc = await service.getById("<any DID>");
+    checkReturnedDIDDoc(returnedDoc);
   });
+
+  function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {
+    for (const property in returnedDoc) {
+      expect(returnedDoc[property]).toStrictEqual(didDoc[property]);
+    }
+    expect(returnedDoc[nameof<DIDDocumentEntity>("logs")]).toBeUndefined();
+  }
 });
