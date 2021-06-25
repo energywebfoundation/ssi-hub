@@ -9,9 +9,11 @@ services:
       - ./logs:${LOGS_DIRECTORY}
     ports:
       - ${NESTJS_PORT}:${NESTJS_PORT}
+      - 80:80
+      - 9229:9229
     restart: unless-stopped
     env_file:
-      - .env
+      - ./.env.dist
     networks:
       - main
     depends_on:
