@@ -1,4 +1,4 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { HttpModule, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -20,6 +20,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { JSONObjectScalar } from './common/json.scalar';
 import { getGraphQlConfig } from './graphql/config';
 import { AssetsModule } from './modules/assets/assets.module';
+
+import csurf from 'csurf';
 
 @Module({
   imports: [
@@ -53,4 +55,14 @@ import { AssetsModule } from './modules/assets/assets.module';
   ],
   providers: [JSONObjectScalar],
 })
-export class AppModule {}
+
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(csurf({ cookie: true, ignoreMethods: ['HEAD'] }))
+      .exclude({
+        path: 'login', method: RequestMethod.ALL
+      })
+      .forRoutes({ path: '/*', method: RequestMethod.ALL });
+  }
+}

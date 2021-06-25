@@ -1,0 +1,39 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": ".6e207494f2ab9f0e3cabc073301297a9300fc69f-audit.json",
+    "files": [
+        {
+            "date": 1624225764570,
+            "name": "iam-cache-server-2021-06-20.log",
+            "hash": "4611ada73609b5baa075d8ab1471d782"
+        },
+        {
+            "date": 1624267034805,
+            "name": "iam-cache-server-2021-06-21.log",
+            "hash": "8eb05906fd7715adfcc92b6817ea1865"
+        },
+        {
+            "date": 1624382906127,
+            "name": "iam-cache-server-2021-06-22.log",
+            "hash": "ad4142391b0b0ce795e75220ef4e00fc"
+        },
+        {
+            "date": 1624432973620,
+            "name": "iam-cache-server-2021-06-23.log",
+            "hash": "0ccb2c7745d9433b794c869fd541386a"
+        },
+        {
+            "date": 1624525200285,
+            "name": "iam-cache-server-2021-06-24.log",
+            "hash": "4f8a026ea0b46015178353a53de54d4e"
+        },
+        {
+            "date": 1624605768144,
+            "name": "iam-cache-server-2021-06-25.log",
+            "hash": "2345bc264fa6af4a4c6225fbe1dd6d7c"
+        }
+    ]
+}

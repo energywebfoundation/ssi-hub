@@ -6,11 +6,12 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
   constructor(configService: ConfigService) {
-    super({
+    super({ 
       name: 'login',
       rpcUrl: configService.get<string>('ENS_URL'),
       cacheServerUrl: configService.get<string>('STRATEGY_CACHE_SERVER'),
       privateKey: configService.get<string>('STRATEGY_PRIVATE_KEY'),
+      numberOfBlocksBack: 100
     });
   }
 }
