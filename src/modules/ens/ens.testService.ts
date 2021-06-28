@@ -1,7 +1,8 @@
+import { IAppDefinition, IOrganizationDefinition, IRoleDefinition } from '@energyweb/iam-contracts';
 import { Injectable } from '@nestjs/common';
 import { EnsService } from './ens.service';
 
-export const ORG_MOCK_DATA = JSON.stringify({
+export const ORG_MOCK_DATA: IOrganizationDefinition = {
   orgName: 'onion',
   description: '',
   websiteUrl: '',
@@ -11,9 +12,9 @@ export const ORG_MOCK_DATA = JSON.stringify({
     b: '2',
     c: '3',
   },
-});
+};
 
-export const APP_MOCK_DATA = JSON.stringify({
+export const APP_MOCK_DATA: IAppDefinition = {
   appName: 'onionapp',
   description: '',
   websiteUrl: '',
@@ -23,17 +24,17 @@ export const APP_MOCK_DATA = JSON.stringify({
     b: '2',
     c: '3',
   },
-});
+};
 
-export const ROLE_MOCK_DATA = JSON.stringify({
-  version: '1',
+export const ROLE_MOCK_DATA: IRoleDefinition = {
+  version: 1,
   roleType: 'custom',
   roleName: 'admin',
   fields: [
     {
       fieldType: 'a',
       label: 'bb',
-      validation: 'ccc',
+      pattern: 'ccc',
     },
   ],
   metadata: {
@@ -45,11 +46,12 @@ export const ROLE_MOCK_DATA = JSON.stringify({
     issuerType: 'issuer',
     did: ['did_0000000'],
   },
-});
+  enrolmentPreconditions: []
+};
 
 @Injectable()
 export class EnsTestService {
-  constructor(private ensService: EnsService) {}
+  constructor(private ensService: EnsService) { }
 
   public async testOrgAppRole() {
     await this.ensService.syncNamespace({

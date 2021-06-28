@@ -1,20 +1,5 @@
-import { InjectQueue } from '@nestjs/bull';
-import {
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  Post,
-  Query,
-  UseInterceptors,
-} from '@nestjs/common';
-import {
-  ApiExcludeEndpoint,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Queue } from 'bull';
+import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { Auth } from '../auth/auth.decorator';
@@ -28,7 +13,6 @@ import { DID } from './did.types';
 export class DIDController {
   constructor(
     private readonly didService: DIDService,
-    @InjectQueue('dids') private readonly didQueue: Queue<string>,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(DIDController.name);
@@ -48,43 +32,15 @@ export class DIDController {
       'Returns a resolved DID Document, optionally with full claim data. \n' +
       'If DID Document is not yet cached, it is retrieved from the blockchain',
   })
-  @ApiQuery({
-    name: 'includeClaims',
-    required: false,
-    description:
-      'If true, includes parsed claim JWT data in service endpoint objects',
-  })
   @UseInterceptors(NotFoundInterceptor)
-  public async getById(
-    @Param('did') id: string,
-    @Query('includeClaims') includeClaimsString: string,
-  ) {
-    const includeClaims = includeClaimsString === 'true';
-    this.logger.info(
-      `Retrieving document for did: ${id} ${
-        includeClaims ? 'with claims' : ''
-      }`,
-    );
+  public async getById(@Param('did') id: string) {
+    this.logger.info(`Retrieving document for did: ${id}`);
     const did = new DID(id);
 
     if (did.method !== 'ethr') {
       return this.didService.getDIDDocumentFromUniversalResolver(did.id);
     }
 
-    return this.didService.getById(did, includeClaims);
-  }
-
-  /**
-   * Queues a DID to have its DID Document cached.
-   * Remark: Once a DID Document has been cached, it will be periodically refreshed
-   * @param id The DID to cache
-   */
-  @Post('/:id')
-  @ApiTags('DID')
-  @ApiExcludeEndpoint()
-  @HttpCode(202)
-  public async upsertById(@Param('id') id: string) {
-    this.logger.debug(`queueing upsert for ${id}`);
-    await this.didQueue.add('refreshDocument', id);
+    return this.didService.getById(did.id);
   }
 }

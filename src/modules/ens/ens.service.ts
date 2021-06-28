@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { providers, utils, errors } from 'ethers';
-import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
+import { utils, errors } from 'ethers';
 import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
 import { ApplicationService } from '../application/application.service';
@@ -13,14 +12,28 @@ import { EnsRegistry } from '../../ethers/EnsRegistry';
 import { namehash } from '../../ethers/utils';
 import chunk from 'lodash.chunk';
 import { Logger } from '../logger/logger.service';
+import { Provider } from '../../common/provider';
+import {
+  IRoleDefinition,
+  IAppDefinition,
+  IOrganizationDefinition,
+  DomainReader,
+  DomainHierarchy,
+  ResolverContractType,
+  DomainNotifier__factory,
+} from '@energyweb/iam-contracts';
+import type { DomainNotifier } from "@energyweb/iam-contracts/dist/ethers-v4/DomainNotifier";
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
 @Injectable()
 export class EnsService {
   private publicResolver: PublicResolver;
+  private domainNotifer: DomainNotifier
   private ensRegistry: EnsRegistry;
-  private provider: providers.JsonRpcProvider;
+  private domainReader: DomainReader;
+  private domainHierarchy: DomainHierarchy;
+
   constructor(
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
@@ -28,29 +41,55 @@ export class EnsService {
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly config: ConfigService,
     private readonly logger: Logger,
+    private readonly provider: Provider,
   ) {
     this.logger.setContext(EnsService.name);
     errors.setLogLevel('error');
 
     // Get config values from .env file
-    const ENS_URL = this.config.get<string>('ENS_URL');
+    const CHAIN_ID = parseInt(this.config.get<string>(
+      'CHAIN_ID',
+    ));
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS',
+    );
+    const RESOLVER_V1_ADDRESS = this.config.get<string>(
+      'RESOLVER_V1_ADDRESS',
+    );
+    const DOMAIN_NOTIFIER_ADDRESS = this.config.get<string>(
+      'DOMAIN_NOTIFIER_ADDRESS',
     );
     const ENS_REGISTRY_ADDRESS = this.config.get<string>(
       'ENS_REGISTRY_ADDRESS',
     );
 
     // Connect to smart contracts
-    this.provider = new providers.JsonRpcProvider(ENS_URL);
     this.publicResolver = PublicResolverFactory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
     );
+    this.domainNotifer = DomainNotifier__factory.connect(
+      DOMAIN_NOTIFIER_ADDRESS,
+      this.provider
+    )
     this.ensRegistry = EnsRegistryFactory.connect(
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
+    this.domainReader = new DomainReader({
+      ensRegistryAddress: ENS_REGISTRY_ADDRESS,
+      provider: this.provider
+    });
+    this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: RESOLVER_V1_ADDRESS, type: ResolverContractType.RoleDefinitionResolver_v1 });
+    this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: PUBLIC_RESOLVER_ADDRESS, type: ResolverContractType.PublicResolver });
+
+    this.domainHierarchy = new DomainHierarchy({
+      domainReader: this.domainReader,
+      ensRegistry: this.ensRegistry,
+      provider: this.provider,
+      domainNotifierAddress: DOMAIN_NOTIFIER_ADDRESS,
+      publicResolverAddress: PUBLIC_RESOLVER_ADDRESS
+    });
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>(
@@ -65,11 +104,12 @@ export class EnsService {
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
     }
-
     this.InitEventListeners();
+    this.syncENS();
   }
 
   private InitEventListeners(): void {
+    // Register event handler for legacy PublicResolver definitions
     this.publicResolver.addListener('TextChanged', async hash => {
       const namespace = await this.publicResolver.name(hash.toString());
       if (!namespace) return;
@@ -92,35 +132,24 @@ export class EnsService {
 
       this.eventHandler({ hash: node, name: namespace, owner });
     });
+
+    // Register event handler for domain definition updates
+    this.domainNotifer.addListener('DomainUpdated', async node => {
+      const namespace = await this.domainReader.readName(node);
+      if (!namespace) return;
+      await this.eventHandler({ hash: node, name: namespace });
+    });
   }
 
   private async getAllNamespaces() {
-    const ensInterface = new utils.Interface(ensResolverContract);
-    const Event = this.publicResolver.filters.TextChanged(
-      null,
-      'metadata',
-      null,
-    );
-    const filter = {
-      fromBlock: 0,
-      toBlock: 'latest',
-      address: Event.address,
-      topics: [...(Event.topics as string[])],
-    };
-    const logs = await this.provider.getLogs(filter);
-    const domains = await Promise.all(
-      logs.map(log => {
-        const parsedLog = ensInterface.parseLog(log);
-        const { node } = parsedLog.values;
-        return this.publicResolver.name(node);
-      }),
-    );
-
-    const uniqDomains = [...new Set(domains)];
-    return uniqDomains;
+    const domains = await this.domainHierarchy.getSubdomainsUsingResolver({
+      domain: 'iam.ewc',
+      mode: "ALL"
+    })
+    return domains;
   }
 
-  public async eventHandler({
+  private async eventHandler({
     hash,
     name,
     owner,
@@ -130,9 +159,10 @@ export class EnsService {
     owner?: string;
   }) {
     try {
-      const promises = [
+
+      const promises: Promise<any>[] = [
         // get role data
-        this.publicResolver.text(hash, 'metadata'),
+        this.domainReader.read({ node: hash })
       ];
       if (!owner) {
         promises.push(this.ensRegistry.owner(hash));
@@ -153,66 +183,9 @@ export class EnsService {
         owner: namespaceOwner,
       });
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(`Error syncing namespace ${name}, owner ${owner}, ${err}`);
       return;
     }
-  }
-
-  getNamespaceInfo({
-    namespace,
-    metadata,
-  }: {
-    namespace: string;
-    metadata: {
-      orgName?: string;
-      appName?: string;
-      roleName?: string;
-      roleType?: string;
-    };
-  }): {
-    type: 'Org' | 'App' | 'Role' | 'NotSupported';
-    name?: string;
-    orgNamespace?: string;
-    appNamespace?: string;
-  } {
-    const [name, parent, ...rest] = namespace.split('.');
-    if (metadata.orgName) {
-      return {
-        type: 'Org',
-        name,
-        orgNamespace:
-          parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
-      };
-    }
-    if (metadata.appName) {
-      if (parent === 'apps') {
-        return {
-          name,
-          type: 'App',
-          orgNamespace: rest.join('.'),
-        };
-      }
-    }
-
-    if (metadata.roleName) {
-      if (metadata.roleType.toLowerCase() === 'app') {
-        return {
-          name,
-          type: 'Role',
-          appNamespace: rest.join('.'),
-        };
-      }
-      if (metadata.roleType.toLowerCase() === 'org') {
-        return {
-          name,
-          type: 'Role',
-          orgNamespace: rest.join('.'),
-        };
-      }
-    }
-    return {
-      type: 'NotSupported',
-    };
   }
 
   public async syncNamespace({
@@ -220,60 +193,55 @@ export class EnsService {
     namespace,
     owner,
   }: {
-    data: string;
+    data: IRoleDefinition | IOrganizationDefinition | IAppDefinition;
     namespace: string;
     owner: string;
   }) {
-    let metadata: Record<string, unknown>;
-    try {
-      metadata = JSON.parse(data);
-    } catch (err) {
-      this.logger.debug('Metadata not parsable: ' + data);
-      return;
-    }
-    const { type, appNamespace, name, orgNamespace } = this.getNamespaceInfo({
-      metadata,
-      namespace,
-    });
-    if (type === 'NotSupported') {
-      this.logger.debug(
-        'Metadata or namespace not supported for ' + namespace + ': ' + data,
-      );
-      return;
-    }
+    const [name, parent, ...rest] = namespace.split('.');
 
-    if (type === 'Org') {
+    if (DomainReader.isOrgDefinition(data)) {
       return this.organizationService.handleOrgSyncWithEns({
-        metadata,
+        metadata: data,
         namespace,
         owner,
         name,
-        parentOrgNamespace: orgNamespace,
+        parentOrgNamespace: parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
       });
+    }
+    if (DomainReader.isAppDefinition(data)) {
+      if (parent === 'apps') {
+        return this.applicationService.handleAppSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          parentOrgNamespace: rest.join('.'),
+        });
+      }
+    }
+    if (DomainReader.isRoleDefinition(data)) {
+      if (data.roleType.toLowerCase() === 'app') {
+        return this.roleService.handleRoleSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          appNamespace: rest.join('.')
+        });
+      }
+      if (data.roleType.toLowerCase() === 'org') {
+        return this.roleService.handleRoleSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          orgNamespace: rest.join('.')
+        });
+      }
     }
 
-    if (type === 'App') {
-      return this.applicationService.handleAppSyncWithEns({
-        metadata,
-        namespace,
-        owner,
-        name,
-        parentOrgNamespace: orgNamespace,
-      });
-    }
-
-    if (type === 'Role') {
-      return this.roleService.handleRoleSyncWithEns({
-        metadata,
-        namespace,
-        owner,
-        name,
-        appNamespace,
-        orgNamespace,
-      });
-    }
     this.logger.debug(
-      `Bailed: Data not supported ${namespace}, ${JSON.stringify(metadata)}`,
+      `Bailed: Data not supported ${namespace}, ${JSON.stringify(data)}`,
     );
   }
 
@@ -284,7 +252,7 @@ export class EnsService {
       const chunks = chunk(namespaces, 10);
       for (const part of chunks) {
         await Promise.allSettled(
-          part.map(item => {
+          part.map((item: string) => {
             const hash = namehash(item);
             return this.eventHandler({ hash, name: item });
           }),
