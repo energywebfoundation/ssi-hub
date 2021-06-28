@@ -7,6 +7,7 @@ import {
   Res,
   UnauthorizedException,
   UseGuards,
+  // VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { LoginGuard } from './login.guard';
 import { Request, Response } from 'express';
@@ -17,7 +18,10 @@ import { ConfigService } from '@nestjs/config';
 import { RoleService } from '../role/role.service';
 
 @ApiTags('Auth')
-@Controller()
+@Controller({
+  path: 'login',
+  version: '1.0'
+})
 export class LoginController {
   constructor(
     private tokenService: TokenService,

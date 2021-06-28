@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import compression from 'compression';
 import helmet from 'helmet';
+import { VersioningType } from '@nestjs/common';
 
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
@@ -22,6 +23,10 @@ global.__rootdir__ = process.cwd();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableVersioning({
+    type: VersioningType.MEDIA_TYPE,
+    key: 'v'
+  });
   app.useGlobalPipes(new ValidationPipe());
 
   // add security middleware

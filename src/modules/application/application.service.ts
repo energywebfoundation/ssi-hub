@@ -16,6 +16,7 @@ export class ApplicationService {
     private readonly organizationService: OrganizationService,
     private readonly logger: Logger,
   ) {
+    console.log('hrach', ApplicationService.name);
     this.logger.setContext(ApplicationService.name);
   }
 
