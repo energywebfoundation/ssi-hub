@@ -83,26 +83,41 @@ export class DIDService {
   }
 
   /**
-   * Retrieves a DID Document for a given DID
-   * @param {DID} did DID whose document should be retrieved
-   * @param {boolean} enhanceWithClaims
-   * @returns {IDIDDocument} Resolved DID Document. Null if no Document is not cached.
+   * Retrieves a DID Document for a given DID. Retrieves from blockchain if not cached.
+   * @param {string} did DID whose document should be retrieved
+   * @returns {IDIDDocument} Resolved DID Document.
    */
   public async getById(did: string): Promise<IDIDDocument> {
+    const convertToIDIDDocument = (entity: DIDDocumentEntity): IDIDDocument => {
+      return {
+        '@context': entity['@context'],
+        authentication: entity.authentication,
+        created: entity.created,
+        delegates: entity.delegates,
+        id: entity.id,
+        service: entity.service,
+        publicKey: entity.publicKey,
+        proof: entity.proof,
+        updated: entity.updated
+      }
+    }
     const cachedDIDDocument = await this.didRepository.findOne(did);
-    if (cachedDIDDocument) return cachedDIDDocument;
+    if (cachedDIDDocument) {
+      return convertToIDIDDocument(cachedDIDDocument);
+    }
 
     this.logger.info(
-      `Requested document for did: ${did} not cached. Queuing cache request.`,
+      `Requested document for did: ${did} not cached. Add to cache.`,
     );
 
-    return this.addCachedDocument(did);
+    const entity = await this.addCachedDocument(did);
+    return convertToIDIDDocument(entity);
   }
 
   /**
    * Adds the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
-   * @param {DID} did
+   * @param {string} did
    */
   public async addCachedDocument(did: string) {
     try {
@@ -131,7 +146,7 @@ export class DIDService {
   /**
    * Refresh the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
-   * @param {DID} did
+   * @param {string} did
    */
   public async refreshCachedDocument(did: string) {
     try {
@@ -250,7 +265,7 @@ export class DIDService {
   private async getAllLogs(id: string): Promise<IDIDLogData> {
     const genesisBlockNumber = 0;
     const readFromBlock = utils.bigNumberify(genesisBlockNumber);
-    return this.resolver.readFromBlock(id, readFromBlock);
+    return await this.resolver.readFromBlock(id, readFromBlock);
   }
 
   private resolveNotCachedClaims(
