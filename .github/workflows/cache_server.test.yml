@@ -1,6 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
+name: Cache-Server Tester
 
 # Controls when the action will run. 
 on:
@@ -8,10 +6,8 @@ on:
   push:
   pull_request:
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
   deployment:
@@ -25,7 +21,6 @@ jobs:
        ports:
        - 5432:5432
       
-      # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -35,13 +30,11 @@ jobs:
         with:
           node-version: '14'
 
-      # Runs a single command using the runners shell
       - name: Install dependencies
         run: npm install
         
       - name: Docker Build
         run: npm run docker:build -f "docker-compose.ci.yml" --env-file .env.dist
-        #run:  docker-compose build app -f "docker-compose.ci.yml" --env-file .env.dist
         
       - name: Generate keys
         run: npm run generate:jwtkeys
@@ -52,5 +45,5 @@ jobs:
       - name: Running unit tests
         run: npm run test
         
-      #- name: Runinng end-to-end tests
+      #- name: Runinng end-to-end tests // TO-Do: Add e2e tests
       #  run: npm run test:e2e
