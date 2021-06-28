@@ -88,14 +88,30 @@ export class DIDService {
    * @returns {IDIDDocument} Resolved DID Document.
    */
   public async getById(did: string): Promise<IDIDDocument> {
+    const convertToIDIDDocument = (entity: DIDDocumentEntity): IDIDDocument => {
+      return {
+        '@context': entity['@context'],
+        authentication: entity.authentication,
+        created: entity.created,
+        delegates: entity.delegates,
+        id: entity.id,
+        service: entity.service,
+        publicKey: entity.publicKey,
+        proof: entity.proof,
+        updated: entity.updated
+      }
+    }
     const cachedDIDDocument = await this.didRepository.findOne(did);
-    if (cachedDIDDocument) return cachedDIDDocument;
+    if (cachedDIDDocument) {
+      return convertToIDIDDocument(cachedDIDDocument);
+    }
 
     this.logger.info(
-      `Requested document for did: ${did} not cached. Queuing cache request.`,
+      `Requested document for did: ${did} not cached. Add to cache.`,
     );
 
-    return this.addCachedDocument(did);
+    const entity = await this.addCachedDocument(did);
+    return convertToIDIDDocument(entity);
   }
 
   /**
