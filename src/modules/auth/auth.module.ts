@@ -13,6 +13,7 @@ import { GqlAuthGuard } from './jwt.gql.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
+import { CsurfController } from './csurf.controller';
 
 @Global()
 @Module({
@@ -24,7 +25,7 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
 
-  controllers: [LoginController],
+  controllers: [LoginController, CsurfController],
   providers: [
     CookiesServices,
     ApplicationService,
@@ -38,4 +39,4 @@ import { ConfigService } from '@nestjs/config';
   ],
   exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard],
 })
-export class AuthModule {}
+export class AuthModule { }

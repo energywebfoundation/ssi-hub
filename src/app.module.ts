@@ -20,7 +20,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { JSONObjectScalar } from './common/json.scalar';
 import { getGraphQlConfig } from './graphql/config';
 import { AssetsModule } from './modules/assets/assets.module';
-import csurf from 'csurf';
+import { checkClientCsrf } from './modules/auth/csrf.utils';
 
 @Module({
   imports: [
@@ -58,11 +58,7 @@ import csurf from 'csurf';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply((req,res,next) => {
-        const csrf = csurf({ cookie: true, ignoreMethods: ['HEAD'] });
-        csrf(req,res,next);
-        next();
-      })
+      .apply(checkClientCsrf)
       .exclude({
         path: 'login', method: RequestMethod.ALL
       })

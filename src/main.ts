@@ -6,8 +6,7 @@ import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import compression from 'compression';
 import helmet from 'helmet';
-import { Request } from 'express';
-const Tokens = require('csrf')
+
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
 declare global {
@@ -48,25 +47,10 @@ async function bootstrap() {
     options.addBearerAuth();
   }
 
-  app.use((req,res,next) => {
-    if(!req.cookies['csrf-token']){
-      const tokens = new Tokens({cookie: true})
-      res.cookie('csrf-token', tokens.create(tokens.secretSync()));
-    }
-    next();
-  })
-
   const builtOptions = options.build();
   
   const documentCustom = SwaggerModule.createDocument(app, builtOptions);
-  SwaggerModule.setup('api', app, documentCustom, {
-    swaggerOptions: {
-      requestInterceptor: (req: Request) => {
-        req.headers['csrf-token'] = document.cookie?.split(';')[1]?.split('=')[1]
-        return req
-      }
-    }
-  });
+  SwaggerModule.setup('api', app, documentCustom);
 
   app.enableCors({ credentials: true, origin: true });
 
