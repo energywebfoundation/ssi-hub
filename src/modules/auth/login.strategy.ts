@@ -10,7 +10,7 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
       name: 'login',
       rpcUrl: configService.get<string>('ENS_URL'),
       cacheServerUrl: configService.get<string>('STRATEGY_CACHE_SERVER'),
-      privateKey: configService.get<string>('STRATEGY_PRIVATE_KEY')
+      privateKey: configService.get<string>('STRATEGY_PRIVATE_KEY'),
     });
   }
 }
