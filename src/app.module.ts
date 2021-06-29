@@ -1,4 +1,4 @@
-import { HttpModule, Module, MiddlewareConsumer, NestModule, RequestMethod, /*RequestMethod*/ } from '@nestjs/common';
+import { HttpModule, Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
