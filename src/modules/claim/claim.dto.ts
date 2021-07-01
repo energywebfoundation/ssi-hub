@@ -84,8 +84,9 @@ export class ClaimIssueDTO implements IClaimIssuance {
   claimIssuer: string[];
 
   @IsString()
+  @IsOptional()
   @ApiProperty()
-  issuedToken: string;
+  issuedToken?: string;
 
   @IsString()
   @ApiProperty()
