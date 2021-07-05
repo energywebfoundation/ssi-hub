@@ -15,6 +15,7 @@ import { TokenService } from './token.service';
 import { CookiesServices } from './cookies.service';
 import { ConfigService } from '@nestjs/config';
 import { RoleService } from '../role/role.service';
+import { supportedOrigins, supportedHosts } from '../../common/constants';
 
 @ApiTags('Auth')
 @Controller()
@@ -24,7 +25,7 @@ export class LoginController {
     private cookiesServices: CookiesServices,
     private configService: ConfigService,
     private roleService: RoleService,
-  ) {}
+  ) { }
 
   @UseGuards(LoginGuard)
   @ApiBody({
@@ -55,7 +56,7 @@ export class LoginController {
     );
 
     const [token, refreshToken] = await Promise.all([
-      this.tokenService.generateAccessToken({ did, verifiedRoles }),
+      this.tokenService.generateAccessToken({ did, verifiedRoles, supportedOrigins, supportedHosts }),
       this.tokenService.generateRefreshToken({
         userDid: did,
       }),
@@ -105,7 +106,7 @@ export class LoginController {
     );
 
     const [token, refreshToken] = await Promise.all([
-      this.tokenService.generateAccessToken({ did: userDid, verifiedRoles }),
+      this.tokenService.generateAccessToken({ did: userDid, verifiedRoles, supportedOrigins, supportedHosts }),
       this.tokenService.generateRefreshToken({
         userDid,
       }),

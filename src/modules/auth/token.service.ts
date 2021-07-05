@@ -1,8 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { NextFunction, Request, Response } from 'express';
 import { RefreshToken } from './refreshToken.model';
 import { RefreshTokenRepository } from './refreshToken.repository';
+
+export interface TokenPayload {
+  did: string;
+  verifiedRoles: { name: string; namespace: string }[];
+  supportedOrigins: Array<string>,
+  supportedHosts: Array<string>
+}
 
 @Injectable()
 export class TokenService {
@@ -10,11 +18,8 @@ export class TokenService {
     private configService: ConfigService,
     private jwtService: JwtService,
     private refreshTokenRepository: RefreshTokenRepository,
-  ) {}
-  async generateAccessToken(data: {
-    did: string;
-    verifiedRoles: { name: string; namespace: string }[];
-  }) {
+  ) { }
+  async generateAccessToken(data: TokenPayload) {
     return this.jwtService.signAsync(data);
   }
 
@@ -63,5 +68,29 @@ export class TokenService {
 
   async invalidateRefreshToken(id: string) {
     return this.refreshTokenRepository.deleteRefreshTokenById(id);
+  }
+
+  async handleOriginCheck(req: Request, res: Response, next: NextFunction) {
+    let token = null;
+    const requestOrigin = req.headers['origin'];
+
+    if (req.headers['authorization']) {
+      token = req.headers['authorization'].replace('Bearer ', '');
+    } else {
+      token = req.cookies.token
+    }
+
+    if (token) {
+      const decodedToken = this.jwtService.decode(token) as TokenPayload;
+      if (decodedToken.supportedOrigins.includes(requestOrigin) ||
+        decodedToken.supportedHosts.includes(req.hostname) // swagger and server based requests check only
+      ) {
+        next()
+      } else {
+        throw new InternalServerErrorException('Something went wrong')
+      }
+    } else {
+      throw new UnauthorizedException('Unauthorized')
+    }
   }
 }
