@@ -9,6 +9,11 @@
             "date": 1625476684155,
             "name": "iam-cache-server-2021-07-05.log",
             "hash": "6844220f4c1420a7133c65934580eee7"
+        },
+        {
+            "date": 1625555833274,
+            "name": "iam-cache-server-2021-07-06.log",
+            "hash": "1413b3de62f75a2c770b5095588a1f4b"
         }
     ]
 }

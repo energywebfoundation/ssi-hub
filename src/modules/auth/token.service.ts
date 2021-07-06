@@ -8,8 +8,7 @@ import { RefreshTokenRepository } from './refreshToken.repository';
 export interface TokenPayload {
   did: string;
   verifiedRoles: { name: string; namespace: string }[];
-  supportedOrigins: Array<string>,
-  supportedHosts: Array<string>
+  origin: string,
 }
 
 @Injectable()
@@ -70,9 +69,8 @@ export class TokenService {
     return this.refreshTokenRepository.deleteRefreshTokenById(id);
   }
 
-  async handleOriginCheck(req: Request, res: Response, next: NextFunction) {
+  async handleOriginCheck(req: Request, res: Response, next: NextFunction, service: JwtService) {
     let token = null;
-    const requestOrigin = req.headers['origin'];
 
     if (req.headers['authorization']) {
       token = req.headers['authorization'].replace('Bearer ', '');
@@ -81,10 +79,8 @@ export class TokenService {
     }
 
     if (token) {
-      const decodedToken = this.jwtService.decode(token) as TokenPayload;
-      if (decodedToken.origin === requestOrigin || requestOrigin === undefined)
-        decodedToken.supportedHosts.includes(req.hostname) // swagger and server based requests check only
-      ) {
+      const decodedToken = service.decode(token) as TokenPayload;
+      if (decodedToken.origin === req.headers['origin'] || req.headers['origin'] === undefined) {
         next()
       } else {
         throw new InternalServerErrorException('Something went wrong')
