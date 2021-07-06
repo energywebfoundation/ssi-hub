@@ -82,7 +82,7 @@ export class TokenService {
 
     if (token) {
       const decodedToken = this.jwtService.decode(token) as TokenPayload;
-      if (decodedToken.supportedOrigins.includes(requestOrigin) ||
+      if (decodedToken.origin === requestOrigin || requestOrigin === undefined)
         decodedToken.supportedHosts.includes(req.hostname) // swagger and server based requests check only
       ) {
         next()
