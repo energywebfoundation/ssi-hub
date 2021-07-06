@@ -11,6 +11,7 @@ import {
   HttpStatus,
   ValidationPipe,
   UsePipes,
+  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -42,7 +43,7 @@ import { DIDsQuery } from './claim.entity';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('claim')
+@Controller({ path: 'claim', version: VERSION_NEUTRAL })
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,

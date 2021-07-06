@@ -8,6 +8,7 @@ import {
   Query,
   UseInterceptors,
   Version,
+  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from '../../common/user.decorator';
@@ -21,7 +22,7 @@ import { Order } from './assets.types';
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
 @ApiTags('Assets')
-@Controller('assets')
+@Controller({ path: 'assets', version: VERSION_NEUTRAL })
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) { }
 

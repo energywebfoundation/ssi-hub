@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Param,
   UseInterceptors,
+  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,9 +16,9 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('org')
+@Controller({ path: 'org', version: VERSION_NEUTRAL })
 export class OrganizationController {
-  constructor(private organizationService: OrganizationService) {}
+  constructor(private organizationService: OrganizationService) { }
 
   @Get('/:namespace')
   @ApiTags('Organization')

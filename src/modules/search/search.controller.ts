@@ -6,6 +6,7 @@ import {
   Param,
   Query,
   UseInterceptors,
+  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SearchService } from './search.service';
@@ -17,9 +18,9 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('search')
+@Controller({ path: 'search', version: VERSION_NEUTRAL })
 export class SearchController {
-  constructor(private searchService: SearchService) {}
+  constructor(private searchService: SearchService) { }
 
   @Get(':search')
   @ApiTags('Search')

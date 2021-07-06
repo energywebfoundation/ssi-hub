@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Param,
   UseInterceptors,
+  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -14,9 +15,9 @@ import { Application } from './application.entity';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('app')
+@Controller({ path: 'app', version: VERSION_NEUTRAL })
 export class ApplicationController {
-  constructor(private applicationService: ApplicationService) {}
+  constructor(private applicationService: ApplicationService) { }
 
   @Get('/:namespace')
   @ApiTags('Application')
