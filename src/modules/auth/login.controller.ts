@@ -106,7 +106,8 @@ export class LoginController {
     );
 
     const [token, refreshToken] = await Promise.all([
-      this.tokenService.generateAccessToken({ did: userDid, verifiedRoles, supportedOrigins, supportedHosts }),
+      const origin = req.headers['origin'];
+      this.tokenService.generateAccessToken({ did: userDid, verifiedRoles, origin }),
       this.tokenService.generateRefreshToken({
         userDid,
       }),
