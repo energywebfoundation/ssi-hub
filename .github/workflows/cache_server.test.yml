@@ -45,5 +45,5 @@ jobs:
       - name: Running unit tests
         run: npm run test
         
-      #- name: Runinng end-to-end tests // TO-Do: Add e2e tests
-      #  run: npm run test:e2e
+      - name: Runinng end-to-end tests # TO-Do: Add e2e tests
+        run: sudo npm run test:e2e
