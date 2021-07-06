@@ -5,7 +5,7 @@ services:
     container_name: app
     build:
       context: .
-      dockerfile: ./docker/dev/Dockerfile
+      dockerfile: ./docker/prod/Dockerfile
     volumes:
       - .:/app
       - /app/node_modules
