@@ -40,8 +40,9 @@ jobs:
         run: npm run generate:jwtkeys
         
       - name: Running the app
-        run: npm run build
-        run: docker-compose -f "docker-compose.ci.yml" --env-file .env.dist up -d
+        run: >
+          npm run build
+          docker-compose -f "docker-compose.ci.yml" --env-file .env.dist up -d
 
       - name: Running unit tests
         run: npm run test
