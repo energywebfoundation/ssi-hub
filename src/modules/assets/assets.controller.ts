@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Query,
   UseInterceptors,
-  Version,
   VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -26,7 +25,6 @@ import { Order } from './assets.types';
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) { }
 
-  @Version('1')
   @Get(':id')
   async getByID(@Param('id') id: string, @User() currentUser?: string) {
     const asset = await this.assetsService.getById(id);

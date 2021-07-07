@@ -26,13 +26,13 @@ export class Logger extends NestLogger implements LoggerService {
     const logFormat = isProduction
       ? format.combine(format.timestamp(), format.json())
       : format.combine(
-          format.timestamp(),
-          format.printf(
-            ({ level, message, timestamp, context }) =>
-              `${level} [${context || ''}] : ${timestamp} - ${message}`,
-          ),
-          format.colorize(),
-        );
+        format.timestamp(),
+        format.printf(
+          ({ level, message, timestamp, context }) =>
+            `${level} [${context || ''}] : ${timestamp} - ${message}`,
+        ),
+        format.colorize(),
+      );
 
     const file = new transports.DailyRotateFile({
       filename: 'iam-cache-server-%DATE%.log',
@@ -55,7 +55,7 @@ export class Logger extends NestLogger implements LoggerService {
   setContext(ctx: string) {
     this.context = ctx;
   }
-  
+
   error(error: any, trace?: string, context: string = this.context) {
     this.sentryService.captureException(error);
     if (Array.isArray(error)) {
