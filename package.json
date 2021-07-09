@@ -17,7 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config test/jest-e2e.json",
+    "test:e2e": "docker-compose up -d && npm run migration:run && docker-compose run app ./node_modules/.bin/jest --config test/jest-e2e.json && npm run docker:down",
     "build:contracts": "npm run build:typechain:registry && npm run build:typechain:resolver && npm run build:typechain:didregistry && npm run build:typechain:offerableIdentity && npm run build:typechain:identityManager",
     "build:typechain:didregistry": "typechain --target ethers-v4 --outDir src/ethers 'abi/EthereumDIDRegistry.json'",
     "build:typechain:registry": "typechain --target ethers-v4 --outDir src/ethers './node_modules/@ensdomains/ens/build/contracts/ENSRegistry.json'",
