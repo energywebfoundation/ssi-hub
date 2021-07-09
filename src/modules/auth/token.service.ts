@@ -80,7 +80,9 @@ export class TokenService {
 
     if (token) {
       const decodedToken = service.decode(token) as TokenPayload;
-      if (decodedToken.origin === req.headers['origin'] || req.headers['origin'] === undefined) {
+      const isBrowserRequestFromAuthenticatedOrigin = decodedToken.origin === req.headers['origin'] 
+      const isServerRequestOrGETFromSameDomain =  req.headers['origin'] === undefined
+      if (isBrowserRequestFromAuthenticatedOrigin || isServerRequestOrGETFromSameDomain) {
         next()
       } else {
         throw new InternalServerErrorException('Something went wrong')
