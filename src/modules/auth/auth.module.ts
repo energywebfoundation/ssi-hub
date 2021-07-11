@@ -36,7 +36,7 @@ import { ConfigService } from '@nestjs/config';
     AuthStrategy,
     GqlAuthGuard,
   ],
-  exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard],
+  exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard, TokenService],
 })
 export class AuthModule implements NestModule {
   constructor(private readonly tokenService: TokenService, private readonly jwtService: JwtService) { }

@@ -71,7 +71,6 @@ export class TokenService {
 
   async handleOriginCheck(req: Request, res: Response, next: NextFunction, service: JwtService) {
     let token = null;
-
     if (req.headers['authorization']) {
       token = req.headers['authorization'].replace('Bearer ', '');
     } else {
@@ -80,8 +79,8 @@ export class TokenService {
 
     if (token) {
       const decodedToken = service.decode(token) as TokenPayload;
-      const isBrowserRequestFromAuthenticatedOrigin = decodedToken.origin === req.headers['origin'] 
-      const isServerRequestOrGETFromSameDomain =  req.headers['origin'] === undefined
+      const isBrowserRequestFromAuthenticatedOrigin = decodedToken.origin === req.headers['origin']
+      const isServerRequestOrGETFromSameDomain = req.headers['origin'] === undefined
       if (isBrowserRequestFromAuthenticatedOrigin || isServerRequestOrGETFromSameDomain) {
         next()
       } else {
