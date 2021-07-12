@@ -87,7 +87,7 @@ export class TokenService {
         throw new InternalServerErrorException('Something went wrong')
       }
     } else {
-      throw new UnauthorizedException('Unauthorized')
+      throw new UnauthorizedException('Unauthorized');
     }
   }
 }
