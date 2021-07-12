@@ -13,7 +13,7 @@ export interface IClaimRequest extends IMessage {
 }
 
 export interface IClaimIssuance extends IMessage {
-  issuedToken: string;
+  issuedToken?: string;
   acceptedBy: string;
 }
 
