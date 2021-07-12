@@ -84,7 +84,7 @@ export class TokenService {
       if (isBrowserRequestFromAuthenticatedOrigin || isServerRequestOrGETFromSameDomain) {
         next()
       } else {
-        throw new InternalServerErrorException('Something went wrong')
+        throw new InternalServerErrorException('Something went wrong');
       }
     } else {
       throw new UnauthorizedException('Unauthorized');

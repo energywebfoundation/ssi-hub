@@ -25,10 +25,10 @@ class TokenService {
             if (isBrowserRequestFromAuthenticatedOrigin || isServerRequestOrGETFromSameDomain) {
                 next()
             } else {
-                throw new InternalServerErrorException('Something went wrong')
+                throw new InternalServerErrorException('Something went wrong');
             }
         } else {
-            throw new UnauthorizedException('Unauthorized')
+            throw new UnauthorizedException('Unauthorized');
         }
     }
 }
@@ -73,12 +73,13 @@ describe('TokenService', () => {
 
     it('should have same GET request ORIGIN header as stored in JWT token ', async () => {
         const token = jwt.sign({
-            origin: 'https://example.com'
+            origin: 'https://switchboard-dev.energyweb.org'
         }, 'testToken');
 
         return request(app.getHttpServer())
             .get('/test')
             .set({ "Authorization": `Bearer ${token}` })
+            .set({ "origin": `https://switchboard-dev.energyweb.org` })
             .expect(200);
     });
 })
