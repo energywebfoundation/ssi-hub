@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { NextFunction, Request, Response } from 'express';
 import { RefreshToken } from './refreshToken.model';
 import { RefreshTokenRepository } from './refreshToken.repository';
+import jwt from 'jsonwebtoken';
 
 export interface TokenPayload {
   did: string;
@@ -69,7 +70,7 @@ export class TokenService {
     return this.refreshTokenRepository.deleteRefreshTokenById(id);
   }
 
-  async handleOriginCheck(req: Request, res: Response, next: NextFunction, service: JwtService) {
+  async handleOriginCheck(req: Request, res: Response, next: NextFunction) {
     let token = null;
     if (req.headers['authorization']) {
       token = req.headers['authorization'].replace('Bearer ', '');
@@ -78,7 +79,7 @@ export class TokenService {
     }
 
     if (token) {
-      const decodedToken = service.decode(token) as TokenPayload;
+      const decodedToken = jwt.decode(token) as TokenPayload;
       const isBrowserRequestFromAuthenticatedOrigin = decodedToken.origin === req.headers['origin']
       const isServerRequestOrGETFromSameDomain = req.headers['origin'] === undefined
       if (isBrowserRequestFromAuthenticatedOrigin || isServerRequestOrGETFromSameDomain) {

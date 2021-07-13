@@ -1,4 +1,4 @@
-import { Controller, Get, INestApplication, Injectable, InternalServerErrorException, MiddlewareConsumer, Module, RequestMethod, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, INestApplication, Injectable, InternalServerErrorException, MiddlewareConsumer, Module, Post, RequestMethod, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { NextFunction } from 'express-serve-static-core';
@@ -40,6 +40,11 @@ class TestController {
     test() {
         return "RETURN_VALUE";
     }
+
+    @Post('test')
+    testPost() {
+        return "RETURN_VALUE";
+    }
 }
 
 // mock the middleware
@@ -58,8 +63,22 @@ class TestModule {
     }
 };
 
+
 describe('TokenService', () => {
     let app: INestApplication;
+    
+    const mockRequest = (method: string, origin: string = undefined, status: number = 200) => {
+        const token = jwt.sign({
+            origin: 'https://switchboard-dev.energyweb.org'
+        }, 'testToken');
+        
+        const req = request(app.getHttpServer())
+            [method]('/test')
+            .set({ "Authorization": `Bearer ${token}` });
+        
+        if(origin) req.set({ "origin": origin });    
+        return req.expect(status);
+    }
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -72,14 +91,14 @@ describe('TokenService', () => {
     });
 
     it('should have same GET request ORIGIN header as stored in JWT token ', async () => {
-        const token = jwt.sign({
-            origin: 'https://switchboard-dev.energyweb.org'
-        }, 'testToken');
+        return mockRequest('get', 'https://switchboard-dev.energyweb.org');
+    });
 
-        return request(app.getHttpServer())
-            .get('/test')
-            .set({ "Authorization": `Bearer ${token}` })
-            .set({ "origin": `https://switchboard-dev.energyweb.org` })
-            .expect(200);
+    it('should NOT have same POST request ORIGIN header as stored in JWT token ', async () => {
+        return mockRequest('post', 'https://hacked-website.com', 500);
+    });
+
+    it('should NOT have origin in request headers', async () => {
+        return mockRequest('get');
     });
 })
