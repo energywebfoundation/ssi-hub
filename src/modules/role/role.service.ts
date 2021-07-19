@@ -130,7 +130,7 @@ export class RoleService {
     const verifiedRoles = await Promise.all(
       ((service as unknown) as (IServiceEndpoint & {
         claimType?: string;
-        claimTypeVersion?: string;
+        claimTypeVersion?: number;
         iss: string;
       })[]).map(({ iss, claimTypeVersion, claimType }) =>
         this.verifyRole({
@@ -186,7 +186,7 @@ export class RoleService {
   }: {
     namespace?: string;
     issuer: string;
-    version?: string;
+    version?: number;
   }) {
     if (!namespace) return null;
 

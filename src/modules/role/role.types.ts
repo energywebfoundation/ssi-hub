@@ -1,3 +1,5 @@
+import { PreconditionType } from "@energyweb/iam-contracts";
+
 export interface Fields {
   fieldType: string;
   label: string;
@@ -18,9 +20,9 @@ export interface Issuer {
 }
 
 export interface EnrolmentPrecondition {
-  type: string;
+  type: PreconditionType;
   conditions: string[];
-}
+}[]
 
 /**
  * Interface describing generic Role's Definition model

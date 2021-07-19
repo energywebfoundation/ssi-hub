@@ -8,7 +8,7 @@ type RoleDefinitionSchema {
   fields: [FieldsSchema!]
   metadata: JSONObject
   issuer: IssuerSchema!
-  version: String!
+  version: Float!
   enrolmentPreconditions: [EnrolmentPreconditionSchema!]
 }
 
