@@ -23,16 +23,3 @@ export interface EnrolmentPrecondition {
   type: PreconditionType;
   conditions: string[];
 }[]
-
-/**
- * Interface describing generic Role's Definition model
- */
-export interface RoleDefinition {
-  roleType: string;
-  roleName: string;
-  fields?: Fields[];
-  metadata?: Record<string, unknown>;
-  issuer: Issuer;
-  version: string;
-  enrolmentPreconditions?: EnrolmentPrecondition[];
-}
