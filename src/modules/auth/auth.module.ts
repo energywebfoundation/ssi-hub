@@ -10,7 +10,7 @@ import { RoleModule } from '../role/role.module';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthStrategy } from './login.strategy';
 import { GqlAuthGuard } from './jwt.gql.guard';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
 
@@ -39,11 +39,11 @@ import { ConfigService } from '@nestjs/config';
   exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard],
 })
 export class AuthModule implements NestModule {
-  constructor(private readonly tokenService: TokenService, private readonly jwtService: JwtService) { }
+  constructor(private readonly tokenService: TokenService) { }
 
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply((req, res, next) => this.tokenService.handleOriginCheck(req, res, next, this.jwtService))
+      .apply((req, res, next) => this.tokenService.handleOriginCheck(req, res, next))
       .exclude(
         { path: '/login', method: RequestMethod.ALL },
         { path: '/refresh_token', method: RequestMethod.ALL }

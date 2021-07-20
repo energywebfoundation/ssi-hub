@@ -119,7 +119,7 @@ export class EnsService {
     // Register event handler for owner change or namespace deletion
     this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
       const hash = utils.keccak256(node + label.slice(2));
-      const namespace = await this.publicResolver.name(hash.toString());
+      const namespace = await this.domainReader.readName(hash.toString());
       if (!namespace) return;
 
       await this.eventHandler({ hash, name: namespace, owner });
@@ -127,7 +127,7 @@ export class EnsService {
 
     // Register event handler for new Role/App/Org
     this.ensRegistry.addListener('Transfer', async (node, owner) => {
-      const namespace = await this.publicResolver.name(node.toString());
+      const namespace = await this.domainReader.readName(node.toString());
       if (!namespace) return;
 
       this.eventHandler({ hash: node, name: namespace, owner });
