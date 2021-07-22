@@ -1,6 +1,6 @@
 name: Cache-Server Tester
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events
   push:
@@ -9,18 +9,17 @@ on:
   workflow_dispatch:
 
 jobs:
-
   deployment:
     services:
       postgres:
-       image: postgres
-       env:
-        DB_USERNAME: ${{secrets.DB_USERNAME}}
-        DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-        DB_HOST: 'postgres'  
-       ports:
-       - 5432:5432
-      
+        image: postgres
+        env:
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_HOST: 'postgres'
+        ports:
+          - 5432:5432
+
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -32,20 +31,17 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        
+
       - name: Docker Build
         run: npm run docker:build -f "docker-compose.ci.yml" --env-file .env.dist
-        
+
       - name: Generate keys
         run: npm run generate:jwtkeys
-        
+
       - name: Running the app
         run: >
           npm run build
           docker-compose -f "docker-compose.ci.yml" --env-file .env.dist up -d
 
-      - name: Running unit tests
+      - name: Running tests
         run: npm run test
-        
-      - name: Runinng end-to-end tests # TO-Do: Add e2e tests
-        run: sudo npm run test:e2e
