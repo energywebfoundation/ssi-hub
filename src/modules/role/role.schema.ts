@@ -1,14 +1,14 @@
+import { IRoleDefinition, PreconditionType } from '@energyweb/iam-contracts';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { JSONObject } from '../../common/json.scalar';
 import {
   EnrolmentPrecondition,
   Fields,
   Issuer,
-  RoleDefinition,
 } from './role.types';
 
 @ObjectType()
-export class RoleDefinitionSchema implements RoleDefinition {
+export class RoleDefinitionSchema implements IRoleDefinition {
   @Field()
   roleType: string;
 
@@ -16,19 +16,19 @@ export class RoleDefinitionSchema implements RoleDefinition {
   roleName: string;
 
   @Field(() => [FieldsSchema], { nullable: true })
-  fields?: Fields[];
+  fields: Fields[];
 
   @Field(() => JSONObject, { nullable: true })
-  metadata?: Record<string, unknown>;
+  metadata: Record<string, unknown>;
 
   @Field(() => IssuerSchema)
   issuer: Issuer;
 
   @Field()
-  version: string;
+  version: number;
 
   @Field(() => [EnrolmentPreconditionSchema], { nullable: true })
-  enrolmentPreconditions?: EnrolmentPrecondition[];
+  enrolmentPreconditions: EnrolmentPrecondition[];
 }
 
 @ObjectType()
@@ -79,7 +79,7 @@ export class IssuerSchema implements Issuer {
 @ObjectType()
 export class EnrolmentPreconditionSchema implements EnrolmentPrecondition {
   @Field()
-  type: string;
+  type: PreconditionType;
 
   @Field(() => [String])
   conditions: string[];
