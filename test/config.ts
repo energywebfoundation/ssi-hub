@@ -9,12 +9,10 @@ export default {
   password: process.env.DB_PASSWORD,
   database:
     process.env.DB_NAME + (process.env.NODE_ENV === 'test' ? '-test' : ''),
+  migrationsRun: true,
+  migrationsTableName: 'migrations_iam_cache_server',
   entities: ['src/**/**.entity{.ts,.js}'],
   migrations: ['src/migrations/*.ts'],
   cli: { migrationsDir: 'src/migrations' },
-  migrationsRun: true,
-  migrationsTableName: 'migrations_iam_cache_server',
-  logging: false,
   autoLoadEntities: true,
-  synchronize: false,
 };
