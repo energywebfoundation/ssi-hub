@@ -23,7 +23,7 @@ const organizationFixture = async (
   repo: Repository<Organization>,
   count = 1,
 ) => {
-  let organizations = [];
+  const organizations = [];
   for (let i = 0; i < count; i++) {
     const name = chance.first().toLowerCase();
     const definition = {
@@ -69,6 +69,7 @@ describe('OrganizationController', () => {
     const dbConnection = module.get(Connection);
     const manager = module.get(EntityManager);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
       'master',
