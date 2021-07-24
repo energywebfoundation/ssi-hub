@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+console.log(process.env);
+
 export default {
   host: process.env.DB_HOST,
   type: 'postgres',
