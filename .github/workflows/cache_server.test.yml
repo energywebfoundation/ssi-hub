@@ -15,6 +15,7 @@ jobs:
         image: postgres
         env:
           DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_NAME: ${{secrets.DB_NAME}}-test
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
           DB_HOST: 'postgres'
         ports:
@@ -24,24 +25,32 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
-      - name: Docker Build
-        run: npm run docker:build -f "docker-compose.ci.yml" --env-file .env.dist
+      - name: Install dependencies
+        run: npm ci
 
       - name: Generate keys
         run: npm run generate:jwtkeys
 
-      - name: Running the app
-        run: >
-          npm run build
-          docker-compose -f "docker-compose.ci.yml" --env-file .env.dist up -d
+      - name: Check linting
+        run: npm run lint
+
+      - name: Audit package dependencies
+        run: npm audit --audit-level=critical
+
+      - name: Build the app
+        run: npm run build
 
       - name: Running tests
         run: npm run test
