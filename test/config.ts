@@ -2,10 +2,9 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const isCI = process.env.CI;
-console.log(isCI);
 
 export default {
-  host: isCI ? 'localhost' : process.env.DB_HOST,
+  host: isCI ? '127.0.0.1' : process.env.DB_HOST,
   type: 'postgres',
   port: isCI ? 5432 : process.env.DB_PORT,
   username: isCI ? 'postgres' : process.env.DB_USERNAME,
