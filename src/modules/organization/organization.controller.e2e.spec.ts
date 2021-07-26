@@ -25,7 +25,7 @@ const organizationFixture = async (
 ) => {
   const organizations = [];
   for (let i = 0; i < count; i++) {
-    const name = chance.first().toLowerCase();
+    const name = chance.string({ symbols: false }).toLowerCase();
     const definition = {
       orgName: name,
       description: chance.paragraph(),
