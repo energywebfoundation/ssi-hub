@@ -131,7 +131,7 @@ describe('OrganizationController', () => {
   });
 
   it('getByOwner(), should return organization belonging to an owner', async () => {
-    const testOrgOwner = chance.string();
+    const testOrgOwner = chance.string({ pool: 'abcdefghijklmnopqrstuvwxyz' });
     await testHttpServer
       .get(`/org/owner/${testOrgOwner}`)
       .expect(200)
