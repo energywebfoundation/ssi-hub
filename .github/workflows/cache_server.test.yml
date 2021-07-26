@@ -17,7 +17,6 @@ jobs:
           DB_USERNAME: ${{secrets.DB_USERNAME}}
           DB_NAME: ${{secrets.DB_NAME}}
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-          DB_HOST: 'postgres'
         ports:
           - 5432:5432
 
