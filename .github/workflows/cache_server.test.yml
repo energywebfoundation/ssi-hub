@@ -1,38 +1,39 @@
-name: Cache-Server Tester
+name: Cache-Server Test
 
-# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events
   push:
   pull_request:
 
-  workflow_dispatch:
-
 jobs:
-  deployment:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
     services:
       postgres:
-        image: postgres
+        image: postgres:12
         env:
           DB_USERNAME: postgres
           DB_NAME: dev-test
           DB_PASSWORD: password
         ports:
           - 5432:5432
+        # Add a health check
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Setup app dependencies
+        uses: actions/setup-node@v1
         with:
-          node-version: '14'
+          node-version: ${{ matrix.node-version }}
 
       - name: Cache Dependencies
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.lock') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
