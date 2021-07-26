@@ -1,4 +1,4 @@
-version: "3.4"
+version: '3.4'
 
 services:
   app:
@@ -10,77 +10,44 @@ services:
       - .:/app
       - /app/node_modules
     ports:
-      - 80:80
+      - ${NESTJS_PORT}:${NESTJS_PORT}
       - 9229:9229
     command: npm run start:dev
     env_file:
-      - .env.ci
+      - .env
     networks:
       - main
     depends_on:
-      - dgraph
-      - zero
       - nats
-      - ratel
+      - redis
       - postgres
   postgres:
     image: postgres:12-alpine
     environment:
-      #POSTGRES_PASSWORD: secrets.DB_PASSWORD
-      # POSTGRES_USERNAME: secrets.DB_USERNAME
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_USERNAME: 'postgres'
+      POSTGRES_PASSWORD: secrets.DB_PASSWORD
+      POSTGRES_USERNAME: secrets.DB_USERNAME
       POSTGRES_DB: 'dev'
       POSTGRES_PORT: 5432
     networks:
       - main
     ports:
       - 5432:5432
-  zero:
-    container_name: dgraph_zero
-    image: dgraph/dgraph:v20.03.0
-    volumes:
-      - dgraph:/dgraph
-    restart: on-failure
-    command: dgraph zero --my=zero:5080
-    networks:
-      - main
-  dgraph:
-    container_name: dgraph_alpha
-    image: dgraph/dgraph:v20.03.0
-    volumes:
-      - dgraph:/dgraph
-    restart: on-failure
-    ports:
-      - 8080:8080
-    command: dgraph alpha --my=dgraph:7080 --lru_mb=2048 --zero=zero:5080
-    networks:
-      - main
-  ratel:
-    container_name: dgraph_ratel
-    image: dgraph/dgraph:v20.03.0
-    volumes:
-      - dgraph:/dgraph
-    ports:
-      - 8000:8000
-    command: dgraph-ratel
   nats:
     container_name: nats
     image: synadia/nats-server:nightly
     volumes:
       - ./config/:/etc/nats
-    command: "-c /etc/nats/nats.conf"
+    command: '-c /etc/nats/nats.conf'
     networks:
       - main
     ports:
-      - "4222:4222"
-      - "8222:8222"
-      - "9222:9222"
+      - '4222:4222'
+      - '8222:8222'
+      - '9222:9222'
   redis:
     container_name: redis
     image: redis:6.0.8
-    # command: redis-server --requirepass secrets.REDIS_PASSWORD
-    command: redis-server --requirepass 'password'
+    command: redis-server --requirepass secrets.REDIS_PASSWORD
     volumes:
       - $PWD/redis-data:/var/lib/redis
     environment:

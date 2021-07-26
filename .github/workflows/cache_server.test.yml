@@ -15,7 +15,7 @@ jobs:
         image: postgres
         env:
           DB_USERNAME: ${{secrets.DB_USERNAME}}
-          DB_NAME: ${{secrets.DB_NAME}}-test
+          DB_NAME: ${{secrets.DB_NAME}}
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
           DB_HOST: 'postgres'
         ports:
@@ -23,7 +23,6 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:

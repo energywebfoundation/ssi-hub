@@ -1,16 +1,15 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-console.log(process.env);
+const isCI = process.env.CI;
 
 export default {
-  host: process.env.DB_HOST,
+  host: isCI ? 'postgres' : process.env.DB_HOST,
   type: 'postgres',
-  port: process.env.DB_PORT,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database:
-    process.env.DB_NAME + (process.env.NODE_ENV === 'test' ? '-test' : ''),
+  port: isCI ? 5432 : process.env.DB_PORT,
+  username: isCI ? 'postgres' : process.env.DB_USERNAME,
+  password: isCI ? 'password' : process.env.DB_PASSWORD,
+  database: 'dev-test',
   migrationsRun: true,
   migrationsTableName: 'migrations_iam_cache_server',
   entities: ['src/**/**.entity{.ts,.js}'],
