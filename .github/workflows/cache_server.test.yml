@@ -16,9 +16,9 @@ jobs:
       postgres:
         image: postgres:12
         env:
-          DB_USERNAME: postgres
-          DB_NAME: dev-test
-          DB_PASSWORD: password
+          POSTGRES_USER: postgres
+          POSTGRES_DB: dev-test
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         # Add a health check
