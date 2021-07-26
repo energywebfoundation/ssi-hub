@@ -16,9 +16,9 @@ jobs:
       postgres:
         image: postgres:12
         env:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: ${{secrets.DB_USERNAME}}
           POSTGRES_DB: dev-test
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
         ports:
           - 5432:5432
         # Add a health check
@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.lock') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
