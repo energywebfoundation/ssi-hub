@@ -1,10 +1,10 @@
-version: "3.4"
+version: '3.4'
 
 services:
   app:
     container_name: app
     image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
-    command: "node /app/dist/main.js"
+    command: 'node /app/dist/main.js'
     volumes:
       - ./logs:${LOGS_DIRECTORY}
     ports:
@@ -20,15 +20,15 @@ services:
   nats:
     container_name: nats
     image: synadia/nats-server:nightly
-    command: "-c /etc/nats/nats.conf"
+    command: '-c /etc/nats/nats.conf'
     restart: unless-stopped
     networks:
       - main
     volumes:
       - ./config/:/etc/nats
     ports:
-      - "4222:4222"
-      - "9222:9222"
+      - '4222:4222'
+      - '9222:9222'
   redis:
     container_name: redis
     image: redis:${REDIS_VERSION}
