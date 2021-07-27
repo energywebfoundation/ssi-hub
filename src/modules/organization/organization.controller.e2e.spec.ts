@@ -10,7 +10,7 @@ import { Organization } from './organization.entity';
 import { LoggerModule } from '../logger/logger.module';
 import { Application } from '../application/application.entity';
 import { SentryModule } from '../sentry/sentry.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { OrganizationService } from './organization.service';
 import { Chance } from 'chance';
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
@@ -62,7 +62,7 @@ describe('OrganizationController', () => {
         SentryModule,
       ],
       controllers: [OrganizationController],
-      providers: [ConfigService, OrganizationService],
+      providers: [OrganizationService],
     }).compile();
 
     app = module.createNestApplication();

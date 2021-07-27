@@ -21,7 +21,11 @@ jobs:
           - 5432:5432
         # Add a health check
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
+        # NATS
+      jetstream:
+        image: synadia/jsm:latest
+        options: >-
+          -e JSM_MODE=server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -51,6 +55,11 @@ jobs:
 
       - name: Build the app
         run: npm run build
+
+      - name: Create Nats cluster
+        uses: onichandame/nats-action@master
+        with:
+          port: '4222 4223 4224'
 
       - name: Running tests
         run: npm run test
