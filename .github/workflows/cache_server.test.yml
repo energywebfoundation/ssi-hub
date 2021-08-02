@@ -63,3 +63,11 @@ jobs:
 
       - name: Running tests
         run: npm run test
+        env:
+          CHAIN_ID: ${{secrets.CHAIN_ID}}
+          PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
+          RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
+          DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
+          ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
+          ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
+          ENS_URL: ${{secrets.ENS_URL}}
