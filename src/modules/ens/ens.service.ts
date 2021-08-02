@@ -62,7 +62,6 @@ export class EnsService {
     const ENS_REGISTRY_ADDRESS = this.config.get<string>(
       'ENS_REGISTRY_ADDRESS',
     );
-
     // Connect to smart contracts
     this.publicResolver = PublicResolverFactory.connect(
       PUBLIC_RESOLVER_ADDRESS,
@@ -103,9 +102,10 @@ export class EnsService {
         parseInt(ensSyncInterval) * 3600000,
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
+      this.InitEventListeners();
+      this.syncENS();
     }
-    this.InitEventListeners();
-    this.syncENS();
+ 
   }
 
   private InitEventListeners(): void {
@@ -196,7 +196,7 @@ export class EnsService {
     data: IRoleDefinition | IOrganizationDefinition | IAppDefinition;
     namespace: string;
     owner: string;
-  }) {
+  }){
     const [name, parent, ...rest] = namespace.split('.');
 
     if (DomainReader.isOrgDefinition(data)) {
@@ -209,6 +209,7 @@ export class EnsService {
       });
     }
     if (DomainReader.isAppDefinition(data)) {
+   
       if (parent === 'apps') {
         return this.applicationService.handleAppSyncWithEns({
           metadata: data,
@@ -218,6 +219,9 @@ export class EnsService {
           parentOrgNamespace: rest.join('.'),
         });
       }
+      this.logger.debug(
+      `Bailed: App with namespace:${namespace} does not have 'apps' subdomain`,
+      );
     }
     if (DomainReader.isRoleDefinition(data)) {
       if (data.roleType.toLowerCase() === 'app') {
@@ -238,8 +242,10 @@ export class EnsService {
           orgNamespace: rest.join('.')
         });
       }
+      this.logger.debug(
+      `Bailed: Roletype ${data.roleType} is not a valid roletype`,
+      );
     }
-
     this.logger.debug(
       `Bailed: Data not supported ${namespace}, ${JSON.stringify(data)}`,
     );
