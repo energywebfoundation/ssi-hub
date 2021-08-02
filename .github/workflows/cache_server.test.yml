@@ -64,6 +64,7 @@ jobs:
       - name: Running tests
         run: npm run test
         env:
+          ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
           CHAIN_ID: ${{secrets.CHAIN_ID}}
           PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
           RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
