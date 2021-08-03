@@ -84,8 +84,10 @@ export class ClaimIssueDTO implements IClaimIssuance {
   claimIssuer: string[];
 
   @IsString()
+  // Is not set in the event that only on-chain role is issued
+  @IsOptional()
   @ApiProperty()
-  issuedToken: string;
+  issuedToken?: string;
 
   @IsString()
   @ApiProperty()

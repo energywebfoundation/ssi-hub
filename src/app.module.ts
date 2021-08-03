@@ -53,4 +53,4 @@ import { AssetsModule } from './modules/assets/assets.module';
   ],
   providers: [JSONObjectScalar],
 })
-export class AppModule {}
+export class AppModule { }

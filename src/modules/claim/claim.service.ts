@@ -100,7 +100,9 @@ export class ClaimService {
         return;
       }
 
-      if (claim && !claim.isRejected && 'issuedToken' in data) {
+      if (claim && !claim.isRejected &&
+        'issuedToken' in data || 'onChainProof' in data
+      ) {
         const dto = await ClaimIssueDTO.create(data);
 
         await this.issue(dto);
