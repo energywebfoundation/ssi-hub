@@ -141,7 +141,7 @@ export class EnsService {
     });
   }
 
-  private async getAllNamespaces() {
+  async getAllNamespaces() {
     const domains = await this.domainHierarchy.getSubdomainsUsingResolver({
       domain: 'iam.ewc',
       mode: "ALL"
@@ -159,7 +159,7 @@ export class EnsService {
     owner?: string;
   }) {
     try {
-
+      if (!owner  || owner !== emptyAddress) {// prevents attempt to resync after namepsace deregisteration
       const promises: Promise<any>[] = [
         // get role data
         this.domainReader.read({ node: hash })
@@ -167,9 +167,9 @@ export class EnsService {
       if (!owner) {
         promises.push(this.ensRegistry.owner(hash));
       }
-
+      
       const [data, namespaceOwner = owner] = await Promise.all(promises);
-
+   
       if (!namespaceOwner || !data) {
         this.logger.debug(
           `Role: ${name} not supported lack of owner or metadata`,
@@ -182,6 +182,10 @@ export class EnsService {
         namespace: name,
         owner: namespaceOwner,
       });
+     }
+      this.logger.debug(
+        `EmptyAddress: namespace has been deregistered.`,
+      );
     } catch (err) {
       this.logger.error(`Error syncing namespace ${name}, owner ${owner}, ${err}`);
       return;

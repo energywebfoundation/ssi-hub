@@ -122,6 +122,21 @@ describe('EnsService', () => {
     await app.close();
   });
 
+  describe('Sync ENS', () => {
+    it('syncENS() throw an error', async () => {
+      jest.spyOn(service, 'syncNamespace');
+      jest
+        .spyOn(service, 'getAllNamespaces')
+        .mockResolvedValueOnce(['apps.myorg.iam.ewc']);
+      await service.syncENS();
+      expect(MockLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Error syncing namespace apps.myorg.iam.ewc, owner undefined, Error: unable to parse resolved textData for node:',
+        ),
+      );
+    });
+  });
+
   describe('ENS Sync Validation', () => {
     it('syncNamespace() Validate and accept APP Sync Data', async () => {
       const mockAppServiceSpy = jest.spyOn(
@@ -168,18 +183,19 @@ describe('EnsService', () => {
       );
       await service.syncNamespace({
         data: ROLE_MOCK_DATA,
-        namespace: 'test.roles.onionapp.apps.onion.iam.ewc',
+        namespace: 'test.roles.onion.iam.ewc',
         owner: 'carrot',
       });
       expect(MockLogger.debug).not.toHaveBeenCalled();
       expect(mockRoleServiceSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           metadata: ROLE_MOCK_DATA,
-          namespace: 'test.roles.onionapp.apps.onion.iam.ewc',
+          namespace: 'test.roles.onion.iam.ewc',
           owner: 'carrot',
         }),
       );
     }, 30000);
+
     it('syncNamespace() Validate and accept ROLE Sync Data with roleType org', async () => {
       ROLE_MOCK_DATA.roleType = 'org';
       const mockRoleServiceSpy = jest.spyOn(
@@ -188,18 +204,19 @@ describe('EnsService', () => {
       );
       await service.syncNamespace({
         data: ROLE_MOCK_DATA,
-        namespace: 'test.roles.onionapp.apps.onion.iam.ewc',
+        namespace: 'test.roles.onion.iam.ewc',
         owner: 'carrot',
       });
       expect(MockLogger.debug).not.toHaveBeenCalled();
       expect(mockRoleServiceSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           metadata: ROLE_MOCK_DATA,
-          namespace: 'test.roles.onionapp.apps.onion.iam.ewc',
+          namespace: 'test.roles.onion.iam.ewc',
           owner: 'carrot',
         }),
       );
     }, 30000);
+
     it('syncNamespace() Validate and reject ROLE Sync Data with roleType custom', async () => {
       ROLE_MOCK_DATA.roleType = 'custom';
       const mockRoleServiceSpy = jest.spyOn(
