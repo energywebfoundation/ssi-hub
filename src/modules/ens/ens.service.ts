@@ -108,7 +108,7 @@ export class EnsService {
  
   }
 
-  private async namespaceDeleteHandler(name: string) {
+  private async deleteNamespace(name: string) {
     try {
        const isOrg = await this.organizationService.getByNamespace(name);
         if(isOrg) {
@@ -189,10 +189,10 @@ export class EnsService {
     
       if (namespaceOwner === emptyAddress) {
         //prevent resync and remove namespace from database
-        return this.namespaceDeleteHandler(name);
+        return this.deleteNamespace(name);
       }
    
-      const data = await this.domainReader.read({ node: hash })
+      const data = await this.domainReader.read({ node: hash });
       
       if (!namespaceOwner || !data) {
         this.logger.debug(
