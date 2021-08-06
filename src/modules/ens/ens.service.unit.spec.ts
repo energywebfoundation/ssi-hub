@@ -123,10 +123,10 @@ describe('EnsService', () => {
   });
 
   describe('Sync ENS', () => {
-    it('syncENS() throw an error', async () => {
+    it('syncENS() malfunctioned metadata should throw error', async () => {
       jest.spyOn(service, 'syncNamespace');
       jest
-        .spyOn(service, 'getAllNamespaces')
+        .spyOn(service as any, 'getAllNamespaces')
         .mockResolvedValueOnce(['apps.myorg.iam.ewc']);
       await service.syncENS();
       expect(MockLogger.error).toHaveBeenCalledWith(
@@ -183,14 +183,14 @@ describe('EnsService', () => {
       );
       await service.syncNamespace({
         data: ROLE_MOCK_DATA,
-        namespace: 'test.roles.onion.iam.ewc',
+        namespace: 'test.roles.onion.apps.myorg.org.iam.ewc',
         owner: 'carrot',
       });
       expect(MockLogger.debug).not.toHaveBeenCalled();
       expect(mockRoleServiceSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           metadata: ROLE_MOCK_DATA,
-          namespace: 'test.roles.onion.iam.ewc',
+          namespace: 'test.roles.onion.apps.myorg.org.iam.ewc',
           owner: 'carrot',
         }),
       );

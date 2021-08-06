@@ -141,7 +141,7 @@ export class EnsService {
     });
   }
 
-  async getAllNamespaces() {
+  private async getAllNamespaces() {
     const domains = await this.domainHierarchy.getSubdomainsUsingResolver({
       domain: 'iam.ewc',
       mode: "ALL"
@@ -159,7 +159,7 @@ export class EnsService {
     owner?: string;
   }) {
     try {
-      if (!owner  || owner !== emptyAddress) {// prevents attempt to resync after namepsace deregisteration
+      if (owner !== emptyAddress) {// prevents attempt to resync after namepsace deregisteration
       const promises: Promise<any>[] = [
         // get role data
         this.domainReader.read({ node: hash })
