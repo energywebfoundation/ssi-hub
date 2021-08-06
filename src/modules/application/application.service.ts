@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from './application.entity';
 import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
-import { emptyAddress } from '../../common/constants';
 import { OrganizationService } from '../organization/organization.service';
 import { IAppDefinition } from '@energyweb/iam-contracts';
 
@@ -124,11 +123,6 @@ export class ApplicationService {
     metadata: IAppDefinition;
     name: string;
   }) {
-    if (owner === emptyAddress) {
-      await this.remove(namespace);
-      return;
-    }
-
     let dto: ApplicationDTO;
     try {
       const definitionDTO = await ApplicationDefinitionDTO.create(metadata);
