@@ -5,7 +5,6 @@ import { DIDService } from '../did/did.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
-import { emptyAddress } from '../../common/constants';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
@@ -240,11 +239,6 @@ export class RoleService {
     metadata: IRoleDefinition;
     name: string;
   }) {
-    if (owner === emptyAddress) {
-      this.remove(namespace);
-      return;
-    }
-
     let dto: RoleDTO;
 
     try {

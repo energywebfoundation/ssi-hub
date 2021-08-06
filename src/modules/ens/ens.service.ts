@@ -108,6 +108,32 @@ export class EnsService {
  
   }
 
+  private async namespaceDeleteHandler(name: string) {
+    try {
+       const isOrg = await this.organizationService.getByNamespace(name);
+        if(isOrg) {
+          await this.organizationService.remove(name);
+          this.logger.log(`OrgDeleted: successfully removed deregistered org with namespace ${name}`);
+        }
+
+        const isRole = await this.roleService.getByNamespace(name);
+        if(isRole) {
+          await this.roleService.remove(name);
+          this.logger.log(`RoleDeleted: successfully removed deregistered role with namespace ${name}`);
+        }
+
+        const isApp = await this.applicationService.getByNamespace(name);
+        if(isApp) {
+          await this.applicationService.remove(name);
+          this.logger.log(`AppDeleted: successfully removed deregistered app with namespace ${name}`);
+        }
+        return;
+    }
+    catch(err) {
+      this.logger.debug(`NamespaceDelete: An error occured while try to remove ${name} namespace: ${err}`)
+    }
+  }
+  
   private InitEventListeners(): void {
     // Register event handler for legacy PublicResolver definitions
     this.publicResolver.addListener('TextChanged', async hash => {
@@ -159,17 +185,15 @@ export class EnsService {
     owner?: string;
   }) {
     try {
-      if (owner !== emptyAddress) {// prevents attempt to resync after namepsace deregisteration
-      const promises: Promise<any>[] = [
-        // get role data
-        this.domainReader.read({ node: hash })
-      ];
-      if (!owner) {
-        promises.push(this.ensRegistry.owner(hash));
+      const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
+    
+      if (namespaceOwner === emptyAddress) {
+        //prevent resync and remove namespace from database
+        return this.namespaceDeleteHandler(name);
       }
-      
-      const [data, namespaceOwner = owner] = await Promise.all(promises);
    
+      const data = await this.domainReader.read({ node: hash })
+      
       if (!namespaceOwner || !data) {
         this.logger.debug(
           `Role: ${name} not supported lack of owner or metadata`,
@@ -182,15 +206,12 @@ export class EnsService {
         namespace: name,
         owner: namespaceOwner,
       });
-     }
-      this.logger.debug(
-        `EmptyAddress: namespace has been deregistered.`,
-      );
     } catch (err) {
       this.logger.error(`Error syncing namespace ${name}, owner ${owner}, ${err}`);
       return;
     }
   }
+
 
   public async syncNamespace({
     data,

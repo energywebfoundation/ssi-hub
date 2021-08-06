@@ -3,7 +3,6 @@ import { OrganizationDefinitionDTO, OrganizationDTO } from './organization.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
-import { emptyAddress } from '../../common/constants';
 import { Logger } from '../logger/logger.service';
 import { IOrganizationDefinition } from '@energyweb/iam-contracts';
 
@@ -160,11 +159,6 @@ export class OrganizationService {
     metadata: IOrganizationDefinition;
     name: string;
   }) {
-    if (owner === emptyAddress) {
-      this.remove(namespace);
-      return;
-    }
-
     let dto: OrganizationDTO;
 
     try {
