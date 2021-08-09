@@ -31,7 +31,6 @@ export class DgraphService {
       claims(func: type(Claim)) {
         id
         requester
-        claimIssuer
         claimType
         token
         issuedToken
@@ -79,13 +78,11 @@ const migrate = async () => {
   console.log(`#### CONNECTED TO POSTGRES ####`);
 
   const claimsRepo = connection.getRepository(Claim);
-  const claimsEntities = claims.reduce((acc, { claimIssuer, ...rest }) => {
-    if (!claimIssuer || claimIssuer.length < 1) return acc;
+  const claimsEntities = claims.reduce((acc, { ...rest }) => {
     acc.push(
       Claim.create({
         claimTypeVersion: '1',
         ...rest,
-        claimIssuer,
       }),
     );
     return acc;
