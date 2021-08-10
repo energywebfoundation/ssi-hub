@@ -28,10 +28,6 @@ export class Claim implements IClaim {
   @Column()
   subject: string;
 
-  @Field(() => [String])
-  @Column('text', { array: true })
-  claimIssuer: string[];
-
   @Field()
   @Column()
   claimType: string;
@@ -40,9 +36,9 @@ export class Claim implements IClaim {
     type: 'enum',
     array: true,
     enum: RegistrationTypes,
-    default: [RegistrationTypes.OffChain]
+    default: [RegistrationTypes.OffChain],
   })
-  registrationTypes: RegistrationTypes[]
+  registrationTypes: RegistrationTypes[];
 
   @Field()
   @Column()
