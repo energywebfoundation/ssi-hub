@@ -1,4 +1,4 @@
-import { INestApplication, Logger } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Provider } from '../../common/provider';
@@ -13,6 +13,7 @@ import { RoleService } from '../role/role.service';
 import { ApplicationService } from '../application/application.service';
 import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
+import { Logger } from '../logger/logger.service';
 
 dotenv.config();
 

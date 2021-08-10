@@ -1,6 +1,6 @@
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { getQueueToken } from '@nestjs/bull';
-import { HttpService, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,6 +8,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
+import { Logger } from '../logger/logger.service';
 
 const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
 const MockLogger = {
