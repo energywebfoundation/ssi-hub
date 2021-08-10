@@ -13,6 +13,7 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "lib": ["ES2020"],
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "skipLibCheck": true
   }
 }
