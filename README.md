@@ -95,4 +95,3 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-<!-- Test to trigger GHA build -->
