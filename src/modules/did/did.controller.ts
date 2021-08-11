@@ -1,4 +1,10 @@
-import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
+import { 
+  Controller,
+  Get,
+  Param,
+  UseInterceptors,
+  VERSION_NEUTRAL
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
@@ -9,7 +15,7 @@ import { DID } from './did.types';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('DID')
+@Controller({path: 'DID', version: VERSION_NEUTRAL})
 export class DIDController {
   constructor(
     private readonly didService: DIDService,
