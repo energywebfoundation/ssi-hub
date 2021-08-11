@@ -24,7 +24,7 @@ interface QueryFilters {
   namespace?: string;
 }
 
-const UUID_NAMESPACE = "5193850c-2367-4ec4-8c22-95dfbd4a2880";
+const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
 
 @Injectable()
 export class ClaimService {
@@ -100,8 +100,9 @@ export class ClaimService {
         return;
       }
 
-      if (claim && !claim.isRejected &&
-        'issuedToken' in data || 'onChainProof' in data
+      if (
+        (claim && !claim.isRejected && 'issuedToken' in data) ||
+        'onChainProof' in data
       ) {
         const dto = await ClaimIssueDTO.create(data);
 
@@ -155,11 +156,16 @@ export class ClaimService {
    * returns claims requested for given DIDs
    * @param subjects claim subjects DIDs
    */
-  public async getBySubjects(
-    { subjects, filters: { isAccepted, namespace } = {}, currentUser }:
-      { subjects: string[], filters?: QueryFilters, currentUser?: string }
-  ): Promise<Claim[]> {
-    const qb = this.claimRepository.createQueryBuilder("claim");
+  public async getBySubjects({
+    subjects,
+    filters: { isAccepted, namespace } = {},
+    currentUser,
+  }: {
+    subjects: string[];
+    filters?: QueryFilters;
+    currentUser?: string;
+  }): Promise<Claim[]> {
+    const qb = this.claimRepository.createQueryBuilder('claim');
     qb.where('claim.subject IN (:...subjects)', { subjects });
 
     if (currentUser) {
@@ -207,8 +213,7 @@ export class ClaimService {
   }) {
     const qb = this.claimRepository
       .createQueryBuilder()
-      .where(':did = ANY ("claimIssuer")', { did })
-      .orWhere(':did = requester', { did });
+      .where(':did = requester', { did });
 
     if (isAccepted !== undefined) {
       qb.andWhere('"isAccepted" = :isAccepted', {
@@ -223,11 +228,11 @@ export class ClaimService {
     }
 
     if (currentUser) {
-      qb.andWhere(new Brackets(query => {
-        query.where(':currentUser = ANY ("claimIssuer")', {
-          currentUser,
-        }).orWhere(':currentUser = requester', { currentUser })
-      }))
+      qb.andWhere(
+        new Brackets(query => {
+          query.where(':currentUser = requester', { currentUser });
+        }),
+      );
     }
     return qb.getMany();
   }
@@ -246,15 +251,16 @@ export class ClaimService {
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const rolesByIssuer = (await this.rolesByIssuer(issuer, namespace))
-      .map((r) => r.namespace);
+    const rolesByIssuer = (await this.rolesByIssuer(issuer, namespace)).map(
+      r => r.namespace,
+    );
 
     if (rolesByIssuer.length === 0) {
       return [];
     }
 
     const qb = this.claimRepository
-      .createQueryBuilder("claim")
+      .createQueryBuilder('claim')
       .where('claim.claimType IN (:...rolesByIssuer)', { rolesByIssuer });
 
     if (isAccepted !== undefined) {
@@ -300,11 +306,11 @@ export class ClaimService {
     }
 
     if (currentUser) {
-      qb.andWhere(new Brackets(query => {
-        query.where(':currentUser = ANY ("claimIssuer")', {
-          currentUser,
-        }).orWhere(':currentUser = requester', { currentUser })
-      }))
+      qb.andWhere(
+        new Brackets(query => {
+          query.where(':currentUser = requester', { currentUser });
+        }),
+      );
     }
     return qb.getMany();
   }
@@ -365,32 +371,56 @@ export class ClaimService {
     return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
   }
 
-  private async rolesByIssuer(issuer: string, namespace?: string): Promise<Role[]> {
-    const rolesOfIssuer = (await this.getBySubject({ subject: issuer, filters: { isAccepted: true } }))
-      .map((r) => r.claimType);
-    const roles = (await this.roleService.getAll())
-      .filter(
-        (r) => r.definition.issuer.did?.includes(issuer) || rolesOfIssuer.includes(r.definition.issuer.roleName)
-      );
-    return namespace ? roles.filter((r: Role) => r.namespace === namespace) : roles;
+  private async rolesByIssuer(
+    issuer: string,
+    namespace?: string,
+  ): Promise<Role[]> {
+    const rolesOfIssuer = (
+      await this.getBySubject({
+        subject: issuer,
+        filters: { isAccepted: true },
+      })
+    ).map(r => r.claimType);
+    const roles = (await this.roleService.getAll()).filter(
+      r =>
+        r.definition.issuer.did?.includes(issuer) ||
+        rolesOfIssuer.includes(r.definition.issuer.roleName),
+    );
+    return namespace
+      ? roles.filter((r: Role) => r.namespace === namespace)
+      : roles;
   }
 
-  private async filterUserRelatedClaims(currentUser: string, qb: SelectQueryBuilder<Claim>) {
-    const ownedAssets = (await this.assetService.getByOwner(currentUser)).map((a) => a.id);
-    const offeredAssets = (await this.assetService.getByOfferedTo(currentUser)).map((a) => a.id);
+  private async filterUserRelatedClaims(
+    currentUser: string,
+    qb: SelectQueryBuilder<Claim>,
+  ) {
+    const ownedAssets = (await this.assetService.getByOwner(currentUser)).map(
+      a => a.id,
+    );
+    const offeredAssets = (
+      await this.assetService.getByOfferedTo(currentUser)
+    ).map(a => a.id);
 
-    const rolesByUser = (await this.rolesByIssuer(currentUser)).map((r) => r.namespace);
+    const rolesByUser = (await this.rolesByIssuer(currentUser)).map(
+      r => r.namespace,
+    );
 
-    qb.andWhere(new Brackets(query => {
-      query.where('claim.claimType IN (:...rolesByUser)', { rolesByUser })
-        .orWhere('claim.subject = :currentUser', { currentUser })
-        .orWhere('claim.requester = :currentUser', { currentUser });
-      if (ownedAssets.length > 0) {
-        query.orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets });
-      }
-      if (offeredAssets.length > 0) {
-        query.orWhere('claim.subject IN (:...offeredAssets)', { offeredAssets });
-      }
-    }));
+    qb.andWhere(
+      new Brackets(query => {
+        query
+          .where('claim.claimType IN (:...rolesByUser)', { rolesByUser })
+          .orWhere('claim.subject = :currentUser', { currentUser })
+          .orWhere('claim.requester = :currentUser', { currentUser });
+        if (ownedAssets.length > 0) {
+          query.orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets });
+        }
+        if (offeredAssets.length > 0) {
+          query.orWhere('claim.subject IN (:...offeredAssets)', {
+            offeredAssets,
+          });
+        }
+      }),
+    );
   }
 }
