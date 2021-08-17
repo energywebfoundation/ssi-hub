@@ -1,0 +1,19 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": ".6e207494f2ab9f0e3cabc073301297a9300fc69f-audit.json",
+    "files": [
+        {
+            "date": 1628688954051,
+            "name": "iam-cache-server-2021-08-11.log",
+            "hash": "1b821b41605c8ac337a490f77bab5547"
+        },
+        {
+            "date": 1628783168978,
+            "name": "iam-cache-server-2021-08-12.log",
+            "hash": "97bf2f6617bab1d1d7595e4cf481a88f"
+        }
+    ]
+}

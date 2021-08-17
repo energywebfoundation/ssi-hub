@@ -39,7 +39,7 @@
     "migration:test": "NODE_ENV=test ts-node ./node_modules/typeorm/cli.js migration:run --config test/config.ts"
   },
   "dependencies": {
-    "@energyweb/iam-contracts": "1.11.2",
+    "@energyweb/iam-contracts": "1.17.2",
     "@ensdomains/ens": "^0.4.5",
     "@ensdomains/resolver": "^0.2.4",
     "@ew-did-registry/did-document": "0.5.2-alpha.1057.0",

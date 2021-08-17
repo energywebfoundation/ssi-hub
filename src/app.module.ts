@@ -21,6 +21,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { JSONObjectScalar } from './common/json.scalar';
 import { getGraphQlConfig } from './graphql/config';
 import { AssetsModule } from './modules/assets/assets.module';
+import { StakingModule } from './modules/staking/staking.module';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { AssetsModule } from './modules/assets/assets.module';
     SentryModule,
     InterceptorsModule,
     ENSModule,
+    StakingModule,
   ],
   providers: [JSONObjectScalar],
 })
-export class AppModule { }
+export class AppModule {}
