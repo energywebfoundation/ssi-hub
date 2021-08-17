@@ -10,7 +10,7 @@ export class StakingTerms {
   @Column('character varying')
   terms: string;
 
-  @Column('double')
+  @Column('decimal', { default: 1.0 })
   version: number;
 
   constructor(stakingTerms: Partial<StakingTerms>) {

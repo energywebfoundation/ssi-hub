@@ -5,6 +5,8 @@ import {
   HttpStatus,
   Post,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
   VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -12,7 +14,6 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../../interceptors/sentry-error-interceptor';
 import { StakingTermsDTO } from '../dtos/staking.terms.dto';
 import { StakingService } from '../staking.service';
-import { IStakingTerms } from '../staking.types';
 
 //@Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -35,6 +36,7 @@ export class StakingController {
   }
 
   @Post('/terms')
+  @UsePipes(new ValidationPipe())
   @ApiTags('Staking Terms')
   @ApiBody({
     type: StakingTermsDTO,
@@ -44,7 +46,7 @@ export class StakingController {
     summary: 'creates staking terms',
     description: 'creates staking terms and condition',
   })
-  public async(@Body() data: IStakingTerms) {
+  public async createTerms(@Body() data: StakingTermsDTO) {
     return this.stakingService.saveTerms(data);
   }
 }

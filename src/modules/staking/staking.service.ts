@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StakingPool } from './entities/staking.pool.entity';
@@ -8,10 +8,10 @@ import { Logger } from '../logger/logger.service';
 @Injectable()
 export class StakingService {
   constructor(
-    @InjectRepository(StakingPool)
     @InjectRepository(StakingTerms)
-    private readonly stakingPoolRepository: Repository<StakingPool>,
     private readonly stakingTermsRepository: Repository<StakingTerms>,
+    @InjectRepository(StakingPool)
+    private readonly stakingPoolRepository: Repository<StakingPool>,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(StakingService.name);
@@ -20,15 +20,18 @@ export class StakingService {
   async saveTerms(stakeTerms: Partial<StakingTerms>): Promise<StakingTerms> {
     const { version, terms } = stakeTerms;
     const stakingTerms = new StakingTerms(stakeTerms);
-    const stakeTermsExist = this.stakingTermsRepository.findOne({
+    const stakeTermsExist = await this.stakingTermsRepository.findOne({
       where: {
         version,
         terms,
       },
     });
+
     if (stakeTermsExist) {
       this.logger.debug(`Staking terms and condition already exists`);
-      return;
+      throw new BadRequestException(
+        'Staking terms and condition already exists',
+      );
     }
     return this.stakingTermsRepository.save(stakingTerms);
   }
@@ -44,15 +47,14 @@ export class StakingService {
   async saveStakingPool(address: string): Promise<StakingPool> {
     const terms = await this.getTerms();
 
-    const addressExist = this.stakingPoolRepository.findOne({
+    const addressExist = await this.stakingPoolRepository.findOne({
       where: {
         address,
       },
     });
 
     if (addressExist) {
-      this.logger.debug(`Staking pool with this address already exists!`);
-      return;
+      throw new Error(`Staking pool with this address already exists!`);
     }
 
     return this.stakingPoolRepository.save({

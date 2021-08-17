@@ -1,7 +1,7 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsDecimal, IsString } from 'class-validator';
 
 export class StakingTermsDTO {
-  @IsNumber()
+  @IsDecimal()
   version: number;
 
   @IsString()
