@@ -1,8 +1,9 @@
 import { ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { StakingTerms } from './staking.terms.entity';
 
 @ObjectType()
-@Entity()
+@Entity({ name: 'staking_pool' })
 export class StakingPool {
   @PrimaryGeneratedColumn()
   id: string;
@@ -10,8 +11,12 @@ export class StakingPool {
   @Column()
   address: string;
 
-  @Column('text', { array: true })
-  terms: string[];
+  @OneToOne(
+    () => StakingTerms,
+    t => t.id,
+    { eager: true },
+  )
+  terms: StakingTerms;
 
   constructor(stakingPool: Partial<StakingPool>) {
     Object.assign(this, stakingPool);

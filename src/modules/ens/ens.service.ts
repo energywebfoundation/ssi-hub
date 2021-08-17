@@ -25,7 +25,7 @@ import {
   VOLTA_STAKING_POOL_FACTORY_ADDRESS
 } from '@energyweb/iam-contracts';
 import type { DomainNotifier } from "@energyweb/iam-contracts/dist/ethers-v4/DomainNotifier";
-import { StakingPoolService } from '../staking/services/staking.pool.service';
+import { StakingService } from '../staking/staking.service';
 import { StakingPoolFactory } from '@energyweb/iam-contracts/dist/ethers-v4/StakingPoolFactory';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
@@ -43,7 +43,7 @@ export class EnsService {
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
     private readonly organizationService: OrganizationService,
-    private readonly stakingPoolService: StakingPoolService,
+    private readonly stakingService: StakingService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly config: ConfigService,
     private readonly logger: Logger,
@@ -176,10 +176,9 @@ export class EnsService {
       await this.eventHandler({ hash: node, name: namespace });
     });
 
-       // Register event handler for domain definition updates
-    this.stakingPoolFactory.addListener('StakingPoolLaunched', async (org,addressPool) => {
-     
-      await this.stakingPoolService.saveTermsAndConditions({terms: org, address: addressPool  })
+    // Register event handler for staking pool launched
+    this.stakingPoolFactory.addListener('StakingPoolLaunched', async (org, address) => {
+      await this.stakingService.saveStakingPool(address);
     });
   }
 
