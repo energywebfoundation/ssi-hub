@@ -1,7 +1,5 @@
-import { ObjectType } from '@nestjs/graphql';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@ObjectType()
 @Entity({ name: 'staking_terms' })
 export class StakingTerms {
   @PrimaryGeneratedColumn()

@@ -6,19 +6,9 @@
     "auditLog": ".6e207494f2ab9f0e3cabc073301297a9300fc69f-audit.json",
     "files": [
         {
-            "date": 1628688954051,
-            "name": "iam-cache-server-2021-08-11.log",
-            "hash": "1b821b41605c8ac337a490f77bab5547"
-        },
-        {
-            "date": 1628783168978,
-            "name": "iam-cache-server-2021-08-12.log",
-            "hash": "97bf2f6617bab1d1d7595e4cf481a88f"
-        },
-        {
-            "date": 1629208492565,
-            "name": "iam-cache-server-2021-08-17.log",
-            "hash": "9d92aec3cac02c98490d3f7494cd44a3"
+            "date": 1629295914070,
+            "name": "iam-cache-server-2021-08-18.log",
+            "hash": "e634a98d35db3526acb740d91fe3a08c"
         }
     ]
 }

@@ -6,7 +6,6 @@ import { Logger } from '../../logger/logger.service';
 import { StakingService } from '../staking.service';
 import { StakingPool } from './staking.pool.entity';
 import { StakingTerms } from './staking.terms.entity';
-//import * as TestDbCOnfig from '../../../../test/config';
 
 const MockLogger = {
   log: jest.fn(),

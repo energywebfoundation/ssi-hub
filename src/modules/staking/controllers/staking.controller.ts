@@ -10,12 +10,12 @@ import {
   VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-//import { Auth } from '../../auth/auth.decorator';
+import { Auth } from '../../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../../interceptors/sentry-error-interceptor';
 import { StakingTermsDTO } from '../dtos/staking.terms.dto';
 import { StakingService } from '../staking.service';
 
-//@Auth()
+@Auth()
 @UseInterceptors(SentryErrorInterceptor)
 @Controller({ path: 'staking', version: VERSION_NEUTRAL })
 export class StakingController {
