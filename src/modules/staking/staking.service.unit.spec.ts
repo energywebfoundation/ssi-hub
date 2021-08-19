@@ -2,10 +2,12 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Logger } from '../../logger/logger.service';
-import { StakingService } from '../staking.service';
-import { StakingPool } from './staking.pool.entity';
-import { StakingTerms } from './staking.terms.entity';
+import { Logger } from '../logger/logger.service';
+import { StakingService } from './staking.service';
+import { StakingPool } from './entities/staking.pool.entity';
+import { StakingTerms } from './entities/staking.terms.entity';
+import { Provider } from '../../common/provider';
+import { ConfigModule } from '@nestjs/config';
 
 const MockLogger = {
   log: jest.fn(),
@@ -45,9 +47,10 @@ describe('StakingService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     module = await Test.createTestingModule({
-      imports: [],
+      imports: [ConfigModule],
       providers: [
         StakingService,
+        Provider,
         {
           provide: Logger,
           useValue: MockLogger,
@@ -80,7 +83,7 @@ describe('StakingService', () => {
     await app.close();
   });
 
-  it('getTerms(), should get the current terms and conditions', async () => {
+  it('getTerms(), should call mocked findOne method to fetch terms and conditions', async () => {
     jest.spyOn(stakeTermsRepo, 'findOne');
     await service.getTerms();
     expect(stakeTermsRepo.findOne).toHaveBeenCalledWith({

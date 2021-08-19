@@ -14,6 +14,8 @@ import { StakingController } from './staking.controller';
 import { StakingService } from '../staking.service';
 import * as TestDbCOnfig from '../../../../test/config';
 import { StakingPool } from '../entities/staking.pool.entity';
+import { Provider } from '../../../common/provider';
+import { ConfigModule } from '@nestjs/config';
 
 const stakingTermsFixture = async (
   repo: Repository<StakingTerms>,
@@ -45,9 +47,10 @@ describe('StakingController', () => {
         TypeOrmModule.forFeature([StakingTerms, StakingPool]),
         LoggerModule,
         SentryModule,
+        ConfigModule,
       ],
       controllers: [StakingController],
-      providers: [StakingService],
+      providers: [StakingService, Provider],
     }).compile();
 
     app = module.createNestApplication();

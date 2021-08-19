@@ -23,8 +23,6 @@ import {
   DomainNotifier__factory,
 } from '@energyweb/iam-contracts';
 import type { DomainNotifier } from "@energyweb/iam-contracts/dist/ethers-v4/DomainNotifier";
-//import { StakingService } from '../staking/staking.service';
-//import { StakingPoolFactory } from '@energyweb/iam-contracts/dist/ethers-v4/StakingPoolFactory';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -35,13 +33,11 @@ export class EnsService {
   private ensRegistry: EnsRegistry;
   private domainReader: DomainReader;
   private domainHierarchy: DomainHierarchy;
-  //private stakingPoolFactory: StakingPoolFactory;
 
   constructor(
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
     private readonly organizationService: OrganizationService,
-    //private readonly stakingService: StakingService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly config: ConfigService,
     private readonly logger: Logger,
@@ -83,10 +79,6 @@ export class EnsService {
       ensRegistryAddress: ENS_REGISTRY_ADDRESS,
       provider: this.provider
     });
-    // this.stakingPoolFactory = StakingPoolFactory__factory.connect(
-    //  VOLTA_STAKING_POOL_FACTORY_ADDRESS,
-    //  this.provider,
-    // );
     this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: RESOLVER_V1_ADDRESS, type: ResolverContractType.RoleDefinitionResolver_v1 });
     this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: PUBLIC_RESOLVER_ADDRESS, type: ResolverContractType.PublicResolver });
 
