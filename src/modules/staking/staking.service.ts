@@ -4,6 +4,12 @@ import { Repository } from 'typeorm';
 import { StakingPool } from './entities/staking.pool.entity';
 import { StakingTerms } from './entities/staking.terms.entity';
 import { Logger } from '../logger/logger.service';
+import {
+  StakingPoolFactory__factory,
+  VOLTA_STAKING_POOL_FACTORY_ADDRESS,
+} from '@energyweb/iam-contracts';
+import { StakingPoolFactory } from '@energyweb/iam-contracts/dist/ethers-v4/StakingPoolFactory';
+import { Provider } from '../../common/provider';
 
 @Injectable()
 export class StakingService {
@@ -13,8 +19,15 @@ export class StakingService {
     @InjectRepository(StakingPool)
     private readonly stakingPoolRepository: Repository<StakingPool>,
     private readonly logger: Logger,
+    private stakingPoolFactory: StakingPoolFactory,
+    private readonly provider: Provider,
   ) {
     this.logger.setContext(StakingService.name);
+    this.stakingPoolFactory = StakingPoolFactory__factory.connect(
+      VOLTA_STAKING_POOL_FACTORY_ADDRESS,
+      this.provider,
+    );
+    this.InitEventListeners();
   }
 
   async saveTerms(stakeTerms: Partial<StakingTerms>): Promise<StakingTerms> {
@@ -61,5 +74,13 @@ export class StakingService {
       terms,
       address,
     });
+  }
+  private InitEventListeners(): void {
+    this.stakingPoolFactory.addListener(
+      'StakingPoolLaunched',
+      async (org, address) => {
+        await this.saveStakingPool(address);
+      },
+    );
   }
 }
