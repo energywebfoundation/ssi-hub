@@ -13,13 +13,14 @@ import { Provider } from '../../common/provider';
 
 @Injectable()
 export class StakingService {
+  private stakingPoolFactory: StakingPoolFactory;
+
   constructor(
     @InjectRepository(StakingTerms)
     private readonly stakingTermsRepository: Repository<StakingTerms>,
     @InjectRepository(StakingPool)
     private readonly stakingPoolRepository: Repository<StakingPool>,
     private readonly logger: Logger,
-    private stakingPoolFactory: StakingPoolFactory,
     private readonly provider: Provider,
   ) {
     this.logger.setContext(StakingService.name);
