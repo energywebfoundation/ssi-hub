@@ -150,7 +150,7 @@ describe('EnsService', () => {
         ),
       );
       expect(MockOrgService.remove).toHaveBeenCalledWith(name);
-    });
+    }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using roleService', async () => {
       const name = 'myorg.daniel.iam.ewc';
