@@ -91,7 +91,7 @@ describe('StakingService', () => {
         version: 'DESC',
       },
     });
-  });
+  }, 30000);
 
   it('stakePool(), should throw an error if address already exists', async () => {
     jest.spyOn(service, 'getTerms').mockResolvedValueOnce(stakingTerms);
@@ -107,7 +107,7 @@ describe('StakingService', () => {
       },
     });
     expect(stakePoolRepo.save).not.toHaveBeenCalled();
-  });
+  }, 30000);
 
   it('stakePool(), should save stake pool', async () => {
     jest.spyOn(service, 'getTerms').mockResolvedValueOnce(stakingTerms);
@@ -121,7 +121,7 @@ describe('StakingService', () => {
       },
     });
     expect(stakePoolRepo.save).toHaveBeenCalledWith(stakePool);
-  });
+  }, 30000);
 
   it('stakePool(), should throw error when trying to save terms that already exists', async () => {
     jest.spyOn(stakeTermsRepo, 'findOne').mockResolvedValueOnce(stakingTerms);
@@ -133,7 +133,7 @@ describe('StakingService', () => {
       where: stakingTerms,
     });
     expect(stakeTermsRepo.save).not.toHaveBeenCalled();
-  });
+  }, 30000);
 
   it('stakePool(), should save terms and conditions', async () => {
     jest.spyOn(stakeTermsRepo, 'findOne').mockResolvedValueOnce(null);
@@ -145,5 +145,5 @@ describe('StakingService', () => {
     });
 
     expect(stakeTermsRepo.save).toHaveBeenCalledWith(stakingTerms);
-  });
+  }, 30000);
 });

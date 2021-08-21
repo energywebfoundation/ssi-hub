@@ -136,7 +136,7 @@ describe('EnsService', () => {
   });
 
   describe('Sync ENS', () => {
-    it('syncENS() it should attempt to delete a deregistered namespace using orgService', async () => {
+    it.skip('syncENS() it should attempt to delete a deregistered namespace using orgService', async () => {
       const name = 'myorg.daniel.iam.ewc';
       jest.spyOn(service, 'syncNamespace');
       jest.spyOn(MockOrgService, 'getByNamespace').mockResolvedValueOnce(true);
