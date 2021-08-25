@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StakingPool } from './entities/staking.pool.entity';
@@ -12,7 +16,7 @@ import { StakingPoolFactory } from '@energyweb/iam-contracts/dist/ethers-v4/Stak
 import { Provider } from '../../common/provider';
 
 @Injectable()
-export class StakingService {
+export class StakingService implements OnModuleDestroy {
   private stakingPoolFactory: StakingPoolFactory;
   constructor(
     @InjectRepository(StakingTerms)
