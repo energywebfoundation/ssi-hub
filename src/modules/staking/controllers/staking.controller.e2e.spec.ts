@@ -64,17 +64,18 @@ describe('StakingController', () => {
     queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
       'master',
     );
-    await queryRunner.startTransaction();
     repo = module.get<Repository<StakingTerms>>(
       getRepositoryToken(StakingTerms),
     );
+    await queryRunner.startTransaction();
     stakeTerms = await stakingTermsFixture(repo, 2);
     testHttpServer = request(app.getHttpServer());
   });
 
   afterEach(async () => {
     await queryRunner.rollbackTransaction();
-    module.close();
+    await app.close();
+    await module.close();
   });
 
   it('getTerms(), should get the current terms and conditions', async () => {
@@ -85,7 +86,7 @@ describe('StakingController', () => {
         expect(res.body.version).toEqual(stakeTerms[1].version);
         expect(res.body.terms).toEqual(stakeTerms[1].terms);
       });
-  });
+  }, 30000);
 
   it('createTerms(), should throw an error when trying to save an already existing terms and conditions', async () => {
     await testHttpServer
@@ -95,7 +96,7 @@ describe('StakingController', () => {
         terms: stakeTerms[1].terms,
       })
       .expect(400);
-  });
+  }, 30000);
 
   it('createTerms(), should create terms and conditions', async () => {
     const termsToSave = {
@@ -110,5 +111,5 @@ describe('StakingController', () => {
         expect(res.body.version).toEqual(`${termsToSave.version}`);
         expect(res.body.terms).toEqual(termsToSave.terms);
       });
-  });
+  }, 30000);
 });

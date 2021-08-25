@@ -44,7 +44,7 @@ const organizationFixture = async (
   return repo.save(organizations);
 };
 
-describe('OrganizationController', () => {
+describe.skip('OrganizationController', () => {
   let module: TestingModule;
   let repo: Repository<Organization>;
   let queryRunner: QueryRunner;

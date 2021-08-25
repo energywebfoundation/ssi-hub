@@ -14,7 +14,6 @@ import { Provider } from '../../common/provider';
 @Injectable()
 export class StakingService {
   private stakingPoolFactory: StakingPoolFactory;
-
   constructor(
     @InjectRepository(StakingTerms)
     private readonly stakingTermsRepository: Repository<StakingTerms>,
@@ -83,5 +82,9 @@ export class StakingService {
         await this.saveStakingPool(address);
       },
     );
+  }
+
+  onModuleDestroy() {
+    this.stakingPoolFactory.removeAllListeners('StakingPoolLaunched');
   }
 }

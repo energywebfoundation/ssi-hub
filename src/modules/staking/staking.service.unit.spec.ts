@@ -37,7 +37,7 @@ const stakePool = new StakingPool({
   terms: stakingTerms,
 });
 
-describe.skip('StakingService', () => {
+describe('StakingService', () => {
   let module: TestingModule;
   let app: INestApplication;
   let service: StakingService;
