@@ -26,6 +26,16 @@ jobs:
         image: synadia/jsm:latest
         options: >-
           -e JSM_MODE=server
+      redis:
+        image: redis
+        ports:
+        - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --entrypoint redis-server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -72,3 +82,6 @@ jobs:
           ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
           ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
           ENS_URL: ${{secrets.ENS_URL}}
+          REDIS_HOST: localhost
+          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
+          NATS_CLIENTS_URL: localhost:4222
