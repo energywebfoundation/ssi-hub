@@ -24,7 +24,7 @@ interface QueryFilters {
   namespace?: string;
 }
 
-const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
+export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
 
 @Injectable()
 export class ClaimService {
@@ -409,9 +409,13 @@ export class ClaimService {
     qb.andWhere(
       new Brackets(query => {
         query
-          .where('claim.claimType IN (:...rolesByUser)', { rolesByUser })
-          .orWhere('claim.subject = :currentUser', { currentUser })
+          .where('claim.subject = :currentUser', { currentUser })
           .orWhere('claim.requester = :currentUser', { currentUser });
+        if (rolesByUser.length > 0) {
+          query.orWhere('claim.claimType IN (:...rolesByUser)', {
+            rolesByUser,
+          });
+        }
         if (ownedAssets.length > 0) {
           query.orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets });
         }
