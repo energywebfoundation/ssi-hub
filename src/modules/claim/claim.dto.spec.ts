@@ -1,7 +1,7 @@
 import { ClaimIssueDTO, ClaimRequestDTO } from './claim.dto';
 import { RegistrationTypes } from './claim.types';
 
-describe.skip('ClaimRequestDTO', () => {
+describe('ClaimRequestDTO', () => {
   const getBaseClaimRequest: () => Partial<ClaimRequestDTO> = () => {
     return {
       id: '1',
