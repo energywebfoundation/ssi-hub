@@ -89,7 +89,7 @@ const ROLE_MOCK_DATA: IRoleDefinition = {
   enrolmentPreconditions: [],
 };
 
-describe.skip('EnsService', () => {
+describe('EnsService', () => {
   let service: EnsService;
   let module: TestingModule;
   let app: INestApplication;
@@ -135,7 +135,7 @@ describe.skip('EnsService', () => {
     await app.close();
   });
 
-  describe.skip('Sync ENS', () => {
+  describe('Sync ENS', () => {
     it('syncENS() it should attempt to delete a deregistered namespace using orgService', async () => {
       const name = 'myorg.daniel.iam.ewc';
       jest.spyOn(service, 'syncNamespace');
@@ -200,7 +200,7 @@ describe.skip('EnsService', () => {
     }, 30000);
   });
 
-  describe.skip('ENS Sync Validation', () => {
+  describe('ENS Sync Validation', () => {
     it('syncNamespace() Validate and accept APP Sync Data', async () => {
       const mockAppServiceSpy = jest.spyOn(
         MockApplicationService,

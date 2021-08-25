@@ -73,7 +73,7 @@ jest.mock('../../ethers/EthereumDidRegistryFactory', () => ({
   },
 }));
 
-describe.skip('DidDocumentService', () => {
+describe('DidDocumentService', () => {
   let service: DIDService;
 
   beforeEach(async () => {

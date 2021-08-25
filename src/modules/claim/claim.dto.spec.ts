@@ -99,7 +99,7 @@ describe.skip('ClaimRequestDTO', () => {
   });
 });
 
-describe.skip('ClaimIssueDTO', () => {
+describe('ClaimIssueDTO', () => {
   const issuer = 'did:ethr:0x8E23B1a27c5aFf82aE0F498a462BB3f50520B222';
 
   const getBaseClaimIssue: () => Partial<ClaimIssueDTO> = () => {
