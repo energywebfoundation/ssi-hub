@@ -1,4 +1,5 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity,
+   ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { StakingTerms } from './staking.terms.entity';
 
 @Entity({ name: 'staking_pool' })
@@ -9,7 +10,7 @@ export class StakingPool {
   @Column()
   address: string;
 
-  @OneToOne(
+  @ManyToOne(
     () => StakingTerms,
     t => t.id,
     { eager: true },
