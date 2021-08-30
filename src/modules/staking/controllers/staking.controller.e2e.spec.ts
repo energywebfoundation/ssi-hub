@@ -75,7 +75,6 @@ describe('StakingController', () => {
   afterEach(async () => {
     await queryRunner.rollbackTransaction();
     await app.close();
-    await module.close();
   });
 
   it('getTerms(), should get the current terms and conditions', async () => {
