@@ -62,8 +62,9 @@ jobs:
           port: '4222 4223 4224'
 
       - name: Running tests
-        run: npm run test
+        run: npm run test --forceExit
         env:
+          CI: true
           ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
           CHAIN_ID: ${{secrets.CHAIN_ID}}
           PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}

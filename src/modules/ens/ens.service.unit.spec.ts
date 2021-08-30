@@ -14,6 +14,7 @@ import { ApplicationService } from '../application/application.service';
 import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import { Logger } from '../logger/logger.service';
+import { StakingService } from '../staking/staking.service';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ const MockOrgService = {
   remove: jest.fn(),
   getByNamespace: jest.fn(),
 };
+const MockStakingService = {};
 const MockLogger = {
   log: jest.fn(),
   error: jest.fn(),
@@ -105,6 +107,10 @@ describe('EnsService', () => {
           useValue: MockOrgService,
         },
         {
+          provide: StakingService,
+          useValue: MockStakingService,
+        },
+        {
           provide: RoleService,
           useValue: MockRoleService,
         },
@@ -144,7 +150,7 @@ describe('EnsService', () => {
         ),
       );
       expect(MockOrgService.remove).toHaveBeenCalledWith(name);
-    });
+    }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using roleService', async () => {
       const name = 'myorg.daniel.iam.ewc';

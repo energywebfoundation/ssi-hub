@@ -144,7 +144,6 @@ type DIDDocumentEntity {
 type Claim {
   id: String!
   requester: String!
-  claimIssuer: [String!]!
   claimType: String!
   claimTypeVersion: String!
   token: String!
