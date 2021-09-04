@@ -9,6 +9,8 @@ import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
 import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { Application } from '../application/application.entity';
+import { Organization } from '../organization/organization.entity';
 
 @Injectable()
 export class RoleService {
@@ -46,8 +48,15 @@ export class RoleService {
    * return true if role with given namespace exists
    * @param namespace
    */
-  public async exists(namespace: string) {
-    return Boolean(await this.getByNamespace(namespace));
+  public async exists(
+    namespace: string,
+    parentApp: Application,
+    parentOrg: Organization,
+  ): Promise<Boolean> {
+    const roleExists = await this.roleRepository.findOne({
+      where: { namespace, parentOrg, parentApp },
+    });
+    return Boolean(roleExists);
   }
 
   /**
@@ -56,28 +65,43 @@ export class RoleService {
    * @return id of newly added Role
    */
   public async create({ appNamespace, orgNamespace, ...data }: RoleDTO) {
+    let parentApp: Application, parentOrg: Organization;
+
     if (appNamespace) {
-      const app = await this.appService.getByNamespace(appNamespace);
-      if (!app) {
+      parentApp = await this.appService.getByNamespace(appNamespace);
+      if (!parentApp) {
         this.logger.debug(
           `Not able to create role: ${data.namespace}, parent application ${appNamespace} does not exists`,
         );
         return;
       }
-      const role = Role.create({ ...data, parentApp: app });
-      return this.roleRepository.save(role);
     }
     if (orgNamespace) {
-      const org = await this.orgService.getByNamespace(orgNamespace);
-      if (!org) {
+      parentOrg = await this.orgService.getByNamespace(orgNamespace);
+      if (!parentOrg) {
         this.logger.debug(
-          `Not able to create application: ${data.namespace}, parent organization ${orgNamespace} does not exists`,
+          `Not able to create role: ${data.namespace}, parent organization ${orgNamespace} does not exists`,
         );
         return;
       }
-      const role = Role.create({ ...data, parentOrg: org });
-      return this.roleRepository.save(role);
     }
+
+    const isRoleExists = await this.exists(
+      data.namespace,
+      parentApp,
+      parentOrg,
+    );
+
+    if (isRoleExists) {
+      this.logger.debug(
+        `Role namespace ${data.namespace} with ParentOrg ${orgNamespace} and parent App ${appNamespace} already exists`,
+      );
+
+      return;
+    }
+
+    const role = Role.create({ ...data, parentApp, parentOrg });
+    return this.roleRepository.save(role);
   }
 
   /**

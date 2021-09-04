@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
 import { OrganizationService } from '../organization/organization.service';
 import { IAppDefinition } from '@energyweb/iam-contracts';
+import { Organization } from '../organization/organization.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -60,8 +61,14 @@ export class ApplicationService {
    * return true if App with given namespace exists
    * @param namespace
    */
-  public async exists(namespace: string) {
-    return Boolean(await this.getByNamespace(namespace));
+  public async exists(
+    namespace: string,
+    parentOrg: Organization,
+  ): Promise<Boolean> {
+    const appExists = await this.applicationRepository.findOne({
+      where: { namespace, parentOrg },
+    });
+    return Boolean(appExists);
   }
 
   /**
@@ -76,6 +83,13 @@ export class ApplicationService {
         `Not able to create application: ${data.namespace}, parent organization ${parentOrg} does not exists`,
       );
       return;
+    }
+    const isAppExists = await this.exists(data.namespace, org);
+
+    if (isAppExists) {
+      this.logger.debug(
+        `Not able to create application: ${data.namespace} with same parent organization ${parentOrg} already exists`,
+      );
     }
     const app = Application.create({ ...data, parentOrg: org });
     return this.applicationRepository.save(app);

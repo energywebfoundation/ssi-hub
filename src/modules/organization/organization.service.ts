@@ -97,8 +97,14 @@ export class OrganizationService {
    * return true if Org with given namespace exists
    * @param namespace
    */
-  public async exists(namespace: string): Promise<boolean> {
-    return Boolean(await this.getByNamespace(namespace));
+  public async exists(
+    namespace: string,
+    parentOrg: Organization,
+  ): Promise<boolean> {
+    const orgExist = await this.orgRepository.findOne({
+      where: { namespace, parentOrg },
+    });
+    return Boolean(orgExist);
   }
 
   /**
@@ -108,6 +114,13 @@ export class OrganizationService {
    */
   public async create({ parentOrg, ...data }: OrganizationDTO) {
     const parentOrganization = await this.getByNamespace(parentOrg);
+    const orgExists = await this.exists(data.namespace, parentOrganization);
+    if (orgExists) {
+      this.logger.debug(
+        `namespace ${data.namespace} already exists in org ${parentOrg} `,
+      );
+      return;
+    }
     const org = Organization.create({ ...data, parentOrg: parentOrganization });
     return this.orgRepository.save(org);
   }
