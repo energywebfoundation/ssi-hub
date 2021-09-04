@@ -99,12 +99,16 @@ export class OrganizationService {
    */
   public async exists(
     namespace: string,
-    parentOrg: Organization,
+    parentOrg?: Organization,
   ): Promise<boolean> {
-    const orgExist = await this.orgRepository.findOne({
-      where: { namespace, parentOrg },
+    let whereObjectClause: any = { namespace };
+    if (parentOrg) {
+      whereObjectClause.parentOrg = parentOrg;
+    }
+    const appExists = await this.orgRepository.findOne({
+      where: whereObjectClause,
     });
-    return Boolean(orgExist);
+    return Boolean(appExists);
   }
 
   /**

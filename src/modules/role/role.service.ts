@@ -50,12 +50,23 @@ export class RoleService {
    */
   public async exists(
     namespace: string,
-    parentApp: Application,
-    parentOrg: Organization,
+    parentApp?: Application,
+    parentOrg?: Organization,
   ): Promise<Boolean> {
+    let whereClauseObject: any = { namespace };
+
+    if (parentApp) {
+      whereClauseObject.parentApp = parentApp;
+    }
+
+    if (parentOrg) {
+      whereClauseObject.parentOrg = parentOrg;
+    }
+
     const roleExists = await this.roleRepository.findOne({
-      where: { namespace, parentOrg, parentApp },
+      where: whereClauseObject,
     });
+
     return Boolean(roleExists);
   }
 

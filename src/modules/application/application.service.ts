@@ -63,10 +63,14 @@ export class ApplicationService {
    */
   public async exists(
     namespace: string,
-    parentOrg: Organization,
+    parentOrg?: Organization,
   ): Promise<Boolean> {
+    let whereObjectClause: any = { namespace };
+    if (parentOrg) {
+      whereObjectClause.parentOrg = parentOrg;
+    }
     const appExists = await this.applicationRepository.findOne({
-      where: { namespace, parentOrg },
+      where: whereObjectClause,
     });
     return Boolean(appExists);
   }

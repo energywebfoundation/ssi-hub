@@ -16,33 +16,9 @@ import { Chance } from 'chance';
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
+import { organizationFixture } from './organization.fixture';
 
 const chance = new Chance();
-
-const organizationFixture = async (
-  repo: Repository<Organization>,
-  count = 1,
-) => {
-  const organizations = [];
-  for (let i = 0; i < count; i++) {
-    const name = chance
-      .string({ pool: 'abcdefghijklmnopqrstuvwxyz' })
-      .toLowerCase();
-    const definition = {
-      orgName: name,
-      description: chance.paragraph(),
-      websiteUrl: chance.url(),
-    };
-    const org = Organization.create({
-      name,
-      namespace: `${name}.iam.ewc`,
-      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
-      definition,
-    });
-    organizations.push(org);
-  }
-  return repo.save(organizations);
-};
 
 describe('OrganizationController', () => {
   let module: TestingModule;
@@ -119,7 +95,7 @@ describe('OrganizationController', () => {
       .expect(200)
       .expect(res => {
         const response: Organization[] = res.body;
-        expect(response.length).toBe(2);
+        expect(response.length).toBe(3);
         response.map(res => {
           expect(res).toHaveProperty('id');
           expect(res).toHaveProperty('name');
