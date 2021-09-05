@@ -1,0 +1,47 @@
+import { Chance } from 'chance';
+import { Repository } from 'typeorm';
+import { Application } from '../application/application.entity';
+import { Organization } from '../organization/organization.entity';
+import { Role } from './role.entity';
+
+const chance = new Chance();
+
+export const roleFixture = async (
+  repo: Repository<Role>,
+  organization: Organization,
+  application: Application,
+  count = 1,
+) => {
+  const roles = [];
+  for (let i = 0; i < count; i++) {
+    const name = chance
+      .string({ pool: 'abcdefghijklmnopqrstuvwxyz' })
+      .toLowerCase();
+
+    const definition = {
+      version: 1.0,
+      enrolmentPreconditions: [],
+      roleType: '',
+      fields: [],
+      issuer: {
+        issuerType: 'Role',
+        did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
+        roleName: 'testRole',
+      },
+      roleName: name,
+      metadata: {},
+    };
+
+    const role = Role.create({
+      name,
+      namespace: `${name}.roles.testapp.apps.testApp.iam.ewc`,
+      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+      definition,
+      parentOrg: organization,
+      parentApp: application,
+    });
+
+    roles.push(role);
+  }
+  return repo.save(roles);
+};

@@ -1,4 +1,3 @@
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   getRepositoryToken,
@@ -6,8 +5,6 @@ import {
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
 import { Application } from '../application/application.entity';
-import { LoggerModule } from '../logger/logger.module';
-import { SentryModule } from '../sentry/sentry.module';
 import { Organization } from './organization.entity';
 import { OrganizationService } from './organization.service';
 import * as TestDbCOnfig from '../../../test/config';
@@ -34,13 +31,11 @@ describe('OrganizationService', () => {
   let queryRunner: QueryRunner;
 
   beforeEach(async () => {
+    jest.resetAllMocks();
     module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(TestDbCOnfig.default as TypeOrmModuleOptions),
         TypeOrmModule.forFeature([Organization, Application]),
-        LoggerModule,
-        ConfigModule,
-        SentryModule,
       ],
       providers: [
         OrganizationService,
