@@ -40,5 +40,6 @@ export class RemoveDuplicates1630744507207 implements MigrationInterface {
     await deleteDuplicateRoles(queryRunner);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async down(queryRunner: QueryRunner): Promise<void> {}
 }
