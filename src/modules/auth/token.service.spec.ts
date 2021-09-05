@@ -52,7 +52,7 @@ class TestModule {
 describe('TokenService', () => {
     let app: INestApplication;
     
-    const mockRequest = (method: string, origin: string = undefined, status: number = 200) => {
+    const mockRequest = (method: string, origin: string = undefined, status = 200) => {
         const token = jwt.sign({
             origin: 'https://switchboard-dev.energyweb.org'
         }, 'testToken');

@@ -101,7 +101,7 @@ export class OrganizationService {
     namespace: string,
     parentOrg?: Organization,
   ): Promise<boolean> {
-    let whereObjectClause: any = { namespace };
+    const whereObjectClause: any = { namespace };
     if (parentOrg) {
       whereObjectClause.parentOrg = parentOrg;
     }

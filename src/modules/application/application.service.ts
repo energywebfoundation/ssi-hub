@@ -64,8 +64,8 @@ export class ApplicationService {
   public async exists(
     namespace: string,
     parentOrg?: Organization,
-  ): Promise<Boolean> {
-    let whereObjectClause: any = { namespace };
+  ): Promise<boolean> {
+    const whereObjectClause: any = { namespace };
     if (parentOrg) {
       whereObjectClause.parentOrg = parentOrg;
     }

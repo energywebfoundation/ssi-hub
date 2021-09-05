@@ -52,8 +52,8 @@ export class RoleService {
     namespace: string,
     parentApp?: Application,
     parentOrg?: Organization,
-  ): Promise<Boolean> {
-    let whereClauseObject: any = { namespace };
+  ): Promise<boolean> {
+    const whereClauseObject: any = { namespace };
 
     if (parentApp) {
       whereClauseObject.parentApp = parentApp;
