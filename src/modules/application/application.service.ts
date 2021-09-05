@@ -88,12 +88,14 @@ export class ApplicationService {
       );
       return;
     }
+
     const isAppExists = await this.exists(data.namespace, org);
 
     if (isAppExists) {
       this.logger.debug(
         `Not able to create application: ${data.namespace} with same parent organization ${parentOrg} already exists`,
       );
+      return;
     }
     const app = Application.create({ ...data, parentOrg: org });
     return this.applicationRepository.save(app);
