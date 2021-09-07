@@ -8,8 +8,8 @@ const chance = new Chance();
 
 export const roleFixture = async (
   repo: Repository<Role>,
-  organization: Organization,
-  application: Application,
+  organization?: Organization,
+  application?: Application,
   count = 1,
 ) => {
   const roles = [];
@@ -37,8 +37,8 @@ export const roleFixture = async (
       namespace: `${name}.roles.testapp.apps.testApp.iam.ewc`,
       owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
       definition,
-      parentOrg: organization,
-      parentApp: application,
+      parentOrg: organization || null,
+      parentApp: application || null,
     });
 
     roles.push(role);

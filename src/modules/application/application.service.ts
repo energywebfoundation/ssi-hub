@@ -60,6 +60,7 @@ export class ApplicationService {
   /**
    * return true if App with given namespace exists
    * @param namespace
+   * @param parentOrg
    */
   public async exists(
     namespace: string,

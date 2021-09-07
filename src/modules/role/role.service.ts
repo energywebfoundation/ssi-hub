@@ -47,6 +47,8 @@ export class RoleService {
   /**
    * return true if role with given namespace exists
    * @param namespace
+   * @param parentApp
+   * @param parentOrg
    */
   public async exists(
     namespace: string,
@@ -76,6 +78,13 @@ export class RoleService {
    * @return id of newly added Role
    */
   public async create({ appNamespace, orgNamespace, ...data }: RoleDTO) {
+    if (appNamespace && orgNamespace) {
+      this.logger.debug(
+        `Not able to create role: ${data.namespace}, namespace can only have one of parentApp and OrgApp`,
+      );
+      return;
+    }
+
     let parentApp: Application, parentOrg: Organization;
 
     if (appNamespace) {
@@ -105,7 +114,7 @@ export class RoleService {
 
     if (isRoleExists) {
       this.logger.debug(
-        `Role namespace ${data.namespace} with ParentOrg ${orgNamespace} and parent App ${appNamespace} already exists`,
+        `Role namespace ${data.namespace} with same ParentOrg or parentApp already exists`,
       );
 
       return;

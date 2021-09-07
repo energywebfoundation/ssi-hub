@@ -96,6 +96,7 @@ export class OrganizationService {
   /**
    * return true if Org with given namespace exists
    * @param namespace
+   * @param parentOrg
    */
   public async exists(
     namespace: string,
@@ -105,10 +106,10 @@ export class OrganizationService {
     if (parentOrg) {
       whereObjectClause.parentOrg = parentOrg;
     }
-    const appExists = await this.orgRepository.findOne({
+    const orgExists = await this.orgRepository.findOne({
       where: whereObjectClause,
     });
-    return Boolean(appExists);
+    return Boolean(orgExists);
   }
 
   /**

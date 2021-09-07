@@ -102,6 +102,72 @@ describe('RoleService', () => {
 
   it('create() it should not save an role with existing namespace, parentOrg and parentApp', async () => {
     const org = organizations[0];
+
+    MockOrgService.getByNamespace.mockResolvedValueOnce(org);
+
+    const testRole = chance.pickone(roles);
+    const { name, owner, namespace } = testRole;
+
+    await service.create({
+      name,
+      namespace,
+      owner,
+      definition: {
+        version: 1.0,
+        enrolmentPreconditions: [],
+        roleType: 'app',
+        fields: [],
+        issuer: {
+          issuerType: 'Role',
+          did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
+          roleName: 'testRole',
+        },
+        roleName: name,
+        metadata: {},
+      },
+      orgNamespace: org.namespace,
+    });
+
+    expect(MockLogger.debug).toHaveBeenCalledWith(
+      expect.stringContaining(
+        `Role namespace ${namespace} with same ParentOrg or parentApp already exists`,
+      ),
+    );
+  });
+
+  it('create() it should create role', async () => {
+    const app = applications[0];
+    MockAppService.getByNamespace.mockResolvedValueOnce(app);
+
+    const name = chance.name();
+    const role = await service.create({
+      name,
+      namespace: `${name}.roles.testApps.apps.testOrg.iam.ewc`,
+      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+      definition: {
+        version: 1.0,
+        enrolmentPreconditions: [],
+        roleType: 'app',
+        fields: [],
+        issuer: {
+          issuerType: 'Role',
+          did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
+          roleName: 'testRole',
+        },
+        roleName: name,
+        metadata: {},
+      },
+      appNamespace: app.namespace,
+    });
+
+    expect(role).toBeInstanceOf(Role);
+    expect(role.name).toBe(name);
+    expect(role.namespace).toBe(`${name}.roles.testApps.apps.testOrg.iam.ewc`);
+    expect(role.parentApp.namespace).toBe(app.namespace);
+  });
+
+  it('create() it should not save when role object has both parentOrg and appOrg params', async () => {
+    const org = organizations[0];
     const app = applications[0];
     MockOrgService.getByNamespace.mockResolvedValueOnce(org);
     MockAppService.getByNamespace.mockResolvedValueOnce(app);
@@ -132,43 +198,8 @@ describe('RoleService', () => {
 
     expect(MockLogger.debug).toHaveBeenCalledWith(
       expect.stringContaining(
-        `Role namespace ${namespace} with ParentOrg ${org.namespace} and parent App ${app.namespace} already exists`,
+        `Not able to create role: ${namespace}, namespace can only have one of parentApp and OrgApp`,
       ),
     );
-  });
-
-  it('create() it should create role', async () => {
-    const org = organizations[0];
-    const app = applications[0];
-    MockOrgService.getByNamespace.mockResolvedValueOnce(org);
-    MockAppService.getByNamespace.mockResolvedValueOnce(app);
-
-    const name = chance.name();
-    const role = await service.create({
-      name,
-      namespace: `${name}.roles.testApps.apps.testOrg.iam.ewc`,
-      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
-      definition: {
-        version: 1.0,
-        enrolmentPreconditions: [],
-        roleType: 'app',
-        fields: [],
-        issuer: {
-          issuerType: 'Role',
-          did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
-          roleName: 'testRole',
-        },
-        roleName: name,
-        metadata: {},
-      },
-      appNamespace: app.namespace,
-      orgNamespace: org.namespace,
-    });
-
-    expect(role).toBeInstanceOf(Role);
-    expect(role.name).toBe(name);
-    expect(role.namespace).toBe(`${name}.roles.testApps.apps.testOrg.iam.ewc`);
-    expect(role.parentOrg.namespace).toBe(org.namespace);
-    expect(role.parentApp.namespace).toBe(app.namespace);
   });
 });
