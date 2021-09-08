@@ -69,14 +69,9 @@ export class ApplicationService {
   /**
    * return true if App with given namespace exists
    * @param namespace
-   * @param parentOrg
    */
   public async exists(namespace: string): Promise<boolean> {
-    return Boolean(
-      await this.applicationRepository.findOne({
-        where: { namespace },
-      }),
-    );
+    return Boolean(await this.getByNamespace(namespace));
   }
 
   /**

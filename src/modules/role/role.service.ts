@@ -57,11 +57,7 @@ export class RoleService {
    * @param namespace
    */
   public async exists(namespace: string): Promise<boolean> {
-    return Boolean(
-      await this.roleRepository.findOne({
-        where: { namespace },
-      }),
-    );
+    return Boolean(await this.getByNamespace(namespace));
   }
 
   /**

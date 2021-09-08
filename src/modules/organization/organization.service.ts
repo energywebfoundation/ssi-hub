@@ -109,11 +109,7 @@ export class OrganizationService {
    * @param namespace
    */
   public async exists(namespace: string): Promise<boolean> {
-    return Boolean(
-      await this.orgRepository.findOne({
-        where: { namespace },
-      }),
-    );
+    return Boolean(await this.getByNamespace(namespace));
   }
 
   /**

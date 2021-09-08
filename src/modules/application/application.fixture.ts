@@ -15,7 +15,7 @@ export const applicationFixture = async (
   for (let i = 0; i < count; i++) {
     const name = `testApp${i}`;
     const namespace = `${name}.apps.testOrg${i}.iam.ewc`;
-    const namespacehash = namehash(namespace);
+    const namespaceHash = namehash(namespace);
 
     const definition = {
       appName: name,
@@ -29,7 +29,7 @@ export const applicationFixture = async (
       owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
       definition,
       parentOrg: organization,
-      namehash: namespacehash,
+      namehash: namespaceHash,
     });
     apps.push(app);
   }
