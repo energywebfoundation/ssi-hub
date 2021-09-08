@@ -14,6 +14,7 @@ import { OrganizationService } from '../organization/organization.service';
 import { organizationFixture } from '../organization/organization.fixture';
 import { Organization } from '../organization/organization.entity';
 import { applicationFixture } from './application.fixture';
+import { namehash } from '../../ethers/utils';
 
 const chance = new Chance();
 
@@ -84,6 +85,7 @@ describe('ApplicationService', () => {
     const testApp = chance.pickone(applications);
     const organization = chance.pickone(organizations);
     const { name, owner, definition, namespace } = testApp;
+    const namespacehash = namehash(namespace);
 
     MockOrgService.getByNamespace.mockResolvedValueOnce(organization);
 
@@ -93,6 +95,7 @@ describe('ApplicationService', () => {
       owner,
       definition,
       parentOrg: organization.namespace,
+      namehash: namespacehash,
     });
 
     expect(MockLogger.debug).toHaveBeenCalledWith(
@@ -117,11 +120,13 @@ describe('ApplicationService', () => {
         websiteUrl: chance.url(),
       },
       parentOrg: organization.namespace,
+      namehash: namehash(`${name}.apps.testOrg.iam.ewc`),
     });
 
     expect(app).toBeInstanceOf(Application);
     expect(app.name).toBe(name);
     expect(app.namespace).toBe(`${name}.apps.testOrg.iam.ewc`);
     expect(app.parentOrg.namespace).toBe(organization.namespace);
+    expect(app.namehash).toBe(namehash(`${name}.apps.testOrg.iam.ewc`));
   });
 });

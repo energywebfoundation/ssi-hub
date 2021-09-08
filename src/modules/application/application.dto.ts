@@ -73,5 +73,9 @@ export class ApplicationDTO implements BaseEnsEntity {
   namespace: string;
 
   @IsString()
+  @ApiProperty()
+  namehash: string;
+
+  @IsString()
   parentOrg: string;
 }

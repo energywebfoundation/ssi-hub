@@ -170,12 +170,14 @@ export class OrganizationService {
     parentOrgNamespace,
     metadata,
     name,
+    namehash,
   }: {
     owner: string;
     namespace: string;
     parentOrgNamespace: string;
     metadata: IOrganizationDefinition;
     name: string;
+    namehash: string;
   }) {
     let dto: OrganizationDTO;
 
@@ -188,6 +190,7 @@ export class OrganizationService {
         owner,
         namespace,
         name,
+        namehash,
       });
     } catch (err) {
       this.logger.debug(

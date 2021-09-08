@@ -137,12 +137,14 @@ export class ApplicationService {
     parentOrgNamespace,
     metadata,
     name,
+    namehash,
   }: {
     owner: string;
     namespace: string;
     parentOrgNamespace: string;
     metadata: IAppDefinition;
     name: string;
+    namehash: string;
   }) {
     let dto: ApplicationDTO;
     try {
@@ -154,6 +156,7 @@ export class ApplicationService {
         name,
         namespace,
         parentOrg: parentOrgNamespace,
+        namehash,
       });
     } catch (err) {
       this.logger.debug(

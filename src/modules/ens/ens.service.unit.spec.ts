@@ -15,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import { Logger } from '../logger/logger.service';
 import { StakingService } from '../staking/staking.service';
+import { namehash } from 'ethers/utils';
 
 dotenv.config();
 
@@ -202,6 +203,7 @@ describe('EnsService', () => {
 
   describe('ENS Sync Validation', () => {
     it('syncNamespace() Validate and accept APP Sync Data', async () => {
+      const namespacehash = namehash('onionapp.app.onion.iam.ewc');
       const mockAppServiceSpy = jest.spyOn(
         MockApplicationService,
         'handleAppSyncWithEns',
@@ -210,6 +212,7 @@ describe('EnsService', () => {
         data: APP_MOCK_DATA,
         namespace: 'onionapp.apps.onion.iam.ewc',
         owner: 'onion',
+        hash: namespacehash,
       });
       expect(MockLogger.debug).not.toHaveBeenCalled();
       expect(mockAppServiceSpy).toHaveBeenCalledWith(
@@ -217,15 +220,18 @@ describe('EnsService', () => {
           metadata: APP_MOCK_DATA,
           namespace: 'onionapp.apps.onion.iam.ewc',
           owner: 'onion',
+          namehash: namespacehash,
         }),
       );
     }, 30000);
 
     it('syncNamespace() Validate and reject APP Sync Data', async () => {
+      const namespacehash = namehash('onionapp.app.onion.iam.ewc');
       const appSyncData = {
         data: APP_MOCK_DATA,
         namespace: 'onionapp.app.onion.iam.ewc',
         owner: 'onion',
+        hash: namespacehash,
       };
 
       const mockAppServiceSpy = jest.spyOn(
@@ -240,6 +246,7 @@ describe('EnsService', () => {
     }, 30000);
 
     it('syncNamespace() Validate and accept ROLE Sync Data with roleType app', async () => {
+      const namespacehash = namehash('test.roles.onion.apps.myorg.org.iam.ewc');
       const mockRoleServiceSpy = jest.spyOn(
         MockRoleService,
         'handleRoleSyncWithEns',
@@ -248,6 +255,7 @@ describe('EnsService', () => {
         data: ROLE_MOCK_DATA,
         namespace: 'test.roles.onion.apps.myorg.org.iam.ewc',
         owner: 'carrot',
+        hash: namespacehash,
       });
       expect(MockLogger.debug).not.toHaveBeenCalled();
       expect(mockRoleServiceSpy).toHaveBeenCalledWith(
@@ -255,11 +263,13 @@ describe('EnsService', () => {
           metadata: ROLE_MOCK_DATA,
           namespace: 'test.roles.onion.apps.myorg.org.iam.ewc',
           owner: 'carrot',
+          namehash: namespacehash,
         }),
       );
     }, 30000);
 
     it('syncNamespace() Validate and accept ROLE Sync Data with roleType org', async () => {
+      const namespacehash = namehash('test.roles.onion.iam.ewc');
       ROLE_MOCK_DATA.roleType = 'org';
       const mockRoleServiceSpy = jest.spyOn(
         MockRoleService,
@@ -269,6 +279,7 @@ describe('EnsService', () => {
         data: ROLE_MOCK_DATA,
         namespace: 'test.roles.onion.iam.ewc',
         owner: 'carrot',
+        hash: namespacehash,
       });
       expect(MockLogger.debug).not.toHaveBeenCalled();
       expect(mockRoleServiceSpy).toHaveBeenCalledWith(
@@ -276,11 +287,13 @@ describe('EnsService', () => {
           metadata: ROLE_MOCK_DATA,
           namespace: 'test.roles.onion.iam.ewc',
           owner: 'carrot',
+          namehash: namespacehash,
         }),
       );
     }, 30000);
 
     it('syncNamespace() Validate and reject ROLE Sync Data with roleType custom', async () => {
+      const namespacehash = namehash('test.roles.onionapp.apps.onion.iam.ewc');
       ROLE_MOCK_DATA.roleType = 'custom';
       const mockRoleServiceSpy = jest.spyOn(
         MockRoleService,
@@ -290,6 +303,7 @@ describe('EnsService', () => {
         data: ROLE_MOCK_DATA,
         namespace: 'test.roles.onionapp.apps.onion.iam.ewc',
         owner: 'carrot',
+        hash: namespacehash,
       });
       expect(MockLogger.debug).toHaveBeenCalledWith(
         `Bailed: Roletype ${ROLE_MOCK_DATA.roleType} is not a valid roletype`,
@@ -298,6 +312,7 @@ describe('EnsService', () => {
     }, 30000);
 
     it('syncNamespace() Validate ORG Sync Data', async () => {
+      const namespacehash = namehash('onion.iam.ewc');
       const mockOrgServiceSpy = jest.spyOn(
         MockOrgService,
         'handleOrgSyncWithEns',
@@ -306,12 +321,14 @@ describe('EnsService', () => {
         data: ORG_MOCK_DATA,
         namespace: 'onion.iam.ewc',
         owner: 'onion',
+        hash: namespacehash,
       });
       expect(mockOrgServiceSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           metadata: ORG_MOCK_DATA,
           namespace: 'onion.iam.ewc',
           owner: 'onion',
+          namehash: namespacehash,
         }),
       );
     }, 30000);

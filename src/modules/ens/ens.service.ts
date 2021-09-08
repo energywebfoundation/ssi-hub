@@ -205,6 +205,7 @@ export class EnsService {
         data,
         namespace: name,
         owner: namespaceOwner,
+        hash
       });
     } catch (err) {
       this.logger.error(`Error syncing namespace ${name}, owner ${owner}, ${err}`);
@@ -217,10 +218,12 @@ export class EnsService {
     data,
     namespace,
     owner,
+    hash
   }: {
     data: IRoleDefinition | IOrganizationDefinition | IAppDefinition;
     namespace: string;
     owner: string;
+    hash: string;
   }){
     const [name, parent, ...rest] = namespace.split('.');
 
@@ -231,6 +234,7 @@ export class EnsService {
         owner,
         name,
         parentOrgNamespace: parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
+        namehash: hash,
       });
     }
     if (DomainReader.isAppDefinition(data)) {
@@ -242,6 +246,7 @@ export class EnsService {
           owner,
           name,
           parentOrgNamespace: rest.join('.'),
+          namehash: hash,
         });
       }
       this.logger.debug(
@@ -255,7 +260,8 @@ export class EnsService {
           namespace,
           owner,
           name,
-          appNamespace: rest.join('.')
+          appNamespace: rest.join('.'),
+          namehash: hash,
         });
       }
       if (data.roleType.toLowerCase() === 'org') {
@@ -264,7 +270,8 @@ export class EnsService {
           namespace,
           owner,
           name,
-          orgNamespace: rest.join('.')
+          orgNamespace: rest.join('.'),
+          namehash: hash,
         });
       }
       this.logger.debug(

@@ -275,6 +275,7 @@ export class RoleService {
     appNamespace,
     metadata,
     name,
+    namehash,
   }: {
     owner: string;
     namespace: string;
@@ -282,6 +283,7 @@ export class RoleService {
     appNamespace?: string;
     metadata: IRoleDefinition;
     name: string;
+    namehash: string;
   }) {
     let dto: RoleDTO;
 
@@ -295,6 +297,7 @@ export class RoleService {
         owner,
         name,
         namespace,
+        namehash,
       });
     } catch (err) {
       this.logger.debug(

@@ -12,6 +12,7 @@ import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { organizationFixture } from './organization.fixture';
 import { Chance } from 'chance';
 import { Logger } from '../logger/logger.service';
+import { namehash } from '../../ethers/utils';
 
 const chance = new Chance();
 
@@ -78,6 +79,7 @@ describe('OrganizationService', () => {
       owner,
       definition,
       parentOrg: testOrg.parentOrg.namespace,
+      namehash: namehash(namespace),
     });
 
     expect(MockLogger.debug).toHaveBeenCalledWith(
@@ -90,18 +92,21 @@ describe('OrganizationService', () => {
   it('create() it should create organization', async () => {
     const testOrg = chance.pickone(organizations);
     const name = chance.name();
+    const namespace = `${name}.iam.ewc`;
 
     const org = await service.create({
       name,
-      namespace: `${name}.iam.ewc`,
+      namespace: `${namespace}`,
       owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
       definition: testOrg.definition,
       parentOrg: testOrg.parentOrg.namespace,
+      namehash: namehash(namespace),
     });
 
     expect(org).toBeInstanceOf(Organization);
     expect(org.name).toBe(name);
     expect(org.namespace).toBe(`${name}.iam.ewc`);
     expect(org.parentOrg.namespace).toBe(testOrg.parentOrg.namespace);
+    expect(org.namehash).toBe(testOrg.namehash);
   });
 });

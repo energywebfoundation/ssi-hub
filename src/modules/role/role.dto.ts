@@ -10,11 +10,7 @@ import {
   validateOrReject,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  EnrolmentPrecondition,
-  Fields,
-  Issuer,
-} from './role.types';
+import { EnrolmentPrecondition, Fields, Issuer } from './role.types';
 import { BaseEnsEntity } from '../../common/ENSBaseEntity';
 import { IRoleDefinition, PreconditionType } from '@energyweb/iam-contracts';
 
@@ -183,6 +179,10 @@ export class RoleDTO implements BaseEnsEntity {
   @IsString()
   @ApiProperty()
   namespace: string;
+
+  @IsString()
+  @ApiProperty()
+  namehash: string;
 
   @IsString()
   @ApiProperty()

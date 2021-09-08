@@ -18,6 +18,7 @@ import { applicationFixture } from '../application/application.fixture';
 import { roleFixture } from './role.fixture';
 import { RoleService } from './role.service';
 import { DIDService } from '../did/did.service';
+import { namehash } from '../../ethers/utils';
 
 const chance = new Chance();
 
@@ -125,6 +126,7 @@ describe('RoleService', () => {
         roleName: name,
         metadata: {},
       },
+      namehash: namehash(namespace),
       orgNamespace: org.namespace,
     });
 
@@ -136,10 +138,12 @@ describe('RoleService', () => {
   });
 
   it('create() it should create role', async () => {
+    const name = chance.name();
     const app = applications[0];
     MockAppService.getByNamespace.mockResolvedValueOnce(app);
 
-    const name = chance.name();
+    const namespace = `${name}.roles.testApps.apps.testOrg.iam.ewc`;
+
     const role = await service.create({
       name,
       namespace: `${name}.roles.testApps.apps.testOrg.iam.ewc`,
@@ -157,6 +161,7 @@ describe('RoleService', () => {
         roleName: name,
         metadata: {},
       },
+      namehash: namehash(namespace),
       appNamespace: app.namespace,
     });
 
@@ -192,6 +197,7 @@ describe('RoleService', () => {
         roleName: name,
         metadata: {},
       },
+      namehash: namehash(namespace),
       appNamespace: app.namespace,
       orgNamespace: org.namespace,
     });
