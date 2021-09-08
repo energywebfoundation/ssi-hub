@@ -33,6 +33,14 @@ export class RoleService {
   }
 
   /**
+   * returns single Role with matching namehash
+   * @param {String} namehash
+   */
+  public async getByNamehash(namehash: string) {
+    return this.roleRepository.findOne({ where: { namehash } });
+  }
+
+  /**
    * returns single Role with matching owner
    * @param {String} owner
    */
@@ -47,29 +55,13 @@ export class RoleService {
   /**
    * return true if role with given namespace exists
    * @param namespace
-   * @param parentApp
-   * @param parentOrg
    */
-  public async exists(
-    namespace: string,
-    parentApp?: Application,
-    parentOrg?: Organization,
-  ): Promise<boolean> {
-    const whereClauseObject: any = { namespace };
-
-    if (parentApp) {
-      whereClauseObject.parentApp = parentApp;
-    }
-
-    if (parentOrg) {
-      whereClauseObject.parentOrg = parentOrg;
-    }
-
-    const roleExists = await this.roleRepository.findOne({
-      where: whereClauseObject,
-    });
-
-    return Boolean(roleExists);
+  public async exists(namespace: string): Promise<boolean> {
+    return Boolean(
+      await this.roleRepository.findOne({
+        where: { namespace },
+      }),
+    );
   }
 
   /**
@@ -106,16 +98,10 @@ export class RoleService {
       }
     }
 
-    const isRoleExists = await this.exists(
-      data.namespace,
-      parentApp,
-      parentOrg,
-    );
+    const isRoleExists = await this.exists(data.namespace);
 
     if (isRoleExists) {
-      this.logger.debug(
-        `Role namespace ${data.namespace} with same ParentOrg or parentApp already exists`,
-      );
+      this.logger.debug(`Role namespace ${data.namespace} already exists`);
 
       return;
     }
@@ -161,6 +147,19 @@ export class RoleService {
    */
   public async remove(namespace: string) {
     const role = await this.getByNamespace(namespace);
+    if (!role) {
+      return;
+    }
+
+    return this.roleRepository.delete(role.id);
+  }
+
+  /**
+   * removes Role with matching namehash
+   * @param namehash
+   */
+  public async removeByNameHash(namehash: string) {
+    const role = await this.getByNamehash(namehash);
     if (!role) {
       return;
     }

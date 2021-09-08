@@ -23,16 +23,19 @@ const MockRoleService = {
   handleRoleSyncWithEns: jest.fn(),
   remove: jest.fn(),
   getByNamespace: jest.fn(),
+  getByNamehash: jest.fn(),
 };
 const MockApplicationService = {
   handleAppSyncWithEns: jest.fn(),
   remove: jest.fn(),
   getByNamespace: jest.fn(),
+  getByNamehash: jest.fn(),
 };
 const MockOrgService = {
   handleOrgSyncWithEns: jest.fn(),
   remove: jest.fn(),
   getByNamespace: jest.fn(),
+  getByNamehash: jest.fn(),
 };
 const MockStakingService = {};
 const MockLogger = {
@@ -139,41 +142,44 @@ describe('EnsService', () => {
   describe('Sync ENS', () => {
     it('syncENS() it should attempt to delete a deregistered namespace using orgService', async () => {
       const name = 'myorg.daniel.iam.ewc';
+      const hash = namehash(name);
       jest.spyOn(service, 'syncNamespace');
-      jest.spyOn(MockOrgService, 'getByNamespace').mockResolvedValueOnce(true);
+      jest.spyOn(MockOrgService, 'getByNamehash').mockResolvedValueOnce(true);
       jest
         .spyOn(service as any, 'getAllNamespaces')
         .mockResolvedValueOnce([name]);
       await service.syncENS();
       expect(MockLogger.log).toHaveBeenCalledWith(
         expect.stringContaining(
-          `OrgDeleted: successfully removed deregistered org with namespace ${name}`,
+          `OrgDeleted: successfully removed deregistered org with namehash ${hash}`,
         ),
       );
-      expect(MockOrgService.remove).toHaveBeenCalledWith(name);
+      expect(MockOrgService.remove).toHaveBeenCalledWith(hash);
     }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using roleService', async () => {
       const name = 'myorg.daniel.iam.ewc';
+      const hash = namehash(name);
       jest.spyOn(service, 'syncNamespace');
-      jest.spyOn(MockRoleService, 'getByNamespace').mockResolvedValueOnce(true);
+      jest.spyOn(MockRoleService, 'getByNamehash').mockResolvedValueOnce(true);
       jest
         .spyOn(service as any, 'getAllNamespaces')
         .mockResolvedValueOnce([name]);
       await service.syncENS();
       expect(MockLogger.log).toHaveBeenCalledWith(
         expect.stringContaining(
-          `RoleDeleted: successfully removed deregistered role with namespace ${name}`,
+          `RoleDeleted: successfully removed deregistered role with namehash ${hash}`,
         ),
       );
-      expect(MockRoleService.remove).toHaveBeenCalledWith(name);
+      expect(MockRoleService.remove).toHaveBeenCalledWith(hash);
     }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using appService', async () => {
       const name = 'myorg.daniel.iam.ewc';
+      const hash = namehash(name);
       jest.spyOn(service, 'syncNamespace');
       jest
-        .spyOn(MockApplicationService, 'getByNamespace')
+        .spyOn(MockApplicationService, 'getByNamehash')
         .mockResolvedValueOnce(true);
       jest
         .spyOn(service as any, 'getAllNamespaces')
@@ -181,21 +187,22 @@ describe('EnsService', () => {
       await service.syncENS();
       expect(MockLogger.log).toHaveBeenCalledWith(
         expect.stringContaining(
-          `AppDeleted: successfully removed deregistered app with namespace ${name}`,
+          `AppDeleted: successfully removed deregistered app with namehash ${hash}`,
         ),
       );
-      expect(MockApplicationService.remove).toHaveBeenCalledWith(name);
+      expect(MockApplicationService.remove).toHaveBeenCalledWith(hash);
     }, 30000);
 
     it('syncENS() malfunctioned metadata should throw error', async () => {
       jest.spyOn(service, 'syncNamespace');
       jest
         .spyOn(service as any, 'getAllNamespaces')
-        .mockResolvedValueOnce(['apps.myorg.iam.ewc']);
+        .mockResolvedValueOnce(['apps.daniel.iam.ewc']);
+
       await service.syncENS();
       expect(MockLogger.error).toHaveBeenCalledWith(
         expect.stringContaining(
-          'Error syncing namespace apps.myorg.iam.ewc, owner undefined, Error: unable to parse resolved textData for node:',
+          'Error syncing namespace apps.daniel.iam.ewc, owner undefined, Error: unable to parse resolved textData for node:',
         ),
       );
     }, 30000);

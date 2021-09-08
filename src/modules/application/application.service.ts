@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
 import { OrganizationService } from '../organization/organization.service';
 import { IAppDefinition } from '@energyweb/iam-contracts';
-import { Organization } from '../organization/organization.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -26,6 +25,16 @@ export class ApplicationService {
   public async getByNamespace(namespace: string): Promise<Application> {
     return this.applicationRepository.findOne({
       where: { namespace },
+    });
+  }
+
+  /**
+   * returns single App with matching namehash
+   * @param {String} namehash
+   */
+  public async getByNamehash(namehash: string): Promise<Application> {
+    return this.applicationRepository.findOne({
+      where: { namehash },
     });
   }
 
@@ -62,18 +71,12 @@ export class ApplicationService {
    * @param namespace
    * @param parentOrg
    */
-  public async exists(
-    namespace: string,
-    parentOrg?: Organization,
-  ): Promise<boolean> {
-    const whereObjectClause: any = { namespace };
-    if (parentOrg) {
-      whereObjectClause.parentOrg = parentOrg;
-    }
-    const appExists = await this.applicationRepository.findOne({
-      where: whereObjectClause,
-    });
-    return Boolean(appExists);
+  public async exists(namespace: string): Promise<boolean> {
+    return Boolean(
+      await this.applicationRepository.findOne({
+        where: { namespace },
+      }),
+    );
   }
 
   /**
@@ -90,11 +93,11 @@ export class ApplicationService {
       return;
     }
 
-    const isAppExists = await this.exists(data.namespace, org);
+    const isAppExists = await this.exists(data.namespace);
 
     if (isAppExists) {
       this.logger.debug(
-        `Not able to create application: ${data.namespace} with same parent organization ${parentOrg} already exists`,
+        `Not able to create application: ${data.namespace} already exists`,
       );
       return;
     }
@@ -128,6 +131,19 @@ export class ApplicationService {
   public async remove(namespace: string) {
     const app = await this.getByNamespace(namespace);
     if (!app) return;
+    return this.applicationRepository.delete(app.id);
+  }
+
+  /**
+   * removes App with matching namehash
+   * @param namehash
+   */
+  public async removeByNameHash(namehash: string) {
+    const app = await this.getByNamehash(namehash);
+    if (!app) {
+      return;
+    }
+
     return this.applicationRepository.delete(app.id);
   }
 

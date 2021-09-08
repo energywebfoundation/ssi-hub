@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { utils, errors } from 'ethers';
 import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
@@ -27,7 +27,7 @@ import type { DomainNotifier } from "@energyweb/iam-contracts/dist/ethers-v4/Dom
 export const emptyAddress = '0x'.padEnd(42, '0');
 
 @Injectable()
-export class EnsService {
+export class EnsService implements OnModuleDestroy {
   private publicResolver: PublicResolver;
   private domainNotifer: DomainNotifier
   private ensRegistry: EnsRegistry;
@@ -108,29 +108,29 @@ export class EnsService {
  
   }
 
-  private async deleteNamespace(name: string) {
+  private async deleteNamespace(hash: string) {
     try {
-       const isOrg = await this.organizationService.getByNamespace(name);
+       const isOrg = await this.organizationService.getByNamehash(hash);
         if(isOrg) {
-          await this.organizationService.remove(name);
-          this.logger.log(`OrgDeleted: successfully removed deregistered org with namespace ${name}`);
+          await this.organizationService.remove(hash);
+          this.logger.log(`OrgDeleted: successfully removed deregistered org with namehash ${hash}`);
         }
 
-        const isRole = await this.roleService.getByNamespace(name);
+        const isRole = await this.roleService.getByNamehash(hash);
         if(isRole) {
-          await this.roleService.remove(name);
-          this.logger.log(`RoleDeleted: successfully removed deregistered role with namespace ${name}`);
+          await this.roleService.remove(hash);
+          this.logger.log(`RoleDeleted: successfully removed deregistered role with namehash ${hash}`);
         }
 
-        const isApp = await this.applicationService.getByNamespace(name);
+        const isApp = await this.applicationService.getByNamehash(hash);
         if(isApp) {
-          await this.applicationService.remove(name);
-          this.logger.log(`AppDeleted: successfully removed deregistered app with namespace ${name}`);
+          await this.applicationService.remove(hash);
+          this.logger.log(`AppDeleted: successfully removed deregistered app with namehash ${hash}`);
         }
         return;
     }
     catch(err) {
-      this.logger.debug(`NamespaceDelete: An error occured while try to remove ${name} namespace: ${err}`)
+      this.logger.debug(`NamespaceDelete: An error occured while try to remove ${namehash} namehash: ${err}`)
     }
   }
   
@@ -153,10 +153,8 @@ export class EnsService {
 
     // Register event handler for new Role/App/Org
     this.ensRegistry.addListener('Transfer', async (node, owner) => {
-      const namespace = await this.domainReader.readName(node.toString());
-      if (!namespace) return;
 
-      this.eventHandler({ hash: node, name: namespace, owner });
+      this.eventHandler({ hash: node, owner });
     });
 
     // Register event handler for domain definition updates
@@ -181,15 +179,15 @@ export class EnsService {
     owner,
   }: {
     hash: string;
-    name: string;
+    name?: string;
     owner?: string;
   }) {
     try {
       const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
-    
+
       if (namespaceOwner === emptyAddress) {
         //prevent resync and remove namespace from database
-        return this.deleteNamespace(name);
+        return this.deleteNamespace(hash);
       }
    
       const data = await this.domainReader.read({ node: hash });
@@ -300,5 +298,12 @@ export class EnsService {
       this.logger.error(err);
     }
     this.logger.info('### Finished ENS Sync ###');
+  }
+
+ onModuleDestroy() {
+    this.ensRegistry.removeAllListeners('Transfer');
+    this.ensRegistry.removeAllListeners('NewOwner');
+    this.domainNotifer.removeAllListeners('DomainUpdated');
+    this.publicResolver.removeAllListeners('TextChanged');
   }
 }

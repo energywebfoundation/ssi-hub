@@ -81,52 +81,131 @@ describe('ApplicationService', () => {
     module.close();
   });
 
-  it('create() it should not save an application with existing namespace and parentOrg ', async () => {
-    const testApp = chance.pickone(applications);
-    const organization = chance.pickone(organizations);
-    const { name, owner, definition, namespace } = testApp;
-    const namespacehash = namehash(namespace);
+  describe('create', () => {
+    it('create() it should not save an application with existing namespace', async () => {
+      const testApp = chance.pickone(applications);
+      const organization = chance.pickone(organizations);
+      const { name, owner, definition, namespace } = testApp;
+      const namespacehash = namehash(namespace);
 
-    MockOrgService.getByNamespace.mockResolvedValueOnce(organization);
+      MockOrgService.getByNamespace.mockResolvedValueOnce(organization);
 
-    await service.create({
-      name,
-      namespace,
-      owner,
-      definition,
-      parentOrg: organization.namespace,
-      namehash: namespacehash,
+      await service.create({
+        name,
+        namespace,
+        owner,
+        definition,
+        parentOrg: organization.namespace,
+        namehash: namespacehash,
+      });
+
+      expect(MockLogger.debug).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Not able to create application: ${namespace} already exists`,
+        ),
+      );
+      const createdApps = await repo.find({ namespace });
+      expect(createdApps.length).toBe(1);
     });
 
-    expect(MockLogger.debug).toHaveBeenCalledWith(
-      expect.stringContaining(
-        `Not able to create application: ${namespace} with same parent organization ${organization.namespace} already exists`,
-      ),
-    );
+    it('create() it should create application', async () => {
+      const organization = chance.pickone(organizations);
+      MockOrgService.getByNamespace.mockResolvedValueOnce(organization);
+      const namespace = 'testapp.apps.testOrg.iam.ewc';
+      const name = 'testapp';
+
+      const app = await service.create({
+        name,
+        namespace,
+        owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+        definition: {
+          appName: name,
+          description: chance.paragraph(),
+          websiteUrl: chance.url(),
+        },
+        parentOrg: organization.namespace,
+        namehash: namehash(namespace),
+      });
+
+      expect(app).toBeInstanceOf(Application);
+      expect(app.name).toBe(name);
+      expect(app.namespace).toBe(namespace);
+      expect(app.parentOrg.namespace).toBe(organization.namespace);
+      expect(app.namehash).toBe(namehash(namespace));
+    });
   });
 
-  it('create() it should create application', async () => {
-    const organization = chance.pickone(organizations);
-    MockOrgService.getByNamespace.mockResolvedValueOnce(organization);
-    const name = chance.name();
+  describe('getByNamehash', () => {
+    it('getByNamehash() it should fetch application using namehash', async () => {
+      const testApp = applications[0];
+      const app = await service.getByNamehash(testApp.namehash);
 
-    const app = await service.create({
-      name,
-      namespace: `${name}.apps.testOrg.iam.ewc`,
-      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
-      definition: {
-        appName: name,
-        description: chance.paragraph(),
-        websiteUrl: chance.url(),
-      },
-      parentOrg: organization.namespace,
-      namehash: namehash(`${name}.apps.testOrg.iam.ewc`),
+      expect(app).toBeInstanceOf(Application);
+      expect(app.name).toBe(testApp.name);
+      expect(app.namespace).toBe(testApp.namespace);
+      expect(app.namehash).toBe(testApp.namehash);
     });
 
-    expect(app).toBeInstanceOf(Application);
-    expect(app.name).toBe(name);
-    expect(app.namespace).toBe(`${name}.apps.testOrg.iam.ewc`);
-    expect(app.parentOrg.namespace).toBe(organization.namespace);
-    expect(app.namehash).toBe(namehash(`${name}.apps.testOrg.iam.ewc`));
+    it('getByNamehash() it should return undefined when using namehash that does not exist', async () => {
+      const name = 'notexists.apps.testOrg.iam.ewc';
+      const namespaceHash = namehash(name);
+      const app = await service.getByNamehash(namespaceHash);
+
+      expect(app).toBe(undefined);
+    });
+  });
+
+  describe('getByNamespace', () => {
+    it('getByNamespace() it should fetch organization using namespace', async () => {
+      const testApp = applications[0];
+      const app = await service.getByNamespace(testApp.namespace);
+
+      expect(app).toBeInstanceOf(Application);
+      expect(app.name).toBe(testApp.name);
+      expect(app.namespace).toBe(testApp.namespace);
+      expect(app.namehash).toBe(testApp.namehash);
+    });
+
+    it('getByNamespace() it should return undefined when using namespace that does not exist', async () => {
+      const app = await service.getByNamespace(
+        `notexists.apps.testOrg.iam.ewc`,
+      );
+
+      expect(app).toBe(undefined);
+    });
+  });
+
+  describe('getByNamespace', () => {
+    it('getByNamespace() it should fetch organization using namespace', async () => {
+      const testApp = applications[0];
+      const app = await service.getByNamespace(testApp.namespace);
+
+      expect(app).toBeInstanceOf(Application);
+      expect(app.name).toBe(testApp.name);
+      expect(app.namespace).toBe(testApp.namespace);
+      expect(app.namehash).toBe(testApp.namehash);
+    });
+  });
+
+  describe('removeByNameHash', () => {
+    it('removeByNameHash() it should remove organization using namehash', async () => {
+      const testApp = organizations[0];
+      await service.removeByNameHash(testApp.namehash);
+
+      const app = await service.getByNamehash(testApp.namehash);
+
+      expect(app).toBe(undefined);
+    });
+  });
+
+  describe('remove', () => {
+    it('remove() it should remove organization using namespace', async () => {
+      const testApp = organizations[0];
+      await service.remove(testApp.namespace);
+
+      const app = await service.getByNamespace(testApp.namespace);
+
+      expect(app).toBe(undefined);
+    });
   });
 });

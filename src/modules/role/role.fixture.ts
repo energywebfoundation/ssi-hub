@@ -1,10 +1,8 @@
-import { Chance } from 'chance';
 import { Repository } from 'typeorm';
+import { namehash } from '../../ethers/utils';
 import { Application } from '../application/application.entity';
 import { Organization } from '../organization/organization.entity';
 import { Role } from './role.entity';
-
-const chance = new Chance();
 
 export const roleFixture = async (
   repo: Repository<Role>,
@@ -14,10 +12,9 @@ export const roleFixture = async (
 ) => {
   const roles = [];
   for (let i = 0; i < count; i++) {
-    const name = chance
-      .string({ pool: 'abcdefghijklmnopqrstuvwxyz' })
-      .toLowerCase();
-
+    const name = `testRole${i}`;
+    const namespace = `${name}.roles.testApp${i}.apps.testOrg${i}.iam.ewc`;
+    const namespaceHash = namehash(namespace);
     const definition = {
       version: 1.0,
       enrolmentPreconditions: [],
@@ -39,6 +36,7 @@ export const roleFixture = async (
       definition,
       parentOrg: organization || null,
       parentApp: application || null,
+      namehash: namespaceHash,
     });
 
     roles.push(role);

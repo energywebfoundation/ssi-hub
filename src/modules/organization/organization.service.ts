@@ -83,6 +83,17 @@ export class OrganizationService {
   }
 
   /**
+   * returns single Org with matching namehash
+   * @param {String} namehash
+   */
+  public async getByNamehash(namehash: string) {
+    return this.orgRepository.findOne({
+      where: { namehash },
+      relations: ['subOrgs', 'subOrgs.subOrgs'],
+    });
+  }
+
+  /**
    * returns single Org with matching namespace
    * @param {String} owner
    */
@@ -96,20 +107,13 @@ export class OrganizationService {
   /**
    * return true if Org with given namespace exists
    * @param namespace
-   * @param parentOrg
    */
-  public async exists(
-    namespace: string,
-    parentOrg?: Organization,
-  ): Promise<boolean> {
-    const whereObjectClause: any = { namespace };
-    if (parentOrg) {
-      whereObjectClause.parentOrg = parentOrg;
-    }
-    const orgExists = await this.orgRepository.findOne({
-      where: whereObjectClause,
-    });
-    return Boolean(orgExists);
+  public async exists(namespace: string): Promise<boolean> {
+    return Boolean(
+      await this.orgRepository.findOne({
+        where: { namespace },
+      }),
+    );
   }
 
   /**
@@ -119,11 +123,9 @@ export class OrganizationService {
    */
   public async create({ parentOrg, ...data }: OrganizationDTO) {
     const parentOrganization = await this.getByNamespace(parentOrg);
-    const orgExists = await this.exists(data.namespace, parentOrganization);
+    const orgExists = await this.exists(data.namespace);
     if (orgExists) {
-      this.logger.debug(
-        `namespace ${data.namespace} already exists in org ${parentOrg} `,
-      );
+      this.logger.debug(`namespace ${data.namespace} already exists`);
       return;
     }
     const org = Organization.create({ ...data, parentOrg: parentOrganization });
@@ -157,6 +159,19 @@ export class OrganizationService {
    */
   public async remove(namespace: string) {
     const org = await this.getByNamespace(namespace);
+    if (!org) {
+      return;
+    }
+
+    return this.orgRepository.delete(org.id);
+  }
+
+  /**
+   * removes Organization with matching namehash
+   * @param namehash
+   */
+  public async removeByNameHash(namehash: string) {
+    const org = await this.getByNamehash(namehash);
     if (!org) {
       return;
     }
