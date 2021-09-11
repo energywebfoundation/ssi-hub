@@ -134,12 +134,7 @@ export class ApplicationService {
    * @param namehash
    */
   public async removeByNameHash(namehash: string) {
-    const app = await this.getByNamehash(namehash);
-    if (!app) {
-      return;
-    }
-
-    return this.applicationRepository.delete(app.id);
+    return this.applicationRepository.delete({ namehash });
   }
 
   public async handleAppSyncWithEns({

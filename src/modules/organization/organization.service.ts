@@ -139,6 +139,7 @@ export class OrganizationService {
         namespace: data.namespace,
       },
     });
+
     if (!org) return this.create({ ...data, parentOrg });
     const parentOrganization = await this.getByNamespace(parentOrg);
     const updatedOrg = Organization.create({
@@ -167,12 +168,7 @@ export class OrganizationService {
    * @param namehash
    */
   public async removeByNameHash(namehash: string) {
-    const org = await this.getByNamehash(namehash);
-    if (!org) {
-      return;
-    }
-
-    return this.orgRepository.delete(org.id);
+    return this.orgRepository.delete({ namehash });
   }
 
   public async handleOrgSyncWithEns({

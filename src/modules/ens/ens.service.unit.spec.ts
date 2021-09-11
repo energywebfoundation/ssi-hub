@@ -99,7 +99,6 @@ describe('EnsService', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
     module = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
@@ -136,6 +135,7 @@ describe('EnsService', () => {
   });
 
   afterEach(async () => {
+    jest.resetAllMocks();
     await app.close();
   });
 
@@ -201,11 +201,9 @@ describe('EnsService', () => {
 
       await service.syncENS();
       expect(MockLogger.error).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Error syncing namespace apps.daniel.iam.ewc, owner undefined, Error: unable to parse resolved textData for node:',
-        ),
+        expect.stringContaining('Error: unable to parse resolved textData'),
       );
-    }, 30000);
+    }, 60000);
   });
 
   describe('ENS Sync Validation', () => {

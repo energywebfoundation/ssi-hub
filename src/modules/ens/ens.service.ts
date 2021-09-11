@@ -137,18 +137,13 @@ export class EnsService implements OnModuleDestroy {
   private InitEventListeners(): void {
     // Register event handler for legacy PublicResolver definitions
     this.publicResolver.addListener('TextChanged', async hash => {
-      const namespace = await this.publicResolver.name(hash.toString());
-      if (!namespace) return;
-      await this.eventHandler({ hash, name: namespace });
+      await this.eventHandler({ hash });
     });
 
     // Register event handler for owner change or namespace deletion
     this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
       const hash = utils.keccak256(node + label.slice(2));
-      const namespace = await this.domainReader.readName(hash.toString());
-      if (!namespace) return;
-
-      await this.eventHandler({ hash, name: namespace, owner });
+      await this.eventHandler({ hash, owner });
     });
 
     // Register event handler for new Role/App/Org
@@ -161,7 +156,7 @@ export class EnsService implements OnModuleDestroy {
     this.domainNotifer.addListener('DomainUpdated', async node => {
       const namespace = await this.domainReader.readName(node);
       if (!namespace) return;
-      await this.eventHandler({ hash: node, name: namespace });
+      await this.eventHandler({ hash: node });
     });
   }
 
@@ -175,13 +170,12 @@ export class EnsService implements OnModuleDestroy {
 
   private async eventHandler({
     hash,
-    name,
     owner,
   }: {
     hash: string;
-    name?: string;
     owner?: string;
   }) {
+    let name: string;
     try {
       const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
 
@@ -190,7 +184,9 @@ export class EnsService implements OnModuleDestroy {
         return this.deleteNamespace(hash);
       }
    
+      
       const data = await this.domainReader.read({ node: hash });
+       name = await this.domainReader.readName(hash);
       
       if (!namespaceOwner || !data) {
         this.logger.debug(
@@ -206,7 +202,7 @@ export class EnsService implements OnModuleDestroy {
         hash
       });
     } catch (err) {
-      this.logger.error(`Error syncing namespace ${name}, owner ${owner}, ${err}`);
+      this.logger.error(`Error syncing namespace ${ name }, owner ${owner}, ${err}`);
       return;
     }
   }
@@ -290,7 +286,7 @@ export class EnsService implements OnModuleDestroy {
         await Promise.allSettled(
           part.map((item: string) => {
             const hash = namehash(item);
-            return this.eventHandler({ hash, name: item });
+            return this.eventHandler({ hash });
           }),
         );
       }

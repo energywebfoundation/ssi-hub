@@ -155,12 +155,7 @@ export class RoleService {
    * @param namehash
    */
   public async removeByNameHash(namehash: string) {
-    const role = await this.getByNamehash(namehash);
-    if (!role) {
-      return;
-    }
-
-    return this.roleRepository.delete(role.id);
+    return this.roleRepository.delete({ namehash });
   }
 
   public async verifyUserRoles(did: string) {
