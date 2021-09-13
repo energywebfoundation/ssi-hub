@@ -44,6 +44,10 @@ export class Organization implements BaseEnsEntity {
   @Column()
   namespace: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  namehash?: string;
+
   @Field()
   @Index()
   @Column()
