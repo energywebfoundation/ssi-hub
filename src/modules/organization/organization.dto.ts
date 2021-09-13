@@ -70,6 +70,10 @@ export class OrganizationDTO implements BaseEnsEntity {
   @ApiProperty()
   namespace: string;
 
+  @IsString()
+  @ApiProperty()
+  namehash: string;
+
   @IsOptional()
   @IsString()
   parentOrg: string;

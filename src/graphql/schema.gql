@@ -48,6 +48,7 @@ type Role {
   id: ID!
   name: String!
   namespace: String!
+  namehash: String
   owner: String!
   definition: RoleDefinitionSchema!
 }
@@ -65,6 +66,7 @@ type Application {
   name: String!
   owner: String!
   namespace: String!
+  namehash: String
   definition: ApplicationDefinitionSchema!
   roles: [Role!]!
 }
@@ -81,6 +83,7 @@ type Organization {
   id: ID!
   name: String!
   namespace: String!
+  namehash: String
   owner: String!
   definition: OrganizationDefinitionSchema!
   apps: [Application!]!
