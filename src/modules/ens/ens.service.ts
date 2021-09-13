@@ -109,22 +109,23 @@ export class EnsService implements OnModuleDestroy {
   }
 
   private async deleteNamespace(hash: string) {
+    
     try {
        const isOrg = await this.organizationService.getByNamehash(hash);
-        if(isOrg) {
-          await this.organizationService.remove(hash);
+        if(isOrg) { 
+          await this.organizationService.removeByNameHash(hash);
           this.logger.log(`OrgDeleted: successfully removed deregistered org with namehash ${hash}`);
         }
 
         const isRole = await this.roleService.getByNamehash(hash);
         if(isRole) {
-          await this.roleService.remove(hash);
+          await this.roleService.removeByNameHash(hash);
           this.logger.log(`RoleDeleted: successfully removed deregistered role with namehash ${hash}`);
         }
 
         const isApp = await this.applicationService.getByNamehash(hash);
         if(isApp) {
-          await this.applicationService.remove(hash);
+          await this.applicationService.removeByNameHash(hash);
           this.logger.log(`AppDeleted: successfully removed deregistered app with namehash ${hash}`);
         }
         return;
@@ -178,7 +179,7 @@ export class EnsService implements OnModuleDestroy {
     let name: string;
     try {
       const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
-
+      
       if (namespaceOwner === emptyAddress) {
         //prevent resync and remove namespace from database
         return this.deleteNamespace(hash);
