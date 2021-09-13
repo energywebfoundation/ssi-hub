@@ -24,18 +24,21 @@ const MockRoleService = {
   remove: jest.fn(),
   getByNamespace: jest.fn(),
   getByNamehash: jest.fn(),
+  removeByNameHash: jest.fn(),
 };
 const MockApplicationService = {
   handleAppSyncWithEns: jest.fn(),
   remove: jest.fn(),
   getByNamespace: jest.fn(),
   getByNamehash: jest.fn(),
+  removeByNameHash: jest.fn(),
 };
 const MockOrgService = {
   handleOrgSyncWithEns: jest.fn(),
   remove: jest.fn(),
   getByNamespace: jest.fn(),
   getByNamehash: jest.fn(),
+  removeByNameHash: jest.fn(),
 };
 const MockStakingService = {};
 const MockLogger = {
@@ -146,6 +149,9 @@ describe('EnsService', () => {
       jest.spyOn(service, 'syncNamespace');
       jest.spyOn(MockOrgService, 'getByNamehash').mockResolvedValueOnce(true);
       jest
+        .spyOn(MockOrgService, 'removeByNameHash')
+        .mockResolvedValueOnce(true);
+      jest
         .spyOn(service as any, 'getAllNamespaces')
         .mockResolvedValueOnce([name]);
       await service.syncENS();
@@ -154,7 +160,7 @@ describe('EnsService', () => {
           `OrgDeleted: successfully removed deregistered org with namehash ${hash}`,
         ),
       );
-      expect(MockOrgService.remove).toHaveBeenCalledWith(hash);
+      expect(MockOrgService.removeByNameHash).toHaveBeenCalledWith(hash);
     }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using roleService', async () => {
@@ -165,13 +171,16 @@ describe('EnsService', () => {
       jest
         .spyOn(service as any, 'getAllNamespaces')
         .mockResolvedValueOnce([name]);
+      jest
+        .spyOn(MockRoleService, 'removeByNameHash')
+        .mockResolvedValueOnce(true);
       await service.syncENS();
       expect(MockLogger.log).toHaveBeenCalledWith(
         expect.stringContaining(
           `RoleDeleted: successfully removed deregistered role with namehash ${hash}`,
         ),
       );
-      expect(MockRoleService.remove).toHaveBeenCalledWith(hash);
+      expect(MockRoleService.removeByNameHash).toHaveBeenCalledWith(hash);
     }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using appService', async () => {
@@ -182,6 +191,9 @@ describe('EnsService', () => {
         .spyOn(MockApplicationService, 'getByNamehash')
         .mockResolvedValueOnce(true);
       jest
+        .spyOn(MockRoleService, 'removeByNameHash')
+        .mockResolvedValueOnce(true);
+      jest
         .spyOn(service as any, 'getAllNamespaces')
         .mockResolvedValueOnce([name]);
       await service.syncENS();
@@ -190,7 +202,9 @@ describe('EnsService', () => {
           `AppDeleted: successfully removed deregistered app with namehash ${hash}`,
         ),
       );
-      expect(MockApplicationService.remove).toHaveBeenCalledWith(hash);
+      expect(MockApplicationService.removeByNameHash).toHaveBeenCalledWith(
+        hash,
+      );
     }, 30000);
 
     it('syncENS() malfunctioned metadata should throw error', async () => {
