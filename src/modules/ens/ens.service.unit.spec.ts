@@ -164,7 +164,7 @@ describe('EnsService', () => {
     }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using roleService', async () => {
-      const name = 'myorg.daniel.iam.ewc';
+      const name = 'myrole.daniel.iam.ewc';
       const hash = namehash(name);
       jest.spyOn(service, 'syncNamespace');
       jest.spyOn(MockRoleService, 'getByNamehash').mockResolvedValueOnce(true);
@@ -184,14 +184,14 @@ describe('EnsService', () => {
     }, 30000);
 
     it('syncENS() it should attempt to delete a deregistered namespace using appService', async () => {
-      const name = 'myorg.daniel.iam.ewc';
+      const name = 'myapplication.daniel.iam.ewc';
       const hash = namehash(name);
       jest.spyOn(service, 'syncNamespace');
       jest
         .spyOn(MockApplicationService, 'getByNamehash')
         .mockResolvedValueOnce(true);
       jest
-        .spyOn(MockRoleService, 'removeByNameHash')
+        .spyOn(MockApplicationService, 'removeByNameHash')
         .mockResolvedValueOnce(true);
       jest
         .spyOn(service as any, 'getAllNamespaces')
