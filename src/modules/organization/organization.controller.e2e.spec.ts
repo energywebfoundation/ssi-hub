@@ -15,8 +15,9 @@ import { OrganizationService } from './organization.service';
 import { Chance } from 'chance';
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import request from 'supertest';
-import { INestApplication, VersioningType } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { organizationFixture } from './organization.fixture';
+import { appConfig } from '../../common/test.utils';
 
 const chance = new Chance();
 
@@ -42,9 +43,7 @@ describe('OrganizationController', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.enableVersioning({
-      type: VersioningType.URI,
-    });
+    appConfig(app);
     await app.init();
 
     const dbConnection = module.get(Connection);

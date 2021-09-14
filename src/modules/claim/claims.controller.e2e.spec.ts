@@ -6,7 +6,7 @@ import { SentryModule } from '../sentry/sentry.module';
 import { ConfigModule } from '@nestjs/config';
 import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import request from 'supertest';
-import { INestApplication, VersioningType } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Claim } from './claim.entity';
 import { ClaimController } from './claim.controller';
 import { ClaimService, UUID_NAMESPACE } from './claim.service';
@@ -20,6 +20,7 @@ import { AssetsService } from '../assets/assets.service';
 import { ClaimProcessor } from './claim.processor';
 import { v5 } from 'uuid';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { appConfig } from '../../common/test.utils';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -81,9 +82,7 @@ describe('ClaimsController', () => {
       .compile();
 
     app = module.createNestApplication();
-    app.enableVersioning({
-      type: VersioningType.URI,
-    });
+    appConfig(app);
     await app.init();
     service = app.get(ClaimService);
 

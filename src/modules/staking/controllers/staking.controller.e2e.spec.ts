@@ -1,6 +1,6 @@
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import request from 'supertest';
-import { INestApplication, VersioningType } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { StakingTerms } from '../entities/staking.terms.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -16,6 +16,7 @@ import * as TestDbCOnfig from '../../../../test/config';
 import { StakingPool } from '../entities/staking.pool.entity';
 import { Provider } from '../../../common/provider';
 import { ConfigModule } from '@nestjs/config';
+import { appConfig } from '../../../common/test.utils';
 
 const stakingTermsFixture = async (
   repo: Repository<StakingTerms>,
@@ -54,9 +55,7 @@ describe('StakingController', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.enableVersioning({
-      type: VersioningType.URI,
-    });
+    appConfig(app);
     await app.init();
 
     const dbConnection = module.get(Connection);
