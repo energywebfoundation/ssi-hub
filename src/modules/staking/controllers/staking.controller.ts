@@ -7,7 +7,6 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
-  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../auth/auth.decorator';
@@ -17,7 +16,7 @@ import { StakingService } from '../staking.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller({ path: 'staking', version: VERSION_NEUTRAL })
+@Controller({ path: 'staking', version: '1' })
 export class StakingController {
   constructor(private stakingService: StakingService) {}
 

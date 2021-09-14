@@ -7,7 +7,6 @@ import {
   Res,
   UnauthorizedException,
   UseGuards,
-  VERSION_NEUTRAL
 } from '@nestjs/common';
 import { LoginGuard } from './login.guard';
 import { Request, Response } from 'express';
@@ -18,14 +17,14 @@ import { ConfigService } from '@nestjs/config';
 import { RoleService } from '../role/role.service';
 
 @ApiTags('Auth')
-@Controller({version: VERSION_NEUTRAL})
+@Controller({ version: '1' })
 export class LoginController {
   constructor(
     private tokenService: TokenService,
     private cookiesServices: CookiesServices,
     private configService: ConfigService,
     private roleService: RoleService,
-  ) { }
+  ) {}
 
   @UseGuards(LoginGuard)
   @ApiBody({
@@ -108,7 +107,11 @@ export class LoginController {
     );
 
     const [token, refreshToken] = await Promise.all([
-      this.tokenService.generateAccessToken({ did: userDid, verifiedRoles, origin }),
+      this.tokenService.generateAccessToken({
+        did: userDid,
+        verifiedRoles,
+        origin,
+      }),
       this.tokenService.generateRefreshToken({
         userDid,
       }),

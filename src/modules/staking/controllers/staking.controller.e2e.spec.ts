@@ -1,6 +1,6 @@
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, VersioningType } from '@nestjs/common';
 import { StakingTerms } from '../entities/staking.terms.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -54,6 +54,9 @@ describe('StakingController', () => {
     }).compile();
 
     app = module.createNestApplication();
+    app.enableVersioning({
+      type: VersioningType.URI,
+    });
     await app.init();
 
     const dbConnection = module.get(Connection);
@@ -79,7 +82,7 @@ describe('StakingController', () => {
 
   it('getTerms(), should get the current terms and conditions', async () => {
     await testHttpServer
-      .get(`/staking/terms`)
+      .get(`/v1/staking/terms`)
       .expect(200)
       .expect(res => {
         expect(res.body.version).toEqual(stakeTerms[1].version);
@@ -89,7 +92,7 @@ describe('StakingController', () => {
 
   it('createTerms(), should throw an error when trying to save an already existing terms and conditions', async () => {
     await testHttpServer
-      .post(`/staking/terms`)
+      .post(`/v1/staking/terms`)
       .send({
         version: stakeTerms[1].version,
         terms: stakeTerms[1].terms,
@@ -103,7 +106,7 @@ describe('StakingController', () => {
       terms: '<h1> <a href="#"> Term version 1.3 </a> </h1>',
     };
     await testHttpServer
-      .post(`/staking/terms`)
+      .post(`/v1/staking/terms`)
       .send(termsToSave)
       .expect(201)
       .expect(res => {
