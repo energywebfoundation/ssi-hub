@@ -4,11 +4,7 @@ import * as TestDbCOnfig from '../../../test/config';
 import { LoggerModule } from '../logger/logger.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { ConfigModule } from '@nestjs/config';
-import {
-  Connection,
-  EntityManager,
-  QueryRunner,
-} from 'typeorm';
+import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Claim } from './claim.entity';
@@ -23,6 +19,7 @@ import { RoleService } from '../role/role.service';
 import { AssetsService } from '../assets/assets.service';
 import { ClaimProcessor } from './claim.processor';
 import { v5 } from 'uuid';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -74,7 +71,14 @@ describe('ClaimsController', () => {
         { provide: AssetsService, useValue: MockAssetService },
         ClaimProcessor,
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: () => {
+          return true;
+        },
+      })
+      .compile();
 
     app = module.createNestApplication();
     await app.init();

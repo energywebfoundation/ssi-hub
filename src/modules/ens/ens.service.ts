@@ -22,14 +22,14 @@ import {
   ResolverContractType,
   DomainNotifier__factory,
 } from '@energyweb/iam-contracts';
-import type { DomainNotifier } from "@energyweb/iam-contracts/dist/ethers-v4/DomainNotifier";
+import { DomainNotifier } from '@energyweb/iam-contracts/dist/ethers-v4/DomainNotifier';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
 @Injectable()
 export class EnsService implements OnModuleDestroy {
   private publicResolver: PublicResolver;
-  private domainNotifer: DomainNotifier
+  private domainNotifer: DomainNotifier;
   private ensRegistry: EnsRegistry;
   private domainReader: DomainReader;
   private domainHierarchy: DomainHierarchy;
@@ -47,15 +47,11 @@ export class EnsService implements OnModuleDestroy {
     errors.setLogLevel('error');
 
     // Get config values from .env file
-    const CHAIN_ID = parseInt(this.config.get<string>(
-      'CHAIN_ID',
-    ));
+    const CHAIN_ID = parseInt(this.config.get<string>('CHAIN_ID'));
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS',
     );
-    const RESOLVER_V1_ADDRESS = this.config.get<string>(
-      'RESOLVER_V1_ADDRESS',
-    );
+    const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
     const DOMAIN_NOTIFIER_ADDRESS = this.config.get<string>(
       'DOMAIN_NOTIFIER_ADDRESS',
     );
@@ -69,25 +65,33 @@ export class EnsService implements OnModuleDestroy {
     );
     this.domainNotifer = DomainNotifier__factory.connect(
       DOMAIN_NOTIFIER_ADDRESS,
-      this.provider
-    )
+      this.provider,
+    );
     this.ensRegistry = EnsRegistryFactory.connect(
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
     this.domainReader = new DomainReader({
       ensRegistryAddress: ENS_REGISTRY_ADDRESS,
-      provider: this.provider
+      provider: this.provider,
     });
-    this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: RESOLVER_V1_ADDRESS, type: ResolverContractType.RoleDefinitionResolver_v1 });
-    this.domainReader.addKnownResolver({ chainId: CHAIN_ID, address: PUBLIC_RESOLVER_ADDRESS, type: ResolverContractType.PublicResolver });
+    this.domainReader.addKnownResolver({
+      chainId: CHAIN_ID,
+      address: RESOLVER_V1_ADDRESS,
+      type: ResolverContractType.RoleDefinitionResolver_v1,
+    });
+    this.domainReader.addKnownResolver({
+      chainId: CHAIN_ID,
+      address: PUBLIC_RESOLVER_ADDRESS,
+      type: ResolverContractType.PublicResolver,
+    });
 
     this.domainHierarchy = new DomainHierarchy({
       domainReader: this.domainReader,
       ensRegistry: this.ensRegistry,
       provider: this.provider,
       domainNotifierAddress: DOMAIN_NOTIFIER_ADDRESS,
-      publicResolverAddress: PUBLIC_RESOLVER_ADDRESS
+      publicResolverAddress: PUBLIC_RESOLVER_ADDRESS,
     });
 
     // Using setInterval so that interval can be set dynamically from config
@@ -96,7 +100,9 @@ export class EnsService implements OnModuleDestroy {
     );
     const ENS_SYNC_ENABLED =
       this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
-    if (ensSyncInterval && ENS_SYNC_ENABLED) {
+    const isTestEnv = this.config.get<string>('NODE_ENV') === 'test';
+
+    if (ensSyncInterval && ENS_SYNC_ENABLED && !isTestEnv) {
       const interval = setInterval(
         () => this.syncENS(),
         parseInt(ensSyncInterval) * 3600000,
@@ -105,36 +111,41 @@ export class EnsService implements OnModuleDestroy {
       this.InitEventListeners();
       this.syncENS();
     }
- 
   }
 
   private async deleteNamespace(hash: string) {
-    
     try {
-       const isOrg = await this.organizationService.getByNamehash(hash);
-        if(isOrg) { 
-          await this.organizationService.removeByNameHash(hash);
-          this.logger.log(`OrgDeleted: successfully removed deregistered org with namehash ${hash}`);
-        }
+      const isOrg = await this.organizationService.getByNamehash(hash);
+      if (isOrg) {
+        await this.organizationService.removeByNameHash(hash);
+        this.logger.log(
+          `OrgDeleted: successfully removed deregistered org with namehash ${hash}`,
+        );
+      }
 
-        const isRole = await this.roleService.getByNamehash(hash);
-        if(isRole) {
-          await this.roleService.removeByNameHash(hash);
-          this.logger.log(`RoleDeleted: successfully removed deregistered role with namehash ${hash}`);
-        }
+      const isRole = await this.roleService.getByNamehash(hash);
+      if (isRole) {
+        await this.roleService.removeByNameHash(hash);
+        this.logger.log(
+          `RoleDeleted: successfully removed deregistered role with namehash ${hash}`,
+        );
+      }
 
-        const isApp = await this.applicationService.getByNamehash(hash);
-        if(isApp) {
-          await this.applicationService.removeByNameHash(hash);
-          this.logger.log(`AppDeleted: successfully removed deregistered app with namehash ${hash}`);
-        }
-        return;
-    }
-    catch(err) {
-      this.logger.debug(`NamespaceDelete: An error occured while try to remove ${namehash} namehash: ${err}`)
+      const isApp = await this.applicationService.getByNamehash(hash);
+      if (isApp) {
+        await this.applicationService.removeByNameHash(hash);
+        this.logger.log(
+          `AppDeleted: successfully removed deregistered app with namehash ${hash}`,
+        );
+      }
+      return;
+    } catch (err) {
+      this.logger.debug(
+        `NamespaceDelete: An error occurred while try to remove ${namehash} namehash: ${err}`,
+      );
     }
   }
-  
+
   private InitEventListeners(): void {
     // Register event handler for legacy PublicResolver definitions
     this.publicResolver.addListener('TextChanged', async hash => {
@@ -149,7 +160,6 @@ export class EnsService implements OnModuleDestroy {
 
     // Register event handler for new Role/App/Org
     this.ensRegistry.addListener('Transfer', async (node, owner) => {
-
       this.eventHandler({ hash: node, owner });
     });
 
@@ -164,8 +174,8 @@ export class EnsService implements OnModuleDestroy {
   private async getAllNamespaces() {
     const domains = await this.domainHierarchy.getSubdomainsUsingResolver({
       domain: 'iam.ewc',
-      mode: "ALL"
-    })
+      mode: 'ALL',
+    });
     return domains;
   }
 
@@ -179,16 +189,15 @@ export class EnsService implements OnModuleDestroy {
     let name: string;
     try {
       const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
-      
+
       if (namespaceOwner === emptyAddress) {
         //prevent resync and remove namespace from database
         return this.deleteNamespace(hash);
       }
-   
-      
+
       const data = await this.domainReader.read({ node: hash });
-       name = await this.domainReader.readName(hash);
-      
+      name = await this.domainReader.readName(hash);
+
       if (!namespaceOwner || !data) {
         this.logger.debug(
           `Role: ${name} not supported lack of owner or metadata`,
@@ -200,26 +209,27 @@ export class EnsService implements OnModuleDestroy {
         data,
         namespace: name,
         owner: namespaceOwner,
-        hash
+        hash,
       });
     } catch (err) {
-      this.logger.error(`Error syncing namespace ${ name }, owner ${owner}, ${err}`);
+      this.logger.error(
+        `Error syncing namespace ${name}, owner ${owner}, ${err}`,
+      );
       return;
     }
   }
-
 
   public async syncNamespace({
     data,
     namespace,
     owner,
-    hash
+    hash,
   }: {
     data: IRoleDefinition | IOrganizationDefinition | IAppDefinition;
     namespace: string;
     owner: string;
     hash: string;
-  }){
+  }) {
     const [name, parent, ...rest] = namespace.split('.');
 
     if (DomainReader.isOrgDefinition(data)) {
@@ -228,12 +238,12 @@ export class EnsService implements OnModuleDestroy {
         namespace,
         owner,
         name,
-        parentOrgNamespace: parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
+        parentOrgNamespace:
+          parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
         namehash: hash,
       });
     }
     if (DomainReader.isAppDefinition(data)) {
-   
       if (parent === 'apps') {
         return this.applicationService.handleAppSyncWithEns({
           metadata: data,
@@ -245,7 +255,7 @@ export class EnsService implements OnModuleDestroy {
         });
       }
       this.logger.debug(
-      `Bailed: App with namespace:${namespace} does not have 'apps' subdomain`,
+        `Bailed: App with namespace:${namespace} does not have 'apps' subdomain`,
       );
     }
     if (DomainReader.isRoleDefinition(data)) {
@@ -270,7 +280,7 @@ export class EnsService implements OnModuleDestroy {
         });
       }
       this.logger.debug(
-      `Bailed: Roletype ${data.roleType} is not a valid roletype`,
+        `Bailed: Roletype ${data.roleType} is not a valid roletype`,
       );
     }
     this.logger.debug(
@@ -297,7 +307,7 @@ export class EnsService implements OnModuleDestroy {
     this.logger.info('### Finished ENS Sync ###');
   }
 
- onModuleDestroy() {
+  onModuleDestroy() {
     this.ensRegistry.removeAllListeners('Transfer');
     this.ensRegistry.removeAllListeners('NewOwner');
     this.domainNotifer.removeAllListeners('DomainUpdated');

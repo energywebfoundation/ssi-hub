@@ -95,7 +95,20 @@ describe('ClaimRequestDTO', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     claimRequest.registrationTypes = ['NotRealRegistrationType'];
-    await expect(ClaimRequestDTO.create(claimRequest)).rejects.toThrow;
+    await expect(ClaimRequestDTO.create(claimRequest)).rejects.toEqual(
+      expect.arrayContaining([
+        {
+          children: [],
+          constraints: {
+            isEnum:
+              'each value in registrationTypes must be a valid enum value',
+          },
+          property: 'registrationTypes',
+          target: { ...claimRequest },
+          value: ['NotRealRegistrationType'],
+        },
+      ]),
+    );
   });
 });
 

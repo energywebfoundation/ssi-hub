@@ -67,7 +67,7 @@ jest.mock('../../ethers/EthereumDidRegistryFactory', () => ({
   EthereumDidRegistryFactory: {
     connect: jest.fn(() => {
       return {
-        addEventListener: jest.fn(),
+        addListener: jest.fn(),
       };
     }),
   },
