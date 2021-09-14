@@ -98,9 +98,9 @@ export class DIDService {
         service: entity.service,
         publicKey: entity.publicKey,
         proof: entity.proof,
-        updated: entity.updated
-      }
-    }
+        updated: entity.updated,
+      };
+    };
     const cachedDIDDocument = await this.didRepository.findOne(did);
     if (cachedDIDDocument) {
       return convertToIDIDDocument(cachedDIDDocument);
@@ -182,11 +182,13 @@ export class DIDService {
   }
 
   public async getDIDDocumentFromUniversalResolver(did: string) {
-    const universalResolverUrl = this.config.get<string>('UNIVERSAL_RESOLVER_URL');
+    const universalResolverUrl = this.config.get<string>(
+      'UNIVERSAL_RESOLVER_URL',
+    );
     if (!universalResolverUrl) {
-      throw new Error("universal resolver url not set");
+      throw new Error('universal resolver url not set');
     }
-    const stripTrailingSlash = (s: string) => s.replace(/\/$/, ""); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
+    const stripTrailingSlash = (s: string) => s.replace(/\/$/, ''); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
     const { data } = await this.httpService
       .get(`${stripTrailingSlash(universalResolverUrl)}/${did}`)
       .toPromise();
