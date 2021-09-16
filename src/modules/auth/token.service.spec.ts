@@ -1,4 +1,12 @@
-import { Controller, Get, INestApplication, MiddlewareConsumer, Module, Post, RequestMethod } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  INestApplication,
+  MiddlewareConsumer,
+  Module,
+  Post,
+  RequestMethod,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import * as jwt from 'jsonwebtoken';
@@ -10,80 +18,94 @@ import { RefreshTokenRepository } from './refreshToken.repository';
 // mock controller
 @Controller()
 class TestController {
-    @Get('test')
-    test() {
-        return "RETURN_VALUE";
-    }
+  @Get('test')
+  test() {
+    return 'RETURN_VALUE';
+  }
 
-    @Post('test')
-    testPost() {
-        return "RETURN_VALUE";
-    }
+  @Post('test')
+  testPost() {
+    return 'RETURN_VALUE';
+  }
 }
 
 // mock the middleware
-@Module({ providers: [
-    TokenService, 
+@Module({
+  providers: [
+    TokenService,
     {
-        provide: ConfigService, useValue: {},
+      provide: ConfigService,
+      useValue: {},
     },
     {
-        provide: JwtService, useValue: {},
+      provide: JwtService,
+      useValue: {},
     },
     {
-        provide: RefreshTokenRepository, useValue: {}
-    }
-], exports: [TokenService] })
-
+      provide: RefreshTokenRepository,
+      useValue: {},
+    },
+  ],
+  exports: [TokenService],
+})
 class TestModule {
-    constructor(private readonly tokenService: TokenService) { }
+  constructor(private readonly tokenService: TokenService) {}
 
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply((req, res, next) => this.tokenService.handleOriginCheck(req, res, next))
-            .exclude(
-                { path: '/login', method: RequestMethod.ALL },
-                { path: '/refresh_token', method: RequestMethod.ALL }
-            )
-            .forRoutes({ path: '/*', method: RequestMethod.ALL });
-    }
-};
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply((req, res, next) =>
+        this.tokenService.handleOriginCheck(req, res, next),
+      )
+      .exclude(
+        { path: '/login', method: RequestMethod.ALL },
+        { path: '/refresh_token', method: RequestMethod.ALL },
+      )
+      .forRoutes({ path: '/*', method: RequestMethod.ALL });
+  }
+}
 
 describe('TokenService', () => {
-    let app: INestApplication;
-    
-    const mockRequest = (method: string, origin: string = undefined, status:number = 200) => {
-        const token = jwt.sign({
-            origin: 'https://switchboard-dev.energyweb.org'
-        }, 'testToken');
-        
-        const req = request(app.getHttpServer())
-            [method]('/test')
-            .set({ "Authorization": `Bearer ${token}` });
-        
-        if(origin) req.set({ "origin": origin });    
-        return req.expect(status);
-    }
+  let app: INestApplication;
 
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [TestModule],
-            controllers: [TestController],
-        }).compile();
+  const mockRequest = (
+    method: string,
+    origin: string = undefined,
+    status = 200,
+  ) => {
+    const token = jwt.sign(
+      {
+        origin: 'https://switchboard-dev.energyweb.org',
+      },
+      'testToken',
+    );
 
-        app = module.createNestApplication();
-        await app.init();
-    });
+    const req = request(app.getHttpServer())
+      [method]('/test')
+      .set({ Authorization: `Bearer ${token}` });
 
-    it('should have same GET request ORIGIN header as stored in JWT token ', async () => {
-        return mockRequest('get', 'https://switchboard-dev.energyweb.org');
-    });
+    if (origin) req.set({ origin: origin });
+    return req.expect(status);
+  };
 
-    it('should NOT have same POST request ORIGIN header as stored in JWT token ', async () => {
-        return mockRequest('post', 'https://hacked-website.com', 500);
-    });
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [TestModule],
+      controllers: [TestController],
+    }).compile();
 
-    it('should NOT have origin in request headers', async () => {
-        return mockRequest('get');
-    });
-})
+    app = module.createNestApplication();
+    await app.init();
+  });
+
+  it('should have same GET request ORIGIN header as stored in JWT token ', async () => {
+    return mockRequest('get', 'https://switchboard-dev.energyweb.org');
+  });
+
+  it('should NOT have same POST request ORIGIN header as stored in JWT token ', async () => {
+    return mockRequest('post', 'https://hacked-website.com', 401);
+  });
+
+  it('should NOT have origin in request headers', async () => {
+    return mockRequest('get');
+  });
+});
