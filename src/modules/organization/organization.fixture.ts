@@ -1,8 +1,9 @@
 import { Chance } from 'chance';
-import { namehash } from 'ethers/utils';
+import { utils } from 'ethers';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
 
+const { namehash } = utils;
 const chance = new Chance();
 
 export const organizationFixture = async (
