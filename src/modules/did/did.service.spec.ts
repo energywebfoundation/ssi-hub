@@ -63,11 +63,11 @@ jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
     };
   }),
 }));
-jest.mock('../../ethers/factories/EthereumDIDRegistry__factory', () => ({
-  EthereumDIDRegistry__factory: {
+jest.mock('../../ethers/EthereumDidRegistryFactory', () => ({
+  EthereumDidRegistryFactory: {
     connect: jest.fn(() => {
       return {
-        on: jest.fn(),
+        addListener: jest.fn(),
       };
     }),
   },
