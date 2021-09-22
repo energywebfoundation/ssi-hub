@@ -5,12 +5,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { VOLTA_STAKING_POOL_FACTORY_ADDRESS } from '@energyweb/iam-contracts';
 import { StakingPool } from './entities/staking.pool.entity';
 import { StakingTerms } from './entities/staking.terms.entity';
 import { Logger } from '../logger/logger.service';
-import { StakingPoolFactory__factory } from '../../ethers/factories/StakingPoolFactory__factory';
-import { StakingPoolFactory } from '../../ethers/StakingPoolFactory';
+import {
+  StakingPoolFactory__factory,
+  VOLTA_STAKING_POOL_FACTORY_ADDRESS,
+} from '@energyweb/iam-contracts';
+import { StakingPoolFactory } from '@energyweb/iam-contracts/dist/ethers-v4/StakingPoolFactory';
 import { Provider } from '../../common/provider';
 
 @Injectable()
@@ -78,9 +80,12 @@ export class StakingService implements OnModuleDestroy {
     });
   }
   private InitEventListeners(): void {
-    this.stakingPoolFactory.on('StakingPoolLaunched', async (_, address) => {
-      await this.saveStakingPool(address);
-    });
+    this.stakingPoolFactory.addListener(
+      'StakingPoolLaunched',
+      async (org, address) => {
+        await this.saveStakingPool(address);
+      },
+    );
   }
 
   onModuleDestroy() {

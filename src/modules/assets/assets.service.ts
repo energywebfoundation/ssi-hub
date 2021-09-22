@@ -4,12 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets } from 'typeorm';
 import { Provider } from '../../common/provider';
 import { IdentityManager } from '../../ethers/IdentityManager';
-import { IdentityManager__factory } from '../../ethers/factories/IdentityManager__factory';
-import { OfferableIdentity__factory } from '../../ethers/factories/OfferableIdentity__factory';
+import { IdentityManagerFactory } from '../../ethers/IdentityManagerFactory';
+import { OfferableIdentityFactory } from '../../ethers/OfferableIdentityFactory';
 import { DIDService } from '../did/did.service';
 import { AssetDto } from './assets.dto';
 import { Asset, AssetsHistory } from './assets.entity';
-import { utils, BigNumber } from 'ethers';
+import { utils } from 'ethers';
 import { getDIDFromAddress } from '../did/did.types';
 import { abi as AssetsManagerContract } from '../../../node_modules/@ew-did-registry/proxyidentity/build/contracts/IdentityManager.json';
 import { Logger } from '../logger/logger.service';
@@ -43,7 +43,7 @@ export class AssetsService {
     private readonly eventEmitter: EventEmitter2,
   ) {
     this.logger.setContext(AssetsService.name);
-    this.assetsManager = IdentityManager__factory.connect(
+    this.assetsManager = IdentityManagerFactory.connect(
       this.configService.get<string>('ASSETS_MANAGER_ADDRESS') || '',
       this.provider,
     );
@@ -108,15 +108,10 @@ export class AssetsService {
       .leftJoinAndSelect('asset.document', 'did_document_entity')
       .where('assets_history.emittedBy = :owner', { owner })
       .andWhere('asset.owner != :owner', { owner })
-      .andWhere(
-        new Brackets(qb => {
-          qb.where('assets_history.type = :asset_transferred', {
-            asset_transferred: AssetHistoryEventType.ASSET_TRANSFERRED,
-          }).orWhere('assets_history.type = :asset_created', {
-            asset_created: AssetHistoryEventType.ASSET_CREATED,
-          });
-        }),
-      )
+      .andWhere(new Brackets((qb) => {
+        qb.where('assets_history.type = :asset_transferred', { asset_transferred: AssetHistoryEventType.ASSET_TRANSFERRED })
+          .orWhere('assets_history.type = :asset_created', { asset_created: AssetHistoryEventType.ASSET_CREATED })
+      }))
       .getMany();
   }
 
@@ -177,9 +172,9 @@ export class AssetsService {
   }
 
   private initializeListeners() {
-    this.assetsManager.on(
+    this.assetsManager.addListener(
       'IdentityCreated',
-      async (identity: string, owner: string, at: BigNumber) => {
+      async (identity: string, owner: string, at: utils.BigNumber) => {
         const atAsNumber = at.toNumber();
         const assetDto = await AssetDto.create({
           id: getDIDFromAddress(identity),
@@ -200,13 +195,13 @@ export class AssetsService {
         );
       },
     );
-    this.assetsManager.on(
+    this.assetsManager.addListener(
       'IdentityOfferCanceled',
       async (
         identity: string,
         owner: string,
         offeredTo: string,
-        at: BigNumber,
+        at: utils.BigNumber,
       ) => {
         const atNumbered = at.toNumber();
         const ownerDID = getDIDFromAddress(owner);
@@ -234,13 +229,13 @@ export class AssetsService {
         );
       },
     );
-    this.assetsManager.on(
+    this.assetsManager.addListener(
       'IdentityOfferRejected',
       async (
         identity: string,
         owner: string,
         offeredTo: string,
-        at: BigNumber,
+        at: utils.BigNumber,
       ) => {
         const assetDID = getDIDFromAddress(identity);
         const ownerDID = getDIDFromAddress(owner);
@@ -267,13 +262,13 @@ export class AssetsService {
         );
       },
     );
-    this.assetsManager.on(
+    this.assetsManager.addListener(
       'IdentityOffered',
       async (
         identity: string,
         owner: string,
         offeredTo: string,
-        at: BigNumber,
+        at: utils.BigNumber,
       ) => {
         const ownerDID = getDIDFromAddress(owner);
         const assetDID = getDIDFromAddress(identity);
@@ -301,9 +296,9 @@ export class AssetsService {
         );
       },
     );
-    this.assetsManager.on(
+    this.assetsManager.addListener(
       'IdentityTransferred',
-      async (identity: string, owner: string, at: BigNumber) => {
+      async (identity: string, owner: string, at: utils.BigNumber) => {
         const assetDID = getDIDFromAddress(identity);
         const newOwnerDID = getDIDFromAddress(owner);
         const numberedAt = at.toNumber();
@@ -348,15 +343,11 @@ export class AssetsService {
     const logs = await this.provider.getLogs(filter);
     return logs.map(log => {
       const parsedLog = assetsManagerInterface.parseLog(log);
-      return {
-        identity: parsedLog.args.identity,
-        owner: parsedLog.args.owner,
-        at: parsedLog.args.at,
-      } as AssetCreatedEventValues;
+      return parsedLog.values as AssetCreatedEventValues;
     });
   }
 
-  private async syncEventForAsset<T extends { at: BigNumber }>({
+  private async syncEventForAsset<T extends { at: utils.BigNumber }>({
     event,
     contractInterface,
     mapChainEventToCacheEvent,
@@ -379,12 +370,7 @@ export class AssetsService {
     const events = logs
       .map(log => {
         const parsedLog = contractInterface.parseLog(log);
-        return ({
-          identity: parsedLog.args.identity,
-          owner: parsedLog.args.owner,
-          offeredTo: parsedLog.args.offeredTo,
-          at: parsedLog.args.at as BigNumber,
-        } as unknown) as T;
+        return parsedLog.values as T;
       })
       .sort((a, b) => a.at.toNumber() - b.at.toNumber());
 
@@ -430,12 +416,7 @@ export class AssetsService {
 
       const [{ owner: firstOwner }] = logs.map(log => {
         const parsedLog = assetsManagerInterface.parseLog(log);
-        return {
-          identity: parsedLog.args.identity,
-          owner: parsedLog.args.owner,
-          offeredTo: parsedLog.args.offeredTo,
-          at: parsedLog.args.at as BigNumber,
-        } as AssetCreatedEventValues;
+        return parsedLog.values as AssetCreatedEventValues;
       });
 
       const OfferCanceledEvent = this.assetsManager.filters.IdentityOfferCanceled(
@@ -526,7 +507,7 @@ export class AssetsService {
     const assets = await this.getAllCreatedAssets();
 
     for (const { at, identity, owner } of assets) {
-      const assetContract = OfferableIdentity__factory.connect(
+      const assetContract = OfferableIdentityFactory.connect(
         identity,
         this.provider,
       );

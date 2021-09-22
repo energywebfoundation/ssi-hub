@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers';
+import { utils } from 'ethers';
 
 export enum AssetHistoryEventType {
   ASSET_CREATED = 'ASSET_CREATED',
@@ -30,7 +30,7 @@ export class AssetEvent implements AssetHistoryEvent {
 }
 
 interface AssetEventValues {
-  at: BigNumber;
+  at: utils.BigNumber;
   identity: string;
 }
 
