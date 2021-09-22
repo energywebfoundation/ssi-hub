@@ -17,6 +17,7 @@ import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { organizationFixture } from './organization.fixture';
+import { appConfig } from '../../common/test.utils';
 
 const chance = new Chance();
 
@@ -42,6 +43,7 @@ describe('OrganizationController', () => {
     }).compile();
 
     app = module.createNestApplication();
+    appConfig(app);
     await app.init();
 
     const dbConnection = module.get(Connection);
@@ -68,7 +70,7 @@ describe('OrganizationController', () => {
   it('getById(), should fetch organization by id', async () => {
     const testOrg = chance.pickone(organizations);
     await testHttpServer
-      .get(`/org/${testOrg.namespace}`)
+      .get(`/v1/org/${testOrg.namespace}`)
       .expect(200)
       .expect(res => {
         expect(res.body.id).toEqual(testOrg.id);
@@ -81,7 +83,7 @@ describe('OrganizationController', () => {
   it('getById(), should not return any organization given an id that does not exist', async () => {
     const testOrgNamespace = `${chance.first().toLowerCase()}.ewc.iam`;
     await testHttpServer
-      .get(`/org/${testOrgNamespace}`)
+      .get(`/v1/org/${testOrgNamespace}`)
       .expect(200)
       .expect(res => {
         expect(res.body).toEqual({});
@@ -91,7 +93,7 @@ describe('OrganizationController', () => {
   it('getByOwner(), should return organization belonging to an owner', async () => {
     const testOrg = chance.pickone(organizations);
     await testHttpServer
-      .get(`/org/owner/${testOrg.owner}`)
+      .get(`/v1/org/owner/${testOrg.owner}`)
       .expect(200)
       .expect(res => {
         const response: Organization[] = res.body;
@@ -109,7 +111,7 @@ describe('OrganizationController', () => {
   it('getByOwner(), should return organization belonging to an owner', async () => {
     const testOrgOwner = chance.string({ pool: 'abcdefghijklmnopqrstuvwxyz' });
     await testHttpServer
-      .get(`/org/owner/${testOrgOwner}`)
+      .get(`/v1/org/owner/${testOrgOwner}`)
       .expect(200)
       .expect(res => {
         const response: Organization[] = res.body;
@@ -121,7 +123,7 @@ describe('OrganizationController', () => {
     const testOrg = chance.pickone(organizations);
     const { namespace } = testOrg;
     await testHttpServer
-      .get(`/org/${namespace}/exists`)
+      .get(`/v1/org/${namespace}/exists`)
       .expect(200)
       .expect(res => {
         expect(res.text).toBe('true');
@@ -131,7 +133,7 @@ describe('OrganizationController', () => {
   it('exists(), should return false if an organization does not exist', async () => {
     const testOrgNamespace = `${chance.first().toLowerCase()}.ewc.iam`;
     await testHttpServer
-      .get(`/org/${testOrgNamespace}/exists`)
+      .get(`/v1/org/${testOrgNamespace}/exists`)
       .expect(200)
       .expect(res => {
         expect(res.text).toBe('false');

@@ -11,7 +11,6 @@ import {
   HttpStatus,
   ValidationPipe,
   UsePipes,
-  VERSION_NEUTRAL
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
 import {
@@ -43,7 +42,7 @@ import { DIDsQuery } from './claim.entity';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller({path: 'claim', version: VERSION_NEUTRAL})
+@Controller({ path: 'claim', version: '1' })
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
@@ -85,10 +84,7 @@ export class ClaimController {
       `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
       payload,
     );
-    this.nats.connection.publish(
-      `${sub}.${NATS_EXCHANGE_TOPIC}`,
-      payload
-    );
+    this.nats.connection.publish(`${sub}.${NATS_EXCHANGE_TOPIC}`, payload);
   }
 
   @Post('/request/:did')
@@ -116,10 +112,11 @@ export class ClaimController {
     const { requester, token } = data;
     const { sub } = jwt.decode(token);
     const ownedAssets = await this.assetsService.getByOwner(requester);
-    if (requester !== sub &&
-      !ownedAssets.some((a) => a.document.id === sub)
-    ) {
-      throw new HttpException("Claim requester not authorized to request for subject", HttpStatus.FORBIDDEN);
+    if (requester !== sub && !ownedAssets.some(a => a.document.id === sub)) {
+      throw new HttpException(
+        'Claim requester not authorized to request for subject',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     const claimData: IClaimRequest = {
@@ -339,7 +336,6 @@ export class ClaimController {
   @ApiOperation({
     summary: 'returns claims requested for given DIDs',
   })
-
   public async getBySubjects(
     @Query() { subjects }: DIDsQuery,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
@@ -349,7 +345,7 @@ export class ClaimController {
     return this.claimService.getBySubjects({
       subjects,
       filters: { isAccepted, namespace },
-      currentUser: user
+      currentUser: user,
     });
   }
 }

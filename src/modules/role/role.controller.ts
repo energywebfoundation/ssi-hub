@@ -4,7 +4,6 @@ import {
   HttpStatus,
   Param,
   UseInterceptors,
-  VERSION_NEUTRAL
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -14,7 +13,7 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller({path: 'role', version: VERSION_NEUTRAL})
+@Controller({ path: 'role', version: '1' })
 export class RoleController {
   constructor(private roleService: RoleService) {}
 

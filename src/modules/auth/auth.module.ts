@@ -45,8 +45,8 @@ export class AuthModule implements NestModule {
     consumer
       .apply((req, res, next) => this.tokenService.handleOriginCheck(req, res, next))
       .exclude(
-        { path: '/login', method: RequestMethod.ALL },
-        { path: '/refresh_token', method: RequestMethod.ALL }
+        { path: '/v1/login', method: RequestMethod.ALL },
+        { path: '/v1/refresh_token', method: RequestMethod.ALL }
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }

@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Query,
   UseInterceptors,
-  VERSION_NEUTRAL
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from '../../common/user.decorator';
@@ -21,15 +20,16 @@ import { Order } from './assets.types';
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
 @ApiTags('Assets')
-@Controller({path: 'assets', version: VERSION_NEUTRAL})
+@Controller({ path: 'assets', version: '1' })
 export class AssetsController {
-  constructor(private readonly assetsService: AssetsService) { }
+  constructor(private readonly assetsService: AssetsService) {}
 
   @Get(':id')
   async getByID(@Param('id') id: string, @User() currentUser?: string) {
     const asset = await this.assetsService.getById(id);
     if (
-      currentUser && asset &&
+      currentUser &&
+      asset &&
       asset.offeredTo !== currentUser &&
       asset.owner !== currentUser
     ) {

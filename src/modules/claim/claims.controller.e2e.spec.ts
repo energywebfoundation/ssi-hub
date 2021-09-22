@@ -20,6 +20,7 @@ import { AssetsService } from '../assets/assets.service';
 import { ClaimProcessor } from './claim.processor';
 import { v5 } from 'uuid';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { appConfig } from '../../common/test.utils';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -81,6 +82,7 @@ describe('ClaimsController', () => {
       .compile();
 
     app = module.createNestApplication();
+    appConfig(app);
     await app.init();
     service = app.get(ClaimService);
 
@@ -122,7 +124,7 @@ describe('ClaimsController', () => {
     };
 
     await testHttpServer
-      .post(`/claim/request/${requester}`)
+      .post(`/v1/claim/request/${requester}`)
       .send(claimRequest)
       .expect(201);
 
@@ -136,7 +138,7 @@ describe('ClaimsController', () => {
     );
 
     await testHttpServer
-      .get(`/claim/subject/${requester}`)
+      .get(`/v1/claim/subject/${requester}`)
       .expect(200)
       .expect(res => {
         expect(res.body.length).toEqual(1);
