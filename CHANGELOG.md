@@ -29,4 +29,4 @@ All notable changes to this project will be documented in this file. See [standa
 - **claim:** issuedToken now optional
 - **did.controller:** remove includeClaims param for /DID endpoint
 - **did.service:** handle trailing slash in UNIVERSAL_RESOLVER_CONFIG
-- installing jwt keys
+- adds generation of jwt keys to installation process
