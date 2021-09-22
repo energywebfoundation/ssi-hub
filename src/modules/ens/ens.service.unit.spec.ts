@@ -15,7 +15,9 @@ import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import { Logger } from '../logger/logger.service';
 import { StakingService } from '../staking/staking.service';
-import { namehash } from 'ethers/utils';
+import { utils } from 'ethers';
+
+const { namehash } = utils;
 
 dotenv.config();
 

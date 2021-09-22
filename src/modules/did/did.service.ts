@@ -9,12 +9,12 @@ import { IDidStore } from '@ew-did-registry/did-store-interface';
 import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { EthereumDidRegistryFactory } from '../../ethers/EthereumDidRegistryFactory';
-import { EthereumDidRegistry } from '../../ethers/EthereumDidRegistry';
+import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
+import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
-import { utils } from 'ethers';
+import { BigNumber } from 'ethers';
 import { Logger } from '../logger/logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DIDDocumentEntity, IClaim } from './did.entity';
@@ -28,11 +28,9 @@ import {
   ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
 
-const { bigNumberify } = utils;
-
 @Injectable()
 export class DIDService {
-  private readonly didRegistry: EthereumDidRegistry;
+  private readonly didRegistry: EthereumDIDRegistry;
   private readonly ipfsStore: IDidStore;
   private readonly resolver: Resolver;
   constructor(
@@ -60,7 +58,7 @@ export class DIDService {
       method: Methods.Erc1056,
     });
 
-    this.didRegistry = EthereumDidRegistryFactory.connect(
+    this.didRegistry = EthereumDIDRegistry__factory.connect(
       DID_REGISTRY_ADDRESS,
       this.provider,
     );
@@ -197,7 +195,7 @@ export class DIDService {
 
   private async InitEventListeners(): Promise<void> {
     const DIDAttributeChanged = 'DIDAttributeChanged';
-    this.didRegistry.addListener(DIDAttributeChanged, async address => {
+    this.didRegistry.on(DIDAttributeChanged, async address => {
       const did = `did:${Methods.Erc1056}:${address}`;
 
       this.logger.info(`${DIDAttributeChanged} event received for did: ${did}`);
@@ -228,7 +226,7 @@ export class DIDService {
     // Operations on IDIDLogData expect some properties to be BigNumbers
     const bigNumberReviver = (key: string, value) => {
       if (knownBigNumberProperties.has(key) && '_hex' in value) {
-        return bigNumberify(value['_hex']);
+        return BigNumber.from(value['_hex']);
       }
       return value;
     };
@@ -266,7 +264,7 @@ export class DIDService {
    */
   private async getAllLogs(id: string): Promise<IDIDLogData> {
     const genesisBlockNumber = 0;
-    const readFromBlock = utils.bigNumberify(genesisBlockNumber);
+    const readFromBlock = BigNumber.from(genesisBlockNumber);
     return await this.resolver.readFromBlock(id, readFromBlock);
   }
 
