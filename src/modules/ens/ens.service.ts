@@ -194,8 +194,14 @@ export class EnsService implements OnModuleDestroy {
         return this.deleteNamespace(hash);
       }
 
-      const data = await this.domainReader.read({ node: hash });
       name = await this.domainReader.readName(hash);
+      // Don't want to sync domains that end in "roles" or "apps" (like "roles.domain.iam.ewc")
+      // This is because these are "spacer" domains that do not have metadata
+      if (name.startsWith('roles') || name.startsWith('apps')) {
+        return;
+      }
+
+      const data = await this.domainReader.read({ node: hash });
 
       if (!namespaceOwner || !data) {
         this.logger.debug(
