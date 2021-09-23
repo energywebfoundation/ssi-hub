@@ -103,7 +103,8 @@ $ npm run test:cov
 ## Release Notes
 
 Release note is generated using [standard-version](https://www.npmjs.com/package/standard-version) which generates
-`CHANGELOG.md` based on last tag version and commits history this can be generated using the command.
+`CHANGELOG.md` based on last tag version and commits history.
+this can be generated using the command.
 
 ```bash
  $ npm run release
