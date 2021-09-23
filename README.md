@@ -2,7 +2,6 @@
 
 ## Prepare
 
-
 ```bash
 # development
 $ git checkout develop
@@ -22,9 +21,11 @@ $ cp docker-compose.prod.yml docker-compose.yml
 The following values can be used in the `.env` file
 
 #### NESTJS CONFIG
+
 NESTJS_PORT=
 
 #### DB Config
+
 DB_HOST=postgres
 DB_PORT=5432
 DB_USERNAME=postgres
@@ -32,15 +33,16 @@ DB_PASSWORD=password
 DB_NAME=dev
 
 #### Redis
-REDIS_VERSION=6.0.8 
+
+REDIS_VERSION=6.0.8
 REDIS_PASSWORD="password"
 REDIS_PORT=6379
 REDIS_HOST=redis
 
 #### NATS.IO CONFIG
+
 NATS_VERSION=2.1.8
 NATS_CLIENTS_URL=nats:4222
-
 
 ## Installation
 
@@ -66,13 +68,16 @@ $ npm run docker:start
 
 ### Cookies
 
-Note that when running in dev, you can change the cookie policy in 
-`cookies.service.ts` from 
+Note that when running in dev, you can change the cookie policy in
+`cookies.service.ts` from
+
 ```
 sameSite: 'none',
 secure: true
 ```
+
 to
+
 ```
 sameSite: 'strict',
 secure: false,
@@ -95,3 +100,12 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Release Notes
+
+Release note is generated using [standard-version](https://www.npmjs.com/package/standard-version) which generates
+`CHANGELOG.md` based on last tag version and commits history.
+this can be generated using the command.
+
+```bash
+ $ npm run release
+```
