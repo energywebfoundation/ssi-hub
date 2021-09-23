@@ -207,16 +207,44 @@ describe('EnsService', () => {
       );
     }, 30000);
 
-    it('syncENS() malfunctioned metadata should throw error', async () => {
+    it('syncENS() malfunctioned metadata should not be sync', async () => {
       jest.spyOn(service, 'syncNamespace');
       jest
         .spyOn(service as any, 'getAllNamespaces')
         .mockResolvedValueOnce(['apps.daniel.iam.ewc']);
+      jest
+        .spyOn((service as any).domainReader, 'readName')
+        .mockResolvedValueOnce('apps.daniel.iam.ewc');
+      const serviceDomainReaderReadFn = jest.spyOn(
+        (service as any).domainReader,
+        'read',
+      );
+      const serviceSyncNamespaceFn = jest.spyOn(service, 'syncNamespace');
 
       await service.syncENS();
-      expect(MockLogger.error).toHaveBeenCalledWith(
-        expect.stringContaining('Error: unable to parse resolved textData'),
+      expect(serviceDomainReaderReadFn).toHaveBeenCalledTimes(0);
+      expect(serviceSyncNamespaceFn).toHaveBeenCalledTimes(0);
+      expect(MockLogger.error).toHaveBeenCalledTimes(0);
+    }, 60000);
+
+    it('eventHandler() should filter out roles and apps domains from syncing', async () => {
+      const appDomain = 'apps.daniel.iam.ewc';
+      jest
+        .spyOn((service as any).domainReader, 'readName')
+        .mockResolvedValueOnce(appDomain);
+
+      const serviceDomainReaderReadFn = jest.spyOn(
+        (service as any).domainReader,
+        'read',
       );
+      const serviceSyncNamespaceFn = jest.spyOn(service, 'syncNamespace');
+
+      await (service as any).eventHandler({
+        hash: namehash(appDomain),
+      });
+      expect(serviceDomainReaderReadFn).toHaveBeenCalledTimes(0);
+      expect(serviceSyncNamespaceFn).toHaveBeenCalledTimes(0);
+      expect(MockLogger.error).toHaveBeenCalledTimes(0);
     }, 60000);
   });
 
