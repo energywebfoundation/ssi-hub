@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { utils, errors } from 'ethers';
+import { errors } from 'ethers';
 import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
 import { RoleService } from '../role/role.service';
 import { ApplicationService } from '../application/application.service';
@@ -153,9 +153,8 @@ export class EnsService implements OnModuleDestroy {
     });
 
     // Register event handler for owner change or namespace deletion
-    this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
-      const hash = utils.keccak256(node + label.slice(2));
-      await this.eventHandler({ hash, owner });
+    this.ensRegistry.addListener('NewOwner', async (node, _, owner) => {
+      await this.eventHandler({ hash: node, owner });
     });
 
     // Register event handler for new Role/App/Org
