@@ -6,9 +6,11 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { HttpService, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { firstValueFrom } from 'rxjs';
 import { EthereumDidRegistryFactory } from '../../ethers/EthereumDidRegistryFactory';
 import { EthereumDidRegistry } from '../../ethers/EthereumDidRegistry';
 import { InjectQueue } from '@nestjs/bull';
@@ -189,9 +191,11 @@ export class DIDService {
       throw new Error('universal resolver url not set');
     }
     const stripTrailingSlash = (s: string) => s.replace(/\/$/, ''); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
-    const { data } = await this.httpService
-      .get(`${stripTrailingSlash(universalResolverUrl)}/${did}`)
-      .toPromise();
+    const observableResponse = this.httpService.get(
+      `${stripTrailingSlash(universalResolverUrl)}/${did}`,
+    );
+    const { data } = await firstValueFrom(observableResponse);
+
     return data.didDocument;
   }
 
