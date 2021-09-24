@@ -163,7 +163,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
+      "pre-commit": "lint-staged && npm run build:docs",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
