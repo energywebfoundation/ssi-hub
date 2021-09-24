@@ -1,6 +1,6 @@
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { getQueueToken } from '@nestjs/bull';
-import { HttpService } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';

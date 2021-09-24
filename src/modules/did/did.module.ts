@@ -1,5 +1,6 @@
 import { BullModule } from '@nestjs/bull';
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Provider } from '../../common/provider';
 import { DIDController } from './did.controller';
