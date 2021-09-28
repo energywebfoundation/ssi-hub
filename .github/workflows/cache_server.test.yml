@@ -93,7 +93,7 @@ jobs:
           NATS_CLIENTS_URL: localhost:4222
 
       - name: Running E2E tests
-        run: npm run test-e2e --forceExit
+        run: npm run test:e2e
         env:
           CI: true
           ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
@@ -129,3 +129,4 @@ jobs:
           NESTJS_PORT: ${{secrets.NESTJS_PORT}}
           STRATEGY_CACHE_SERVER: ${{secrets.STRATEGY_CACHE_SERVER}}
           STRATEGY_PRIVATE_KEY: ${{secrets.STRATEGY_PRIVATE_KEY}}
+          STRATEGY_NUM_BLOCKS_BACK: 10
