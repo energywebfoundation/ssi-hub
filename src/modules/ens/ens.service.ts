@@ -1,18 +1,9 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { errors } from 'ethers';
-import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
-import { RoleService } from '../role/role.service';
-import { ApplicationService } from '../application/application.service';
-import { OrganizationService } from '../organization/organization.service';
-import { EnsRegistryFactory } from '../../ethers/EnsRegistryFactory';
 import { ConfigService } from '@nestjs/config';
-import { PublicResolver } from '../../ethers/PublicResolver';
-import { EnsRegistry } from '../../ethers/EnsRegistry';
-import { namehash } from '../../ethers/utils';
+import { utils } from 'ethers';
 import chunk from 'lodash.chunk';
-import { Logger } from '../logger/logger.service';
-import { Provider } from '../../common/provider';
+import { LogLevel } from '@ethersproject/logger';
 import {
   IRoleDefinition,
   IAppDefinition,
@@ -20,17 +11,27 @@ import {
   DomainReader,
   DomainHierarchy,
   ResolverContractType,
-  DomainNotifier__factory,
 } from '@energyweb/iam-contracts';
-import { DomainNotifier } from '@energyweb/iam-contracts/dist/ethers-v4/DomainNotifier';
+import { PublicResolver__factory } from '../../ethers/factories/PublicResolver__factory';
+import { RoleService } from '../role/role.service';
+import { ApplicationService } from '../application/application.service';
+import { OrganizationService } from '../organization/organization.service';
+import { ENSRegistry__factory } from '../../ethers/factories/ENSRegistry__factory';
+import { PublicResolver } from '../../ethers/PublicResolver';
+import { ENSRegistry } from '../../ethers/ENSRegistry';
+import { namehash } from '../../ethers/utils';
+import { DomainNotifier__factory } from '../../ethers/factories/DomainNotifier__factory';
+import { DomainNotifier } from '../../ethers/DomainNotifier';
+import { Logger } from '../logger/logger.service';
+import { Provider } from '../../common/provider';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
 @Injectable()
 export class EnsService implements OnModuleDestroy {
   private publicResolver: PublicResolver;
-  private domainNotifer: DomainNotifier;
-  private ensRegistry: EnsRegistry;
+  private domainNotifier: DomainNotifier;
+  private ensRegistry: ENSRegistry;
   private domainReader: DomainReader;
   private domainHierarchy: DomainHierarchy;
 
@@ -44,7 +45,7 @@ export class EnsService implements OnModuleDestroy {
     private readonly provider: Provider,
   ) {
     this.logger.setContext(EnsService.name);
-    errors.setLogLevel('error');
+    utils.Logger.setLogLevel(LogLevel.ERROR);
 
     // Get config values from .env file
     const CHAIN_ID = parseInt(this.config.get<string>('CHAIN_ID'));
@@ -59,15 +60,15 @@ export class EnsService implements OnModuleDestroy {
       'ENS_REGISTRY_ADDRESS',
     );
     // Connect to smart contracts
-    this.publicResolver = PublicResolverFactory.connect(
+    this.publicResolver = PublicResolver__factory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
     );
-    this.domainNotifer = DomainNotifier__factory.connect(
+    this.domainNotifier = DomainNotifier__factory.connect(
       DOMAIN_NOTIFIER_ADDRESS,
       this.provider,
     );
-    this.ensRegistry = EnsRegistryFactory.connect(
+    this.ensRegistry = ENSRegistry__factory.connect(
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
@@ -88,7 +89,7 @@ export class EnsService implements OnModuleDestroy {
 
     this.domainHierarchy = new DomainHierarchy({
       domainReader: this.domainReader,
-      ensRegistry: this.ensRegistry,
+      ensRegistryAddress: this.ensRegistry.address,
       provider: this.provider,
       domainNotifierAddress: DOMAIN_NOTIFIER_ADDRESS,
       publicResolverAddress: PUBLIC_RESOLVER_ADDRESS,
@@ -148,22 +149,22 @@ export class EnsService implements OnModuleDestroy {
 
   private InitEventListeners(): void {
     // Register event handler for legacy PublicResolver definitions
-    this.publicResolver.addListener('TextChanged', async hash => {
+    this.publicResolver.on('TextChanged', async hash => {
       await this.eventHandler({ hash });
     });
 
     // Register event handler for owner change or namespace deletion
-    this.ensRegistry.addListener('NewOwner', async (node, _, owner) => {
+    this.ensRegistry.on('NewOwner', async (node, _, owner) => {
       await this.eventHandler({ hash: node, owner });
     });
 
     // Register event handler for new Role/App/Org
-    this.ensRegistry.addListener('Transfer', async (node, owner) => {
+    this.ensRegistry.on('Transfer', async (node, owner) => {
       this.eventHandler({ hash: node, owner });
     });
 
     // Register event handler for domain definition updates
-    this.domainNotifer.addListener('DomainUpdated', async node => {
+    this.domainNotifier.on('DomainUpdated', async node => {
       const namespace = await this.domainReader.readName(node);
       if (!namespace) return;
       await this.eventHandler({ hash: node });
@@ -315,7 +316,7 @@ export class EnsService implements OnModuleDestroy {
   onModuleDestroy() {
     this.ensRegistry.removeAllListeners('Transfer');
     this.ensRegistry.removeAllListeners('NewOwner');
-    this.domainNotifer.removeAllListeners('DomainUpdated');
+    this.domainNotifier.removeAllListeners('DomainUpdated');
     this.publicResolver.removeAllListeners('TextChanged');
   }
 }
