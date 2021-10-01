@@ -228,10 +228,19 @@ export class DIDService {
     knownBigNumberProperties.add('topBlock');
 
     // Operations on IDIDLogData expect some properties to be BigNumbers
-    const bigNumberReviver = (key: string, value) => {
+    const bigNumberReviver = (key: string, value: unknown) => {
+      if (!(value instanceof Object)) return value;
+
       if (knownBigNumberProperties.has(key) && '_hex' in value) {
         return BigNumber.from(value['_hex']);
       }
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (value.hasOwnProperty('type') && value.type === 'BigNumber') {
+        return BigNumber.from(value);
+      }
+
       return value;
     };
     return JSON.parse(logs, bigNumberReviver) as IDIDLogData;
