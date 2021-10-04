@@ -9,12 +9,14 @@ import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
+import { BigNumber } from '@ethersproject/bignumber';
 
 const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
 const MockLogger = {
   log: jest.fn(),
   info: jest.fn(),
   debug: jest.fn(),
+  error: jest.fn(),
   setContext: jest.fn(),
 };
 const MockObject = {};
@@ -96,6 +98,10 @@ describe('DidDocumentService', () => {
     service = module.get<DIDService>(DIDService);
   });
 
+  afterAll(() => {
+    expect(MockLogger.error).not.toBeCalled();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -110,6 +116,14 @@ describe('DidDocumentService', () => {
     didDocEntity = undefined;
     const returnedDoc = await service.getById('<any DID>');
     checkReturnedDIDDoc(returnedDoc);
+  });
+
+  it('parseLogs() should parse BigNumbers', async () => {
+    const logs = {
+      topBlock: BigNumber.from('0x1ffffffffff'),
+    };
+    const parsedLogs = (service as any).parseLogs(JSON.stringify(logs));
+    expect(parsedLogs.topBlock).toBeInstanceOf(BigNumber);
   });
 
   function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {

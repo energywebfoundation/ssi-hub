@@ -122,11 +122,9 @@ export class DIDService {
   public async addCachedDocument(did: string) {
     try {
       this.logger.debug(`Add cached document for did: ${did}`);
-
       const logs = await this.getAllLogs(did);
 
       const updatedDidDocument = this.resolveDocumentFromLogs(did, logs);
-
       const updatedServices = await this.resolveNotCachedClaims(
         updatedDidDocument.service,
       );
@@ -231,13 +229,10 @@ export class DIDService {
     const bigNumberReviver = (key: string, value: unknown) => {
       if (!(value instanceof Object)) return value;
 
-      if (knownBigNumberProperties.has(key) && '_hex' in value) {
-        return BigNumber.from(value['_hex']);
-      }
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      if (value.hasOwnProperty('type') && value.type === 'BigNumber') {
+      if (
+        knownBigNumberProperties.has(key) &&
+        ('_hex' in value || 'hex' in value)
+      ) {
         return BigNumber.from(value);
       }
 
