@@ -7,13 +7,13 @@
 ```bash
 # development
 $ cp .env.dist .env
-$ cp docker-compose.dev.yml docker.compose.yml
+$ cp docker-compose.dev.yml docker-compose.yml
 ```
 
 ```bash
 # production mode
 $ cp .env.dist .env
-$ cp docker-compose.prod.yml docker.compose.yml
+$ cp docker-compose.prod.yml docker-compose.yml
 ```
 
 ## Installation
