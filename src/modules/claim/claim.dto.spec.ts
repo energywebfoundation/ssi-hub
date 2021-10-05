@@ -39,6 +39,13 @@ describe('ClaimRequestDTO', () => {
     const claimRequest = getBaseClaimRequest();
     claimRequest.claimTypeVersion = '1.0.0';
     const dto = await ClaimRequestDTO.create(claimRequest);
+    expect(dto.claimTypeVersion).toEqual('1');
+  });
+
+  it('should default claimTypeVersion to 1 if not provided', async () => {
+    const claimRequest = getBaseClaimRequest();
+    claimRequest.claimTypeVersion = undefined;
+    const dto = await ClaimRequestDTO.create(claimRequest);
     expect(dto).toBeInstanceOf(ClaimRequestDTO);
   });
 

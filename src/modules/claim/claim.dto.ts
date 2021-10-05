@@ -17,7 +17,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ClaimRequestDTO implements IClaimRequest {
   static async create(data: Partial<ClaimRequestDTO>) {
-    data.claimTypeVersion = data.claimTypeVersion.toString().split('.')[0];
+    data.claimTypeVersion =
+      data.claimTypeVersion?.toString().split('.')[0] ?? '1';
     const dto = new ClaimRequestDTO();
     Object.assign(dto, data);
 
