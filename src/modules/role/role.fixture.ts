@@ -37,6 +37,7 @@ export const roleFixture = async (
       parentOrg: organization || null,
       parentApp: application || null,
       namehash: namespaceHash,
+      version: 1,
     });
 
     roles.push(role);

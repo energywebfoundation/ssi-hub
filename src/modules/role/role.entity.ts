@@ -47,6 +47,10 @@ export class Role implements BaseEnsEntity {
   @Column({ type: 'jsonb' })
   definition: IRoleDefinition;
 
+  @Field()
+  @Column()
+  version: number;
+
   @ManyToOne(
     () => Organization,
     org => org.roles,

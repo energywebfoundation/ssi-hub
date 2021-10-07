@@ -110,7 +110,12 @@ export class RoleService {
       return;
     }
 
-    const role = Role.create({ ...data, parentApp, parentOrg });
+    const role = Role.create({
+      ...data,
+      parentApp,
+      parentOrg,
+      version: data.version,
+    });
     return this.roleRepository.save(role);
   }
 
@@ -125,6 +130,7 @@ export class RoleService {
         namespace: data.namespace,
       },
     });
+    console.log(!!role, ' :ROLE');
     if (!role) return this.create(data);
 
     if (data.appNamespace) {
@@ -307,7 +313,6 @@ export class RoleService {
       );
       return;
     }
-
     this.update(dto);
   }
 }

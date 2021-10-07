@@ -143,6 +143,7 @@ export class RoleDTO implements BaseEnsEntity {
       issuer,
       enrolmentPreconditions = [],
       fields = [],
+      version,
       ...definition
     },
     ...data
@@ -157,14 +158,25 @@ export class RoleDTO implements BaseEnsEntity {
         PreconditionsDTO.create(precondition),
       ),
     );
+    // Support for legacy version format
+    const versionUnknownType = version as unknown;
+    const versionDTO =
+      typeof versionUnknownType === 'string' && versionUnknownType.includes('.')
+        ? (+versionUnknownType.split('.')[0] as number)
+        : (+versionUnknownType as number);
     const definitionDto = {
       ...(definition || {}),
+      version,
       fields: fieldsDTO,
       issuer: issuerDTO,
       enrolmentPreconditions: enrolmentPreconditionsDTO,
     };
     const dto = new RoleDTO();
-    Object.assign(dto, { ...data, definition: definitionDto });
+    Object.assign(dto, {
+      ...data,
+      definition: definitionDto,
+      version: versionDTO,
+    });
     await validateOrReject(dto, { whitelist: true });
     return dto;
   }
@@ -195,6 +207,10 @@ export class RoleDTO implements BaseEnsEntity {
   @IsOptional()
   @IsString()
   appNamespace?: string;
+
+  @IsOptional()
+  @IsNumber()
+  version: number;
 }
 
 export interface NamespaceFragments {

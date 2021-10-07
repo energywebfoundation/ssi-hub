@@ -51,6 +51,7 @@ type Role {
   namehash: String
   owner: String!
   definition: RoleDefinitionSchema!
+  version: Float!
 }
 
 type ApplicationDefinitionSchema {
