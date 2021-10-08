@@ -49,6 +49,10 @@ export class Application implements BaseEnsEntity {
   @Column()
   namespace: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  namehash?: string;
+
   @Field(() => ApplicationDefinitionSchema)
   @Column({ type: 'jsonb' })
   definition: ApplicationDefinition;

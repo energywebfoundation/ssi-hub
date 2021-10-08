@@ -14,7 +14,7 @@ import { Application } from './application.entity';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('app')
+@Controller({ path: 'app', version: '1' })
 export class ApplicationController {
   constructor(private applicationService: ApplicationService) {}
 

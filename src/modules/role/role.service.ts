@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
 import { RoleDTO } from './role.dto';
 import { DIDService } from '../did/did.service';
-import { DID } from '../did/did.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
-import { emptyAddress } from '../../common/constants';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
+import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { Application } from '../application/application.entity';
+import { Organization } from '../organization/organization.entity';
 
 @Injectable()
 export class RoleService {
@@ -32,6 +33,14 @@ export class RoleService {
   }
 
   /**
+   * returns single Role with matching namehash
+   * @param {String} namehash
+   */
+  public async getByNamehash(namehash: string) {
+    return this.roleRepository.findOne({ where: { namehash } });
+  }
+
+  /**
    * returns single Role with matching owner
    * @param {String} owner
    */
@@ -39,11 +48,15 @@ export class RoleService {
     return this.roleRepository.find({ where: { owner } });
   }
 
+  public async getAll() {
+    return this.roleRepository.find();
+  }
+
   /**
    * return true if role with given namespace exists
    * @param namespace
    */
-  public async exists(namespace: string) {
+  public async exists(namespace: string): Promise<boolean> {
     return Boolean(await this.getByNamespace(namespace));
   }
 
@@ -53,28 +66,44 @@ export class RoleService {
    * @return id of newly added Role
    */
   public async create({ appNamespace, orgNamespace, ...data }: RoleDTO) {
+    if (appNamespace && orgNamespace) {
+      this.logger.debug(
+        `Not able to create role: ${data.namespace}, namespace can only have one of parentApp and OrgApp`,
+      );
+      return;
+    }
+
+    let parentApp: Application, parentOrg: Organization;
+
     if (appNamespace) {
-      const app = await this.appService.getByNamespace(appNamespace);
-      if (!app) {
+      parentApp = await this.appService.getByNamespace(appNamespace);
+      if (!parentApp) {
         this.logger.debug(
           `Not able to create role: ${data.namespace}, parent application ${appNamespace} does not exists`,
         );
         return;
       }
-      const role = Role.create({ ...data, parentApp: app });
-      return this.roleRepository.save(role);
     }
     if (orgNamespace) {
-      const org = await this.orgService.getByNamespace(orgNamespace);
-      if (!org) {
+      parentOrg = await this.orgService.getByNamespace(orgNamespace);
+      if (!parentOrg) {
         this.logger.debug(
-          `Not able to create application: ${data.namespace}, parent organization ${orgNamespace} does not exists`,
+          `Not able to create role: ${data.namespace}, parent organization ${orgNamespace} does not exists`,
         );
         return;
       }
-      const role = Role.create({ ...data, parentOrg: org });
-      return this.roleRepository.save(role);
     }
+
+    const isRoleExists = await this.exists(data.namespace);
+
+    if (isRoleExists) {
+      this.logger.debug(`Role namespace ${data.namespace} already exists`);
+
+      return;
+    }
+
+    const role = Role.create({ ...data, parentApp, parentOrg });
+    return this.roleRepository.save(role);
   }
 
   /**
@@ -121,13 +150,20 @@ export class RoleService {
     return this.roleRepository.delete(role.id);
   }
 
+  /**
+   * removes Role with matching namehash
+   * @param namehash
+   */
+  public async removeByNameHash(namehash: string) {
+    return this.roleRepository.delete({ namehash });
+  }
+
   public async verifyUserRoles(did: string) {
-    const user = new DID(did);
-    const { service } = await this.didService.getById(user, true);
+    const { service } = await this.didService.getById(did);
     const verifiedRoles = await Promise.all(
       ((service as unknown) as (IServiceEndpoint & {
         claimType?: string;
-        claimTypeVersion?: string;
+        claimTypeVersion?: number;
         iss: string;
       })[]).map(({ iss, claimTypeVersion, claimType }) =>
         this.verifyRole({
@@ -148,7 +184,7 @@ export class RoleService {
     claimType: string;
   }) {
     const [didDocument, role] = await Promise.all([
-      this.didService.getById(new DID(userDID), true),
+      this.didService.getById(userDID),
       this.getByNamespace(claimType),
     ]);
 
@@ -183,7 +219,7 @@ export class RoleService {
   }: {
     namespace?: string;
     issuer: string;
-    version?: string;
+    version?: number;
   }) {
     if (!namespace) return null;
 
@@ -210,11 +246,7 @@ export class RoleService {
     }
 
     if (role.issuer?.issuerType === 'Role') {
-      const issuerDID = new DID(issuer);
-      const { service: issuerClaims } = await this.didService.getById(
-        issuerDID,
-        true,
-      );
+      const { service: issuerClaims } = await this.didService.getById(issuer);
       const issuerRoles = issuerClaims.map(c => c.claimType);
       if (issuerRoles.includes(role.issuer.roleName)) {
         return {
@@ -233,19 +265,16 @@ export class RoleService {
     appNamespace,
     metadata,
     name,
+    namehash,
   }: {
     owner: string;
     namespace: string;
     orgNamespace?: string;
     appNamespace?: string;
-    metadata: Record<string, unknown>;
+    metadata: IRoleDefinition;
     name: string;
+    namehash: string;
   }) {
-    if (owner === emptyAddress) {
-      this.remove(namespace);
-      return;
-    }
-
     let dto: RoleDTO;
 
     try {
@@ -258,6 +287,7 @@ export class RoleService {
         owner,
         name,
         namespace,
+        namehash,
       });
     } catch (err) {
       this.logger.debug(

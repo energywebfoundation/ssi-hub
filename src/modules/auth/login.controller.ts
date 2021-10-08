@@ -17,7 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { RoleService } from '../role/role.service';
 
 @ApiTags('Auth')
-@Controller()
+@Controller({ version: '1' })
 export class LoginController {
   constructor(
     private tokenService: TokenService,
@@ -40,6 +40,7 @@ export class LoginController {
   })
   @Post('login')
   async login(@Req() req: Request, @Res() res: Response) {
+    const origin = req.headers['origin'];
     const { did, verifiedRoles } =
       (req.user as {
         did: string;
@@ -55,7 +56,7 @@ export class LoginController {
     );
 
     const [token, refreshToken] = await Promise.all([
-      this.tokenService.generateAccessToken({ did, verifiedRoles }),
+      this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
       this.tokenService.generateRefreshToken({
         userDid: did,
       }),
@@ -83,6 +84,7 @@ export class LoginController {
     @Res() res: Response,
     @Query('refresh_token') refresh_token?: string,
   ) {
+    const origin = req.headers['origin'];
     const refreshTokenString =
       req.cookies[this.configService.get<string>('JWT_REFRESH_TOKEN_NAME')] ||
       refresh_token;
@@ -105,7 +107,11 @@ export class LoginController {
     );
 
     const [token, refreshToken] = await Promise.all([
-      this.tokenService.generateAccessToken({ did: userDid, verifiedRoles }),
+      this.tokenService.generateAccessToken({
+        did: userDid,
+        verifiedRoles,
+        origin,
+      }),
       this.tokenService.generateRefreshToken({
         userDid,
       }),

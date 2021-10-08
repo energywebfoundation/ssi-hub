@@ -1,7 +1,7 @@
 import {
   IsArray,
   IsBoolean,
-  IsDateString,
+  IsDate,
   IsDefined,
   IsNumber,
   IsObject,
@@ -10,13 +10,9 @@ import {
   validateOrReject,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  EnrolmentPrecondition,
-  Fields,
-  Issuer,
-  RoleDefinition,
-} from './role.types';
+import { EnrolmentPrecondition, Fields, Issuer } from './role.types';
 import { BaseEnsEntity } from '../../common/ENSBaseEntity';
+import { IRoleDefinition, PreconditionType } from '@energyweb/iam-contracts';
 
 export class FieldsDTO implements Fields {
   static async create(data: Partial<FieldsDTO>) {
@@ -64,12 +60,12 @@ export class FieldsDTO implements Fields {
   maxValue?: number;
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @ApiProperty()
   minDate?: Date;
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @ApiProperty()
   maxDate?: Date;
 }
@@ -82,7 +78,7 @@ export class PreconditionsDTO implements EnrolmentPrecondition {
     return dto;
   }
   @IsString()
-  type: string;
+  type: PreconditionType;
 
   @IsArray()
   conditions: string[];
@@ -99,7 +95,8 @@ export class IssuerDTO implements Issuer {
   issuerType: string;
 
   @IsArray()
-  did: string[];
+  @IsOptional()
+  did?: string[];
 
   @IsString()
   @IsOptional()
@@ -109,20 +106,20 @@ export class IssuerDTO implements Issuer {
 /**
  * Role's Definition DTO providing validation and API schema for swagger UI
  */
-export class RoleDefinitionDTO implements RoleDefinition {
+export class RoleDefinitionDTO implements IRoleDefinition {
   @IsOptional()
-  fields?: FieldsDTO[];
+  fields: FieldsDTO[];
 
   @IsOptional()
   @IsObject()
   @ApiProperty()
-  metadata?: Record<string, unknown>;
+  metadata: Record<string, unknown>;
 
   @IsDefined()
   issuer: IssuerDTO;
 
   @IsOptional()
-  enrolmentPreconditions?: PreconditionsDTO[];
+  enrolmentPreconditions: PreconditionsDTO[];
 
   @IsString()
   @ApiProperty()
@@ -134,7 +131,7 @@ export class RoleDefinitionDTO implements RoleDefinition {
 
   @IsString()
   @ApiProperty()
-  version: string;
+  version: number;
 }
 
 /**
@@ -182,6 +179,10 @@ export class RoleDTO implements BaseEnsEntity {
   @IsString()
   @ApiProperty()
   namespace: string;
+
+  @IsString()
+  @ApiProperty()
+  namehash: string;
 
   @IsString()
   @ApiProperty()

@@ -15,7 +15,7 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('org')
+@Controller({ path: 'org', version: '1' })
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}
 

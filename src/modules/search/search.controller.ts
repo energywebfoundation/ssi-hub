@@ -17,7 +17,7 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('search')
+@Controller({ path: 'search', version: '1' })
 export class SearchController {
   constructor(private searchService: SearchService) {}
 

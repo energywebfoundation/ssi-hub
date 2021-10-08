@@ -1,6 +1,8 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ApplicationModule } from './modules/application/application.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClaimModule } from './modules/claim/claim.module';
@@ -18,6 +20,8 @@ import { getDBConfig } from './db/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { JSONObjectScalar } from './common/json.scalar';
 import { getGraphQlConfig } from './graphql/config';
+import { AssetsModule } from './modules/assets/assets.module';
+import { StakingModule } from './modules/staking/staking.module';
 
 @Module({
   imports: [
@@ -32,20 +36,23 @@ import { getGraphQlConfig } from './graphql/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     HttpModule,
-    ApplicationModule,
     AuthModule,
+    AssetsModule,
+    ApplicationModule,
     ClaimModule,
     DIDModule,
-    LoggerModule,
-    SearchModule,
-    NatsModule,
     OrganizationModule,
+    NatsModule,
     RoleModule,
+    SearchModule,
+    LoggerModule,
     SentryModule,
     InterceptorsModule,
     ENSModule,
+    StakingModule,
   ],
   providers: [JSONObjectScalar],
 })

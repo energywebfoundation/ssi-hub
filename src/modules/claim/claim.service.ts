@@ -11,15 +11,20 @@ import { Logger } from '../logger/logger.service';
 import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
 import { Claim } from './claim.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { NatsService } from '../nats/nats.service';
 import jwt from 'jsonwebtoken';
+import { v5 } from 'uuid';
+import { AssetsService } from '../assets/assets.service';
+import { Role } from '../role/role.entity';
 interface QueryFilters {
-  accepted?: boolean;
-  parentNamespace?: string;
+  isAccepted?: boolean;
+  namespace?: string;
 }
+
+export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
 
 @Injectable()
 export class ClaimService {
@@ -28,6 +33,7 @@ export class ClaimService {
     private readonly logger: Logger,
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
+    private readonly assetService: AssetsService,
     @InjectQueue('claims') private readonly claimQueue: Queue<string>,
     private readonly nats: NatsService,
   ) {
@@ -44,20 +50,17 @@ export class ClaimService {
 
   /**
    * Returns dgraph filter string based on passed options object
-   * @param options config object
-   * @return string
+   * @param options QueryFilters
+   * @return QueryFilters
    * @private
    */
-  private parseFilters({ accepted, parentNamespace }: QueryFilters = {}): {
-    isAccepted?: boolean;
-    parentNamespace?: string;
-  } {
-    const filters: { isAccepted?: boolean; parentNamespace?: string } = {};
-    if (accepted !== undefined) {
-      filters.isAccepted = accepted;
+  private parseFilters({ isAccepted, namespace }: QueryFilters): QueryFilters {
+    const filters: QueryFilters = {};
+    if (isAccepted !== undefined) {
+      filters.isAccepted = isAccepted;
     }
-    if (parentNamespace) {
-      filters.parentNamespace = parentNamespace;
+    if (namespace) {
+      filters.namespace = namespace;
     }
     return filters;
   }
@@ -97,7 +100,10 @@ export class ClaimService {
         return;
       }
 
-      if (claim && !claim.isRejected && 'issuedToken' in data) {
+      if (
+        (claim && !claim.isRejected && 'issuedToken' in data) ||
+        'onChainProof' in data
+      ) {
         const dto = await ClaimIssueDTO.create(data);
 
         await this.issue(dto);
@@ -119,8 +125,9 @@ export class ClaimService {
       .join('.');
 
     const claim = Claim.create({
+      id: ClaimService.idOfClaim(data),
       ...data,
-      parentNamespace: parent,
+      namespace: parent,
     });
     return this.claimRepository.save(claim);
   }
@@ -146,13 +153,48 @@ export class ClaimService {
   }
 
   /**
+   * returns claims requested for given DIDs
+   * @param subjects claim subjects DIDs
+   */
+  public async getBySubjects({
+    subjects,
+    filters: { isAccepted, namespace } = {},
+    currentUser,
+  }: {
+    subjects: string[];
+    filters?: QueryFilters;
+    currentUser?: string;
+  }): Promise<Claim[]> {
+    const qb = this.claimRepository.createQueryBuilder('claim');
+    qb.where('claim.subject IN (:...subjects)', { subjects });
+
+    if (currentUser) {
+      await this.filterUserRelatedClaims(currentUser, qb);
+    }
+
+    if (isAccepted !== undefined) {
+      qb.andWhere('claim.isAccepted = :isAccepted', {
+        isAccepted,
+      });
+    }
+
+    if (namespace) {
+      qb.andWhere('claim.namespace = :namespace', {
+        namespace,
+      });
+    }
+
+    return qb.getMany();
+  }
+
+  /**
    * returns claims with matching parent namespace
    * eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.app", "user.roles.A.app"
    * @param namespace target parent namespace
    */
   async getByParentNamespace(namespace: string) {
     return this.claimRepository.find({
-      where: { parentNamespace: namespace },
+      where: { namespace },
     });
   }
 
@@ -162,19 +204,16 @@ export class ClaimService {
    */
   async getByUserDid({
     did,
-    filters,
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     did: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const { isAccepted, parentNamespace } = this.parseFilters(filters);
-
     const qb = this.claimRepository
       .createQueryBuilder()
-      .where(':did = ANY ("claimIssuer")', { did })
-      .orWhere(':did = requester', { did });
+      .where(':did = requester', { did });
 
     if (isAccepted !== undefined) {
       qb.andWhere('"isAccepted" = :isAccepted', {
@@ -182,18 +221,18 @@ export class ClaimService {
       });
     }
 
-    if (parentNamespace) {
-      qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: parentNamespace,
+    if (namespace) {
+      qb.andWhere('"namespace" = :namespace', {
+        namespace,
       });
     }
 
     if (currentUser) {
-      qb.andWhere(new Brackets(query => {
-        query.where(':currentUser = ANY ("claimIssuer")', {
-          currentUser,
-        }).orWhere(':currentUser = requester', { currentUser })
-      }))
+      qb.andWhere(
+        new Brackets(query => {
+          query.where(':currentUser = requester', { currentUser });
+        }),
+      );
     }
     return qb.getMany();
   }
@@ -205,36 +244,33 @@ export class ClaimService {
    */
   async getByIssuer({
     issuer,
-    filters = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     issuer: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const { isAccepted, parentNamespace } = this.parseFilters(filters);
+    const rolesByIssuer = (await this.rolesByIssuer(issuer, namespace)).map(
+      r => r.namespace,
+    );
+
+    if (rolesByIssuer.length === 0) {
+      return [];
+    }
+
     const qb = this.claimRepository
-      .createQueryBuilder()
-      .where(':issuer = ANY ("claimIssuer")', { issuer });
+      .createQueryBuilder('claim')
+      .where('claim.claimType IN (:...rolesByIssuer)', { rolesByIssuer });
 
     if (isAccepted !== undefined) {
-      qb.andWhere('"isAccepted" = :isAccepted', {
+      qb.andWhere('claim.isAccepted = :isAccepted', {
         isAccepted,
       });
     }
 
-    if (parentNamespace) {
-      qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: parentNamespace,
-      });
-    }
-
     if (currentUser) {
-      qb.andWhere(new Brackets(query => {
-        query.where(':currentUser = ANY ("claimIssuer")', {
-          currentUser,
-        }).orWhere(':currentUser = requester', { currentUser })
-      }))
+      await this.filterUserRelatedClaims(currentUser, qb);
     }
     return qb.getMany();
   }
@@ -246,14 +282,13 @@ export class ClaimService {
    */
   async getByRequester({
     requester,
-    filters = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     requester: string;
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const { isAccepted, parentNamespace } = this.parseFilters(filters);
     const qb = this.claimRepository
       .createQueryBuilder()
       .where(':requester = requester', { requester });
@@ -264,20 +299,37 @@ export class ClaimService {
       });
     }
 
-    if (parentNamespace) {
-      qb.andWhere('"parentNamespace" = :namespace', {
-        namespace: parentNamespace,
+    if (namespace) {
+      qb.andWhere('"namespace" = :namespace', {
+        namespace,
       });
     }
 
     if (currentUser) {
-      qb.andWhere(new Brackets(query => {
-        query.where(':currentUser = ANY ("claimIssuer")', {
-          currentUser,
-        }).orWhere(':currentUser = requester', { currentUser })
-      }))
+      qb.andWhere(
+        new Brackets(query => {
+          query.where(':currentUser = requester', { currentUser });
+        }),
+      );
     }
     return qb.getMany();
+  }
+
+  /**
+   * Get claims issued for given subject
+   * @param did subjects's DID
+   * @param filters additional filters
+   */
+  async getBySubject({
+    subject,
+    filters,
+    currentUser,
+  }: {
+    subject: string;
+    filters?: QueryFilters;
+    currentUser?: string;
+  }) {
+    return this.getBySubjects({ subjects: [subject], filters, currentUser });
   }
 
   /**
@@ -300,16 +352,79 @@ export class ClaimService {
   /**
    * get all DID of requesters of given namespace
    * @param namespace target claim namespace
-   * @param accepted flag for filtering only accepted claims
+   * @param isAccepted flag for filtering only accepted claims
    */
   public async getDidOfClaimsOfNamespace(
     namespace: string,
-    accepted?: boolean,
+    isAccepted?: boolean,
   ): Promise<string[]> {
-    const parsedFilters = this.parseFilters({ accepted });
+    const parsedFilters = this.parseFilters({ isAccepted });
     const claims = await this.claimRepository.find({
       where: [{ ...parsedFilters, claimType: namespace }],
     });
     return claims.map(claim => claim.requester);
+  }
+
+  static idOfClaim(claimReq: IClaimRequest) {
+    const { token, claimType: role, claimTypeVersion: version } = claimReq;
+    const { sub: subject } = jwt.decode(token);
+    return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
+  }
+
+  private async rolesByIssuer(
+    issuer: string,
+    namespace?: string,
+  ): Promise<Role[]> {
+    const rolesOfIssuer = (
+      await this.getBySubject({
+        subject: issuer,
+        filters: { isAccepted: true },
+      })
+    ).map(r => r.claimType);
+    const roles = (await this.roleService.getAll()).filter(
+      r =>
+        r.definition.issuer.did?.includes(issuer) ||
+        rolesOfIssuer.includes(r.definition.issuer.roleName),
+    );
+    return namespace
+      ? roles.filter((r: Role) => r.namespace === namespace)
+      : roles;
+  }
+
+  private async filterUserRelatedClaims(
+    currentUser: string,
+    qb: SelectQueryBuilder<Claim>,
+  ) {
+    const ownedAssets = (await this.assetService.getByOwner(currentUser)).map(
+      a => a.id,
+    );
+    const offeredAssets = (
+      await this.assetService.getByOfferedTo(currentUser)
+    ).map(a => a.id);
+
+    const rolesByUser = (await this.rolesByIssuer(currentUser)).map(
+      r => r.namespace,
+    );
+
+    qb.andWhere(
+      new Brackets(query => {
+        query
+          .where('claim.subject = :currentUser', { currentUser })
+          .orWhere('claim.requester = :currentUser', { currentUser });
+        if (rolesByUser.length > 0) {
+          query.orWhere('claim.claimType IN (:...rolesByUser)', {
+            rolesByUser,
+          });
+        }
+        if (ownedAssets.length > 0) {
+          query.orWhere('claim.subject IN (:...ownedAssets)', { ownedAssets });
+        }
+        if (offeredAssets.length > 0) {
+          query.orWhere('claim.subject IN (:...offeredAssets)', {
+            offeredAssets,
+          });
+        }
+      }),
+    );
   }
 }

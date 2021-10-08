@@ -1,26 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { providers, utils, errors } from 'ethers';
-import { abi as ensResolverContract } from '@ensdomains/resolver/build/contracts/PublicResolver.json';
-import { PublicResolverFactory } from '../../ethers/PublicResolverFactory';
+import { ConfigService } from '@nestjs/config';
+import { utils } from 'ethers';
+import chunk from 'lodash.chunk';
+import { LogLevel } from '@ethersproject/logger';
+import {
+  IRoleDefinition,
+  IAppDefinition,
+  IOrganizationDefinition,
+  DomainReader,
+  DomainHierarchy,
+  ResolverContractType,
+} from '@energyweb/iam-contracts';
+import { PublicResolver__factory } from '../../ethers/factories/PublicResolver__factory';
 import { RoleService } from '../role/role.service';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
-import { EnsRegistryFactory } from '../../ethers/EnsRegistryFactory';
-import { ConfigService } from '@nestjs/config';
+import { ENSRegistry__factory } from '../../ethers/factories/ENSRegistry__factory';
 import { PublicResolver } from '../../ethers/PublicResolver';
-import { EnsRegistry } from '../../ethers/EnsRegistry';
+import { ENSRegistry } from '../../ethers/ENSRegistry';
 import { namehash } from '../../ethers/utils';
-import chunk from 'lodash.chunk';
+import { DomainNotifier__factory } from '../../ethers/factories/DomainNotifier__factory';
+import { DomainNotifier } from '../../ethers/DomainNotifier';
 import { Logger } from '../logger/logger.service';
+import { Provider } from '../../common/provider';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
 @Injectable()
-export class EnsService {
+export class EnsService implements OnModuleDestroy {
   private publicResolver: PublicResolver;
-  private ensRegistry: EnsRegistry;
-  private provider: providers.JsonRpcProvider;
+  private domainNotifier: DomainNotifier;
+  private ensRegistry: ENSRegistry;
+  private domainReader: DomainReader;
+  private domainHierarchy: DomainHierarchy;
+
   constructor(
     private readonly roleService: RoleService,
     private readonly applicationService: ApplicationService,
@@ -28,29 +42,58 @@ export class EnsService {
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly config: ConfigService,
     private readonly logger: Logger,
+    private readonly provider: Provider,
   ) {
     this.logger.setContext(EnsService.name);
-    errors.setLogLevel('error');
+    utils.Logger.setLogLevel(LogLevel.ERROR);
 
     // Get config values from .env file
-    const ENS_URL = this.config.get<string>('ENS_URL');
+    const CHAIN_ID = parseInt(this.config.get<string>('CHAIN_ID'));
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS',
+    );
+    const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
+    const DOMAIN_NOTIFIER_ADDRESS = this.config.get<string>(
+      'DOMAIN_NOTIFIER_ADDRESS',
     );
     const ENS_REGISTRY_ADDRESS = this.config.get<string>(
       'ENS_REGISTRY_ADDRESS',
     );
-
     // Connect to smart contracts
-    this.provider = new providers.JsonRpcProvider(ENS_URL);
-    this.publicResolver = PublicResolverFactory.connect(
+    this.publicResolver = PublicResolver__factory.connect(
       PUBLIC_RESOLVER_ADDRESS,
       this.provider,
     );
-    this.ensRegistry = EnsRegistryFactory.connect(
+    this.domainNotifier = DomainNotifier__factory.connect(
+      DOMAIN_NOTIFIER_ADDRESS,
+      this.provider,
+    );
+    this.ensRegistry = ENSRegistry__factory.connect(
       ENS_REGISTRY_ADDRESS,
       this.provider,
     );
+    this.domainReader = new DomainReader({
+      ensRegistryAddress: ENS_REGISTRY_ADDRESS,
+      provider: this.provider,
+    });
+    this.domainReader.addKnownResolver({
+      chainId: CHAIN_ID,
+      address: RESOLVER_V1_ADDRESS,
+      type: ResolverContractType.RoleDefinitionResolver_v1,
+    });
+    this.domainReader.addKnownResolver({
+      chainId: CHAIN_ID,
+      address: PUBLIC_RESOLVER_ADDRESS,
+      type: ResolverContractType.PublicResolver,
+    });
+
+    this.domainHierarchy = new DomainHierarchy({
+      domainReader: this.domainReader,
+      ensRegistryAddress: this.ensRegistry.address,
+      provider: this.provider,
+      domainNotifierAddress: DOMAIN_NOTIFIER_ADDRESS,
+      publicResolverAddress: PUBLIC_RESOLVER_ADDRESS,
+    });
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>(
@@ -58,87 +101,108 @@ export class EnsService {
     );
     const ENS_SYNC_ENABLED =
       this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
-    if (ensSyncInterval && ENS_SYNC_ENABLED) {
+    const isTestEnv = this.config.get<string>('NODE_ENV') === 'test';
+
+    if (ensSyncInterval && ENS_SYNC_ENABLED && !isTestEnv) {
       const interval = setInterval(
         () => this.syncENS(),
         parseInt(ensSyncInterval) * 3600000,
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
+      this.InitEventListeners();
+      this.syncENS();
     }
+  }
 
-    this.InitEventListeners();
+  private async deleteNamespace(hash: string) {
+    try {
+      const isOrg = await this.organizationService.getByNamehash(hash);
+      if (isOrg) {
+        await this.organizationService.removeByNameHash(hash);
+        this.logger.log(
+          `OrgDeleted: successfully removed deregistered org with namehash ${hash}`,
+        );
+      }
+
+      const isRole = await this.roleService.getByNamehash(hash);
+      if (isRole) {
+        await this.roleService.removeByNameHash(hash);
+        this.logger.log(
+          `RoleDeleted: successfully removed deregistered role with namehash ${hash}`,
+        );
+      }
+
+      const isApp = await this.applicationService.getByNamehash(hash);
+      if (isApp) {
+        await this.applicationService.removeByNameHash(hash);
+        this.logger.log(
+          `AppDeleted: successfully removed deregistered app with namehash ${hash}`,
+        );
+      }
+      return;
+    } catch (err) {
+      this.logger.debug(
+        `NamespaceDelete: An error occurred while try to remove ${namehash} namehash: ${err}`,
+      );
+    }
   }
 
   private InitEventListeners(): void {
-    this.publicResolver.addListener('TextChanged', async hash => {
-      const namespace = await this.publicResolver.name(hash.toString());
-      if (!namespace) return;
-      await this.eventHandler({ hash, name: namespace });
+    // Register event handler for legacy PublicResolver definitions
+    this.publicResolver.on('TextChanged', async hash => {
+      await this.eventHandler({ hash });
     });
 
     // Register event handler for owner change or namespace deletion
-    this.ensRegistry.addListener('NewOwner', async (node, label, owner) => {
-      const hash = utils.keccak256(node + label.slice(2));
-      const namespace = await this.publicResolver.name(hash.toString());
-      if (!namespace) return;
-
-      await this.eventHandler({ hash, name: namespace, owner });
+    this.ensRegistry.on('NewOwner', async (node, _, owner) => {
+      await this.eventHandler({ hash: node, owner });
     });
 
     // Register event handler for new Role/App/Org
-    this.ensRegistry.addListener('Transfer', async (node, owner) => {
-      const namespace = await this.publicResolver.name(node.toString());
-      if (!namespace) return;
+    this.ensRegistry.on('Transfer', async (node, owner) => {
+      this.eventHandler({ hash: node, owner });
+    });
 
-      this.eventHandler({ hash: node, name: namespace, owner });
+    // Register event handler for domain definition updates
+    this.domainNotifier.on('DomainUpdated', async node => {
+      const namespace = await this.domainReader.readName(node);
+      if (!namespace) return;
+      await this.eventHandler({ hash: node });
     });
   }
 
   private async getAllNamespaces() {
-    const ensInterface = new utils.Interface(ensResolverContract);
-    const Event = this.publicResolver.filters.TextChanged(
-      null,
-      'metadata',
-      null,
-    );
-    const filter = {
-      fromBlock: 0,
-      toBlock: 'latest',
-      address: Event.address,
-      topics: [...(Event.topics as string[])],
-    };
-    const logs = await this.provider.getLogs(filter);
-    const domains = await Promise.all(
-      logs.map(log => {
-        const parsedLog = ensInterface.parseLog(log);
-        const { node } = parsedLog.values;
-        return this.publicResolver.name(node);
-      }),
-    );
-
-    const uniqDomains = [...new Set(domains)];
-    return uniqDomains;
+    const domains = await this.domainHierarchy.getSubdomainsUsingResolver({
+      domain: 'iam.ewc',
+      mode: 'ALL',
+    });
+    return domains;
   }
 
-  public async eventHandler({
+  private async eventHandler({
     hash,
-    name,
     owner,
   }: {
     hash: string;
-    name: string;
     owner?: string;
   }) {
+    let name: string;
     try {
-      const promises = [
-        // get role data
-        this.publicResolver.text(hash, 'metadata'),
-      ];
-      if (!owner) {
-        promises.push(this.ensRegistry.owner(hash));
+      const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
+
+      if (namespaceOwner === emptyAddress) {
+        //prevent resync and remove namespace from database
+        return this.deleteNamespace(hash);
       }
 
-      const [data, namespaceOwner = owner] = await Promise.all(promises);
+      name = await this.domainReader.readName(hash);
+      // Don't want to sync domains that end in "roles" or "apps" (like "roles.domain.iam.ewc")
+      // This is because these are "spacer" domains that do not have metadata
+      if (name.startsWith('roles') || name.startsWith('apps')) {
+        return;
+      }
+
+      const data = await this.domainReader.read({ node: hash });
 
       if (!namespaceOwner || !data) {
         this.logger.debug(
@@ -151,129 +215,82 @@ export class EnsService {
         data,
         namespace: name,
         owner: namespaceOwner,
+        hash,
       });
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(
+        `Error syncing namespace ${name}, owner ${owner}, ${err}`,
+      );
       return;
     }
-  }
-
-  getNamespaceInfo({
-    namespace,
-    metadata,
-  }: {
-    namespace: string;
-    metadata: {
-      orgName?: string;
-      appName?: string;
-      roleName?: string;
-      roleType?: string;
-    };
-  }): {
-    type: 'Org' | 'App' | 'Role' | 'NotSupported';
-    name?: string;
-    orgNamespace?: string;
-    appNamespace?: string;
-  } {
-    const [name, parent, ...rest] = namespace.split('.');
-    if (metadata.orgName) {
-      return {
-        type: 'Org',
-        name,
-        orgNamespace:
-          parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
-      };
-    }
-    if (metadata.appName) {
-      if (parent === 'apps') {
-        return {
-          name,
-          type: 'App',
-          orgNamespace: rest.join('.'),
-        };
-      }
-    }
-
-    if (metadata.roleName) {
-      if (metadata.roleType.toLowerCase() === 'app') {
-        return {
-          name,
-          type: 'Role',
-          appNamespace: rest.join('.'),
-        };
-      }
-      if (metadata.roleType.toLowerCase() === 'org') {
-        return {
-          name,
-          type: 'Role',
-          orgNamespace: rest.join('.'),
-        };
-      }
-    }
-    return {
-      type: 'NotSupported',
-    };
   }
 
   public async syncNamespace({
     data,
     namespace,
     owner,
+    hash,
   }: {
-    data: string;
+    data: IRoleDefinition | IOrganizationDefinition | IAppDefinition;
     namespace: string;
     owner: string;
+    hash: string;
   }) {
-    let metadata: Record<string, unknown>;
-    try {
-      metadata = JSON.parse(data);
-    } catch (err) {
-      this.logger.debug('Metadata not parsable: ' + data);
-      return;
-    }
-    const { type, appNamespace, name, orgNamespace } = this.getNamespaceInfo({
-      metadata,
-      namespace,
-    });
-    if (type === 'NotSupported') {
-      this.logger.debug(
-        'Metadata or namespace not supported for ' + namespace + ': ' + data,
-      );
-      return;
-    }
+    const [name, parent, ...rest] = namespace.split('.');
 
-    if (type === 'Org') {
+    if (DomainReader.isOrgDefinition(data)) {
       return this.organizationService.handleOrgSyncWithEns({
-        metadata,
+        metadata: data,
         namespace,
         owner,
         name,
-        parentOrgNamespace: orgNamespace,
+        parentOrgNamespace:
+          parent !== 'iam' ? [parent, ...rest].join('.') : undefined,
+        namehash: hash,
       });
     }
-
-    if (type === 'App') {
-      return this.applicationService.handleAppSyncWithEns({
-        metadata,
-        namespace,
-        owner,
-        name,
-        parentOrgNamespace: orgNamespace,
-      });
+    if (DomainReader.isAppDefinition(data)) {
+      if (parent === 'apps') {
+        return this.applicationService.handleAppSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          parentOrgNamespace: rest.join('.'),
+          namehash: hash,
+        });
+      }
+      this.logger.debug(
+        `Bailed: App with namespace:${namespace} does not have 'apps' subdomain`,
+      );
     }
-
-    if (type === 'Role') {
-      return this.roleService.handleRoleSyncWithEns({
-        metadata,
-        namespace,
-        owner,
-        name,
-        appNamespace,
-        orgNamespace,
-      });
+    if (DomainReader.isRoleDefinition(data)) {
+      if (data.roleType.toLowerCase() === 'app') {
+        return this.roleService.handleRoleSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          appNamespace: rest.join('.'),
+          namehash: hash,
+        });
+      }
+      if (data.roleType.toLowerCase() === 'org') {
+        return this.roleService.handleRoleSyncWithEns({
+          metadata: data,
+          namespace,
+          owner,
+          name,
+          orgNamespace: rest.join('.'),
+          namehash: hash,
+        });
+      }
+      this.logger.debug(
+        `Bailed: Roletype ${data.roleType} is not a valid roletype`,
+      );
     }
     this.logger.debug(
-      `Bailed: Data not supported ${namespace}, ${JSON.stringify(metadata)}`,
+      `Bailed: Data not supported ${namespace}, ${JSON.stringify(data)}`,
     );
   }
 
@@ -284,9 +301,9 @@ export class EnsService {
       const chunks = chunk(namespaces, 10);
       for (const part of chunks) {
         await Promise.allSettled(
-          part.map(item => {
+          part.map((item: string) => {
             const hash = namehash(item);
-            return this.eventHandler({ hash, name: item });
+            return this.eventHandler({ hash });
           }),
         );
       }
@@ -294,5 +311,12 @@ export class EnsService {
       this.logger.error(err);
     }
     this.logger.info('### Finished ENS Sync ###');
+  }
+
+  onModuleDestroy() {
+    this.ensRegistry.removeAllListeners('Transfer');
+    this.ensRegistry.removeAllListeners('NewOwner');
+    this.domainNotifier.removeAllListeners('DomainUpdated');
+    this.publicResolver.removeAllListeners('TextChanged');
   }
 }

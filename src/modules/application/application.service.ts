@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from './application.entity';
 import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
-import { emptyAddress } from '../../common/constants';
 import { OrganizationService } from '../organization/organization.service';
+import { IAppDefinition } from '@energyweb/iam-contracts';
 
 @Injectable()
 export class ApplicationService {
@@ -25,6 +25,16 @@ export class ApplicationService {
   public async getByNamespace(namespace: string): Promise<Application> {
     return this.applicationRepository.findOne({
       where: { namespace },
+    });
+  }
+
+  /**
+   * returns single App with matching namehash
+   * @param {String} namehash
+   */
+  public async getByNamehash(namehash: string): Promise<Application> {
+    return this.applicationRepository.findOne({
+      where: { namehash },
     });
   }
 
@@ -60,7 +70,7 @@ export class ApplicationService {
    * return true if App with given namespace exists
    * @param namespace
    */
-  public async exists(namespace: string) {
+  public async exists(namespace: string): Promise<boolean> {
     return Boolean(await this.getByNamespace(namespace));
   }
 
@@ -74,6 +84,15 @@ export class ApplicationService {
     if (!org) {
       this.logger.debug(
         `Not able to create application: ${data.namespace}, parent organization ${parentOrg} does not exists`,
+      );
+      return;
+    }
+
+    const isAppExists = await this.exists(data.namespace);
+
+    if (isAppExists) {
+      this.logger.debug(
+        `Not able to create application: ${data.namespace} already exists`,
       );
       return;
     }
@@ -110,24 +129,29 @@ export class ApplicationService {
     return this.applicationRepository.delete(app.id);
   }
 
+  /**
+   * removes App with matching namehash
+   * @param namehash
+   */
+  public async removeByNameHash(namehash: string) {
+    return this.applicationRepository.delete({ namehash });
+  }
+
   public async handleAppSyncWithEns({
     owner,
     namespace,
     parentOrgNamespace,
     metadata,
     name,
+    namehash,
   }: {
     owner: string;
     namespace: string;
     parentOrgNamespace: string;
-    metadata: Record<string, unknown>;
+    metadata: IAppDefinition;
     name: string;
+    namehash: string;
   }) {
-    if (owner === emptyAddress) {
-      await this.remove(namespace);
-      return;
-    }
-
     let dto: ApplicationDTO;
     try {
       const definitionDTO = await ApplicationDefinitionDTO.create(metadata);
@@ -138,6 +162,7 @@ export class ApplicationService {
         name,
         namespace,
         parentOrg: parentOrgNamespace,
+        namehash,
       });
     } catch (err) {
       this.logger.debug(

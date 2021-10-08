@@ -3,8 +3,8 @@ import { OrganizationDefinitionDTO, OrganizationDTO } from './organization.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
-import { emptyAddress } from '../../common/constants';
 import { Logger } from '../logger/logger.service';
+import { IOrganizationDefinition } from '@energyweb/iam-contracts';
 
 @Injectable()
 export class OrganizationService {
@@ -83,6 +83,17 @@ export class OrganizationService {
   }
 
   /**
+   * returns single Org with matching namehash
+   * @param {String} namehash
+   */
+  public async getByNamehash(namehash: string) {
+    return this.orgRepository.findOne({
+      where: { namehash },
+      relations: ['subOrgs', 'subOrgs.subOrgs'],
+    });
+  }
+
+  /**
    * returns single Org with matching namespace
    * @param {String} owner
    */
@@ -108,6 +119,11 @@ export class OrganizationService {
    */
   public async create({ parentOrg, ...data }: OrganizationDTO) {
     const parentOrganization = await this.getByNamespace(parentOrg);
+    const orgExists = await this.exists(data.namespace);
+    if (orgExists) {
+      this.logger.debug(`namespace ${data.namespace} already exists`);
+      return;
+    }
     const org = Organization.create({ ...data, parentOrg: parentOrganization });
     return this.orgRepository.save(org);
   }
@@ -123,6 +139,7 @@ export class OrganizationService {
         namespace: data.namespace,
       },
     });
+
     if (!org) return this.create({ ...data, parentOrg });
     const parentOrganization = await this.getByNamespace(parentOrg);
     const updatedOrg = Organization.create({
@@ -146,24 +163,29 @@ export class OrganizationService {
     return this.orgRepository.delete(org.id);
   }
 
+  /**
+   * removes Organization with matching namehash
+   * @param namehash
+   */
+  public async removeByNameHash(namehash: string) {
+    return this.orgRepository.delete({ namehash });
+  }
+
   public async handleOrgSyncWithEns({
     owner,
     namespace,
     parentOrgNamespace,
     metadata,
     name,
+    namehash,
   }: {
     owner: string;
     namespace: string;
     parentOrgNamespace: string;
-    metadata: Record<string, unknown>;
+    metadata: IOrganizationDefinition;
     name: string;
+    namehash: string;
   }) {
-    if (owner === emptyAddress) {
-      this.remove(namespace);
-      return;
-    }
-
     let dto: OrganizationDTO;
 
     try {
@@ -175,6 +197,7 @@ export class OrganizationService {
         owner,
         namespace,
         name,
+        namehash,
       });
     } catch (err) {
       this.logger.debug(

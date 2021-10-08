@@ -34,7 +34,7 @@ export class ClaimResolver {
     return this.claimService.getByUserDid({
       did,
       currentUser: user,
-      filters: { accepted, parentNamespace },
+      filters: { isAccepted: accepted, namespace: parentNamespace },
     });
   }
 
@@ -51,7 +51,7 @@ export class ClaimResolver {
     return this.claimService.getByIssuer({
       issuer,
       currentUser: user,
-      filters: { accepted, parentNamespace },
+      filters: { isAccepted: accepted, namespace: parentNamespace },
     });
   }
 
@@ -69,7 +69,7 @@ export class ClaimResolver {
     return this.claimService.getByRequester({
       requester,
       currentUser: user,
-      filters: { accepted, parentNamespace },
+      filters: { isAccepted: accepted, namespace: parentNamespace },
     });
   }
 

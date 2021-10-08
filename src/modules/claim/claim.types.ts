@@ -3,7 +3,7 @@ export const NATS_EXCHANGE_TOPIC = 'claim.exchange';
 export interface IMessage {
   id: string;
   requester: string;
-  claimIssuer: string[];
+  claimIssuer?: string[];
 }
 
 export interface IClaimRequest extends IMessage {
@@ -13,7 +13,7 @@ export interface IClaimRequest extends IMessage {
 }
 
 export interface IClaimIssuance extends IMessage {
-  issuedToken: string;
+  issuedToken?: string;
   acceptedBy: string;
 }
 
@@ -25,16 +25,23 @@ export type DecodedClaimToken = {
   claimData: { claimType: string; claimTypeVersion: string };
 };
 
+export enum RegistrationTypes {
+  OffChain = 'RegistrationTypes::OffChain',
+  OnChain = 'RegistrationTypes::OnChain',
+}
+
 export interface IClaim {
   id: string;
   requester: string;
-  claimIssuer: string[];
   claimType: string;
   claimTypeVersion: string;
+  registrationTypes: RegistrationTypes[];
   token: string;
+  subjectAgreement?: string;
+  onChainProof?: string;
   issuedToken?: string;
   isAccepted: boolean;
   acceptedBy?: string;
   isRejected?: boolean;
-  parentNamespace: string;
+  namespace: string;
 }

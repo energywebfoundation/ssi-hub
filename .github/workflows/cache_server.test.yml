@@ -1,0 +1,88 @@
+name: Cache-Server Test
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events
+  push:
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+  deployment:
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: ${{secrets.DB_USERNAME}}
+          POSTGRES_DB: dev-test
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
+        ports:
+          - 5432:5432
+        # Add a health check
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        # NATS
+      jetstream:
+        image: synadia/jsm:latest
+        options: >-
+          -e JSM_MODE=server
+      redis:
+        image: redis
+        ports:
+        - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --entrypoint redis-server
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate keys
+        run: npm run generate:jwtkeys
+
+      - name: Check linting
+        run: npm run lint
+
+      - name: Audit package dependencies
+        run: npm audit --audit-level=critical
+
+      - name: Build the app
+        run: npm run build
+
+      - name: Create Nats cluster
+        uses: onichandame/nats-action@master
+        with:
+          port: '4222 4223 4224'
+
+      - name: Running tests
+        run: npm run test --forceExit
+        env:
+          CI: true
+          ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
+          CHAIN_ID: ${{secrets.CHAIN_ID}}
+          PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
+          RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
+          DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
+          ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
+          ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
+          ENS_URL: ${{secrets.ENS_URL}}
+          REDIS_HOST: localhost
+          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
+          NATS_CLIENTS_URL: localhost:4222

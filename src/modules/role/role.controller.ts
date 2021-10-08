@@ -13,7 +13,7 @@ import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller('role')
+@Controller({ path: 'role', version: '1' })
 export class RoleController {
   constructor(private roleService: RoleService) {}
 
