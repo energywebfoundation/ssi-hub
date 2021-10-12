@@ -4,7 +4,7 @@ import { RoleDTO } from './role.dto';
 import { DIDService } from '../did/did.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
@@ -30,6 +30,14 @@ export class RoleService {
    */
   public async getByNamespace(namespace: string) {
     return this.roleRepository.findOne({ where: { namespace } });
+  }
+
+  /**
+   * returns multiple Role with matching namespaces
+   * @param {String} namespace
+   */
+  public async getByNamespaces(namespaces: string[]) {
+    return this.roleRepository.find({ where: { namespace: In(namespaces) } });
   }
 
   /**
