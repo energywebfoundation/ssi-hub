@@ -40,15 +40,15 @@
 
 ### create
 
-▸ **create**(`__namedParameters`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)\>
+▸ **create**(`data`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)\>
 
 Method for adding new Org to database
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | [`OrganizationDTO`](modules_organization_organization_dto.OrganizationDTO.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`OrganizationDTO`](modules_organization_organization_dto.OrganizationDTO.md) | object containing all needed Org properties |
 
 #### Returns
 

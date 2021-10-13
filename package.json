@@ -33,7 +33,7 @@
     "docker:start:resolver": "make start-universal-resolver",
     "docker:watch": "npm run docker:start:app && docker-compose logs -f app",
     "docker:down": "docker-compose down -v",
-    "build:docs": "rimraf docs/api && typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs true",
+    "build:docs": "rimraf docs/api && typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs true ./src",
     "generate:jwtkeys": "openssl genrsa -out private.pem 2048 && openssl rsa -in private.pem -pubout > public.pem",
     "migrate:claim-subject": "node src/scripts/migrate_claim_subject.js",
     "migration:generate": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:generate -n",
@@ -144,7 +144,7 @@
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
     "typedoc": "^0.22.0",
-    "typedoc-plugin-markdown": "^3.10.4",
+    "typedoc-plugin-markdown": "^3.11.0",
     "typescript": "^4.3.5"
   },
   "jest": {

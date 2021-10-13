@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [StakingPoolFactory\_\_factory](../classes/ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md)
+- [StakingPoolFactory__factory](../classes/ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md)
