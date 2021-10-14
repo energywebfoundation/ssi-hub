@@ -34,6 +34,7 @@ before_deploy:
 - mv makefile.prod makefile
 - scp -P $SERVER_PORT -i deploy_rsa -o StrictHostKeyChecking=no -r .env.ci.dist ./universal-resolver
   docker-compose.prod.yml deploy.sh makefile $SERVER_USER@$SERVER_HOST:$APP_DIRECTORY_NEW/
+- echo "$AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $AWS_REGION $AWS_ECR_REPOSITORY" > deleteme
 deploy:
   provider: script
   script: ssh -p $SERVER_PORT -i deploy_rsa -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST
