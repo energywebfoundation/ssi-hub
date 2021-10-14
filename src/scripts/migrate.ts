@@ -1,7 +1,7 @@
 import { Policy } from 'cockatiel';
 import { DgraphClient, DgraphClientStub } from 'dgraph-js';
 import { createConnection } from 'typeorm';
-import { Claim } from '../modules/claim/claim.entity';
+import { RoleClaim } from '../modules/claim/entities/roleClaim.entity';
 import chunk from 'lodash.chunk';
 
 export class DgraphService {
@@ -62,7 +62,7 @@ const migrate = async () => {
   console.log('#### DGRAPH CLIENT INITIALIZED ####');
 
   const { claims } = (await dgraph.getClaimFromDgraph()) as {
-    claims: Claim[];
+    claims: RoleClaim[];
   };
 
   const connection = await createConnection({
@@ -72,21 +72,21 @@ const migrate = async () => {
     username: process.env['DB_USERNAME'],
     password: process.env['DB_PASSWORD'],
     database: process.env['DB_NAME'],
-    entities: [Claim],
+    entities: [RoleClaim],
   });
 
   console.log(`#### CONNECTED TO POSTGRES ####`);
 
-  const claimsRepo = connection.getRepository(Claim);
+  const claimsRepo = connection.getRepository(RoleClaim);
   const claimsEntities = claims.reduce((acc, { ...rest }) => {
     acc.push(
-      Claim.create({
+      RoleClaim.create({
         claimTypeVersion: '1',
         ...rest,
       }),
     );
     return acc;
-  }, [] as Claim[]);
+  }, [] as RoleClaim[]);
 
   console.log(`#### THERE ARE ${claimsEntities.length} CLAIMS TO MIGRATE ####`);
 

@@ -31,14 +31,19 @@ import {
 } from './claim.types';
 import { NatsService } from '../nats/nats.service';
 import { validateOrReject } from 'class-validator';
-import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
+import {
+  ClaimIssueDTO,
+  ClaimRejectionDTO,
+  ClaimRequestDTO,
+  IssuedClaimDTO,
+} from './claim.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { User } from '../../common/user.decorator';
 import { BooleanPipe } from '../../common/boolean.pipe';
 import { AssetsService } from '../assets/assets.service';
-import { DIDsQuery } from './claim.entity';
+import { DIDsQuery } from './entities/roleClaim.entity';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -347,5 +352,28 @@ export class ClaimController {
       filters: { isAccepted, namespace },
       currentUser: user,
     });
+  }
+
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @Post('/issued')
+  @ApiExcludeEndpoint()
+  @ApiTags('Claims')
+  public async saveIssued(@Body() body: IssuedClaimDTO) {
+    return this.claimService.saveIssuedClaim(body);
+  }
+
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Get('/issued')
+  @ApiQuery({
+    name: 'subjects',
+    required: true,
+    description: 'DIDs whose issued claims are being requested',
+  })
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns issued claims requested for given DIDs',
+  })
+  public async getIssuedClaimsBySubjects(@Query() { subjects }: DIDsQuery) {
+    return this.claimService.getIssuedClaimsBySubjects(subjects);
   }
 }

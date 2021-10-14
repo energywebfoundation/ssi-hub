@@ -8,6 +8,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsJWT,
   IsNumberString,
   IsOptional,
   IsString,
@@ -123,4 +124,17 @@ export class ClaimRejectionDTO implements IClaimRejection {
   @IsBoolean()
   @ApiProperty()
   isRejected: boolean;
+}
+
+export class IssuedClaimDTO {
+  static async create(data: IssuedClaimDTO) {
+    const dto = new IssuedClaimDTO();
+    Object.assign(dto, data);
+    await validateOrReject(dto, { whitelist: true });
+    return dto;
+  }
+
+  @IsJWT()
+  @ApiProperty()
+  issuedToken: string;
 }

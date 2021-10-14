@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { Claim } from './claim.entity';
+import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
 import { ClaimService, UUID_NAMESPACE } from './claim.service';
 import { IClaimRequest, RegistrationTypes } from './claim.types';
@@ -53,7 +53,7 @@ describe('ClaimsController', () => {
     module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(TestDbCOnfig.default as TypeOrmModuleOptions),
-        TypeOrmModule.forFeature([Claim]),
+        TypeOrmModule.forFeature([RoleClaim]),
         BullModule.registerQueue({
           name: 'claims',
           redis: redisConfig,
