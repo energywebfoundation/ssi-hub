@@ -13,16 +13,17 @@ before_install:
 - export DOCKER_TAG=$TRAVIS_COMMIT
 - export SENTRY_RELEASE=$TRAVIS_COMMIT
 install:
-- if ! [ -x "$(command -v aws)" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-  -o "awscliv2.zip" ; unzip awscliv2.zip ; sudo ./aws/install ; rm -rf ./aws; rm awscliv2.zip;
-  fi
-- docker build --build-arg SENTRY_RELEASE --build-arg SENTRY_AUTH_TOKEN -t $AWS_ECR_REPOSITORY:$DOCKER_TAG
-  -t $AWS_ECR_REPOSITORY:latest -f ./docker/prod/Dockerfile .
-- aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin
-  $AWS_ECR_REPOSITORY
-- docker push $AWS_ECR_REPOSITORY:$DOCKER_TAG
-- docker push $AWS_ECR_REPOSITORY:latest
-- docker logout
+  - echo "skip build"
+# - if ! [ -x "$(command -v aws)" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+#   -o "awscliv2.zip" ; unzip awscliv2.zip ; sudo ./aws/install ; rm -rf ./aws; rm awscliv2.zip;
+#   fi
+# - docker build --build-arg SENTRY_RELEASE --build-arg SENTRY_AUTH_TOKEN -t $AWS_ECR_REPOSITORY:$DOCKER_TAG
+#   -t $AWS_ECR_REPOSITORY:latest -f ./docker/prod/Dockerfile .
+# - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin
+#   $AWS_ECR_REPOSITORY
+# - docker push $AWS_ECR_REPOSITORY:$DOCKER_TAG
+# - docker push $AWS_ECR_REPOSITORY:latest
+# - docker logout
 script:
 - echo 'No tests provided'
 before_deploy:
