@@ -30,7 +30,7 @@ export enum RegistrationTypes {
   OnChain = 'RegistrationTypes::OnChain',
 }
 
-export interface IClaim {
+export interface IRoleClaim {
   id: string;
   requester: string;
   claimType: string;
@@ -44,4 +44,10 @@ export interface IClaim {
   acceptedBy?: string;
   isRejected?: boolean;
   namespace: string;
+}
+
+export interface IClaim {
+  issuedToken: string;
+  subject: string;
+  issuedAt: string;
 }

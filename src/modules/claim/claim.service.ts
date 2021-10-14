@@ -8,10 +8,16 @@ import {
 } from './claim.types';
 import { RoleService } from '../role/role.service';
 import { Logger } from '../logger/logger.service';
-import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
-import { Claim } from './claim.entity';
+import {
+  ClaimIssueDTO,
+  ClaimRejectionDTO,
+  ClaimRequestDTO,
+  IssuedClaimDTO,
+} from './claim.dto';
+import { Claim } from './entities/claim.entity';
+import { RoleClaim } from './entities/roleClaim.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { NatsService } from '../nats/nats.service';
@@ -31,6 +37,8 @@ export class ClaimService {
   constructor(
     private readonly roleService: RoleService,
     private readonly logger: Logger,
+    @InjectRepository(RoleClaim)
+    private readonly roleClaimRepository: Repository<RoleClaim>,
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
     private readonly assetService: AssetsService,
@@ -73,7 +81,7 @@ export class ClaimService {
     data: IClaimIssuance | IClaimRejection | IClaimRequest,
   ): Promise<string> {
     try {
-      const claim: Claim = await this.getById(data.id);
+      const claim: RoleClaim = await this.getById(data.id);
       if (!claim && 'token' in data) {
         const {
           claimData: { claimType, claimTypeVersion },
@@ -118,38 +126,42 @@ export class ClaimService {
    * Saves claim to database
    * @param data Raw claim data
    */
-  public async create(data: ClaimRequestDTO): Promise<Claim> {
+  public async create(data: ClaimRequestDTO): Promise<RoleClaim> {
     const parent = data.claimType
       .split('.')
       .slice(2)
       .join('.');
 
-    const claim = Claim.create({
+    const claim = RoleClaim.create({
       id: ClaimService.idOfClaim(data),
       ...data,
       namespace: parent,
     });
-    return this.claimRepository.save(claim);
+    return this.roleClaimRepository.save(claim);
   }
 
   public async reject(id: string) {
-    const claim = await this.claimRepository.findOne(id);
-    const updatedClaim = Claim.create({ ...claim, isRejected: true });
-    return this.claimRepository.save(updatedClaim);
+    const claim = await this.roleClaimRepository.findOne(id);
+    const updatedClaim = RoleClaim.create({ ...claim, isRejected: true });
+    return this.roleClaimRepository.save(updatedClaim);
   }
 
   public async issue(data: ClaimIssueDTO) {
-    const claim = await this.claimRepository.findOne(data.id);
-    const updatedClaim = Claim.create({ ...claim, ...data, isAccepted: true });
-    return this.claimRepository.save(updatedClaim);
+    const claim = await this.roleClaimRepository.findOne(data.id);
+    const updatedClaim = RoleClaim.create({
+      ...claim,
+      ...data,
+      isAccepted: true,
+    });
+    return this.roleClaimRepository.save(updatedClaim);
   }
 
   /**
    * returns claim with matching ID
    * @param id claim ID
    */
-  public async getById(id: string): Promise<Claim> {
-    return this.claimRepository.findOne(id);
+  public async getById(id: string): Promise<RoleClaim> {
+    return this.roleClaimRepository.findOne(id);
   }
 
   /**
@@ -164,8 +176,8 @@ export class ClaimService {
     subjects: string[];
     filters?: QueryFilters;
     currentUser?: string;
-  }): Promise<Claim[]> {
-    const qb = this.claimRepository.createQueryBuilder('claim');
+  }): Promise<RoleClaim[]> {
+    const qb = this.roleClaimRepository.createQueryBuilder('claim');
     qb.where('claim.subject IN (:...subjects)', { subjects });
 
     if (currentUser) {
@@ -193,7 +205,7 @@ export class ClaimService {
    * @param namespace target parent namespace
    */
   async getByParentNamespace(namespace: string) {
-    return this.claimRepository.find({
+    return this.roleClaimRepository.find({
       where: { namespace },
     });
   }
@@ -211,7 +223,7 @@ export class ClaimService {
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const qb = this.claimRepository
+    const qb = this.roleClaimRepository
       .createQueryBuilder()
       .where(':did = requester', { did });
 
@@ -259,7 +271,7 @@ export class ClaimService {
       return [];
     }
 
-    const qb = this.claimRepository
+    const qb = this.roleClaimRepository
       .createQueryBuilder('claim')
       .where('claim.claimType IN (:...rolesByIssuer)', { rolesByIssuer });
 
@@ -289,7 +301,7 @@ export class ClaimService {
     filters?: QueryFilters;
     currentUser?: string;
   }) {
-    const qb = this.claimRepository
+    const qb = this.roleClaimRepository
       .createQueryBuilder()
       .where(':requester = requester', { requester });
 
@@ -346,7 +358,7 @@ export class ClaimService {
     ) {
       throw new ForbiddenException();
     }
-    await this.claimRepository.delete(claim.id);
+    await this.roleClaimRepository.delete(claim.id);
   }
 
   /**
@@ -359,10 +371,42 @@ export class ClaimService {
     isAccepted?: boolean,
   ): Promise<string[]> {
     const parsedFilters = this.parseFilters({ isAccepted });
-    const claims = await this.claimRepository.find({
+    const claims = await this.roleClaimRepository.find({
       where: [{ ...parsedFilters, claimType: namespace }],
     });
     return claims.map(claim => claim.requester);
+  }
+
+  /**
+   * Save issued claim
+   * @param {Object} claim - Issued claim that we want to save
+   * @param {string} claim.subject - Subject of the claim
+   * @param {string} claim.issuedToken - Issued token
+   */
+  public async saveIssuedClaim(claim: IssuedClaimDTO) {
+    const { issuedToken } = claim;
+    const newIssuedClaim = Claim.create({ issuedToken });
+    const issuedClaim = await this.claimRepository.findOne({
+      where: {
+        subject: newIssuedClaim.subject,
+        issuedToken,
+      },
+    });
+
+    if (issuedClaim) return;
+    this.claimRepository.save(newIssuedClaim);
+  }
+
+  /**
+   * Save issued claim
+   * @param {Array} claim - DIDs whose issued claims are being requested
+   */
+  public async getIssuedClaimsBySubjects(subjects: string[]) {
+    return this.claimRepository.find({
+      where: {
+        subject: In(subjects),
+      },
+    });
   }
 
   static idOfClaim(claimReq: IClaimRequest) {
@@ -393,7 +437,7 @@ export class ClaimService {
 
   private async filterUserRelatedClaims(
     currentUser: string,
-    qb: SelectQueryBuilder<Claim>,
+    qb: SelectQueryBuilder<RoleClaim>,
   ) {
     const ownedAssets = (await this.assetService.getByOwner(currentUser)).map(
       a => a.id,

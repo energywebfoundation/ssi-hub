@@ -4,7 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NatsModule } from '../nats/nats.module';
 import { RoleModule } from '../role/role.module';
 import { ClaimController } from './claim.controller';
-import { Claim } from './claim.entity';
+import { RoleClaim } from './entities/roleClaim.entity';
+import { Claim } from './entities/claim.entity';
 import { ClaimProcessor } from './claim.processor';
 import { ClaimResolver } from './claim.resolver';
 import { ClaimService } from './claim.service';
@@ -12,7 +13,7 @@ import { AssetsModule } from '../assets/assets.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Claim]),
+    TypeOrmModule.forFeature([RoleClaim, Claim]),
     BullModule.registerQueue({
       name: 'claims',
     }),
