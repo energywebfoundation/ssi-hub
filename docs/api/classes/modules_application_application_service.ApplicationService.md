@@ -39,15 +39,15 @@
 
 ### create
 
-▸ **create**(`__namedParameters`): `Promise`<[`Application`](modules_application_application_entity.Application.md)\>
+▸ **create**(`data`): `Promise`<[`Application`](modules_application_application_entity.Application.md)\>
 
 Method for adding new App to database
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | [`ApplicationDTO`](modules_application_application_dto.ApplicationDTO.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ApplicationDTO`](modules_application_application_dto.ApplicationDTO.md) | object containing all needed App properties |
 
 #### Returns
 
@@ -113,15 +113,17 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
+▸ **getByOwner**(`owner`, `__namedParameters?`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
 
-returns single App with matching namespace
+Returns applications owned by `owner`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.withRelations?` | `boolean` |
 
 #### Returns
 

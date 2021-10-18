@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [IdentityManager\_\_factory](../classes/ethers_factories_IdentityManager__factory.IdentityManager__factory.md)
+- [IdentityManager__factory](../classes/ethers_factories_IdentityManager__factory.IdentityManager__factory.md)

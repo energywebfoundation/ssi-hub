@@ -129,7 +129,7 @@ describe('OrganizationController', () => {
   });
 
   it('getByOwner(), should be able to specify if relations should be included', async () => {
-    const parentOrg = Organization.create({
+    let parentOrg = Organization.create({
       name: 'parentOrg',
       namespace: `parentOrg.iam.ewc`,
       owner: Wallet.createRandom().address,
@@ -139,7 +139,7 @@ describe('OrganizationController', () => {
         websiteUrl: chance.url(),
       },
     });
-    await orgRepo.save(parentOrg);
+    parentOrg = await orgRepo.save(parentOrg);
 
     const app = Application.create({
       name: 'app',
@@ -172,7 +172,7 @@ describe('OrganizationController', () => {
         expect(role).toMatchObject(response[0].roles[0]);
       });
 
-      await testHttpServer
+    await testHttpServer
       .get(`/v1/org/owner/${parentOrg.owner}?withRelations=false`)
       .expect(200)
       .expect(res => {

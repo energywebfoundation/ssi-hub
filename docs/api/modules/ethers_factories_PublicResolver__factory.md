@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [PublicResolver\_\_factory](../classes/ethers_factories_PublicResolver__factory.PublicResolver__factory.md)
+- [PublicResolver__factory](../classes/ethers_factories_PublicResolver__factory.PublicResolver__factory.md)

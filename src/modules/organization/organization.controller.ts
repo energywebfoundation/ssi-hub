@@ -50,7 +50,7 @@ export class OrganizationController {
     @Param('owner') owner: string,
     @Query('withRelations', BooleanPipe) withRelations: boolean,
   ) {
-    return await this.organizationService.getByOwner(owner, { withRelations });
+    return this.organizationService.getByOwner(owner, { withRelations });
   }
 
   @Get('/:namespace/exists')

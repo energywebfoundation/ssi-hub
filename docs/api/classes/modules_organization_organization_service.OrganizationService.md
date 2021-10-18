@@ -40,15 +40,15 @@
 
 ### create
 
-▸ **create**(`__namedParameters`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)\>
+▸ **create**(`data`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)\>
 
 Method for adding new Org to database
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | [`OrganizationDTO`](modules_organization_organization_dto.OrganizationDTO.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`OrganizationDTO`](modules_organization_organization_dto.OrganizationDTO.md) | object containing all needed Org properties |
 
 #### Returns
 
@@ -132,15 +132,18 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
+▸ **getByOwner**(`owner`, `__namedParameters?`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
 
-returns single Org with matching namespace
+Returns organizations owned by `owner`
+Also returns the suborgs of the org and, optionally, associated apps and/or roles
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.withRelations?` | `boolean` |
 
 #### Returns
 

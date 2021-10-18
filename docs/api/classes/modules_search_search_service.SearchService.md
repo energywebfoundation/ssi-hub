@@ -30,7 +30,7 @@
 
 ### searchByText
 
-▸ **searchByText**(`text`, `types?`): `Promise`<([`Application`](modules_application_application_entity.Application.md) \| [`Organization`](modules_organization_organization_entity.Organization.md) \| [`Role`](modules_role_role_entity.Role.md))[]\>
+▸ **searchByText**(`text`, `types?`): `Promise`<([`Application`](modules_application_application_entity.Application.md) \| [`Role`](modules_role_role_entity.Role.md) \| [`Organization`](modules_organization_organization_entity.Organization.md))[]\>
 
 returns App/Org/Role with namespace matching or similar to provided text
 
@@ -43,6 +43,6 @@ returns App/Org/Role with namespace matching or similar to provided text
 
 #### Returns
 
-`Promise`<([`Application`](modules_application_application_entity.Application.md) \| [`Organization`](modules_organization_organization_entity.Organization.md) \| [`Role`](modules_role_role_entity.Role.md))[]\>
+`Promise`<([`Application`](modules_application_application_entity.Application.md) \| [`Role`](modules_role_role_entity.Role.md) \| [`Organization`](modules_organization_organization_entity.Organization.md))[]\>
 
 Array of Apps, Orgs and Roles

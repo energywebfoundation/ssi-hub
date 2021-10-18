@@ -88,12 +88,12 @@ Get claims issued by user with matching DID
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `__namedParameters` | `Object` | - |
-| `__namedParameters.currentUser?` | `string` | - |
-| `__namedParameters.filters?` | `QueryFilters` | additional filters |
-| `__namedParameters.issuer` | `string` | - |
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.issuer` | `string` |
 
 #### Returns
 
@@ -128,12 +128,12 @@ Get claims requested by user with matching DID
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `__namedParameters` | `Object` | - |
-| `__namedParameters.currentUser?` | `string` | - |
-| `__namedParameters.filters?` | `QueryFilters` | additional filters |
-| `__namedParameters.requester` | `string` | - |
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.requester` | `string` |
 
 #### Returns
 
@@ -149,12 +149,12 @@ Get claims issued for given subject
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `__namedParameters` | `Object` | - |
-| `__namedParameters.currentUser?` | `string` | - |
-| `__namedParameters.filters?` | `QueryFilters` | additional filters |
-| `__namedParameters.subject` | `string` | - |
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.subject` | `string` |
 
 #### Returns
 
@@ -164,7 +164,7 @@ ___
 
 ### getBySubjects
 
-▸ **getBySubjects**(`__namedParameters`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getBySubjects**(`subjects`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
 
 returns claims requested for given DIDs
 
@@ -172,10 +172,10 @@ returns claims requested for given DIDs
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `__namedParameters` | `Object` | - |
-| `__namedParameters.currentUser?` | `string` | - |
-| `__namedParameters.filters?` | `QueryFilters` | - |
-| `__namedParameters.subjects` | `string`[] | claim subjects DIDs |
+| `subjects` | `Object` | claim subjects DIDs |
+| `subjects.currentUser?` | `string` | - |
+| `subjects.filters?` | `QueryFilters` | - |
+| `subjects.subjects` | `string`[] | - |
 
 #### Returns
 
@@ -185,7 +185,7 @@ ___
 
 ### getByUserDid
 
-▸ **getByUserDid**(`__namedParameters`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByUserDid**(`did`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
 
 Get claims requested or issued by user with matching DID
 
@@ -193,10 +193,10 @@ Get claims requested or issued by user with matching DID
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `__namedParameters` | `Object` | - |
-| `__namedParameters.currentUser?` | `string` | - |
-| `__namedParameters.did` | `string` | user DID |
-| `__namedParameters.filters?` | `QueryFilters` | - |
+| `did` | `Object` | user DID |
+| `did.currentUser?` | `string` | - |
+| `did.did` | `string` | - |
+| `did.filters?` | `QueryFilters` | - |
 
 #### Returns
 

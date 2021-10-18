@@ -20,7 +20,7 @@
 
 ### Variables
 
-- [NATS\_EXCHANGE\_TOPIC](modules_claim_claim_types.md#nats_exchange_topic)
+- [NATS_EXCHANGE_TOPIC](modules_claim_claim_types.md#nats_exchange_topic)
 
 ## Type aliases
 
@@ -40,4 +40,4 @@
 
 ### NATS\_EXCHANGE\_TOPIC
 
-• `Const` **NATS\_EXCHANGE\_TOPIC**: ``"claim.exchange"``
+• **NATS\_EXCHANGE\_TOPIC**: ``"claim.exchange"``

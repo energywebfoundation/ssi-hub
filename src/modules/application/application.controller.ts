@@ -48,7 +48,7 @@ export class ApplicationController {
     @Param('owner') owner: string,
     @Query('withRelations', BooleanPipe) withRelations: boolean,
   ) {
-    return await this.applicationService.getByOwner(owner, { withRelations });
+    return this.applicationService.getByOwner(owner, { withRelations });
   }
 
   @Get('/:namespace/exists')

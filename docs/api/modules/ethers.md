@@ -5,16 +5,16 @@
 ### References
 
 - [StakingPoolFactory](ethers.md#stakingpoolfactory)
-- [StakingPoolFactory\_\_factory](ethers.md#stakingpoolfactory__factory)
+- [StakingPoolFactory__factory](ethers.md#stakingpoolfactory__factory)
 
 ## References
 
 ### StakingPoolFactory
 
-Re-exports: [StakingPoolFactory](../classes/ethers_StakingPoolFactory.StakingPoolFactory.md)
+• **StakingPoolFactory**: `Object`
 
 ___
 
 ### StakingPoolFactory\_\_factory
 
-Re-exports: [StakingPoolFactory\_\_factory](../classes/ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md)
+• **StakingPoolFactory\_\_factory**: `Object`

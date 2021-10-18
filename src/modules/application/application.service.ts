@@ -45,7 +45,7 @@ export class ApplicationService {
    */
   public async getByOwner(
     owner: string,
-    { withRelations = false }: { withRelations?: boolean } = {},
+    { withRelations = true }: { withRelations?: boolean } = {},
   ) {
     const qb = this.applicationRepository.createQueryBuilder('application');
     qb.where('application.owner = :owner', { owner });

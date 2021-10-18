@@ -89,7 +89,7 @@ export class TokenService {
     if (req.headers['authorization']) {
       token = req.headers['authorization'].replace('Bearer ', '');
     } else {
-      token = req.cookies.token;
+      token = req.cookies?.token;
     }
 
     if (token) {
