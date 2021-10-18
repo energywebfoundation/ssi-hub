@@ -4,6 +4,7 @@ import {
   TypeOrmModule,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
+import { Wallet } from 'ethers';
 import { OrganizationController } from './organization.controller';
 import * as TestDbCOnfig from '../../../test/config';
 import { Organization } from './organization.entity';
@@ -18,12 +19,16 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { organizationFixture } from './organization.fixture';
 import { appConfig } from '../../common/test.utils';
+import { Role } from '../role/role.entity';
+import { IRoleDefinition } from '@energyweb/iam-contracts';
 
 const chance = new Chance();
 
 describe('OrganizationController', () => {
   let module: TestingModule;
-  let repo: Repository<Organization>;
+  let orgRepo: Repository<Organization>;
+  let appRepo: Repository<Application>;
+  let roleRepo: Repository<Role>;
   let queryRunner: QueryRunner;
   let testHttpServer: request.SuperTest<request.Test>;
   let app: INestApplication;
@@ -33,7 +38,7 @@ describe('OrganizationController', () => {
     module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(TestDbCOnfig.default as TypeOrmModuleOptions),
-        TypeOrmModule.forFeature([Organization, Application]),
+        TypeOrmModule.forFeature([Organization, Application, Role]),
         LoggerModule,
         ConfigModule,
         SentryModule,
@@ -55,10 +60,14 @@ describe('OrganizationController', () => {
       'master',
     );
     await queryRunner.startTransaction();
-    repo = module.get<Repository<Organization>>(
+    orgRepo = module.get<Repository<Organization>>(
       getRepositoryToken(Organization),
     );
-    organizations = await organizationFixture(repo, 2);
+    appRepo = module.get<Repository<Application>>(
+      getRepositoryToken(Application),
+    );
+    roleRepo = module.get<Repository<Role>>(getRepositoryToken(Role));
+    organizations = await organizationFixture(orgRepo, 2);
     testHttpServer = request(app.getHttpServer());
   });
 
@@ -116,6 +125,61 @@ describe('OrganizationController', () => {
       .expect(res => {
         const response: Organization[] = res.body;
         expect(response.length).toBe(0);
+      });
+  });
+
+  it('getByOwner(), should be able to specify if relations should be included', async () => {
+    const parentOrg = Organization.create({
+      name: 'parentOrg',
+      namespace: `parentOrg.iam.ewc`,
+      owner: Wallet.createRandom().address,
+      definition: {
+        orgName: 'parentOrg.iam.ewc',
+        description: chance.paragraph(),
+        websiteUrl: chance.url(),
+      },
+    });
+    await orgRepo.save(parentOrg);
+
+    const app = Application.create({
+      name: 'app',
+      owner: parentOrg.owner,
+      namespace: 'app',
+      definition: { appName: 'app' },
+      parentOrg,
+      roles: [],
+    });
+    await appRepo.save(app);
+
+    const role = Role.create({
+      name: 'role',
+      namespace: 'role',
+      owner: parentOrg.owner,
+      definition: {} as IRoleDefinition,
+      parentOrg,
+    });
+    roleRepo.save(role);
+
+    await testHttpServer
+      .get(`/v1/org/owner/${parentOrg.owner}`)
+      .expect(200)
+      .expect(res => {
+        const response: Organization[] = res.body;
+        expect(response.length).toBe(1);
+        expect(response[0].apps.length).toBe(1);
+        expect(app).toMatchObject(response[0].apps[0]);
+        expect(response[0].roles.length).toBe(1);
+        expect(role).toMatchObject(response[0].roles[0]);
+      });
+
+      await testHttpServer
+      .get(`/v1/org/owner/${parentOrg.owner}?withRelations=false`)
+      .expect(200)
+      .expect(res => {
+        const response: Organization[] = res.body;
+        expect(response.length).toBe(1);
+        expect(response[0].apps).toBe(undefined);
+        expect(response[0].roles).toBe(undefined);
       });
   });
 
