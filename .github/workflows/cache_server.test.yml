@@ -15,7 +15,7 @@ jobs:
         image: postgres:12
         env:
           POSTGRES_USER: ${{secrets.DB_USERNAME}}
-          POSTGRES_DB: dev-test
+          POSTGRES_DB: ${{secrets.DB_NAME}}
           POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
         ports:
           - 5432:5432
@@ -29,7 +29,7 @@ jobs:
       redis:
         image: redis
         ports:
-        - 6379:6379
+          - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -91,3 +91,42 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: ${{ job.services.redis.ports[6379] }}
           NATS_CLIENTS_URL: localhost:4222
+
+      - name: Running E2E tests
+        run: npm run test:e2e
+        env:
+          CI: true
+          ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
+          CHAIN_ID: ${{secrets.CHAIN_ID}}
+          PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
+          RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
+          DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
+          ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
+          ENS_URL: ${{secrets.ENS_URL}}
+          REDIS_HOST: ${{secrets.REDIS_HOST}}
+          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
+          NATS_CLIENTS_URL: ${{secrets.NATS_CLIENTS_URL}}
+          JWT_PUBLIC_KEY: ${{secrets.JWT_PUBLIC_KEY}}
+          JWT_PRIVATE_KEY: ${{secrets.JWT_PRIVATE_KEY}}
+          DB_HOST: ${{secrets.DB_HOST}}
+          DB_PORT: ${{secrets.DB_PORT}}
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_NAME: ${{secrets.DB_NAME}}
+          JWT_ACCESS_TOKEN_EXPIRES_IN: ${{secrets.JWT_ACCESS_TOKEN_EXPIRES_IN}}
+          JWT_REFRESH_TOKEN_EXPIRES_IN: ${{secrets.JWT_REFRESH_TOKEN_EXPIRES_IN}}
+          JWT_ACCESS_TOKEN_NAME: ${{secrets.JWT_ACCESS_TOKEN_NAME}}
+          JWT_REFRESH_TOKEN_NAME: ${{secrets.JWT_REFRESH_TOKEN_NAME}}
+          UNIVERSAL_RESOLVER_URL: ${{secrets.UNIVERSAL_RESOLVER_URL}}
+          ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
+          DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
+          CLAIM_MANAGER_ADDRESS: ${{secrets.CLAIM_MANAGER_ADDRESS}}
+          ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
+          ASSETS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_INTERVAL_IN_HOURS}}
+          ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS}}
+          ASSETS_SYNC_ENABLED: ${{secrets.ASSETS_SYNC_ENABLED}}
+          IPFS_URL: ${{secrets.IPFS_URL}}
+          NESTJS_PORT: ${{secrets.NESTJS_PORT}}
+          STRATEGY_CACHE_SERVER: ${{secrets.STRATEGY_CACHE_SERVER}}
+          STRATEGY_PRIVATE_KEY: ${{secrets.STRATEGY_PRIVATE_KEY}}
+          STRATEGY_NUM_BLOCKS_BACK: 10
