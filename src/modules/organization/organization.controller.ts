@@ -3,6 +3,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
@@ -12,6 +13,7 @@ import { ApplicationDTO } from '../application/application.dto';
 import { RoleDTO } from '../role/role.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
+import { BooleanPipe } from '../../common/boolean.pipe';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -36,15 +38,19 @@ export class OrganizationController {
   @Get('/owner/:owner')
   @ApiTags('Organization')
   @ApiOperation({
-    summary: 'Returns Organization with given namespace',
+    summary:
+      'Returns organizations owned by given identity optionally including organizations subdomains',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: OrganizationDTO,
-    description: 'Organizations with matching Id',
+    description: 'Organizations owned by given identity',
   })
-  public async getByOwner(@Param('owner') owner: string) {
-    return await this.organizationService.getByOwner(owner);
+  public async getByOwner(
+    @Param('owner') owner: string,
+    @Query('withRelations', BooleanPipe) withRelations: boolean,
+  ) {
+    return await this.organizationService.getByOwner(owner, { withRelations });
   }
 
   @Get('/:namespace/exists')
