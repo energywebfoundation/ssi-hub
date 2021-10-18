@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [OfferableIdentity\_\_factory](../classes/ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md)
+- [OfferableIdentity__factory](../classes/ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md)

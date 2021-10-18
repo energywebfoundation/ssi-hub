@@ -26,8 +26,8 @@
 ### Methods
 
 - [ABI](ethers_PublicResolver.PublicResolver.md#abi)
-- [addr(bytes32)](ethers_PublicResolver.PublicResolver.md#addr(bytes32))
-- [addr(bytes32,uint256)](ethers_PublicResolver.PublicResolver.md#addr(bytes32,uint256))
+- [addr%28bytes32%29](ethers_PublicResolver.PublicResolver.md#addr(bytes32))
+- [addr%28bytes32%2Cuint256%29](ethers_PublicResolver.PublicResolver.md#addr(bytes32,uint256))
 - [attach](ethers_PublicResolver.PublicResolver.md#attach)
 - [authorisations](ethers_PublicResolver.PublicResolver.md#authorisations)
 - [clearDNSZone](ethers_PublicResolver.PublicResolver.md#cleardnszone)
@@ -48,8 +48,8 @@
 - [removeAllListeners](ethers_PublicResolver.PublicResolver.md#removealllisteners)
 - [removeListener](ethers_PublicResolver.PublicResolver.md#removelistener)
 - [setABI](ethers_PublicResolver.PublicResolver.md#setabi)
-- [setAddr(bytes32,address)](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,address))
-- [setAddr(bytes32,uint256,bytes)](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,uint256,bytes))
+- [setAddr%28bytes32%2Caddress%29](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,address))
+- [setAddr%28bytes32%2Cuint256%2Cbytes%29](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,uint256,bytes))
 - [setAuthorisation](ethers_PublicResolver.PublicResolver.md#setauthorisation)
 - [setContenthash](ethers_PublicResolver.PublicResolver.md#setcontenthash)
 - [setDNSRecords](ethers_PublicResolver.PublicResolver.md#setdnsrecords)

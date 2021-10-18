@@ -44,15 +44,15 @@
 
 ### create
 
-▸ **create**(`__namedParameters`): `Promise`<[`Role`](modules_role_role_entity.Role.md)\>
+▸ **create**(`data`): `Promise`<[`Role`](modules_role_role_entity.Role.md)\>
 
 Method for adding new Role to database
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | [`RoleDTO`](modules_role_role_dto.RoleDTO.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`RoleDTO`](modules_role_role_dto.RoleDTO.md) | object containing all needed role properties |
 
 #### Returns
 

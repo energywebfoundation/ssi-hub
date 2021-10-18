@@ -8,10 +8,10 @@
 
 ### Variables
 
-- [UUID\_NAMESPACE](modules_claim_claim_service.md#uuid_namespace)
+- [UUID_NAMESPACE](modules_claim_claim_service.md#uuid_namespace)
 
 ## Variables
 
 ### UUID\_NAMESPACE
 
-• `Const` **UUID\_NAMESPACE**: ``"5193850c-2367-4ec4-8c22-95dfbd4a2880"``
+• **UUID\_NAMESPACE**: ``"5193850c-2367-4ec4-8c22-95dfbd4a2880"``

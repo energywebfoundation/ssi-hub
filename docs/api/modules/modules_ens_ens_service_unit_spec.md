@@ -4,10 +4,10 @@
 
 ### Variables
 
-- [ORG\_MOCK\_DATA](modules_ens_ens_service_unit_spec.md#org_mock_data)
+- [ORG_MOCK_DATA](modules_ens_ens_service_unit_spec.md#org_mock_data)
 
 ## Variables
 
 ### ORG\_MOCK\_DATA
 
-• `Const` **ORG\_MOCK\_DATA**: `IOrganizationDefinition`
+• **ORG\_MOCK\_DATA**: `IOrganizationDefinition`

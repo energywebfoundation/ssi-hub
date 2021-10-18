@@ -1,9 +1,10 @@
 {
-  "entryPoints": ["src/"],
+  "entryPointStrategy": ["Expand"],
   "out": ["docs/api"],
   "disableSources": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeExternals": true,
-  "exclude": "src/migrations"
+  "exclude": "src/migrations/*.ts",
+  "githubPages": false
 }
