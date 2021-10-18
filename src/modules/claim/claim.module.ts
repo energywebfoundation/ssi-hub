@@ -10,22 +10,15 @@ import { ClaimResolver } from './claim.resolver';
 import { ClaimService } from './claim.service';
 import { AssetsModule } from '../assets/assets.module';
 
-const redisConfig = {
-  port: parseInt(process.env.REDIS_PORT),
-  host: process.env.REDIS_HOST,
-  password: process.env.REDIS_PASSWORD,
-};
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([Claim]),
     BullModule.registerQueue({
       name: 'claims',
-      redis: redisConfig,
     }),
     NatsModule,
     RoleModule,
-    AssetsModule
+    AssetsModule,
   ],
   controllers: [ClaimController],
   providers: [ClaimService, ClaimProcessor, TypeOrmModule, ClaimResolver],
