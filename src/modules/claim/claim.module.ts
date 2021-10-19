@@ -22,10 +22,14 @@ const redisConfig = {
     BullModule.registerQueue({
       name: 'claims',
       redis: redisConfig,
+      defaultJobOptions: {
+        removeOnComplete: true,
+        removeOnFail: 20,
+      },
     }),
     NatsModule,
     RoleModule,
-    AssetsModule
+    AssetsModule,
   ],
   controllers: [ClaimController],
   providers: [ClaimService, ClaimProcessor, TypeOrmModule, ClaimResolver],

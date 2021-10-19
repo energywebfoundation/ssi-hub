@@ -21,6 +21,10 @@ const redisConfig = {
     BullModule.registerQueue({
       name: 'dids',
       redis: redisConfig,
+      defaultJobOptions: {
+        removeOnComplete: true,
+        removeOnFail: 20,
+      },
     }),
     TypeOrmModule.forFeature([DIDDocumentEntity]),
   ],
