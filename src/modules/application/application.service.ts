@@ -39,15 +39,20 @@ export class ApplicationService {
   }
 
   /**
-   * returns single App with matching namespace
+   * Returns applications owned by `owner`
    * @param {String} owner
+   * @param {object} [object.withRelations] if true each application will include its roles
    */
-  public async getByOwner(owner: string) {
-    return this.applicationRepository.find({
-      where: {
-        owner,
-      },
-    });
+  public async getByOwner(
+    owner: string,
+    { withRelations = true }: { withRelations?: boolean } = {},
+  ) {
+    const qb = this.applicationRepository.createQueryBuilder('application');
+    qb.where('application.owner = :owner', { owner });
+    if (withRelations) {
+      qb.leftJoinAndSelect('application.roles', 'role');
+    }
+    return qb.getMany();
   }
 
   /**

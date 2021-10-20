@@ -9,22 +9,11 @@ import { DIDProcessor } from './did.processor';
 import { DIDResolver } from './did.resolver';
 import { DIDService } from './did.service';
 
-const redisConfig = {
-  port: parseInt(process.env.REDIS_PORT),
-  host: process.env.REDIS_HOST,
-  password: process.env.REDIS_PASSWORD,
-};
-
 @Module({
   imports: [
     HttpModule,
     BullModule.registerQueue({
       name: 'dids',
-      redis: redisConfig,
-      defaultJobOptions: {
-        removeOnComplete: true,
-        removeOnFail: 20,
-      },
     }),
     TypeOrmModule.forFeature([DIDDocumentEntity]),
   ],

@@ -132,15 +132,18 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
+▸ **getByOwner**(`owner`, `__namedParameters?`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
 
-returns single Org with matching namespace
+Returns organizations owned by `owner`
+Also returns the suborgs of the org and, optionally, associated apps and/or roles
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.withRelations?` | `boolean` |
 
 #### Returns
 

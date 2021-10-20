@@ -81,13 +81,14 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
+▸ **getByOwner**(`owner`, `withRelations`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
+| `withRelations` | `boolean` |
 
 #### Returns
 

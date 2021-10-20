@@ -28,7 +28,7 @@
 
 ### search
 
-▸ **search**(`search`, `types?`): `Promise`<`ValidationError`[] \| ([`Application`](modules_application_application_entity.Application.md) \| [`Organization`](modules_organization_organization_entity.Organization.md) \| [`Role`](modules_role_role_entity.Role.md))[]\>
+▸ **search**(`search`, `types?`): `Promise`<`ValidationError`[] \| ([`Application`](modules_application_application_entity.Application.md) \| [`Role`](modules_role_role_entity.Role.md) \| [`Organization`](modules_organization_organization_entity.Organization.md))[]\>
 
 #### Parameters
 
@@ -39,4 +39,4 @@
 
 #### Returns
 
-`Promise`<`ValidationError`[] \| ([`Application`](modules_application_application_entity.Application.md) \| [`Organization`](modules_organization_organization_entity.Organization.md) \| [`Role`](modules_role_role_entity.Role.md))[]\>
+`Promise`<`ValidationError`[] \| ([`Application`](modules_application_application_entity.Application.md) \| [`Role`](modules_role_role_entity.Role.md) \| [`Organization`](modules_organization_organization_entity.Organization.md))[]\>

@@ -63,13 +63,14 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
+▸ **getByOwner**(`owner`, `withRelations`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
+| `withRelations` | `boolean` |
 
 #### Returns
 

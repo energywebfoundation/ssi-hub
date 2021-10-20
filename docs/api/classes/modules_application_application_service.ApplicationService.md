@@ -113,15 +113,17 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
+▸ **getByOwner**(`owner`, `__namedParameters?`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
 
-returns single App with matching namespace
+Returns applications owned by `owner`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.withRelations?` | `boolean` |
 
 #### Returns
 
