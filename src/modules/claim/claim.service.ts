@@ -379,8 +379,7 @@ export class ClaimService {
 
   /**
    * Save issued claim
-   * @param {Object} claim - Issued claim that we want to save
-   * @param {string} claim.subject - Subject of the claim
+   * @param {IssuedClaimDTO} claim - Issued claim that we want to save
    * @param {string} claim.issuedToken - Issued token
    */
   public async saveIssuedClaim(claim: IssuedClaimDTO) {
@@ -394,7 +393,7 @@ export class ClaimService {
     });
 
     if (issuedClaim) return;
-    this.claimRepository.save(newIssuedClaim);
+    return this.claimRepository.save(newIssuedClaim);
   }
 
   /**
@@ -406,6 +405,7 @@ export class ClaimService {
       where: {
         subject: In(subjects),
       },
+      select: ['issuedAt', 'issuedToken', 'subject'],
     });
   }
 
