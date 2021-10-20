@@ -44,6 +44,10 @@ import { BullModule } from '@nestjs/bull';
           host: configService.get('REDIS_HOST'),
           password: configService.get('REDIS_PASSWORD'),
         },
+        defaultJobOptions: {
+          removeOnComplete: true,
+          removeOnFail: 20,
+        },
       }),
       inject: [ConfigService],
     }),
