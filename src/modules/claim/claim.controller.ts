@@ -177,15 +177,6 @@ export class ClaimController {
     );
   }
 
-  @Get('/:id')
-  @ApiTags('Claims')
-  @ApiOperation({
-    summary: 'returns claim with given ID',
-  })
-  public async getById(@Param('id') id: string) {
-    return await this.claimService.getById(id);
-  }
-
   @Delete('/:id')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
@@ -362,7 +353,7 @@ export class ClaimController {
     return this.claimService.saveIssuedClaim(body);
   }
 
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   @Get('/issued')
   @ApiQuery({
     name: 'subjects',
@@ -375,5 +366,14 @@ export class ClaimController {
   })
   public async getIssuedClaimsBySubjects(@Query() { subjects }: DIDsQuery) {
     return this.claimService.getIssuedClaimsBySubjects(subjects);
+  }
+
+  @Get('/:id')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns claim with given ID',
+  })
+  public async getById(@Param('id') id: string) {
+    return await this.claimService.getById(id);
   }
 }

@@ -2,7 +2,7 @@ const { createConnection } = require('typeorm');
 const { JWT } = require('@ew-did-registry/jwt');
 const { Keys } = require('@ew-did-registry/keys');
 const {
-  Claim,
+  RoleClaim,
 } = require('../../dist/modules/claim/entities/roleClaim.entity.js');
 
 (async function() {
@@ -13,10 +13,10 @@ const {
     port: 5432,
     username: 'postgres',
     password: 'password',
-    database: 'dev',
+    database: 'dev-test',
     entities: ['dist/**/*.entity.js'],
   });
-  const claimsRepository = connection.getRepository(Claim);
+  const claimsRepository = connection.getRepository(RoleClaim);
   let claims = await claimsRepository.find();
 
   const jwt = new JWT(new Keys());

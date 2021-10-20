@@ -21,6 +21,7 @@ import { ClaimProcessor } from './claim.processor';
 import { v5 } from 'uuid';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { appConfig } from '../../common/test.utils';
+import { Claim } from './entities/claim.entity';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -53,7 +54,7 @@ describe('ClaimsController', () => {
     module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(TestDbCOnfig.default as TypeOrmModuleOptions),
-        TypeOrmModule.forFeature([RoleClaim]),
+        TypeOrmModule.forFeature([RoleClaim, Claim]),
         BullModule.registerQueue({
           name: 'claims',
           redis: redisConfig,
@@ -154,5 +155,38 @@ describe('ClaimsController', () => {
           }),
         );
       });
+  });
+
+  it('should save issuedToken and fetch it by subject', async () => {
+    const claimType = 'myRole.roles.myApp.apps.myOrg.iam.ewc';
+    const claimTypeVersion = '1';
+    const requester = `did:ethr:requester`;
+    const token = await jwt.sign(
+      { claimData: { claimType, claimTypeVersion } },
+      { subject: requester },
+    );
+
+    await testHttpServer
+      .post(`/v1/claim/issued`)
+      .send({ issuedToken: token })
+      .expect(201);
+
+    await testHttpServer
+      .get(`/v1/claim/issued?subjects=${requester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].issuedToken).toEqual(token);
+        expect(res.body[0].issuedAt).toHaveLength(10);
+        expect(res.body[0].subject).toEqual(requester);
+      });
+  });
+
+  it('should throw an error when token is not valid jwt', async () => {
+    await testHttpServer
+      .post(`/v1/claim/issued`)
+      .send({ issuedToken: 'string' })
+      .expect(400);
   });
 });

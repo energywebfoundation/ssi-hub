@@ -15,7 +15,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "run-s migration:test && NODE_ENV=test jest -i \"/src/.*\\.spec\\.ts$\"",
+    "test": "run-s migration:test && NODE_ENV=test jest -i \"/src/.*\\.spec\\.ts$\" --force-exit",
     "test:e2e": "run-s migration:test && jest -i \"/test/.*\\.e2e.spec.(ts|js)$\" --force-exit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
