@@ -1,4 +1,10 @@
-import { Global, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  Global,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ApplicationService } from '../application/application.service';
 import { CookiesServices } from './cookies.service';
 import { JwtAuthGuard } from './jwt.guard';
@@ -39,14 +45,19 @@ import { ConfigService } from '@nestjs/config';
   exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard],
 })
 export class AuthModule implements NestModule {
-  constructor(private readonly tokenService: TokenService) { }
+  constructor(private readonly tokenService: TokenService) {}
 
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply((req, res, next) => this.tokenService.handleOriginCheck(req, res, next))
+      .apply((req, res, next) =>
+        this.tokenService.handleOriginCheck(req, res, next),
+      )
       .exclude(
         { path: '/v1/login', method: RequestMethod.ALL },
-        { path: '/v1/refresh_token', method: RequestMethod.ALL }
+        { path: '/v1/refresh_token', method: RequestMethod.ALL },
+        { path: '/v1/health/live', method: RequestMethod.GET },
+        { path: '/v1/health/ready', method: RequestMethod.GET },
+        { path: '/v1/health', method: RequestMethod.GET },
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }
