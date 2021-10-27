@@ -6,7 +6,13 @@ import {
   IPublicKey,
 } from '@ew-did-registry/did-resolver-interface';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { JSONObject } from '../../common/json.scalar';
 
 interface ProfileClaim {
@@ -174,4 +180,30 @@ export class DIDDocumentEntity implements IDIDDocument {
 
   @Column()
   logs: string;
+}
+
+@Entity({ name: 'did_contact' })
+@ObjectType()
+export class DIDContact {
+  static create(data: Partial<DIDContact>) {
+    const entity = new DIDContact();
+    Object.assign(entity, data);
+    return entity;
+  }
+
+  @PrimaryGeneratedColumn('uuid')
+  @Field(() => ID)
+  id: string;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp without time zone' })
+  @Field()
+  createdAt: Date;
+
+  @Column({ type: 'varchar' })
+  @Field(() => String)
+  did: string;
+
+  @Column({ type: 'text' })
+  @Field(() => String)
+  label: string;
 }
