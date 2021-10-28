@@ -6,15 +6,17 @@ import {
   UsePipes,
   ValidationPipe,
   Body,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
-import { Auth } from '../auth/auth.decorator';
+//import { Auth } from '../auth/auth.decorator';
 import { DIDService } from './did.service';
 import { DIDContactDTO } from './did.dto';
 
-@Auth()
+//@Auth()
 @UseInterceptors(SentryErrorInterceptor)
 @Controller({ path: 'didContact', version: '1' })
 export class DIDContactController {
@@ -49,5 +51,15 @@ export class DIDContactController {
   public async getDIDContacts() {
     this.logger.info(`Retrieving list of saved did contacts`);
     return this.didService.getDIDContacts();
+  }
+
+  @Delete('/:id')
+  @ApiTags('DIDContact')
+  @ApiOperation({
+    summary: 'Delete a DIDContact using id',
+    description: 'Deletes a DIDContact using id',
+  })
+  public async deleteDIDContact(@Param('id') id: string) {
+    return this.didService.deleteDIDContact(id);
   }
 }

@@ -20,6 +20,9 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { getQueueToken } from '@nestjs/bull';
 import { DIDContactController } from './did.contact.controller';
+import { Chance } from 'chance';
+
+const chance = new Chance();
 
 describe('DIDContactController', () => {
   let module: TestingModule;
@@ -119,6 +122,34 @@ describe('DIDContactController', () => {
           expect(res.body.message).toEqual(
             `DID contact with did ${didContactToSave.did} already exists`,
           );
+        });
+    }, 30000);
+  });
+
+  describe('deleteDIDContact()', () => {
+    it('deleteDIDContact(), should throw an error when trying to delete a didContact record that does not exist', async () => {
+      const id = chance.guid({ version: 4 });
+      await testHttpServer
+        .delete(`/v1/didContact/${id}`)
+        .send()
+        .expect(404)
+        .expect(res => {
+          expect(res.body.message).toEqual(
+            `DID contact with id ${id} was not found`,
+          );
+        });
+    }, 30000);
+
+    it('deleteDIDContact(), should delete DIDContact of passed id', async () => {
+      const id = didContacts[0].id;
+      await testHttpServer
+        .delete(`/v1/didContact/${id}`)
+        .send()
+        .expect(200)
+        .expect(async res => {
+          expect(res.body).not.toHaveProperty('id');
+          const contacts = await didContactRepo.find();
+          expect(contacts.length).toBe(1);
         });
     }, 30000);
   });

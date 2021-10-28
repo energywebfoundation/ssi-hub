@@ -6,7 +6,11 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -327,5 +331,18 @@ export class DIDService {
 
   public async getDIDContacts(): Promise<DIDContact[]> {
     return this.didContactRepository.find();
+  }
+
+  public async deleteDIDContact(id: string) {
+    const didContact = await this.didContactRepository.findOne({
+      where: { id },
+    });
+
+    if (!didContact) {
+      this.logger.debug(`DID contact with id ${id} was not found`);
+      throw new NotFoundException(`DID contact with id ${id} was not found`);
+    }
+
+    return this.didContactRepository.remove(didContact);
   }
 }
