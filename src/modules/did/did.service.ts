@@ -305,7 +305,9 @@ export class DIDService {
     );
   }
 
-  public async createDIDContact(didContact: DIDContactDTO) {
+  public async createDIDContact(
+    didContact: DIDContactDTO,
+  ): Promise<DIDContact> {
     const { did } = didContact;
     const didContactExists = await this.didContactRepository.findOne({
       where: { did },
@@ -321,5 +323,9 @@ export class DIDService {
     const didContactDoc = new DIDContact(didContact);
 
     return this.didContactRepository.save(didContactDoc);
+  }
+
+  public async getDIDContacts(): Promise<DIDContact[]> {
+    return this.didContactRepository.find();
   }
 }

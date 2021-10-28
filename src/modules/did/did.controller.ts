@@ -1,21 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe,
-  Body,
-} from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { Auth } from '../auth/auth.decorator';
 import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
 import { DID } from './did.types';
-import { DIDContactDTO } from './did.dto';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -52,20 +42,5 @@ export class DIDController {
     }
 
     return this.didService.getById(did.id);
-  }
-
-  @Post('/contact')
-  @UsePipes(new ValidationPipe())
-  @ApiTags('DID')
-  @ApiBody({
-    type: DIDContactDTO,
-    description: 'DIDContact data object, containing label and DID',
-  })
-  @ApiOperation({
-    summary: 'Creates a DID Contact document',
-    description: 'creates DID Contact document',
-  })
-  public async createDIDContact(@Body() data: DIDContactDTO) {
-    return this.didService.createDIDContact(data);
   }
 }
