@@ -3,14 +3,12 @@ ARG IMAGE=node:14.15.1-alpine
 FROM $IMAGE as build
 
 ARG SENTRY_RELEASE
-ARG SENTRY_AUTH_TOKEN
 
 WORKDIR /app
 COPY . .
 
 RUN chmod +x ./docker/node-modules-clean.sh
 RUN chmod +x ./sentry-upload.sh
-
 
 RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
   curl -sL https://sentry.io/get-cli/ | bash && \
