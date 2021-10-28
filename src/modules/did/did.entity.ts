@@ -185,12 +185,6 @@ export class DIDDocumentEntity implements IDIDDocument {
 @Entity({ name: 'did_contact' })
 @ObjectType()
 export class DIDContact {
-  static create(data: Partial<DIDContact>) {
-    const entity = new DIDContact();
-    Object.assign(entity, data);
-    return entity;
-  }
-
   @PrimaryGeneratedColumn('uuid')
   @Field(() => ID)
   id: string;
@@ -206,4 +200,8 @@ export class DIDContact {
   @Column({ type: 'text' })
   @Field(() => String)
   label: string;
+
+  constructor(didContactDoc: Partial<DIDContact>) {
+    Object.assign(this, didContactDoc);
+  }
 }

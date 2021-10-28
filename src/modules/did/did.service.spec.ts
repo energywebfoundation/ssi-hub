@@ -6,7 +6,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Provider } from '../../common/provider';
-import { DIDDocumentEntity } from './did.entity';
+import { DIDContact, DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -90,6 +90,10 @@ describe('DidDocumentService', () => {
         {
           provide: getRepositoryToken(DIDDocumentEntity),
           useFactory: repositoryMockFactory,
+        },
+        {
+          provide: getRepositoryToken(DIDContact),
+          useFactory: jest.fn(),
         },
         { provide: Provider, useValue: MockObject },
       ],
