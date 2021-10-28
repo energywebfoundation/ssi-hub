@@ -13,6 +13,7 @@ import {
   ClaimRejectionDTO,
   ClaimRequestDTO,
   IssuedClaimDTO,
+  NewClaimIssueDTO,
 } from './claim.dto';
 import { Claim } from './entities/claim.entity';
 import { RoleClaim } from './entities/roleClaim.entity';
@@ -101,6 +102,25 @@ export class ClaimService {
         await this.create(dto);
         return;
       }
+      if (!claim && 'issuedToken' in data) {
+        const {
+          claimData: { claimType, claimTypeVersion },
+        } = jwt.decode(data.issuedToken) as DecodedClaimToken;
+
+        const dto = await NewClaimIssueDTO.create({
+          ...data,
+          claimType,
+          claimTypeVersion,
+        });
+
+        await this.roleService.verifyEnrolmentPrecondition({
+          claimType,
+          userDID: dto.requester,
+        });
+
+        await this.createAndIssue(dto);
+        return;
+      }
       if (claim && !claim.isAccepted && 'isRejected' in data) {
         const dto = await ClaimRejectionDTO.create(data);
 
@@ -136,6 +156,26 @@ export class ClaimService {
       id: ClaimService.idOfClaim(data),
       ...data,
       namespace: parent,
+    });
+    return this.roleClaimRepository.save(claim);
+  }
+
+  /**
+   * Saves and issue claim to database
+   * @param data Raw claim data
+   */
+  public async createAndIssue(data: NewClaimIssueDTO): Promise<RoleClaim> {
+    const parent = data.claimType
+      .split('.')
+      .slice(2)
+      .join('.');
+
+    const claim = RoleClaim.create({
+      id: ClaimService.idOfClaim({ ...data, token: data.issuedToken }),
+      ...data,
+      namespace: parent,
+      token: data.issuedToken,
+      isAccepted: true,
     });
     return this.roleClaimRepository.save(claim);
   }
@@ -409,7 +449,11 @@ export class ClaimService {
     });
   }
 
-  static idOfClaim(claimReq: IClaimRequest) {
+  static idOfClaim(claimReq: {
+    token: string;
+    claimType: string;
+    claimTypeVersion: string;
+  }) {
     const { token, claimType: role, claimTypeVersion: version } = claimReq;
     const { sub: subject } = jwt.decode(token);
     return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
