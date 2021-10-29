@@ -45,9 +45,9 @@ describe('DIDContactController', () => {
       controllers: [DIDContactController],
       providers: [
         DIDService,
-        Provider,
         { provide: SchedulerRegistry, useValue: jest.fn() },
         { provide: getQueueToken('dids'), useValue: jest.fn() },
+        Provider,
       ],
     }).compile();
 

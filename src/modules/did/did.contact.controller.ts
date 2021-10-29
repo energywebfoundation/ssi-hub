@@ -13,12 +13,12 @@ import {
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
-//import { Auth } from '../auth/auth.decorator';
+import { Auth } from '../auth/auth.decorator';
 import { DIDService } from './did.service';
 import { DIDContactDTO } from './did.dto';
 import { DIDContact } from './did.entity';
 
-//@Auth()
+@Auth()
 @UseInterceptors(SentryErrorInterceptor)
 @Controller({ path: 'didContact', version: '1' })
 export class DIDContactController {
