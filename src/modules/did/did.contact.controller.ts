@@ -8,13 +8,15 @@ import {
   Body,
   Delete,
   Param,
+  HttpStatus,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 //import { Auth } from '../auth/auth.decorator';
 import { DIDService } from './did.service';
 import { DIDContactDTO } from './did.dto';
+import { DIDContact } from './did.entity';
 
 //@Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -38,7 +40,9 @@ export class DIDContactController {
     summary: 'Creates a DID Contact document',
     description: 'creates DID Contact document',
   })
-  public async createDIDContact(@Body() data: DIDContactDTO) {
+  public async createDIDContact(
+    @Body() data: DIDContactDTO,
+  ): Promise<DIDContact> {
     return this.didService.createDIDContact(data);
   }
 
@@ -48,7 +52,11 @@ export class DIDContactController {
     summary: 'returns list of saved DID contacts',
     description: 'returns list of saved DID contacts',
   })
-  public async getDIDContacts() {
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: DIDContact,
+  })
+  public async getDIDContacts(): Promise<DIDContact[]> {
     this.logger.info(`Retrieving list of saved did contacts`);
     return this.didService.getDIDContacts();
   }
