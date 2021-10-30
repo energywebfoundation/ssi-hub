@@ -459,7 +459,7 @@ export class ClaimService {
     return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
   }
 
-  private async rolesByIssuer(
+  public async rolesByIssuer(
     issuer: string,
     namespace?: string,
   ): Promise<Role[]> {
