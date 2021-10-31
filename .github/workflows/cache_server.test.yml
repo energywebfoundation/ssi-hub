@@ -88,6 +88,7 @@ jobs:
           ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
           ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
           ENS_URL: ${{secrets.ENS_URL}}
+          ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
           REDIS_HOST: localhost
           REDIS_PORT: ${{ job.services.redis.ports[6379] }}
           NATS_CLIENTS_URL: localhost:4222
