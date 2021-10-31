@@ -18,9 +18,10 @@ import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { organizationFixture } from './organization.fixture';
-import { appConfig } from '../../common/test.utils';
+import { appConfig, MockJWTAuthGuard } from '../../common/test.utils';
 import { Role } from '../role/role.entity';
 import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 const chance = new Chance();
 
@@ -45,7 +46,10 @@ describe('OrganizationController', () => {
       ],
       controllers: [OrganizationController],
       providers: [OrganizationService],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(MockJWTAuthGuard)
+      .compile();
 
     app = module.createNestApplication();
     appConfig(app);

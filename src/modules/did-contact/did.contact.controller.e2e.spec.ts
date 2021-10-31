@@ -10,7 +10,7 @@ import { Provider } from '../../common/provider';
 import { LoggerModule } from '../logger/logger.module';
 import * as TestDbCOnfig from '../../../test/config';
 import request from 'supertest';
-import { appConfig } from '../../common/test.utils';
+import { appConfig, MockJWTAuthGuard } from '../../common/test.utils';
 import { didContactFixture, didDocumentFixture } from './did.contact.fixture';
 import { Chance } from 'chance';
 import { DIDContactController } from './did.contact.controller';
@@ -24,16 +24,6 @@ import { DIDDocumentEntity } from '../did/did.entity';
 const chance = new Chance();
 const userDID1 = 'did:ethr:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9';
 const userDID2 = 'did:ethr:0x0C4021qb2085C8AA0f686caA011de1cB53a615E9';
-
-const MockJWTAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const req = context.switchToHttp().getRequest();
-    req.user = {
-      did: userDID1,
-    };
-    return true;
-  },
-};
 
 const MockGuardImplementation = jest
   .fn()
@@ -55,7 +45,7 @@ const MockEmptyDIDGuardImplementation = jest
     return true;
   });
 
-describe.only('DIDContactController', () => {
+describe('DIDContactController', () => {
   let module: TestingModule;
   let didContactRepo: Repository<DIDContact>;
   let didDocRepo: Repository<DIDDocumentEntity>;

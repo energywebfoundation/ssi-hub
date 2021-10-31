@@ -15,6 +15,8 @@ import { organizationFixture } from '../organization/organization.fixture';
 import { Organization } from '../organization/organization.entity';
 import { applicationFixture } from './application.fixture';
 import { namehash } from '../../ethers/utils';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { MockJWTAuthGuard } from '../../common/test.utils';
 
 const chance = new Chance();
 
@@ -54,7 +56,10 @@ describe('ApplicationService', () => {
           useValue: MockLogger,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(MockJWTAuthGuard)
+      .compile();
 
     const dbConnection = module.get(Connection);
     const manager = module.get(EntityManager);
