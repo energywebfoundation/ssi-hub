@@ -293,9 +293,7 @@ describe('RoleService', () => {
     it('removeByNameHash() it should remove role using namehash', async () => {
       const testRole = roles[0];
       await service.removeByNameHash(testRole.namehash);
-
       const role = await service.getByNamehash(testRole.namehash);
-
       expect(role).toBe(undefined);
     });
   });
@@ -304,10 +302,7 @@ describe('RoleService', () => {
     it('remove() it should remove role using namespace', async () => {
       const testRole = roles[0];
       await service.remove(testRole.namespace);
-
       const role = await service.getByNamespace(testRole.namespace);
-      console.log(`got here ${role}`);
-
       expect(role).toBe(undefined);
     });
   });
