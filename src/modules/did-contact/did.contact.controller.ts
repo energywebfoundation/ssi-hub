@@ -9,21 +9,23 @@ import {
   Delete,
   Param,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
-import { Logger } from '../logger/logger.service';
+import { DIDContactDTO, RequestUserDTO } from './did.contact.dto';
+import { DIDContactService } from './did.contact.service';
 import { Auth } from '../auth/auth.decorator';
-import { DIDService } from './did.service';
-import { DIDContactDTO } from './did.dto';
-import { DIDContact } from './did.entity';
+import { DIDContact } from './did.contact.entity';
+import { Request } from 'express';
+import { Logger } from '../logger/logger.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
 @Controller({ path: 'didContact', version: '1' })
 export class DIDContactController {
   constructor(
-    private readonly didService: DIDService,
+    private readonly didContactService: DIDContactService,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(DIDContactController.name);
@@ -42,8 +44,10 @@ export class DIDContactController {
   })
   public async createDIDContact(
     @Body() data: DIDContactDTO,
+    @Req() req: Request,
   ): Promise<DIDContact> {
-    return this.didService.createDIDContact(data);
+    const { did } = req.user as RequestUserDTO;
+    return this.didContactService.createDIDContact(data, did);
   }
 
   @Get()
@@ -56,9 +60,10 @@ export class DIDContactController {
     status: HttpStatus.OK,
     type: DIDContact,
   })
-  public async getDIDContacts(): Promise<DIDContact[]> {
+  public async getDIDContacts(@Req() req: Request): Promise<DIDContact[]> {
+    const { did } = req.user as RequestUserDTO;
     this.logger.info(`Retrieving list of saved did contacts`);
-    return this.didService.getDIDContacts();
+    return this.didContactService.getDIDContacts(did);
   }
 
   @Delete('/:id')
@@ -67,7 +72,8 @@ export class DIDContactController {
     summary: 'Delete a DIDContact using id',
     description: 'Deletes a DIDContact using id',
   })
-  public async deleteDIDContact(@Param('id') id: string) {
-    return this.didService.deleteDIDContact(id);
+  public async deleteDIDContact(@Param('id') id: string, @Req() req: Request) {
+    const { did } = req.user as RequestUserDTO;
+    return this.didContactService.deleteDIDContact(id, did);
   }
 }

@@ -4,11 +4,10 @@ import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Provider } from '../../common/provider';
 import { DIDController } from './did.controller';
-import { DIDContact, DIDDocumentEntity } from './did.entity';
+import { DIDDocumentEntity } from './did.entity';
 import { DIDProcessor } from './did.processor';
 import { DIDResolver } from './did.resolver';
 import { DIDService } from './did.service';
-import { DIDContactController } from './did.contact.controller';
 
 @Module({
   imports: [
@@ -16,9 +15,9 @@ import { DIDContactController } from './did.contact.controller';
     BullModule.registerQueue({
       name: 'dids',
     }),
-    TypeOrmModule.forFeature([DIDDocumentEntity, DIDContact]),
+    TypeOrmModule.forFeature([DIDDocumentEntity]),
   ],
-  controllers: [DIDController, DIDContactController],
+  controllers: [DIDController],
   providers: [DIDService, DIDProcessor, DIDResolver, Provider],
   exports: [DIDService],
 })

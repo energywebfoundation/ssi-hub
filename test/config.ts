@@ -16,4 +16,5 @@ export default {
   migrations: ['src/migrations/*.ts'],
   cli: { migrationsDir: 'src/migrations' },
   autoLoadEntities: true,
+  keepConnectionAlive: true,
 };

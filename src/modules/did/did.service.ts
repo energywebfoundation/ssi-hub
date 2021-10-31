@@ -6,11 +6,7 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -23,7 +19,7 @@ import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
 import { BigNumber } from 'ethers';
 import { Logger } from '../logger/logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DIDContact, DIDDocumentEntity, IClaim } from './did.entity';
+import { DIDDocumentEntity, IClaim } from './did.entity';
 import { Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
 import { Provider } from '../../common/provider';
@@ -33,7 +29,6 @@ import {
   Resolver,
   ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
-import { DIDContactDTO } from './did.dto';
 
 @Injectable()
 export class DIDService {
@@ -48,8 +43,6 @@ export class DIDService {
     private readonly logger: Logger,
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
-    @InjectRepository(DIDContact)
-    private readonly didContactRepository: Repository<DIDContact>,
     private readonly provider: Provider,
   ) {
     this.logger.setContext(DIDService.name);
@@ -307,42 +300,5 @@ export class DIDService {
         };
       }),
     );
-  }
-
-  public async createDIDContact(
-    didContact: DIDContactDTO,
-  ): Promise<DIDContact> {
-    const { did } = didContact;
-    const didContactExists = await this.didContactRepository.findOne({
-      where: { did },
-    });
-
-    if (didContactExists) {
-      this.logger.debug(`DID contact with did ${did} already exists`);
-      throw new BadRequestException(
-        `DID contact with did ${did} already exists`,
-      );
-    }
-
-    const didContactDoc = new DIDContact(didContact);
-
-    return this.didContactRepository.save(didContactDoc);
-  }
-
-  public async getDIDContacts(): Promise<DIDContact[]> {
-    return this.didContactRepository.find();
-  }
-
-  public async deleteDIDContact(id: string) {
-    const didContact = await this.didContactRepository.findOne({
-      where: { id },
-    });
-
-    if (!didContact) {
-      this.logger.debug(`DID contact with id ${id} was not found`);
-      throw new NotFoundException(`DID contact with id ${id} was not found`);
-    }
-
-    return this.didContactRepository.remove(didContact);
   }
 }
