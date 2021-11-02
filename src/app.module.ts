@@ -24,6 +24,7 @@ import { AssetsModule } from './modules/assets/assets.module';
 import { StakingModule } from './modules/staking/staking.module';
 import { BullModule } from '@nestjs/bull';
 import { HealthCheckModule } from './health-check/health-check.module';
+import { DIDContactModule } from './modules/did-contact/did.contact.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { HealthCheckModule } from './health-check/health-check.module';
     ApplicationModule,
     ClaimModule,
     DIDModule,
+    DIDContactModule,
     OrganizationModule,
     NatsModule,
     RoleModule,

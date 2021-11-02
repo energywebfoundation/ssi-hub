@@ -16,7 +16,8 @@ import * as TestDbCOnfig from '../../../../test/config';
 import { StakingPool } from '../entities/staking.pool.entity';
 import { Provider } from '../../../common/provider';
 import { ConfigModule } from '@nestjs/config';
-import { appConfig } from '../../../common/test.utils';
+import { appConfig, MockJWTAuthGuard } from '../../../common/test.utils';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
 
 const stakingTermsFixture = async (
   repo: Repository<StakingTerms>,
@@ -52,8 +53,10 @@ describe('StakingController', () => {
       ],
       controllers: [StakingController],
       providers: [StakingService, Provider],
-    }).compile();
-
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(MockJWTAuthGuard)
+      .compile();
     app = module.createNestApplication();
     appConfig(app);
     await app.init();
