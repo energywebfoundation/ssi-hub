@@ -87,7 +87,7 @@ export class TokenService {
   async handleOriginCheck(req: Request, res: Response, next: NextFunction) {
     const authEnabled = this.configService.get<string>('ENABLE_AUTH');
     if (authEnabled === 'false') {
-      next();
+      return next();
     }
     let token = null;
     if (req.headers['authorization']) {
