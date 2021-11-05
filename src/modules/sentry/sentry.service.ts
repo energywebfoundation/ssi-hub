@@ -29,7 +29,6 @@ export class SentryService {
               (Sentry.getCurrentHub().getClient<Client<Options>>() as Client<
                 Options
               >).captureException(err);
-              process.exit(1);
             },
           }),
           new Sentry.Integrations.OnUnhandledRejection({ mode: 'warn' }),
