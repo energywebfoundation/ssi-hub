@@ -2,6 +2,12 @@
 
 [modules/claim/claim.dto](../modules/modules_claim_claim_dto.md).ClaimIssueDTO
 
+## Hierarchy
+
+- **`ClaimIssueDTO`**
+
+  ↳ [`NewClaimIssueDTO`](modules_claim_claim_dto.NewClaimIssueDTO.md)
+
 ## Implements
 
 - [`IClaimIssuance`](../interfaces/modules_claim_claim_types.IClaimIssuance.md)

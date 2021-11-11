@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   UseInterceptors,
   UsePipes,
@@ -11,6 +12,7 @@ import {
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../../interceptors/sentry-error-interceptor';
+import { StakingPoolDTO } from '../dtos/staking.pool.dto';
 import { StakingTermsDTO } from '../dtos/staking.terms.dto';
 import { StakingService } from '../staking.service';
 
@@ -20,7 +22,7 @@ import { StakingService } from '../staking.service';
 export class StakingController {
   constructor(private stakingService: StakingService) {}
 
-  @Get('/:terms')
+  @Get('/terms')
   @ApiTags('Staking Terms')
   @ApiOperation({
     summary: 'Returns the latest version of terms and conditions',
@@ -47,5 +49,19 @@ export class StakingController {
   })
   public async createTerms(@Body() data: StakingTermsDTO) {
     return this.stakingService.saveTerms(data);
+  }
+
+  @Get('/pool/:id')
+  @ApiTags('Staking pool')
+  @ApiOperation({
+    summary: 'Returns staking pool by its id',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: StakingPoolDTO,
+    description: 'Staking pool by id',
+  })
+  getPool(@Param('id') id: string) {
+    return this.stakingService.getPool(id);
   }
 }

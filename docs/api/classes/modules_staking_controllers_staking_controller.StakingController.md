@@ -11,6 +11,7 @@
 ### Methods
 
 - [createTerms](modules_staking_controllers_staking_controller.StakingController.md#createterms)
+- [getPool](modules_staking_controllers_staking_controller.StakingController.md#getpool)
 - [getTerms](modules_staking_controllers_staking_controller.StakingController.md#getterms)
 
 ## Constructors
@@ -40,6 +41,22 @@
 #### Returns
 
 `Promise`<[`StakingTerms`](modules_staking_entities_staking_terms_entity.StakingTerms.md)\>
+
+___
+
+### getPool
+
+▸ **getPool**(`id`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+
+#### Returns
+
+`Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
 
 ___
 

@@ -4,7 +4,6 @@
 
 ### Classes
 
-- [DIDContact](../classes/modules_did_did_entity.DIDContact.md)
 - [DIDDocumentEntity](../classes/modules_did_did_entity.DIDDocumentEntity.md)
 
 ### Interfaces

@@ -2,9 +2,25 @@
 
 ## Table of contents
 
+### Variables
+
+- [MockJWTAuthGuard](common_test_utils.md#mockjwtauthguard)
+
 ### Functions
 
 - [appConfig](common_test_utils.md#appconfig)
+
+## Variables
+
+### MockJWTAuthGuard
+
+• **MockJWTAuthGuard**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `canActivate` | (`context`: `ExecutionContext`) => `boolean` |
 
 ## Functions
 

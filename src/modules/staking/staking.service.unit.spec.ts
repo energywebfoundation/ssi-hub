@@ -1,3 +1,4 @@
+import { Wallet } from 'ethers';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -8,6 +9,9 @@ import { StakingPool } from './entities/staking.pool.entity';
 import { StakingTerms } from './entities/staking.terms.entity';
 import { Provider } from '../../common/provider';
 import { ConfigModule } from '@nestjs/config';
+import { RoleService } from '../role/role.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { OrganizationService } from '../organization/organization.service';
 
 const MockLogger = {
   log: jest.fn(),
@@ -18,7 +22,7 @@ const MockLogger = {
 };
 
 const MockStakePoolRepo = {
-  findOne: jest.fn(),
+  find: jest.fn(),
   save: jest.fn(),
 };
 
@@ -27,13 +31,20 @@ const MockStakeTermsRepo = {
   save: jest.fn(),
 };
 
+const MockRoleService = jest.fn();
+
+const MockOrganizationService = jest.fn();
+
 const stakingTerms = new StakingTerms({
   terms: `<ul> <li> <a href='#'>term 1 </a></li> </ul>`,
   version: 1.0,
 });
 
+const patronRole = 'patronRole.roles.ewc.iam';
+
 const stakePool = new StakingPool({
-  address: '',
+  address: Wallet.createRandom().address,
+  patronRoles: [patronRole],
   terms: stakingTerms,
 });
 
@@ -50,6 +61,7 @@ describe('StakingService', () => {
       imports: [ConfigModule],
       providers: [
         StakingService,
+        SchedulerRegistry,
         Provider,
         {
           provide: Logger,
@@ -62,6 +74,14 @@ describe('StakingService', () => {
         {
           provide: getRepositoryToken(StakingTerms),
           useValue: MockStakeTermsRepo,
+        },
+        {
+          provide: RoleService,
+          useValue: MockRoleService,
+        },
+        {
+          provide: OrganizationService,
+          useValue: MockOrganizationService,
         },
       ],
     }).compile();
@@ -93,29 +113,16 @@ describe('StakingService', () => {
     });
   }, 30000);
 
-  it('stakePool(), should throw an error if address already exists', async () => {
-    jest.spyOn(service, 'getTerms').mockResolvedValueOnce(stakingTerms);
-    jest.spyOn(stakePoolRepo, 'findOne').mockResolvedValueOnce(stakePool);
+  it('stakePool(), should save pool', async () => {
+    jest.spyOn(service, 'getTerms').mockResolvedValue(stakingTerms);
+    jest
+      .spyOn(service as any, 'getPoolFromChain')
+      .mockResolvedValueOnce(stakePool);
+    jest.spyOn(stakePoolRepo, 'find').mockResolvedValueOnce(null);
     jest.spyOn(stakePoolRepo, 'save');
-    await expect(service.saveStakingPool('')).rejects.toThrowError(
-      'Staking pool with this address already exists!',
-    );
+    await service.syncPool(stakePool.address);
     expect(service.getTerms).toHaveBeenCalled();
-    expect(stakePoolRepo.findOne).toHaveBeenCalledWith({
-      where: {
-        address: stakePool.address,
-      },
-    });
-    expect(stakePoolRepo.save).not.toHaveBeenCalled();
-  }, 30000);
-
-  it('stakePool(), should save stake pool', async () => {
-    jest.spyOn(service, 'getTerms').mockResolvedValueOnce(stakingTerms);
-    jest.spyOn(stakePoolRepo, 'findOne').mockResolvedValueOnce(null);
-    jest.spyOn(stakePoolRepo, 'save');
-    await service.saveStakingPool('');
-    expect(service.getTerms).toHaveBeenCalled();
-    expect(stakePoolRepo.findOne).toHaveBeenCalledWith({
+    expect(stakePoolRepo.find).toHaveBeenCalledWith({
       where: {
         address: stakePool.address,
       },

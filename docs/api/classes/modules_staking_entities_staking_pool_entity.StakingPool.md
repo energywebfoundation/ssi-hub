@@ -12,7 +12,12 @@
 
 - [address](modules_staking_entities_staking_pool_entity.StakingPool.md#address)
 - [id](modules_staking_entities_staking_pool_entity.StakingPool.md#id)
+- [minStakingPeriod](modules_staking_entities_staking_pool_entity.StakingPool.md#minstakingperiod)
+- [org](modules_staking_entities_staking_pool_entity.StakingPool.md#org)
+- [patronRewardPortion](modules_staking_entities_staking_pool_entity.StakingPool.md#patronrewardportion)
+- [patronRoles](modules_staking_entities_staking_pool_entity.StakingPool.md#patronroles)
 - [terms](modules_staking_entities_staking_pool_entity.StakingPool.md#terms)
+- [withdrawDelay](modules_staking_entities_staking_pool_entity.StakingPool.md#withdrawdelay)
 
 ## Constructors
 
@@ -40,6 +45,36 @@ ___
 
 ___
 
+### minStakingPeriod
+
+• **minStakingPeriod**: `BigNumber`
+
+___
+
+### org
+
+• **org**: `string`
+
+___
+
+### patronRewardPortion
+
+• **patronRewardPortion**: `BigNumber`
+
+___
+
+### patronRoles
+
+• **patronRoles**: `string`[]
+
+___
+
 ### terms
 
 • **terms**: [`StakingTerms`](modules_staking_entities_staking_terms_entity.StakingTerms.md)
+
+___
+
+### withdrawDelay
+
+• **withdrawDelay**: `BigNumber`

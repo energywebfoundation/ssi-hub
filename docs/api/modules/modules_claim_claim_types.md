@@ -13,6 +13,7 @@
 - [IClaimRejection](../interfaces/modules_claim_claim_types.IClaimRejection.md)
 - [IClaimRequest](../interfaces/modules_claim_claim_types.IClaimRequest.md)
 - [IMessage](../interfaces/modules_claim_claim_types.IMessage.md)
+- [IRoleClaim](../interfaces/modules_claim_claim_types.IRoleClaim.md)
 
 ### Type aliases
 

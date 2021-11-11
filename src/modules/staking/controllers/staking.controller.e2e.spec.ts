@@ -8,6 +8,7 @@ import {
   TypeOrmModule,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { LoggerModule } from '../../logger/logger.module';
 import { SentryModule } from '../../sentry/sentry.module';
 import { StakingController } from './staking.controller';
@@ -18,6 +19,9 @@ import { Provider } from '../../../common/provider';
 import { ConfigModule } from '@nestjs/config';
 import { appConfig, MockJWTAuthGuard } from '../../../common/test.utils';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { RoleService } from '../../role/role.service';
+import { Wallet } from '@ethersproject/wallet';
+import { OrganizationService } from '../../organization/organization.service';
 
 const stakingTermsFixture = async (
   repo: Repository<StakingTerms>,
@@ -34,6 +38,15 @@ const stakingTermsFixture = async (
   return repo.save(terms);
 };
 
+const MockRoleService = jest.fn();
+const MockOrganizationService = jest.fn();
+
+const patronRoleNamespace = 'patron.roles.ewc.iam';
+const pool: Partial<StakingPool> = {
+  address: Wallet.createRandom().address,
+  patronRoles: [patronRoleNamespace],
+};
+
 describe('StakingController', () => {
   let module: TestingModule;
   let repo: Repository<StakingTerms>;
@@ -41,6 +54,7 @@ describe('StakingController', () => {
   let testHttpServer: request.SuperTest<request.Test>;
   let app: INestApplication;
   let stakeTerms: StakingTerms[];
+  let stakingService: StakingService;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -52,7 +66,13 @@ describe('StakingController', () => {
         ConfigModule,
       ],
       controllers: [StakingController],
-      providers: [StakingService, Provider],
+      providers: [
+        StakingService,
+        SchedulerRegistry,
+        Provider,
+        { provide: RoleService, useValue: MockRoleService },
+        { provide: OrganizationService, useValue: MockOrganizationService },
+      ],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue(MockJWTAuthGuard)
@@ -72,6 +92,7 @@ describe('StakingController', () => {
     repo = module.get<Repository<StakingTerms>>(
       getRepositoryToken(StakingTerms),
     );
+    stakingService = module.get(StakingService);
     await queryRunner.startTransaction();
     stakeTerms = await stakingTermsFixture(repo, 2);
     testHttpServer = request(app.getHttpServer());
@@ -116,4 +137,19 @@ describe('StakingController', () => {
         expect(res.body.terms).toEqual(termsToSave.terms);
       });
   }, 30000);
+
+  it('getPool(), should return saved pool', async () => {
+    jest
+      .spyOn(stakingService as any, 'getPoolFromChain')
+      .mockResolvedValueOnce(pool);
+    const { id } = await stakingService.syncPool(pool.address);
+
+    await testHttpServer
+      .get(`/v1/staking/pool/${id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.address).toEqual(`${pool.address}`);
+        expect(res.body.patronRoles).toEqual(pool.patronRoles);
+      });
+  });
 });
