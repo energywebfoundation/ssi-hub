@@ -1,19 +1,16 @@
 import { BigNumber } from '@energyweb/iam-contracts/node_modules/ethers';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { StakingTerms } from './staking.terms.entity';
 
 @Entity({ name: 'staking_pool' })
 export class StakingPool {
-  @PrimaryGeneratedColumn()
-  id: string;
-
-  @Column()
+  @PrimaryColumn()
   address: string;
 
   @Column()
   org: string;
 
-  @Column('simple-json', { default: BigNumber.from(0) })
+  @Column('simple-json')
   minStakingPeriod: BigNumber;
 
   @Column('simple-json')
@@ -22,7 +19,7 @@ export class StakingPool {
   @Column('simple-json')
   patronRewardPortion: BigNumber;
 
-  @Column({ type: 'varchar', array: true, default: [] })
+  @Column({ type: 'varchar', array: true })
   patronRoles: string[];
 
   @ManyToOne(

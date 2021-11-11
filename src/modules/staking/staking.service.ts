@@ -16,6 +16,7 @@ import { RoleService } from '../role/role.service';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { OrganizationService } from '../organization/organization.service';
+import { StakingPool__factory } from '../../ethers/factories/StakingPool__factory';
 
 @Injectable()
 export class StakingService implements OnModuleDestroy {
@@ -81,34 +82,26 @@ export class StakingService implements OnModuleDestroy {
     });
   }
 
-  async syncPool(address: string): Promise<StakingPool> {
+  /**
+   * @description pesists pool read from chain
+   * @param address address of deployed pool
+   */
+  async syncPool(address: string): Promise<void> {
     const poolToSync = await this.getPoolFromChain(address);
-
-    const pools = await this.stakingPoolRepository.find({
-      where: {
-        address,
-      },
-    });
-
-    if (pools && pools.length === 1) {
-      const pool = pools[0];
-      if (
-        Object.values(poolToSync).every(prop =>
-          Object.values(pool).includes(prop),
-        )
-      ) {
-        return;
-      }
+    if (!poolToSync) {
+      return;
     }
 
-    if (pools && pools.length > 1) {
-      await this.stakingPoolRepository.delete(pools.map(p => p.id));
-    }
+    const pool = await this.stakingPoolRepository.findOne(address);
 
-    return this.stakingPoolRepository.save({
-      terms: await this.getTerms(),
-      ...poolToSync,
-    });
+    if (pool) {
+      await this.stakingPoolRepository.save({ ...pool, ...poolToSync });
+    } else {
+      await this.stakingPoolRepository.save({
+        terms: await this.getTerms(),
+        ...poolToSync,
+      });
+    }
   }
 
   async getPool(id: string) {
@@ -135,14 +128,14 @@ export class StakingService implements OnModuleDestroy {
 
   private async getPoolFromChain(
     address: string,
-  ): Promise<Partial<StakingPool>> {
+  ): Promise<Partial<StakingPool> | null> {
     const filter = this.stakingPoolFactory.filters.StakingPoolLaunched(
       null,
       address,
     );
     const event = (await this.stakingPoolFactory.queryFilter(filter))[0];
     if (!event) {
-      throw new Error('Pool was not launched');
+      return null;
     }
     const txHash = event.transactionHash;
     const tx = await this.provider.getTransaction(txHash);
@@ -161,10 +154,17 @@ export class StakingService implements OnModuleDestroy {
     );
     const patronRolesNames = patronRoles.filter(Boolean).map(r => r.namespace);
     const org = await this.orgService.getByNamehash(orgHash);
+    if (!org) {
+      return null;
+    }
     return {
       address,
-      org: org?.namespace, // if organization is not synchronized yet
+      org: org.namespace, // if organization is not synchronized yet
       patronRoles: patronRolesNames,
+      withdrawDelay: await StakingPool__factory.connect(
+        address,
+        this.provider,
+      ).withdrawDelay(),
       minStakingPeriod,
       patronRewardPortion,
     };

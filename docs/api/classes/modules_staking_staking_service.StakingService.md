@@ -99,14 +99,16 @@ ___
 
 ### syncPool
 
-▸ **syncPool**(`address`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+▸ **syncPool**(`address`): `Promise`<`void`\>
+
+**`description`** pesists pool read from chain
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `address` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `address` | `string` | address of deployed pool |
 
 #### Returns
 
-`Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+`Promise`<`void`\>

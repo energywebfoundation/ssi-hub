@@ -22,6 +22,7 @@ import { JwtAuthGuard } from '../../auth/jwt.guard';
 import { RoleService } from '../../role/role.service';
 import { Wallet } from '@ethersproject/wallet';
 import { OrganizationService } from '../../organization/organization.service';
+import { BigNumber } from '@ethersproject/bignumber';
 
 const stakingTermsFixture = async (
   repo: Repository<StakingTerms>,
@@ -42,10 +43,6 @@ const MockRoleService = jest.fn();
 const MockOrganizationService = jest.fn();
 
 const patronRoleNamespace = 'patron.roles.ewc.iam';
-const pool: Partial<StakingPool> = {
-  address: Wallet.createRandom().address,
-  patronRoles: [patronRoleNamespace],
-};
 
 describe('StakingController', () => {
   let module: TestingModule;
@@ -54,6 +51,7 @@ describe('StakingController', () => {
   let testHttpServer: request.SuperTest<request.Test>;
   let app: INestApplication;
   let stakeTerms: StakingTerms[];
+  let pool: Partial<StakingPool>;
   let stakingService: StakingService;
 
   beforeEach(async () => {
@@ -95,6 +93,15 @@ describe('StakingController', () => {
     stakingService = module.get(StakingService);
     await queryRunner.startTransaction();
     stakeTerms = await stakingTermsFixture(repo, 2);
+    pool = {
+      org: 'myorg.ewc.iam',
+      minStakingPeriod: BigNumber.from(47),
+      patronRewardPortion: BigNumber.from(47),
+      withdrawDelay: BigNumber.from(47),
+      address: Wallet.createRandom().address,
+      patronRoles: [patronRoleNamespace],
+      terms: stakeTerms[1],
+    };
     testHttpServer = request(app.getHttpServer());
   });
 
@@ -142,10 +149,10 @@ describe('StakingController', () => {
     jest
       .spyOn(stakingService as any, 'getPoolFromChain')
       .mockResolvedValueOnce(pool);
-    const { id } = await stakingService.syncPool(pool.address);
+    await stakingService.syncPool(pool.address);
 
     await testHttpServer
-      .get(`/v1/staking/pool/${id}`)
+      .get(`/v1/staking/pool/${pool.address}`)
       .expect(200)
       .expect(res => {
         expect(res.body.address).toEqual(`${pool.address}`);

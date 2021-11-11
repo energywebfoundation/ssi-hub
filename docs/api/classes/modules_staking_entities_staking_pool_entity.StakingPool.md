@@ -11,7 +11,6 @@
 ### Properties
 
 - [address](modules_staking_entities_staking_pool_entity.StakingPool.md#address)
-- [id](modules_staking_entities_staking_pool_entity.StakingPool.md#id)
 - [minStakingPeriod](modules_staking_entities_staking_pool_entity.StakingPool.md#minstakingperiod)
 - [org](modules_staking_entities_staking_pool_entity.StakingPool.md#org)
 - [patronRewardPortion](modules_staking_entities_staking_pool_entity.StakingPool.md#patronrewardportion)
@@ -36,12 +35,6 @@
 ### address
 
 • **address**: `string`
-
-___
-
-### id
-
-• **id**: `string`
 
 ___
 

@@ -22,7 +22,7 @@ const MockLogger = {
 };
 
 const MockStakePoolRepo = {
-  find: jest.fn(),
+  findOne: jest.fn(),
   save: jest.fn(),
 };
 
@@ -42,7 +42,7 @@ const stakingTerms = new StakingTerms({
 
 const patronRole = 'patronRole.roles.ewc.iam';
 
-const stakePool = new StakingPool({
+const pool = new StakingPool({
   address: Wallet.createRandom().address,
   patronRoles: [patronRole],
   terms: stakingTerms,
@@ -115,19 +115,13 @@ describe('StakingService', () => {
 
   it('stakePool(), should save pool', async () => {
     jest.spyOn(service, 'getTerms').mockResolvedValue(stakingTerms);
-    jest
-      .spyOn(service as any, 'getPoolFromChain')
-      .mockResolvedValueOnce(stakePool);
-    jest.spyOn(stakePoolRepo, 'find').mockResolvedValueOnce(null);
+    jest.spyOn(service as any, 'getPoolFromChain').mockResolvedValueOnce(pool);
+    jest.spyOn(stakePoolRepo, 'findOne').mockResolvedValueOnce(null);
     jest.spyOn(stakePoolRepo, 'save');
-    await service.syncPool(stakePool.address);
+    await service.syncPool(pool.address);
     expect(service.getTerms).toHaveBeenCalled();
-    expect(stakePoolRepo.find).toHaveBeenCalledWith({
-      where: {
-        address: stakePool.address,
-      },
-    });
-    expect(stakePoolRepo.save).toHaveBeenCalledWith(stakePool);
+    expect(stakePoolRepo.findOne).toHaveBeenCalledWith(pool.address);
+    expect(stakePoolRepo.save).toHaveBeenCalledWith(pool);
   }, 30000);
 
   it('stakePool(), should throw error when trying to save terms that already exists', async () => {

@@ -27,7 +27,7 @@
     "build:typechain:offerableIdentity": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ew-did-registry/proxyidentity/build/contracts/OfferableIdentity.json'",
     "build:typechain:identityManager": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ew-did-registry/proxyidentity/build/contracts/IdentityManager.json'",
     "build:typechain:domainNotifier": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@energyweb/iam-contracts/dist/contracts/DomainNotifier.json'",
-    "build:typechain:stakingPool": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@energyweb/iam-contracts/dist/contracts/StakingPoolFactory.json'",
+    "build:typechain:stakingPool": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@energyweb/iam-contracts/dist/contracts/StakingPool*.json'",
     "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
     "docker:build": "docker-compose build app",
     "docker:start:app": "docker-compose up -d",
