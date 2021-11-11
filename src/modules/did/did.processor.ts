@@ -1,4 +1,4 @@
-import { Process, Processor } from '@nestjs/bull';
+import { OnQueueError, Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Logger } from '../logger/logger.service';
 import { DIDService } from './did.service';
@@ -13,23 +13,20 @@ export class DIDProcessor {
     this.logger.setContext(DIDProcessor.name);
   }
 
+  @OnQueueError()
+  onError(error: Error) {
+    this.logger.error(error);
+  }
+
   @Process(ADD_DID_DOC_QUEUE_NAME)
   public async processDIDDocumentAddition(job: Job<string>) {
-    try {
-      this.logger.debug(`processing cache add for ${job.data}`);
-      await this.didService.addCachedDocument(job.data);
-    } catch (err) {
-      this.logger.error(err);
-    }
+    this.logger.debug(`processing cache add for ${job.data}`);
+    await this.didService.addCachedDocument(job.data);
   }
 
   @Process(UPDATE_DID_DOC_QUEUE_NAME)
   public async processDIDDocumentRefresh(job: Job<string>) {
-    try {
-      this.logger.debug(`processing cache refresh for ${job.data}`);
-      await this.didService.refreshCachedDocument(job.data);
-    } catch (err) {
-      this.logger.error(err);
-    }
+    this.logger.debug(`processing cache refresh for ${job.data}`);
+    await this.didService.refreshCachedDocument(job.data);
   }
 }

@@ -16,10 +16,11 @@ import { ApplicationService } from './application.service';
 import { SentryModule } from '../sentry/sentry.module';
 import { Role } from '../role/role.entity';
 import * as TestDbCOnfig from '../../../test/config';
-import { appConfig } from '../../common/test.utils';
+import { appConfig, MockJWTAuthGuard } from '../../common/test.utils';
 import { OrganizationService } from '../organization/organization.service';
 import { Organization } from '../organization/organization.entity';
 import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 const chance = new Chance();
 
@@ -47,7 +48,10 @@ describe('ApplicationController', () => {
         ApplicationService,
         { provide: OrganizationService, useValue: mockOrganizationService },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(MockJWTAuthGuard)
+      .compile();
 
     app = module.createNestApplication();
     appConfig(app);

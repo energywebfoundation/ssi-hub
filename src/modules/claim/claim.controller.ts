@@ -44,6 +44,7 @@ import { User } from '../../common/user.decorator';
 import { BooleanPipe } from '../../common/boolean.pipe';
 import { AssetsService } from '../assets/assets.service';
 import { DIDsQuery } from './entities/roleClaim.entity';
+import { RoleDTO } from '../role/role.dto';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -237,6 +238,21 @@ export class ClaimController {
       },
       currentUser: user,
     });
+  }
+
+  @Get('/issuer/roles/allowed/:did')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary:
+      'Returns the Roles that an issuer DID can issuer, given the permissions in the role definitions',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: [RoleDTO],
+    description: 'Roles that the issuer can issue',
+  })
+  public async getByAllowedRolesByIssuer(@Param('did') issuer: string) {
+    return await this.claimService.rolesByIssuer(issuer);
   }
 
   @Get('/requester/:did')
