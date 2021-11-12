@@ -9,6 +9,7 @@
 - [common/ENSBaseSchema](modules/common_ENSBaseSchema.md)
 - [common/boolean.pipe](modules/common_boolean_pipe.md)
 - [common/constants](modules/common_constants.md)
+- [common/isBigNumber.validator](modules/common_isBigNumber_validator.md)
 - [common/json.scalar](modules/common_json_scalar.md)
 - [common/provider](modules/common_provider.md)
 - [common/test.utils](modules/common_test_utils.md)

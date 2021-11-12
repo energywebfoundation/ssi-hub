@@ -1,8 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddStakingPoolParameters1636645393251
-  implements MigrationInterface {
-  name = 'AddStakingPoolParameters1636645393251';
+export class AddStakingParams1636725750389 implements MigrationInterface {
+  name = 'AddStakingParams1636725750389';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`TRUNCATE staking_pool`);
@@ -10,9 +9,6 @@ export class AddStakingPoolParameters1636645393251
       `ALTER TABLE "staking_pool" DROP CONSTRAINT "PK_4637d41e49b3467bf50f8d8eaa3"`,
     );
     await queryRunner.query(`ALTER TABLE "staking_pool" DROP COLUMN "id"`);
-    await queryRunner.query(
-      `ALTER TABLE "staking_pool" ADD "org" character varying NOT NULL`,
-    );
     await queryRunner.query(
       `ALTER TABLE "staking_pool" ADD "minStakingPeriod" text NOT NULL`,
     );
@@ -25,15 +21,29 @@ export class AddStakingPoolParameters1636645393251
     await queryRunner.query(
       `ALTER TABLE "staking_pool" ADD "patronRoles" character varying array NOT NULL`,
     );
+    await queryRunner.query(`ALTER TABLE "staking_pool" ADD "orgId" integer`);
+    await queryRunner.query(
+      `ALTER TABLE "staking_pool" ADD CONSTRAINT "UQ_13216987f2268a5982d9b095230" UNIQUE ("orgId")`,
+    );
     await queryRunner.query(
       `ALTER TABLE "staking_pool" ADD CONSTRAINT "PK_45b66bfdb189f7c878ab4a38aab" PRIMARY KEY ("address")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "staking_pool" ADD CONSTRAINT "FK_13216987f2268a5982d9b095230" FOREIGN KEY ("orgId") REFERENCES "organization"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
+      `ALTER TABLE "staking_pool" DROP CONSTRAINT "FK_13216987f2268a5982d9b095230"`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "staking_pool" DROP CONSTRAINT "PK_45b66bfdb189f7c878ab4a38aab"`,
     );
+    await queryRunner.query(
+      `ALTER TABLE "staking_pool" DROP CONSTRAINT "UQ_13216987f2268a5982d9b095230"`,
+    );
+    await queryRunner.query(`ALTER TABLE "staking_pool" DROP COLUMN "orgId"`);
     await queryRunner.query(
       `ALTER TABLE "staking_pool" DROP COLUMN "patronRoles"`,
     );
@@ -46,7 +56,6 @@ export class AddStakingPoolParameters1636645393251
     await queryRunner.query(
       `ALTER TABLE "staking_pool" DROP COLUMN "minStakingPeriod"`,
     );
-    await queryRunner.query(`ALTER TABLE "staking_pool" DROP COLUMN "org"`);
     await queryRunner.query(
       `ALTER TABLE "staking_pool" ADD "id" SERIAL NOT NULL`,
     );

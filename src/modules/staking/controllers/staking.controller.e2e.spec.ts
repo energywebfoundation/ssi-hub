@@ -23,6 +23,7 @@ import { RoleService } from '../../role/role.service';
 import { Wallet } from '@ethersproject/wallet';
 import { OrganizationService } from '../../organization/organization.service';
 import { BigNumber } from '@ethersproject/bignumber';
+import { Organization } from '../../organization/organization.entity';
 
 const stakingTermsFixture = async (
   repo: Repository<StakingTerms>,
@@ -53,6 +54,7 @@ describe('StakingController', () => {
   let stakeTerms: StakingTerms[];
   let pool: Partial<StakingPool>;
   let stakingService: StakingService;
+  const org = { namespace: 'myorg.ewc.iam' } as Organization;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -94,7 +96,7 @@ describe('StakingController', () => {
     await queryRunner.startTransaction();
     stakeTerms = await stakingTermsFixture(repo, 2);
     pool = {
-      org: 'myorg.ewc.iam',
+      org,
       minStakingPeriod: BigNumber.from(47),
       patronRewardPortion: BigNumber.from(47),
       withdrawDelay: BigNumber.from(47),
@@ -152,7 +154,7 @@ describe('StakingController', () => {
     await stakingService.syncPool(pool.address);
 
     await testHttpServer
-      .get(`/v1/staking/pool/${pool.address}`)
+      .get(`/v1/staking/pool/address/${pool.address}`)
       .expect(200)
       .expect(res => {
         expect(res.body.address).toEqual(`${pool.address}`);

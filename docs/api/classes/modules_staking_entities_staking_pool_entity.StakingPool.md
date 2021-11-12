@@ -46,7 +46,7 @@ ___
 
 ### org
 
-• **org**: `string`
+• **org**: [`Organization`](modules_organization_organization_entity.Organization.md)
 
 ___
 

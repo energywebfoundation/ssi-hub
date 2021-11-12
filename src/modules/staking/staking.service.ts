@@ -83,7 +83,8 @@ export class StakingService implements OnModuleDestroy {
   }
 
   /**
-   * @description pesists pool read from chain
+   * @description pesists pool deployed on `address`. If pool wasn't deployed by registered staking pool factory
+   * or organization for which pool launched not yet been synchronized pool synchronization will be skipped
    * @param address address of deployed pool
    */
   async syncPool(address: string): Promise<void> {
@@ -104,8 +105,19 @@ export class StakingService implements OnModuleDestroy {
     }
   }
 
-  async getPool(id: string) {
-    return this.stakingPoolRepository.findOne(id);
+  async getPoolByAddress(address: string) {
+    return this.stakingPoolRepository.findOne(address);
+  }
+
+  /**
+   * @description returns organization for which pool was launched
+   * @param namespace
+   * @returns
+   */
+  async getPoolByOrg(namespace: string) {
+    return this.stakingPoolRepository.findOne({
+      where: { org: { namespace } },
+    });
   }
 
   private InitEventListeners(): void {
@@ -119,11 +131,13 @@ export class StakingService implements OnModuleDestroy {
   }
 
   private async sync() {
+    this.logger.info('Syncing Staking Pools');
     const orgs = await this.stakingPoolFactory.orgsList();
     for await (const org of orgs) {
       const { pool } = await this.stakingPoolFactory.services(org);
       await this.syncPool(pool);
     }
+    this.logger.info('Staking Pools syncing is finished');
   }
 
   private async getPoolFromChain(
@@ -159,7 +173,7 @@ export class StakingService implements OnModuleDestroy {
     }
     return {
       address,
-      org: org.namespace, // if organization is not synchronized yet
+      org,
       patronRoles: patronRolesNames,
       withdrawDelay: await StakingPool__factory.connect(
         address,

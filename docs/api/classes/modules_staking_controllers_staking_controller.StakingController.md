@@ -11,7 +11,8 @@
 ### Methods
 
 - [createTerms](modules_staking_controllers_staking_controller.StakingController.md#createterms)
-- [getPool](modules_staking_controllers_staking_controller.StakingController.md#getpool)
+- [getPoolByAddress](modules_staking_controllers_staking_controller.StakingController.md#getpoolbyaddress)
+- [getPoolByOrg](modules_staking_controllers_staking_controller.StakingController.md#getpoolbyorg)
 - [getTerms](modules_staking_controllers_staking_controller.StakingController.md#getterms)
 
 ## Constructors
@@ -44,15 +45,31 @@
 
 ___
 
-### getPool
+### getPoolByAddress
 
-▸ **getPool**(`id`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+▸ **getPoolByAddress**(`address`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `id` | `string` |
+| `address` | `string` |
+
+#### Returns
+
+`Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+
+___
+
+### getPoolByOrg
+
+▸ **getPoolByOrg**(`namespace`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `namespace` | `string` |
 
 #### Returns
 

@@ -14,7 +14,8 @@
 
 ### Methods
 
-- [getPool](modules_staking_staking_service.StakingService.md#getpool)
+- [getPoolByAddress](modules_staking_staking_service.StakingService.md#getpoolbyaddress)
+- [getPoolByOrg](modules_staking_staking_service.StakingService.md#getpoolbyorg)
 - [getTerms](modules_staking_staking_service.StakingService.md#getterms)
 - [onModuleDestroy](modules_staking_staking_service.StakingService.md#onmoduledestroy)
 - [saveTerms](modules_staking_staking_service.StakingService.md#saveterms)
@@ -41,15 +42,33 @@
 
 ## Methods
 
-### getPool
+### getPoolByAddress
 
-▸ **getPool**(`id`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+▸ **getPoolByAddress**(`address`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `id` | `string` |
+| `address` | `string` |
+
+#### Returns
+
+`Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+
+___
+
+### getPoolByOrg
+
+▸ **getPoolByOrg**(`namespace`): `Promise`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\>
+
+**`description`** returns organization for which pool was launched
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `namespace` | `string` |
 
 #### Returns
 
@@ -101,7 +120,8 @@ ___
 
 ▸ **syncPool**(`address`): `Promise`<`void`\>
 
-**`description`** pesists pool read from chain
+**`description`** pesists pool deployed on `address`. If pool wasn't deployed by registered staking pool factory
+or organization for which pool launched not yet been synchronized pool synchronization will be skipped
 
 #### Parameters
 

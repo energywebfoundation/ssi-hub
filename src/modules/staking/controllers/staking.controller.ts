@@ -51,17 +51,31 @@ export class StakingController {
     return this.stakingService.saveTerms(data);
   }
 
-  @Get('/pool/:id')
+  @Get('/pool/address/:address')
   @ApiTags('Staking pool')
   @ApiOperation({
-    summary: 'Returns staking pool by its id',
+    summary: 'Returns staking pool deployed on given address',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: StakingPoolDTO,
-    description: 'Staking pool by id',
+    description: 'Staking pool on address',
   })
-  getPool(@Param('id') id: string) {
-    return this.stakingService.getPool(id);
+  getPoolByAddress(@Param('address') address: string) {
+    return this.stakingService.getPoolByAddress(address);
+  }
+
+  @Get('/pool/org/:namespace')
+  @ApiTags('Staking pool')
+  @ApiOperation({
+    summary: 'Returns staking pool launched for given organization',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: StakingPoolDTO,
+    description: 'Staking pool of organization',
+  })
+  getPoolByOrg(@Param('namespace') namespace: string) {
+    return this.stakingService.getPoolByOrg(namespace);
   }
 }
