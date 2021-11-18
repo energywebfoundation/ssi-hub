@@ -12,6 +12,10 @@ export class NatsService implements OnModuleDestroy {
       this.connection = connect(`nats://${NATS_CLIENTS_URL}`, {
         pingInterval: 5000,
         maxReconnectAttempts: -1,
+        reconnectDelayHandler: () => {
+          this.logger.log(`Reconnecting to NATS server...`);
+          return 1000;
+        },
       });
     } catch (err) {
       this.logger.error(err, NatsService.name);
