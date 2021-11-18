@@ -23,7 +23,7 @@
 
 ### constructor
 
-• **new StakingService**(`stakingTermsRepository`, `stakingPoolRepository`, `logger`, `provider`)
+• **new StakingService**(`stakingTermsRepository`, `stakingPoolRepository`, `logger`, `provider`, `config`)
 
 #### Parameters
 
@@ -33,6 +33,7 @@
 | `stakingPoolRepository` | `Repository`<[`StakingPool`](modules_staking_entities_staking_pool_entity.StakingPool.md)\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `provider` | [`Provider`](common_provider.Provider.md) |
+| `config` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
 
 ## Methods
 
