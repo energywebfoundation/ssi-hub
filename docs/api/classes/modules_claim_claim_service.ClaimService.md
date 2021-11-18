@@ -11,6 +11,7 @@
 ### Methods
 
 - [create](modules_claim_claim_service.ClaimService.md#create)
+- [createAndIssue](modules_claim_claim_service.ClaimService.md#createandissue)
 - [getById](modules_claim_claim_service.ClaimService.md#getbyid)
 - [getByIssuer](modules_claim_claim_service.ClaimService.md#getbyissuer)
 - [getByParentNamespace](modules_claim_claim_service.ClaimService.md#getbyparentnamespace)
@@ -19,17 +20,20 @@
 - [getBySubjects](modules_claim_claim_service.ClaimService.md#getbysubjects)
 - [getByUserDid](modules_claim_claim_service.ClaimService.md#getbyuserdid)
 - [getDidOfClaimsOfNamespace](modules_claim_claim_service.ClaimService.md#getdidofclaimsofnamespace)
+- [getIssuedClaimsBySubjects](modules_claim_claim_service.ClaimService.md#getissuedclaimsbysubjects)
 - [handleExchangeMessage](modules_claim_claim_service.ClaimService.md#handleexchangemessage)
 - [issue](modules_claim_claim_service.ClaimService.md#issue)
 - [reject](modules_claim_claim_service.ClaimService.md#reject)
 - [removeById](modules_claim_claim_service.ClaimService.md#removebyid)
+- [rolesByIssuer](modules_claim_claim_service.ClaimService.md#rolesbyissuer)
+- [saveIssuedClaim](modules_claim_claim_service.ClaimService.md#saveissuedclaim)
 - [idOfClaim](modules_claim_claim_service.ClaimService.md#idofclaim)
 
 ## Constructors
 
 ### constructor
 
-• **new ClaimService**(`roleService`, `logger`, `claimRepository`, `assetService`, `claimQueue`, `nats`)
+• **new ClaimService**(`roleService`, `logger`, `roleClaimRepository`, `claimRepository`, `assetService`, `claimQueue`, `nats`)
 
 #### Parameters
 
@@ -37,7 +41,8 @@
 | :------ | :------ |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
-| `claimRepository` | `Repository`<[`Claim`](modules_claim_claim_entity.Claim.md)\> |
+| `roleClaimRepository` | `Repository`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\> |
+| `claimRepository` | `Repository`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)\> |
 | `assetService` | [`AssetsService`](modules_assets_assets_service.AssetsService.md) |
 | `claimQueue` | `Queue`<`string`\> |
 | `nats` | [`NatsService`](modules_nats_nats_service.NatsService.md) |
@@ -46,7 +51,7 @@
 
 ### create
 
-▸ **create**(`data`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+▸ **create**(`data`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 Saves claim to database
 
@@ -58,13 +63,31 @@ Saves claim to database
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+___
+
+### createAndIssue
+
+▸ **createAndIssue**(`data`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+Saves and issue claim to database
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`NewClaimIssueDTO`](modules_claim_claim_dto.NewClaimIssueDTO.md) | Raw claim data |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 ___
 
 ### getById
 
-▸ **getById**(`id`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+▸ **getById**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 returns claim with matching ID
 
@@ -76,13 +99,13 @@ returns claim with matching ID
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 ___
 
 ### getByIssuer
 
-▸ **getByIssuer**(`__namedParameters`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByIssuer**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims issued by user with matching DID
 
@@ -97,13 +120,13 @@ Get claims issued by user with matching DID
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getByParentNamespace
 
-▸ **getByParentNamespace**(`namespace`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByParentNamespace**(`namespace`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 returns claims with matching parent namespace
 eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.app", "user.roles.A.app"
@@ -116,13 +139,13 @@ eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getByRequester
 
-▸ **getByRequester**(`__namedParameters`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByRequester**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims requested by user with matching DID
 
@@ -137,13 +160,13 @@ Get claims requested by user with matching DID
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getBySubject
 
-▸ **getBySubject**(`__namedParameters`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getBySubject**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims issued for given subject
 
@@ -158,13 +181,13 @@ Get claims issued for given subject
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getBySubjects
 
-▸ **getBySubjects**(`subjects`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getBySubjects**(`subjects`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 returns claims requested for given DIDs
 
@@ -179,13 +202,13 @@ returns claims requested for given DIDs
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getByUserDid
 
-▸ **getByUserDid**(`did`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByUserDid**(`did`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims requested or issued by user with matching DID
 
@@ -200,7 +223,7 @@ Get claims requested or issued by user with matching DID
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
@@ -220,6 +243,24 @@ get all DID of requesters of given namespace
 #### Returns
 
 `Promise`<`string`[]\>
+
+___
+
+### getIssuedClaimsBySubjects
+
+▸ **getIssuedClaimsBySubjects**(`subjects`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
+
+Save issued claim
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `subjects` | `string`[] |
+
+#### Returns
+
+`Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
 
 ___
 
@@ -243,7 +284,7 @@ ___
 
 ### issue
 
-▸ **issue**(`data`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+▸ **issue**(`data`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 #### Parameters
 
@@ -253,13 +294,13 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 ___
 
 ### reject
 
-▸ **reject**(`id`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+▸ **reject**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 #### Parameters
 
@@ -269,7 +310,7 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 ___
 
@@ -292,6 +333,41 @@ delete claim with matching ID
 
 ___
 
+### rolesByIssuer
+
+▸ **rolesByIssuer**(`issuer`, `namespace?`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `issuer` | `string` |
+| `namespace?` | `string` |
+
+#### Returns
+
+`Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+___
+
+### saveIssuedClaim
+
+▸ **saveIssuedClaim**(`claim`): `Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
+
+Save issued claim
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `claim` | [`IssuedClaimDTO`](modules_claim_claim_dto.IssuedClaimDTO.md) | Issued claim that we want to save |
+
+#### Returns
+
+`Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
+
+___
+
 ### idOfClaim
 
 ▸ `Static` **idOfClaim**(`claimReq`): `string`
@@ -300,7 +376,10 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `claimReq` | [`IClaimRequest`](../interfaces/modules_claim_claim_types.IClaimRequest.md) |
+| `claimReq` | `Object` |
+| `claimReq.claimType` | `string` |
+| `claimReq.claimTypeVersion` | `string` |
+| `claimReq.token` | `string` |
 
 #### Returns
 

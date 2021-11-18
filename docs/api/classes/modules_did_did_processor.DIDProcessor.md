@@ -10,6 +10,7 @@
 
 ### Methods
 
+- [onError](modules_did_did_processor.DIDProcessor.md#onerror)
 - [processDIDDocumentAddition](modules_did_did_processor.DIDProcessor.md#processdiddocumentaddition)
 - [processDIDDocumentRefresh](modules_did_did_processor.DIDProcessor.md#processdiddocumentrefresh)
 
@@ -27,6 +28,22 @@
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
+
+### onError
+
+▸ **onError**(`error`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `error` | `Error` |
+
+#### Returns
+
+`void`
+
+___
 
 ### processDIDDocumentAddition
 

@@ -10,6 +10,7 @@
 
 ### Methods
 
+- [getByAllowedRolesByIssuer](modules_claim_claim_controller.ClaimController.md#getbyallowedrolesbyissuer)
 - [getById](modules_claim_claim_controller.ClaimController.md#getbyid)
 - [getByIssuerDid](modules_claim_claim_controller.ClaimController.md#getbyissuerdid)
 - [getByParentNamespace](modules_claim_claim_controller.ClaimController.md#getbyparentnamespace)
@@ -18,10 +19,12 @@
 - [getBySubjects](modules_claim_claim_controller.ClaimController.md#getbysubjects)
 - [getByUserDid](modules_claim_claim_controller.ClaimController.md#getbyuserdid)
 - [getDidsOfNamespace](modules_claim_claim_controller.ClaimController.md#getdidsofnamespace)
+- [getIssuedClaimsBySubjects](modules_claim_claim_controller.ClaimController.md#getissuedclaimsbysubjects)
 - [postClaimRejection](modules_claim_claim_controller.ClaimController.md#postclaimrejection)
 - [postIssuerClaim](modules_claim_claim_controller.ClaimController.md#postissuerclaim)
 - [postRequesterClaim](modules_claim_claim_controller.ClaimController.md#postrequesterclaim)
 - [removeById](modules_claim_claim_controller.ClaimController.md#removebyid)
+- [saveIssued](modules_claim_claim_controller.ClaimController.md#saveissued)
 
 ## Constructors
 
@@ -40,9 +43,25 @@
 
 ## Methods
 
+### getByAllowedRolesByIssuer
+
+▸ **getByAllowedRolesByIssuer**(`issuer`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `issuer` | `string` |
+
+#### Returns
+
+`Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+___
+
 ### getById
 
-▸ **getById**(`id`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+▸ **getById**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 #### Parameters
 
@@ -52,13 +71,13 @@
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 ___
 
 ### getByIssuerDid
 
-▸ **getByIssuerDid**(`issuer`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByIssuerDid**(`issuer`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -71,13 +90,13 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getByParentNamespace
 
-▸ **getByParentNamespace**(`id`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByParentNamespace**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -87,13 +106,13 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getByRequesterDid
 
-▸ **getByRequesterDid**(`requester`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByRequesterDid**(`requester`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -106,13 +125,13 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getBySubject
 
-▸ **getBySubject**(`subject`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getBySubject**(`subject`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -125,32 +144,32 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getBySubjects
 
-▸ **getBySubjects**(`__namedParameters`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getBySubjects**(`__namedParameters`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`DIDsQuery`](modules_claim_claim_entity.DIDsQuery.md) |
+| `__namedParameters` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### getByUserDid
 
-▸ **getByUserDid**(`did`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **getByUserDid**(`did`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -161,7 +180,7 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
@@ -179,6 +198,22 @@ ___
 #### Returns
 
 `Promise`<`string`[]\>
+
+___
+
+### getIssuedClaimsBySubjects
+
+▸ **getIssuedClaimsBySubjects**(`__namedParameters`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
+
+#### Returns
+
+`Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
 
 ___
 
@@ -247,3 +282,19 @@ ___
 #### Returns
 
 `Promise`<`void`\>
+
+___
+
+### saveIssued
+
+▸ **saveIssued**(`body`): `Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `body` | [`IssuedClaimDTO`](modules_claim_claim_dto.IssuedClaimDTO.md) |
+
+#### Returns
+
+`Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
