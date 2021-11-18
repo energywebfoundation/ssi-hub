@@ -33,7 +33,7 @@
 
 ### claim
 
-▸ **claim**(`id`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+▸ **claim**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 #### Parameters
 
@@ -43,13 +43,13 @@
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 ___
 
 ### claimsByIssuer
 
-▸ **claimsByIssuer**(`issuer?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **claimsByIssuer**(`issuer?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -62,13 +62,13 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### claimsByParentNamespace
 
-▸ **claimsByParentNamespace**(`namespace`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **claimsByParentNamespace**(`namespace`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -78,13 +78,13 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### claimsByRequester
 
-▸ **claimsByRequester**(`requester?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **claimsByRequester**(`requester?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -97,13 +97,13 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
 ### claimsByUser
 
-▸ **claimsByUser**(`did?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+▸ **claimsByUser**(`did?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -116,7 +116,7 @@ ___
 
 #### Returns
 
-`Promise`<[`Claim`](modules_claim_claim_entity.Claim.md)[]\>
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 ___
 
