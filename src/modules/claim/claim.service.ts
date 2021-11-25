@@ -51,10 +51,16 @@ export class ClaimService {
   }
 
   private initializeExchangeListener() {
-    this.nats.connection.subscribe(`*.${NATS_EXCHANGE_TOPIC}`, async data => {
-      this.logger.debug(`Got message ${data}`);
-      await this.claimQueue.add('save', data);
-    });
+    this.nats.connection.subscribe(
+      `*.${NATS_EXCHANGE_TOPIC}`,
+      {
+        queue: 'iam_cache_server_exchange_topic',
+      },
+      async data => {
+        this.logger.debug(`Got message ${data}`);
+        await this.claimQueue.add('save', data);
+      },
+    );
   }
 
   /**
