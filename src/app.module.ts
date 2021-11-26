@@ -17,9 +17,9 @@ import { InterceptorsModule } from './modules/interceptors/interceptors.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ENSModule } from './modules/ens/ens.module';
 import { getDBConfig } from './db/config';
-import { GraphQLModule } from '@nestjs/graphql';
+// import { GraphQLModule } from '@nestjs/graphql';
 import { JSONObjectScalar } from './common/json.scalar';
-import { getGraphQlConfig } from './graphql/config';
+// import { getGraphQlConfig } from './graphql/config';
 import { AssetsModule } from './modules/assets/assets.module';
 import { StakingModule } from './modules/staking/staking.module';
 import { BullModule } from '@nestjs/bull';
@@ -28,10 +28,10 @@ import { DIDContactModule } from './modules/did-contact/did.contact.module';
 
 @Module({
   imports: [
-    GraphQLModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: getGraphQlConfig,
-    }),
+    // GraphQLModule.forRootAsync({
+    //   inject: [ConfigService],
+    //   useFactory: getGraphQlConfig,
+    // }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: getDBConfig,
