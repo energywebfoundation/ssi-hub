@@ -17,7 +17,7 @@ export const getIdentityToken = async (
   };
 
   const payload = {
-    iss: `did:ethr:${address}`,
+    iss: `did:ethr:volta:${address}`,
     claimData: {
       blockNumber,
     },

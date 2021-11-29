@@ -31,7 +31,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `DomainUpdated(bytes32)` | `any` |
+| `DomainUpdated(bytes32)` | `EventFragment` |
 
 #### Overrides
 
@@ -47,7 +47,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `domainUpdated(bytes32)` | `any` |
+| `domainUpdated(bytes32)` | `FunctionFragment` |
 
 #### Overrides
 
@@ -57,7 +57,7 @@ ethers.utils.Interface.functions
 
 ### decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -68,7 +68,7 @@ ethers.utils.Interface.functions
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
@@ -99,7 +99,7 @@ ___
 
 ### getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -109,7 +109,7 @@ ___
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 

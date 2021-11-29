@@ -10,7 +10,7 @@ import { DIDService } from '../did/did.service';
 import { AssetDto } from './assets.dto';
 import { Asset, AssetsHistory } from './assets.entity';
 import { utils, BigNumber } from 'ethers';
-import { getDIDFromAddress } from '../did/did.types';
+import { DID, getDIDFromAddress } from '../did/did.types';
 import { abi as AssetsManagerContract } from '../../../node_modules/@ew-did-registry/proxyidentity/build/contracts/IdentityManager.json';
 import { Logger } from '../logger/logger.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -414,7 +414,8 @@ export class AssetsService {
       this.logger.debug(`### ASSET ${assetDID} EVENTS SYNC STARTED ###`);
 
       const assetsManagerInterface = new utils.Interface(AssetsManagerContract);
-      const [, , assetAddress] = assetDID.split(':');
+      const parsedDID = new DID(assetDID);
+      const assetAddress = parsedDID.id;
       const CreatedEvent = this.assetsManager.filters.IdentityCreated(
         assetAddress,
         null,

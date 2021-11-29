@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
 import { NatsWrapper } from './nats.wrapper';
-import { ConfigService } from '@nestjs/config';
+
 
 export type IMessageJob = {
   subject: string;

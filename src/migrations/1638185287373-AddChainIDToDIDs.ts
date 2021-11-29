@@ -2,18 +2,18 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
   name = 'AddChainIDToDIDs1638185287373';
-  CHAIN_ID = process.env.CHAIN_ID;
+  CHAIN_NAME = process.env.CHAIN_NAME;
 
   private checkForChainID(): void {
-    if (!this.CHAIN_ID) {
+    if (!this.CHAIN_NAME) {
       throw new Error(
-        'CHAIN_ID environment variable is not set. Please set it to your chain ID',
+        'CHAIN_NAME environment variable is not set. Please set it to your chain ID',
       );
     }
   }
 
   private getUpUpdateSQL(table: string, column: string): string {
-    return `UPDATE public.${table} SET ${column} = 'did:ethr:${this.CHAIN_ID}:' || split_part(${column},':', 3) WHERE ${column} IS NOT NULL;`;
+    return `UPDATE public.${table} SET ${column} = 'did:ethr:${this.CHAIN_NAME}:' || split_part(${column},':', 3) WHERE ${column} IS NOT NULL;`;
   }
 
   private getDownUpdateSQL(table: string, column: string): string {
@@ -22,6 +22,8 @@ export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     this.checkForChainID();
+
+    await queryRunner.query("SET session_replication_role = 'replica';");
 
     // asset table
     await queryRunner.query(this.getUpUpdateSQL('asset', 'id'));
@@ -49,10 +51,14 @@ export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
     await queryRunner.query(this.getUpUpdateSQL('role_claim', 'requester'));
     await queryRunner.query(this.getUpUpdateSQL('role_claim', 'subject'));
     await queryRunner.query(this.getUpUpdateSQL('role_claim', `"acceptedBy"`));
+
+    await queryRunner.query("SET session_replication_role = 'origin';");
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     this.checkForChainID();
+
+    await queryRunner.query("SET session_replication_role = 'replica';");
 
     // asset table
     await queryRunner.query(this.getDownUpdateSQL('asset', 'id'));
@@ -87,5 +93,7 @@ export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
     await queryRunner.query(
       this.getDownUpdateSQL('role_claim', `"acceptedBy"`),
     );
+
+    await queryRunner.query("SET session_replication_role = 'origin';");
   }
 }

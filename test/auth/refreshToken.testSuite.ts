@@ -14,7 +14,7 @@ export const authRefreshTokenTestSuite = () => {
       const userAddress = await wallet.getAddress();
       const tokenService = app.get(TokenService);
       return tokenService.generateRefreshToken({
-        userDid: `did:ethr:${userAddress}`,
+        userDid: `did:ethr:volta:${userAddress}`,
       });
     };
 

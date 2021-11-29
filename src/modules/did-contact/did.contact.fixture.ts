@@ -9,7 +9,7 @@ export const didDocumentFixture = async (
   didDocRepo: Repository<DIDDocumentEntity>,
 ) => {
   const didDoc = {
-    id: 'did:ethr:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
+    id: 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
     service: [],
     authentication: [],
     publicKey: [],
@@ -29,7 +29,7 @@ export const didContactFixture = async (
   count = 1,
 ) => {
   const contacts = [];
-  const didConst = `did:ethr:0x0C2021qb2085C8AA0f686caA011de1cB53a615E`;
+  const didConst = `did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E`;
   for (let i = 0; i < count; i++) {
     const label = chance.string();
     const did = `${didConst}${i}`;

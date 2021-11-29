@@ -50,14 +50,12 @@ export const authLoginTestSuite = () => {
       expect(loginResponse.headers['set-cookie'][1]).toContain(
         loginResponse.body.refreshToken,
       );
-
       return request(app.getHttpServer())
         .get('/v1/search/test')
         .set('Cookie', [
           loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
           loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
         ])
-        .set('authorization', loginResponse.body.token)
         .expect(200);
     });
 

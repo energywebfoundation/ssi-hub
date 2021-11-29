@@ -31,11 +31,11 @@
 
 | Name | Type |
 | :------ | :------ |
-| `ApprovalForAll(address,address,bool)` | `any` |
-| `NewOwner(bytes32,bytes32,address)` | `any` |
-| `NewResolver(bytes32,address)` | `any` |
-| `NewTTL(bytes32,uint64)` | `any` |
-| `Transfer(bytes32,address)` | `any` |
+| `ApprovalForAll(address,address,bool)` | `EventFragment` |
+| `NewOwner(bytes32,bytes32,address)` | `EventFragment` |
+| `NewResolver(bytes32,address)` | `EventFragment` |
+| `NewTTL(bytes32,uint64)` | `EventFragment` |
+| `Transfer(bytes32,address)` | `EventFragment` |
 
 #### Overrides
 
@@ -51,18 +51,18 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `isApprovedForAll(address,address)` | `any` |
-| `owner(bytes32)` | `any` |
-| `recordExists(bytes32)` | `any` |
-| `resolver(bytes32)` | `any` |
-| `setApprovalForAll(address,bool)` | `any` |
-| `setOwner(bytes32,address)` | `any` |
-| `setRecord(bytes32,address,address,uint64)` | `any` |
-| `setResolver(bytes32,address)` | `any` |
-| `setSubnodeOwner(bytes32,bytes32,address)` | `any` |
-| `setSubnodeRecord(bytes32,bytes32,address,address,uint64)` | `any` |
-| `setTTL(bytes32,uint64)` | `any` |
-| `ttl(bytes32)` | `any` |
+| `isApprovedForAll(address,address)` | `FunctionFragment` |
+| `owner(bytes32)` | `FunctionFragment` |
+| `recordExists(bytes32)` | `FunctionFragment` |
+| `resolver(bytes32)` | `FunctionFragment` |
+| `setApprovalForAll(address,bool)` | `FunctionFragment` |
+| `setOwner(bytes32,address)` | `FunctionFragment` |
+| `setRecord(bytes32,address,address,uint64)` | `FunctionFragment` |
+| `setResolver(bytes32,address)` | `FunctionFragment` |
+| `setSubnodeOwner(bytes32,bytes32,address)` | `FunctionFragment` |
+| `setSubnodeRecord(bytes32,bytes32,address,address,uint64)` | `FunctionFragment` |
+| `setTTL(bytes32,uint64)` | `FunctionFragment` |
+| `ttl(bytes32)` | `FunctionFragment` |
 
 #### Overrides
 
@@ -72,7 +72,7 @@ ethers.utils.Interface.functions
 
 ### decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -83,13 +83,13 @@ ethers.utils.Interface.functions
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -100,13 +100,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -117,13 +117,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -134,13 +134,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -151,13 +151,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -168,13 +168,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -185,13 +185,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -202,13 +202,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -219,13 +219,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -236,13 +236,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -253,13 +253,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -270,7 +270,7 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
@@ -488,7 +488,7 @@ ___
 
 ### getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -498,13 +498,13 @@ ___
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 
 ethers.utils.Interface.getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -514,13 +514,13 @@ ethers.utils.Interface.getEvent
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 
 ethers.utils.Interface.getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -530,13 +530,13 @@ ethers.utils.Interface.getEvent
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 
 ethers.utils.Interface.getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -546,13 +546,13 @@ ethers.utils.Interface.getEvent
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 
 ethers.utils.Interface.getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -562,7 +562,7 @@ ethers.utils.Interface.getEvent
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 

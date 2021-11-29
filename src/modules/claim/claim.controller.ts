@@ -90,7 +90,7 @@ export class ClaimController {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
-    const { sub } = new JWT(new Keys()).decode(claimData.issuedToken);
+    const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as { sub:string };
     await this.nats.publishForDids(
       ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
@@ -124,7 +124,7 @@ export class ClaimController {
   ) {
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
-    const { sub } = jwt.decode(token);
+    const { sub } = jwt.decode(token) as { sub: string };
     const ownedAssets = await this.assetsService.getByOwner(requester);
     if (requester !== sub && !ownedAssets.some(a => a.document.id === sub)) {
       throw new HttpException(
