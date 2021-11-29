@@ -31,7 +31,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `TransactionSent(bytes,uint256)` | `any` |
+| `TransactionSent(bytes,uint256)` | `EventFragment` |
 
 #### Overrides
 
@@ -47,15 +47,15 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `acceptOffer()` | `any` |
-| `cancelOffer()` | `any` |
-| `init(address)` | `any` |
-| `offer(address)` | `any` |
-| `offeredTo()` | `any` |
-| `owner()` | `any` |
-| `rejectOffer()` | `any` |
-| `sendTransaction(address,bytes,uint256)` | `any` |
-| `supportsInterface(bytes4)` | `any` |
+| `acceptOffer()` | `FunctionFragment` |
+| `cancelOffer()` | `FunctionFragment` |
+| `init(address)` | `FunctionFragment` |
+| `offer(address)` | `FunctionFragment` |
+| `offeredTo()` | `FunctionFragment` |
+| `owner()` | `FunctionFragment` |
+| `rejectOffer()` | `FunctionFragment` |
+| `sendTransaction(address,bytes,uint256)` | `FunctionFragment` |
+| `supportsInterface(bytes4)` | `FunctionFragment` |
 
 #### Overrides
 
@@ -65,7 +65,7 @@ ethers.utils.Interface.functions
 
 ### decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -76,13 +76,13 @@ ethers.utils.Interface.functions
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -93,13 +93,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -110,13 +110,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -127,13 +127,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -144,13 +144,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -161,13 +161,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -178,13 +178,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -195,13 +195,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -212,7 +212,7 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
@@ -379,7 +379,7 @@ ___
 
 ### getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -389,7 +389,7 @@ ___
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 

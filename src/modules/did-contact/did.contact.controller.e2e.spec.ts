@@ -22,8 +22,8 @@ import { DIDContact } from './did.contact.entity';
 import { DIDDocumentEntity } from '../did/did.entity';
 
 const chance = new Chance();
-const userDID1 = 'did:ethr:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9';
-const userDID2 = 'did:ethr:0x0C4021qb2085C8AA0f686caA011de1cB53a615E9';
+const userDID1 = 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9';
+const userDID2 = 'did:ethr:volta:0x0C4021qb2085C8AA0f686caA011de1cB53a615E9';
 
 const MockGuardImplementation = jest
   .fn()
@@ -133,7 +133,7 @@ describe('DIDContactController', () => {
       MockJWTAuthGuard.canActivate = MockGuardImplementation;
       const didContactToSave = {
         label: 'DIDContact Label 1',
-        did: 'did:ethr:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
+        did: 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
       };
       await testHttpServer
         .post(`/v1/didContact`)

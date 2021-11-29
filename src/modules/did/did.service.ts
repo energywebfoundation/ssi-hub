@@ -198,7 +198,7 @@ export class DIDService {
   private async InitEventListeners(): Promise<void> {
     const DIDAttributeChanged = 'DIDAttributeChanged';
     this.didRegistry.on(DIDAttributeChanged, async address => {
-      const did = `did:${Methods.Erc1056}:${address}`;
+      const did = `did:${Methods.Erc1056}:${process.env.CHAIN_NAME}:${address}`;
 
       this.logger.info(`${DIDAttributeChanged} event received for did: ${did}`);
 

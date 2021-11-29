@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { NatsWrapper } from './nats.wrapper';
 import { NatsService } from './nats.service';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@energyweb/iam-contracts/node_modules/ethers/lib/utils';
+import { Logger } from '../logger/logger.service';
 
 @Module({
   imports: [

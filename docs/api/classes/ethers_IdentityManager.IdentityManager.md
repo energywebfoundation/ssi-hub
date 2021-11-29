@@ -36,14 +36,21 @@
 - [identityOffered](ethers_IdentityManager.IdentityManager.md#identityoffered)
 - [identityOwner](ethers_IdentityManager.IdentityManager.md#identityowner)
 - [identityRejected](ethers_IdentityManager.IdentityManager.md#identityrejected)
+- [initialize](ethers_IdentityManager.IdentityManager.md#initialize)
 - [listeners](ethers_IdentityManager.IdentityManager.md#listeners)
 - [off](ethers_IdentityManager.IdentityManager.md#off)
 - [on](ethers_IdentityManager.IdentityManager.md#on)
 - [once](ethers_IdentityManager.IdentityManager.md#once)
+- [owner](ethers_IdentityManager.IdentityManager.md#owner)
 - [queryFilter](ethers_IdentityManager.IdentityManager.md#queryfilter)
 - [removeAllListeners](ethers_IdentityManager.IdentityManager.md#removealllisteners)
 - [removeListener](ethers_IdentityManager.IdentityManager.md#removelistener)
+- [renounceOwnership](ethers_IdentityManager.IdentityManager.md#renounceownership)
+- [transferOwnership](ethers_IdentityManager.IdentityManager.md#transferownership)
+- [upgradeTo](ethers_IdentityManager.IdentityManager.md#upgradeto)
+- [upgradeToAndCall](ethers_IdentityManager.IdentityManager.md#upgradetoandcall)
 - [verified](ethers_IdentityManager.IdentityManager.md#verified)
+- [version](ethers_IdentityManager.IdentityManager.md#version)
 
 ## Constructors
 
@@ -57,7 +64,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Signer` \| `Provider` |
+| `signerOrProvider?` | `Provider` \| `Signer` |
 
 #### Inherited from
 
@@ -81,7 +88,14 @@ BaseContract.constructor
 | `identityOffered` | (`_offeredTo`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`void`\> |
 | `identityOwner` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`string`\> |
 | `identityRejected` | (`_offeredTo`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`void`\> |
+| `initialize` | (`_libraryAddress`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`void`\> |
+| `owner` | (`overrides?`: `CallOverrides`) => `Promise`<`string`\> |
+| `renounceOwnership` | (`overrides?`: `CallOverrides`) => `Promise`<`void`\> |
+| `transferOwnership` | (`newOwner`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`void`\> |
+| `upgradeTo` | (`newImplementation`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`void`\> |
+| `upgradeToAndCall` | (`newImplementation`: `string`, `data`: `BytesLike`, `overrides?`: `CallOverrides`) => `Promise`<`void`\> |
 | `verified` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`boolean`\> |
+| `version` | (`overrides?`: `CallOverrides`) => `Promise`<`string`\> |
 
 #### Overrides
 
@@ -105,7 +119,14 @@ ___
 | `identityOffered` | (`_offeredTo`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`BigNumber`\> |
 | `identityOwner` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`BigNumber`\> |
 | `identityRejected` | (`_offeredTo`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`BigNumber`\> |
+| `initialize` | (`_libraryAddress`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`BigNumber`\> |
+| `owner` | (`overrides?`: `CallOverrides`) => `Promise`<`BigNumber`\> |
+| `renounceOwnership` | (`overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`BigNumber`\> |
+| `transferOwnership` | (`newOwner`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`BigNumber`\> |
+| `upgradeTo` | (`newImplementation`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`BigNumber`\> |
+| `upgradeToAndCall` | (`newImplementation`: `string`, `data`: `BytesLike`, `overrides?`: `PayableOverrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`BigNumber`\> |
 | `verified` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`BigNumber`\> |
+| `version` | (`overrides?`: `CallOverrides`) => `Promise`<`BigNumber`\> |
 
 #### Overrides
 
@@ -121,6 +142,10 @@ ___
 
 | Name | Type |
 | :------ | :------ |
+| `AdminChanged` | (`previousAdmin?`: ``null``, `newAdmin?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `AdminChanged(address,address)` | (`previousAdmin?`: ``null``, `newAdmin?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `BeaconUpgraded` | (`beacon?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
+| `BeaconUpgraded(address)` | (`beacon?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
 | `IdentityCreated` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], `Object`\> |
 | `IdentityCreated(address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], `Object`\> |
 | `IdentityOfferCanceled` | (`identity?`: `string`, `owner?`: `string`, `oferedto?`: ``null``, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], `Object`\> |
@@ -131,6 +156,10 @@ ___
 | `IdentityOffered(address,address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `offeredTo?`: ``null``, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], `Object`\> |
 | `IdentityTransferred` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], `Object`\> |
 | `IdentityTransferred(address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], `Object`\> |
+| `OwnershipTransferred` | (`previousOwner?`: `string`, `newOwner?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `OwnershipTransferred(address,address)` | (`previousOwner?`: `string`, `newOwner?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `Upgraded` | (`implementation?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
+| `Upgraded(address)` | (`implementation?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
 
 #### Overrides
 
@@ -154,7 +183,14 @@ ___
 | `identityOffered` | (`_offeredTo`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`ContractTransaction`\> |
 | `identityOwner` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<[`string`]\> |
 | `identityRejected` | (`_offeredTo`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`ContractTransaction`\> |
+| `initialize` | (`_libraryAddress`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`ContractTransaction`\> |
+| `owner` | (`overrides?`: `CallOverrides`) => `Promise`<[`string`]\> |
+| `renounceOwnership` | (`overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`ContractTransaction`\> |
+| `transferOwnership` | (`newOwner`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`ContractTransaction`\> |
+| `upgradeTo` | (`newImplementation`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`ContractTransaction`\> |
+| `upgradeToAndCall` | (`newImplementation`: `string`, `data`: `BytesLike`, `overrides?`: `PayableOverrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`ContractTransaction`\> |
 | `verified` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<[`boolean`]\> |
+| `version` | (`overrides?`: `CallOverrides`) => `Promise`<[`string`]\> |
 
 #### Overrides
 
@@ -188,7 +224,14 @@ ___
 | `identityOffered` | (`_offeredTo`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`PopulatedTransaction`\> |
 | `identityOwner` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`PopulatedTransaction`\> |
 | `identityRejected` | (`_offeredTo`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`PopulatedTransaction`\> |
+| `initialize` | (`_libraryAddress`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`PopulatedTransaction`\> |
+| `owner` | (`overrides?`: `CallOverrides`) => `Promise`<`PopulatedTransaction`\> |
+| `renounceOwnership` | (`overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`PopulatedTransaction`\> |
+| `transferOwnership` | (`newOwner`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`PopulatedTransaction`\> |
+| `upgradeTo` | (`newImplementation`: `string`, `overrides?`: `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`PopulatedTransaction`\> |
+| `upgradeToAndCall` | (`newImplementation`: `string`, `data`: `BytesLike`, `overrides?`: `PayableOverrides` & { `from?`: `string` \| `Promise`<`string`\>  }) => `Promise`<`PopulatedTransaction`\> |
 | `verified` | (`identity`: `string`, `overrides?`: `CallOverrides`) => `Promise`<`PopulatedTransaction`\> |
+| `version` | (`overrides?`: `CallOverrides`) => `Promise`<`PopulatedTransaction`\> |
 
 #### Overrides
 
@@ -386,6 +429,23 @@ ___
 
 ___
 
+### initialize
+
+▸ **initialize**(`_libraryAddress`, `overrides?`): `Promise`<`ContractTransaction`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `_libraryAddress` | `string` |
+| `overrides?` | `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  } |
+
+#### Returns
+
+`Promise`<`ContractTransaction`\>
+
+___
+
 ### listeners
 
 ▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
@@ -564,6 +624,24 @@ BaseContract.once
 
 ___
 
+### owner
+
+▸ **owner**(`overrides?`): `Promise`<`string`\>
+
+Returns the address of the current owner.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `overrides?` | `CallOverrides` |
+
+#### Returns
+
+`Promise`<`string`\>
+
+___
+
 ### queryFilter
 
 ▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
@@ -681,6 +759,82 @@ BaseContract.removeListener
 
 ___
 
+### renounceOwnership
+
+▸ **renounceOwnership**(`overrides?`): `Promise`<`ContractTransaction`\>
+
+Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `overrides?` | `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  } |
+
+#### Returns
+
+`Promise`<`ContractTransaction`\>
+
+___
+
+### transferOwnership
+
+▸ **transferOwnership**(`newOwner`, `overrides?`): `Promise`<`ContractTransaction`\>
+
+Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `newOwner` | `string` |
+| `overrides?` | `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  } |
+
+#### Returns
+
+`Promise`<`ContractTransaction`\>
+
+___
+
+### upgradeTo
+
+▸ **upgradeTo**(`newImplementation`, `overrides?`): `Promise`<`ContractTransaction`\>
+
+Upgrade the implementation of the proxy to `newImplementation`. Calls {_authorizeUpgrade}. Emits an {Upgraded} event.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `newImplementation` | `string` |
+| `overrides?` | `Overrides` & { `from?`: `string` \| `Promise`<`string`\>  } |
+
+#### Returns
+
+`Promise`<`ContractTransaction`\>
+
+___
+
+### upgradeToAndCall
+
+▸ **upgradeToAndCall**(`newImplementation`, `data`, `overrides?`): `Promise`<`ContractTransaction`\>
+
+Upgrade the implementation of the proxy to `newImplementation`, and subsequently execute the function call encoded in `data`. Calls {_authorizeUpgrade}. Emits an {Upgraded} event.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `newImplementation` | `string` |
+| `data` | `BytesLike` |
+| `overrides?` | `PayableOverrides` & { `from?`: `string` \| `Promise`<`string`\>  } |
+
+#### Returns
+
+`Promise`<`ContractTransaction`\>
+
+___
+
 ### verified
 
 ▸ **verified**(`identity`, `overrides?`): `Promise`<`boolean`\>
@@ -695,3 +849,19 @@ ___
 #### Returns
 
 `Promise`<`boolean`\>
+
+___
+
+### version
+
+▸ **version**(`overrides?`): `Promise`<`string`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `overrides?` | `CallOverrides` |
+
+#### Returns
+
+`Promise`<`string`\>
