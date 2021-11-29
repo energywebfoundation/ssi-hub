@@ -31,13 +31,13 @@ export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
 
 export class ClaimHandleResult {
   isSuccessful: boolean;
-  deatils?: string;
+  details?: string;
   static Success(): ClaimHandleResult {
     return { isSuccessful: true };
   }
 
   static Failure(details: string): ClaimHandleResult {
-    return { isSuccessful: false, deatils: details };
+    return { isSuccessful: false, details: details };
   }
 }
 
@@ -73,16 +73,16 @@ export class ClaimService {
   }
 
   /**
-   * Handles claim enrollment request saving and updates.
+   * Handles claim enrolment request saving and updates.
    * @param rq IClaimRequest request
    */
-  public async handleClaimEnrollmentRequest(
+  public async handleClaimEnrolmentRequest(
     rq: IClaimRequest,
   ): Promise<ClaimHandleResult> {
     const claim: RoleClaim = await this.getById(rq.id);
     if (claim || !rq.token)
       return ClaimHandleResult.Failure(
-        'Claim Enrollment Request criteria not met',
+        'Claim Enrolment Request criteria not met',
       );
 
     const {

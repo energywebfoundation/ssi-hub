@@ -87,7 +87,7 @@ export class ClaimController {
       claimData,
     );
     if (!result.isSuccessful) {
-      throw new HttpException(result.deatils, HttpStatus.BAD_REQUEST);
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
     const { sub } = new JWT(new Keys()).decode(claimData.issuedToken);
@@ -140,11 +140,11 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
-    const result = await this.claimService.handleClaimEnrollmentRequest(
+    const result = await this.claimService.handleClaimEnrolmentRequest(
       claimData,
     );
     if (!result.isSuccessful) {
-      throw new HttpException(result.deatils, HttpStatus.BAD_REQUEST);
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
     await this.nats.publishForDids(
@@ -186,7 +186,7 @@ export class ClaimController {
       claimData,
     );
     if (!result.isSuccessful) {
-      throw new HttpException(result.deatils, HttpStatus.BAD_REQUEST);
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
     await this.nats.publishForDids(
