@@ -92,7 +92,7 @@ export class ClaimController {
 
     const { sub } = new JWT(new Keys()).decode(claimData.issuedToken);
     await this.nats.publishForDids(
-      ClaimRequestType.CREDENTIAL_ISSUED,
+      ClaimRequestType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       [claimData.requester, sub as string],
       { url: `/claim/${claimData.id}` },
@@ -190,7 +190,7 @@ export class ClaimController {
     }
 
     await this.nats.publishForDids(
-      ClaimRequestType.CREDENTIAL_REJECTED,
+      ClaimRequestType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       claimData.claimIssuer,
       { url: `/claim/${claimData.requester}` },

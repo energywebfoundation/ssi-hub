@@ -11,7 +11,7 @@ export type IMessageJob = {
 @Injectable()
 @Processor('nats-messages')
 export class NatsService {
-  natsSubjectSuffix: string;
+  natsEnvironmentName: string;
 
   constructor(
     private natsWrapper: NatsWrapper,
@@ -19,7 +19,7 @@ export class NatsService {
     @InjectQueue('nats-messages')
     private readonly messagesQueue: Queue<IMessageJob>,
   ) {
-    this.natsSubjectSuffix = this.config.get<string>('NATS_SUBJECT_SUFFIX');
+    this.natsEnvironmentName = this.config.get<string>('NATS_ENVIRONMENT_NAME');
   }
 
   public async publishForDids(
@@ -31,7 +31,7 @@ export class NatsService {
     await Promise.all(
       dids.map(did =>
         this.messagesQueue.add('message', {
-          subject: `${requestType}.${topic}.${did}.${this.natsSubjectSuffix}`,
+          subject: `${requestType}.${topic}.${did}.${this.natsEnvironmentName}`,
           data,
         }),
       ),

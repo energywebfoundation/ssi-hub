@@ -5,8 +5,8 @@ export const NATS_EXCHANGE_TOPIC = 'claim-exchange';
  */
 
 export enum ClaimRequestType {
-  CREDENTIAL_ISSUED = 'credential-issued',
-  CREDENTIAL_REJECTED = 'credential-rejected',
+  ISSUE_CREDENTIAL = 'issue-credential',
+  REJECT_CREDENTIAL = 'reject-credential',
   REQUEST_CREDENTIALS = 'request-credential',
 }
 
