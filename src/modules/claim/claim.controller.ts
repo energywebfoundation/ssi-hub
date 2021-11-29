@@ -97,6 +97,8 @@ export class ClaimController {
       [claimData.requester, sub as string],
       { url: `/claim/${claimData.id}` },
     );
+
+    this.logger.debug(`credentials issued for ${did}`);
   }
 
   @Post('/request/:did')
@@ -154,6 +156,8 @@ export class ClaimController {
       { url: `/claim/${claimData.id}` },
     );
 
+    this.logger.debug(`credentials requested from ${did}`);
+
     return claimData.id;
   }
 
@@ -195,6 +199,8 @@ export class ClaimController {
       claimData.claimIssuer,
       { url: `/claim/${claimData.requester}` },
     );
+
+    this.logger.debug(`credentials rejected for ${did}`);
   }
 
   @Delete('/:id')

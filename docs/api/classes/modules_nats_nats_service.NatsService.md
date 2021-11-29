@@ -10,7 +10,7 @@
 
 ### Properties
 
-- [natsSubjectSuffix](modules_nats_nats_service.NatsService.md#natssubjectsuffix)
+- [natsEnvironmentName](modules_nats_nats_service.NatsService.md#natsenvironmentname)
 
 ### Methods
 
@@ -33,9 +33,9 @@
 
 ## Properties
 
-### natsSubjectSuffix
+### natsEnvironmentName
 
-• **natsSubjectSuffix**: `string`
+• **natsEnvironmentName**: `string`
 
 ## Methods
 
