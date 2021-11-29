@@ -8,7 +8,6 @@ import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import request from 'supertest';
 import { Keys } from '@ew-did-registry/keys';
 import { JWT } from '@ew-did-registry/jwt';
-import { BullModule } from '@nestjs/bull';
 import { v5 } from 'uuid';
 import * as TestDbCOnfig from '../../../test/config';
 import { LoggerModule } from '../logger/logger.module';
@@ -20,7 +19,6 @@ import { IClaimRequest, RegistrationTypes } from './claim.types';
 import { NatsModule } from '../nats/nats.module';
 import { RoleService } from '../role/role.service';
 import { AssetsService } from '../assets/assets.service';
-import { ClaimProcessor } from './claim.processor';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { appConfig } from '../../common/test.utils';
 import { Claim } from './entities/claim.entity';
@@ -28,6 +26,7 @@ import { Provider } from '../../common/provider';
 import { Asset, AssetsHistory } from '../assets/assets.entity';
 import { DIDService } from '../did/did.service';
 import { Wallet } from '@ethersproject/wallet';
+import { BullModule } from '@nestjs/bull';
 
 // const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -37,7 +36,7 @@ const redisConfig = {
   password: process.env.REDIS_PASSWORD,
 };
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 describe('ClaimsController', () => {
   const jwt = new JWT(new Keys());
   let module: TestingModule;
@@ -88,19 +87,11 @@ describe('ClaimsController', () => {
     };
 
     didMock.mockReturnValueOnce(requester);
+
     await testHttpServer
       .post(`/v1/claim/request/${requester}`)
       .send(claimRequest)
       .expect(201);
-
-    await new Promise(resolve =>
-      jest.spyOn(service, 'create').mockImplementationOnce(claimDto =>
-        service.create(claimDto).then(claim => {
-          resolve(claim);
-          return claim;
-        }),
-      ),
-    );
 
     return { id, token };
   };
@@ -108,12 +99,10 @@ describe('ClaimsController', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
+        BullModule.forRoot({ redis: redisConfig }),
+
         TypeOrmModule.forRoot(TestDbCOnfig.default as TypeOrmModuleOptions),
         TypeOrmModule.forFeature([RoleClaim, Claim, Asset, AssetsHistory]),
-        BullModule.registerQueue({
-          name: 'claims',
-          redis: redisConfig,
-        }),
         NatsModule,
         LoggerModule,
         ConfigModule.forRoot({
@@ -127,7 +116,6 @@ describe('ClaimsController', () => {
         { provide: RoleService, useValue: MockRoleService },
         { provide: DIDService, useValue: {} },
         AssetsService,
-        ClaimProcessor,
         Provider,
         EventEmitter2,
         SchedulerRegistry,
@@ -156,11 +144,11 @@ describe('ClaimsController', () => {
   });
 
   afterEach(async () => {
-    await queryRunner.rollbackTransaction();
+    await queryRunner?.rollbackTransaction();
     await app.close();
   });
 
-  it('getBySubject() should return claim requested for subject', async () => {
+  it.only('getBySubject() should return claim requested for subject', async () => {
     const claimType = 'myRole.roles.myApp.apps.myOrg.iam.ewc';
     const claimTypeVersion = '1';
     const requester = `did:ethr:requester`;

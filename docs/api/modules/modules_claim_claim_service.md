@@ -4,6 +4,7 @@
 
 ### Classes
 
+- [ClaimHandleResult](../classes/modules_claim_claim_service.ClaimHandleResult.md)
 - [ClaimService](../classes/modules_claim_claim_service.ClaimService.md)
 
 ### Variables

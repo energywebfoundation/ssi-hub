@@ -1,4 +1,10 @@
-export const NATS_EXCHANGE_TOPIC = 'claim.exchange';
+export const NATS_EXCHANGE_TOPIC = 'claim-exchange';
+
+export enum ClaimRequestType {
+  CLAIM_ISSUANCE = 'credential-issued',
+  CLAIM_REJECTION = 'credential-rejected',
+  CLAIM_ENROLMENT_REQUEST = 'request-credential',
+}
 
 export interface IMessage {
   id: string;
@@ -14,6 +20,7 @@ export interface IClaimRequest extends IMessage {
 
 export interface IClaimIssuance extends IMessage {
   issuedToken?: string;
+  onChainProof?: string;
   acceptedBy: string;
 }
 

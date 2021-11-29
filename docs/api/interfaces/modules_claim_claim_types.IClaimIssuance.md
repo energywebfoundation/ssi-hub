@@ -20,6 +20,7 @@
 - [claimIssuer](modules_claim_claim_types.IClaimIssuance.md#claimissuer)
 - [id](modules_claim_claim_types.IClaimIssuance.md#id)
 - [issuedToken](modules_claim_claim_types.IClaimIssuance.md#issuedtoken)
+- [onChainProof](modules_claim_claim_types.IClaimIssuance.md#onchainproof)
 - [requester](modules_claim_claim_types.IClaimIssuance.md#requester)
 
 ## Properties
@@ -53,6 +54,12 @@ ___
 ### issuedToken
 
 • `Optional` **issuedToken**: `string`
+
+___
+
+### onChainProof
+
+• `Optional` **onChainProof**: `string`
 
 ___
 
