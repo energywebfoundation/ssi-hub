@@ -148,7 +148,7 @@ describe('ClaimsController', () => {
     await app.close();
   });
 
-  it.only('getBySubject() should return claim requested for subject', async () => {
+  it('getBySubject() should return claim requested for subject', async () => {
     const claimType = 'myRole.roles.myApp.apps.myOrg.iam.ewc';
     const claimTypeVersion = '1';
     const requester = `did:ethr:requester`;

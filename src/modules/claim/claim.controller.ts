@@ -87,12 +87,12 @@ export class ClaimController {
       claimData,
     );
     if (!result.isSuccessful) {
-      throw new HttpException(result.deatils, HttpStatus.BAD_REQUEST);
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
     const { sub } = new JWT(new Keys()).decode(claimData.issuedToken);
     await this.nats.publishForDids(
-      ClaimRequestType.CLAIM_ISSUANCE,
+      ClaimRequestType.CREDENTIAL_ISSUED,
       NATS_EXCHANGE_TOPIC,
       [claimData.requester, sub as string],
       { url: `/claim/${claimData.id}` },
@@ -140,15 +140,15 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
-    const result = await this.claimService.handleClaimEnrollmentRequest(
+    const result = await this.claimService.handleClaimEnrolmentRequest(
       claimData,
     );
     if (!result.isSuccessful) {
-      throw new HttpException(result.deatils, HttpStatus.BAD_REQUEST);
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
     await this.nats.publishForDids(
-      ClaimRequestType.CLAIM_ENROLMENT_REQUEST,
+      ClaimRequestType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
       claimData.claimIssuer,
       { url: `/claim/${claimData.id}` },
@@ -186,11 +186,11 @@ export class ClaimController {
       claimData,
     );
     if (!result.isSuccessful) {
-      throw new HttpException(result.deatils, HttpStatus.BAD_REQUEST);
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
     await this.nats.publishForDids(
-      ClaimRequestType.CLAIM_REJECTION,
+      ClaimRequestType.CREDENTIAL_REJECTED,
       NATS_EXCHANGE_TOPIC,
       claimData.claimIssuer,
       { url: `/claim/${claimData.requester}` },

@@ -10,7 +10,7 @@
 
 ### Properties
 
-- [deatils](modules_claim_claim_service.ClaimHandleResult.md#deatils)
+- [details](modules_claim_claim_service.ClaimHandleResult.md#details)
 - [isSuccessful](modules_claim_claim_service.ClaimHandleResult.md#issuccessful)
 
 ### Methods
@@ -26,9 +26,9 @@
 
 ## Properties
 
-### deatils
+### details
 
-• `Optional` **deatils**: `string`
+• `Optional` **details**: `string`
 
 ___
 

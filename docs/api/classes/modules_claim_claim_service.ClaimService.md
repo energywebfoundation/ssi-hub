@@ -21,7 +21,7 @@
 - [getByUserDid](modules_claim_claim_service.ClaimService.md#getbyuserdid)
 - [getDidOfClaimsOfNamespace](modules_claim_claim_service.ClaimService.md#getdidofclaimsofnamespace)
 - [getIssuedClaimsBySubjects](modules_claim_claim_service.ClaimService.md#getissuedclaimsbysubjects)
-- [handleClaimEnrollmentRequest](modules_claim_claim_service.ClaimService.md#handleclaimenrollmentrequest)
+- [handleClaimEnrolmentRequest](modules_claim_claim_service.ClaimService.md#handleclaimenrolmentrequest)
 - [handleClaimIssuanceRequest](modules_claim_claim_service.ClaimService.md#handleclaimissuancerequest)
 - [handleClaimRejectionRequest](modules_claim_claim_service.ClaimService.md#handleclaimrejectionrequest)
 - [issue](modules_claim_claim_service.ClaimService.md#issue)
@@ -264,11 +264,11 @@ Save issued claim
 
 ___
 
-### handleClaimEnrollmentRequest
+### handleClaimEnrolmentRequest
 
-▸ **handleClaimEnrollmentRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+▸ **handleClaimEnrolmentRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
 
-Handles claim enrollment request saving and updates.
+Handles claim enrolment request saving and updates.
 
 #### Parameters
 

@@ -31,13 +31,13 @@ export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
 
 export class ClaimHandleResult {
   isSuccessful: boolean;
-  deatils?: string;
+  details?: string;
   static Success(): ClaimHandleResult {
     return { isSuccessful: true };
   }
 
   static Failure(details: string): ClaimHandleResult {
-    return { isSuccessful: false, deatils: details };
+    return { isSuccessful: false, details: details };
   }
 }
 
@@ -73,17 +73,15 @@ export class ClaimService {
   }
 
   /**
-   * Handles claim enrollment request saving and updates.
+   * Handles claim enrolment request saving and updates.
    * @param rq IClaimRequest request
    */
-  public async handleClaimEnrollmentRequest(
+  public async handleClaimEnrolmentRequest(
     rq: IClaimRequest,
   ): Promise<ClaimHandleResult> {
     const claim: RoleClaim = await this.getById(rq.id);
     if (claim || !rq.token)
-      return ClaimHandleResult.Failure(
-        'Claim Enrollment Request criteria not met',
-      );
+      return ClaimHandleResult.Failure('credential request criteria not met');
 
     const {
       claimData: { claimType, claimTypeVersion },
@@ -139,7 +137,7 @@ export class ClaimService {
       const dto = await ClaimIssueDTO.create(rq);
       await this.issue(dto);
     } else {
-      return ClaimHandleResult.Failure('Non of claim issuance criteria met');
+      return ClaimHandleResult.Failure('claim issuance criteria not met');
     }
     return ClaimHandleResult.Success();
   }
@@ -153,7 +151,7 @@ export class ClaimService {
   ): Promise<ClaimHandleResult> {
     const claim: RoleClaim = await this.getById(rq.id);
     if (!claim || claim.isAccepted || !rq.isRejected)
-      return ClaimHandleResult.Failure('Claim rejection criteria not met');
+      return ClaimHandleResult.Failure('claim rejection criteria not met');
 
     const dto = await ClaimRejectionDTO.create(rq);
     await this.reject(dto.id);

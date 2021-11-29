@@ -1,9 +1,13 @@
 export const NATS_EXCHANGE_TOPIC = 'claim-exchange';
 
+/**
+ * Types inspired by Aries Issue-Credential protocol {@link https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md}
+ */
+
 export enum ClaimRequestType {
-  CLAIM_ISSUANCE = 'credential-issued',
-  CLAIM_REJECTION = 'credential-rejected',
-  CLAIM_ENROLMENT_REQUEST = 'request-credential',
+  CREDENTIAL_ISSUED = 'credential-issued',
+  CREDENTIAL_REJECTED = 'credential-rejected',
+  REQUEST_CREDENTIALS = 'request-credential',
 }
 
 export interface IMessage {
