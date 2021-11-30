@@ -21,7 +21,9 @@
 - [getByUserDid](modules_claim_claim_service.ClaimService.md#getbyuserdid)
 - [getDidOfClaimsOfNamespace](modules_claim_claim_service.ClaimService.md#getdidofclaimsofnamespace)
 - [getIssuedClaimsBySubjects](modules_claim_claim_service.ClaimService.md#getissuedclaimsbysubjects)
-- [handleExchangeMessage](modules_claim_claim_service.ClaimService.md#handleexchangemessage)
+- [handleClaimEnrolmentRequest](modules_claim_claim_service.ClaimService.md#handleclaimenrolmentrequest)
+- [handleClaimIssuanceRequest](modules_claim_claim_service.ClaimService.md#handleclaimissuancerequest)
+- [handleClaimRejectionRequest](modules_claim_claim_service.ClaimService.md#handleclaimrejectionrequest)
 - [issue](modules_claim_claim_service.ClaimService.md#issue)
 - [reject](modules_claim_claim_service.ClaimService.md#reject)
 - [removeById](modules_claim_claim_service.ClaimService.md#removebyid)
@@ -33,7 +35,7 @@
 
 ### constructor
 
-• **new ClaimService**(`roleService`, `logger`, `roleClaimRepository`, `claimRepository`, `assetService`, `claimQueue`, `nats`)
+• **new ClaimService**(`roleService`, `logger`, `roleClaimRepository`, `claimRepository`, `assetService`)
 
 #### Parameters
 
@@ -44,8 +46,6 @@
 | `roleClaimRepository` | `Repository`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\> |
 | `claimRepository` | `Repository`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)\> |
 | `assetService` | [`AssetsService`](modules_assets_assets_service.AssetsService.md) |
-| `claimQueue` | `Queue`<`string`\> |
-| `nats` | [`NatsService`](modules_nats_nats_service.NatsService.md) |
 
 ## Methods
 
@@ -264,21 +264,58 @@ Save issued claim
 
 ___
 
-### handleExchangeMessage
+### handleClaimEnrolmentRequest
 
-▸ **handleExchangeMessage**(`data`): `Promise`<`string`\>
+▸ **handleClaimEnrolmentRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
 
-Handles claims saving and updates
+Handles claim enrolment request saving and updates.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `data` | [`IClaimIssuance`](../interfaces/modules_claim_claim_types.IClaimIssuance.md) \| [`IClaimRequest`](../interfaces/modules_claim_claim_types.IClaimRequest.md) \| [`IClaimRejection`](../interfaces/modules_claim_claim_types.IClaimRejection.md) | Raw claim data |
+| `rq` | [`IClaimRequest`](../interfaces/modules_claim_claim_types.IClaimRequest.md) | IClaimRequest request |
 
 #### Returns
 
-`Promise`<`string`\>
+`Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+
+___
+
+### handleClaimIssuanceRequest
+
+▸ **handleClaimIssuanceRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+
+Handles claim issuance request saving and updates.
+Two scenarios are handled - issue requested claim and issue not-requested claim
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `rq` | [`IClaimIssuance`](../interfaces/modules_claim_claim_types.IClaimIssuance.md) | IClaimIssuance request |
+
+#### Returns
+
+`Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+
+___
+
+### handleClaimRejectionRequest
+
+▸ **handleClaimRejectionRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+
+Handles claim rejection request saving and updates.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `rq` | [`IClaimRejection`](../interfaces/modules_claim_claim_types.IClaimRejection.md) | IClaimRejection request |
+
+#### Returns
+
+`Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
 
 ___
 

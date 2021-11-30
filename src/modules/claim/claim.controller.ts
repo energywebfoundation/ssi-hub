@@ -24,12 +24,12 @@ import {
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
 import {
+  ClaimRequestType,
   IClaimIssuance,
   IClaimRejection,
   IClaimRequest,
   NATS_EXCHANGE_TOPIC,
 } from './claim.types';
-import { NatsService } from '../nats/nats.service';
 import { validateOrReject } from 'class-validator';
 import {
   ClaimIssueDTO,
@@ -45,6 +45,7 @@ import { BooleanPipe } from '../../common/boolean.pipe';
 import { AssetsService } from '../assets/assets.service';
 import { DIDsQuery } from './entities/roleClaim.entity';
 import { RoleDTO } from '../role/role.dto';
+import { NatsService } from '../nats/nats.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -52,9 +53,9 @@ import { RoleDTO } from '../role/role.dto';
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
-    private readonly nats: NatsService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
+    private readonly nats: NatsService,
   ) {
     this.logger.setContext(ClaimController.name);
   }
@@ -82,15 +83,22 @@ export class ClaimController {
     const claimDTO = ClaimIssueDTO.create(claimData);
 
     await validateOrReject(claimDTO);
-
-    const { sub } = new JWT(new Keys()).decode(data.issuedToken);
-
-    const payload = JSON.stringify(claimData);
-    this.nats.connection.publish(
-      `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
-      payload,
+    const result = await this.claimService.handleClaimIssuanceRequest(
+      claimData,
     );
-    this.nats.connection.publish(`${sub}.${NATS_EXCHANGE_TOPIC}`, payload);
+    if (!result.isSuccessful) {
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
+    }
+
+    const { sub } = new JWT(new Keys()).decode(claimData.issuedToken);
+    await this.nats.publishForDids(
+      ClaimRequestType.ISSUE_CREDENTIAL,
+      NATS_EXCHANGE_TOPIC,
+      [claimData.requester, sub as string],
+      { url: `/claim/${claimData.id}` },
+    );
+
+    this.logger.debug(`credentials issued for ${did}`);
   }
 
   @Post('/request/:did')
@@ -134,14 +142,22 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
-    const payload = JSON.stringify(claimData);
-    this.logger.debug(`publishing claims request ${payload} from ${did}`);
-    data.claimIssuer.map(issuerDid => {
-      this.nats.connection.publish(
-        `${issuerDid}.${NATS_EXCHANGE_TOPIC}`,
-        payload,
-      );
-    });
+    const result = await this.claimService.handleClaimEnrolmentRequest(
+      claimData,
+    );
+    if (!result.isSuccessful) {
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
+    }
+
+    await this.nats.publishForDids(
+      ClaimRequestType.REQUEST_CREDENTIALS,
+      NATS_EXCHANGE_TOPIC,
+      claimData.claimIssuer,
+      { url: `/claim/${claimData.id}` },
+    );
+
+    this.logger.debug(`credentials requested from ${did}`);
+
     return claimData.id;
   }
 
@@ -170,12 +186,21 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
-    const payload = JSON.stringify(claimData);
-    this.logger.debug(`publishing claims rejection ${payload} from ${did}`);
-    this.nats.connection.publish(
-      `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
-      payload,
+    const result = await this.claimService.handleClaimRejectionRequest(
+      claimData,
     );
+    if (!result.isSuccessful) {
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
+    }
+
+    await this.nats.publishForDids(
+      ClaimRequestType.REJECT_CREDENTIAL,
+      NATS_EXCHANGE_TOPIC,
+      claimData.claimIssuer,
+      { url: `/claim/${claimData.requester}` },
+    );
+
+    this.logger.debug(`credentials rejected for ${did}`);
   }
 
   @Delete('/:id')

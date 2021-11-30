@@ -4,6 +4,7 @@
 
 ### Enumerations
 
+- [ClaimRequestType](../enums/modules_claim_claim_types.ClaimRequestType.md)
 - [RegistrationTypes](../enums/modules_claim_claim_types.RegistrationTypes.md)
 
 ### Interfaces
@@ -41,4 +42,4 @@
 
 ### NATS\_EXCHANGE\_TOPIC
 
-• **NATS\_EXCHANGE\_TOPIC**: ``"claim.exchange"``
+• **NATS\_EXCHANGE\_TOPIC**: ``"claim-exchange"``

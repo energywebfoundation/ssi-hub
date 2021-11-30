@@ -4,7 +4,6 @@ import {
   IClaimRejection,
   IClaimRequest,
   DecodedClaimToken,
-  NATS_EXCHANGE_TOPIC,
 } from './claim.types';
 import { RoleService } from '../role/role.service';
 import { Logger } from '../logger/logger.service';
@@ -19,9 +18,6 @@ import { Claim } from './entities/claim.entity';
 import { RoleClaim } from './entities/roleClaim.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { NatsService } from '../nats/nats.service';
 import jwt from 'jsonwebtoken';
 import { v5 } from 'uuid';
 import { AssetsService } from '../assets/assets.service';
@@ -33,6 +29,18 @@ interface QueryFilters {
 
 export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
 
+export class ClaimHandleResult {
+  isSuccessful: boolean;
+  details?: string;
+  static Success(): ClaimHandleResult {
+    return { isSuccessful: true };
+  }
+
+  static Failure(details: string): ClaimHandleResult {
+    return { isSuccessful: false, details: details };
+  }
+}
+
 @Injectable()
 export class ClaimService {
   constructor(
@@ -43,24 +51,8 @@ export class ClaimService {
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
     private readonly assetService: AssetsService,
-    @InjectQueue('claims') private readonly claimQueue: Queue<string>,
-    private readonly nats: NatsService,
   ) {
     this.logger.setContext(ClaimService.name);
-    this.initializeExchangeListener();
-  }
-
-  private initializeExchangeListener() {
-    this.nats.connection.subscribe(
-      `*.${NATS_EXCHANGE_TOPIC}`,
-      {
-        queue: 'iam_cache_server_exchange_topic',
-      },
-      async data => {
-        this.logger.debug(`Got message ${data}`);
-        await this.claimQueue.add('save', data);
-      },
-    );
   }
 
   /**
@@ -81,71 +73,89 @@ export class ClaimService {
   }
 
   /**
-   * Handles claims saving and updates
-   * @param data Raw claim data
+   * Handles claim enrolment request saving and updates.
+   * @param rq IClaimRequest request
    */
-  public async handleExchangeMessage(
-    data: IClaimIssuance | IClaimRejection | IClaimRequest,
-  ): Promise<string> {
-    try {
-      const claim: RoleClaim = await this.getById(data.id);
-      if (!claim && 'token' in data) {
-        const {
-          claimData: { claimType, claimTypeVersion },
-        } = jwt.decode(data.token) as DecodedClaimToken;
+  public async handleClaimEnrolmentRequest(
+    rq: IClaimRequest,
+  ): Promise<ClaimHandleResult> {
+    const claim: RoleClaim = await this.getById(rq.id);
+    if (claim || !rq.token)
+      return ClaimHandleResult.Failure('credential request criteria not met');
 
-        const dto = await ClaimRequestDTO.create({
-          ...data,
-          claimType,
-          claimTypeVersion,
-        });
+    const {
+      claimData: { claimType, claimTypeVersion },
+    } = jwt.decode(rq.token) as DecodedClaimToken;
 
-        await this.roleService.verifyEnrolmentPrecondition({
-          claimType,
-          userDID: dto.requester,
-        });
+    const dto = await ClaimRequestDTO.create({
+      ...rq,
+      claimType,
+      claimTypeVersion,
+    });
 
-        await this.create(dto);
-        return;
-      }
-      if (!claim && 'issuedToken' in data) {
-        const {
-          claimData: { claimType, claimTypeVersion },
-        } = jwt.decode(data.issuedToken) as DecodedClaimToken;
+    await this.roleService.verifyEnrolmentPrecondition({
+      claimType,
+      userDID: dto.requester,
+    });
 
-        const dto = await NewClaimIssueDTO.create({
-          ...data,
-          claimType,
-          claimTypeVersion,
-        });
+    await this.create(dto);
 
-        await this.roleService.verifyEnrolmentPrecondition({
-          claimType,
-          userDID: dto.requester,
-        });
+    return ClaimHandleResult.Success();
+  }
 
-        await this.createAndIssue(dto);
-        return;
-      }
-      if (claim && !claim.isAccepted && 'isRejected' in data) {
-        const dto = await ClaimRejectionDTO.create(data);
+  /**
+   * Handles claim issuance request saving and updates.
+   * Two scenarios are handled - issue requested claim and issue not-requested claim
+   * @param rq IClaimIssuance request
+   */
+  public async handleClaimIssuanceRequest(
+    rq: IClaimIssuance,
+  ): Promise<ClaimHandleResult> {
+    const claim: RoleClaim = await this.getById(rq.id);
+    const {
+      claimData: { claimType, claimTypeVersion },
+    } = jwt.decode(rq.issuedToken) as DecodedClaimToken;
 
-        await this.reject(dto.id);
-        return;
-      }
+    if (!claim && rq.issuedToken) {
+      const dto = await NewClaimIssueDTO.create({
+        ...rq,
+        claimType,
+        claimTypeVersion,
+      });
 
-      if (
-        (claim && !claim.isRejected && 'issuedToken' in data) ||
-        'onChainProof' in data
-      ) {
-        const dto = await ClaimIssueDTO.create(data);
+      await this.roleService.verifyEnrolmentPrecondition({
+        claimType,
+        userDID: dto.requester,
+      });
 
-        await this.issue(dto);
-        return;
-      }
-    } catch (err) {
-      this.logger.error(err);
+      await this.createAndIssue(dto);
+    } else if (
+      claim &&
+      !claim.isRejected &&
+      (rq.issuedToken || rq.onChainProof)
+    ) {
+      const dto = await ClaimIssueDTO.create(rq);
+      await this.issue(dto);
+    } else {
+      return ClaimHandleResult.Failure('claim issuance criteria not met');
     }
+    return ClaimHandleResult.Success();
+  }
+
+  /**
+   * Handles claim rejection request saving and updates.
+   * @param rq IClaimRejection request
+   */
+  public async handleClaimRejectionRequest(
+    rq: IClaimRejection,
+  ): Promise<ClaimHandleResult> {
+    const claim: RoleClaim = await this.getById(rq.id);
+    if (!claim || claim.isAccepted || !rq.isRejected)
+      return ClaimHandleResult.Failure('claim rejection criteria not met');
+
+    const dto = await ClaimRejectionDTO.create(rq);
+    await this.reject(dto.id);
+    return ClaimHandleResult.Success();
   }
 
   /**

@@ -72,6 +72,10 @@ ___
 
 • `Optional` **onChainProof**: `string`
 
+#### Implementation of
+
+[IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[onChainProof](../interfaces/modules_claim_claim_types.IClaimIssuance.md#onchainproof)
+
 ___
 
 ### requester
