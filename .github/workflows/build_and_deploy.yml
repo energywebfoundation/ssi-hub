@@ -1,0 +1,91 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ develop, master ]
+  workflow_dispatch:
+
+jobs:
+  cancel-previous:
+    name: 'Cancel Previous Runs'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
+
+  unique_id:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate unique id
+        id: unique_id
+        run: echo "::set-output name=id::$(uuidgen)"
+    outputs:
+      unique_id: ${{ steps.unique_id.outputs.id }}
+  env_name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get GHA environment name
+        id: env_name
+        run: |
+          echo "Running on branch ${{ github.ref }}"
+          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "::set-output name=env_name::dev"
+          elif [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "::set-output name=env_name::staging"
+          fi
+      - name: Use specified environment secrets from previous step
+        run: echo "Environment secrets set name ${{ steps.env_name.outputs.env_name }}"
+    outputs:
+      env_name: ${{ steps.env_name.outputs.env_name }}
+
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    needs: [cancel-previous, unique_id, env_name]
+    environment:
+      name: ${{ needs.env_name.outputs.env_name }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get the tag version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build & push docker images
+        env:
+          BUILD_ID: ${{needs.unique_id.outputs.unique_id}}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/ics-api:$BUILD_ID -f docker/prod/Dockerfile .
+          docker push $ECR_REGISTRY/ics-api:$BUILD_ID
+          docker build -t $ECR_REGISTRY/ics-api:latest -f docker/prod/Dockerfile .
+          docker push $ECR_REGISTRY/ics-api:latest
+
+      - name: Logout of Amazon ECR
+        if: always()
+        run: docker logout ${{ steps.login-ecr.outputs.registry }}
+
+      - name: ArgoCD login
+        uses: clowdhaus/argo-cd-action/@main
+        id: argocd_login
+        with:
+          command: login ${{ secrets.ARGOCD_URL }}
+          options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
+
+      - name: ArgoCD overvrite values.yaml
+        uses: clowdhaus/argo-cd-action/@main
+        id: argocd_image_tag_overwrite
+        with:
+          command: app set iam-cache-server
+          options: -p image.tag=${{needs.unique_id.outputs.unique_id}}
