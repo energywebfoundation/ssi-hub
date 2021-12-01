@@ -95,7 +95,7 @@ export class ClaimController {
       ClaimRequestType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       [claimData.requester, sub as string],
-      { url: `/claim/${claimData.id}` },
+      { claimId: claimData.id, url: `/claim/${claimData.requester}` },
     );
 
     this.logger.debug(`credentials issued for ${did}`);
@@ -153,7 +153,7 @@ export class ClaimController {
       ClaimRequestType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
       claimData.claimIssuer,
-      { url: `/claim/${claimData.id}` },
+      { claimId: claimData.id, url: `/claim/${claimData.id}` },
     );
 
     this.logger.debug(`credentials requested from ${did}`);
@@ -197,7 +197,7 @@ export class ClaimController {
       ClaimRequestType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       claimData.claimIssuer,
-      { url: `/claim/${claimData.requester}` },
+      { claimId: claimData.id, url: `/claim/${claimData.requester}` },
     );
 
     this.logger.debug(`credentials rejected for ${did}`);
