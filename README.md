@@ -136,3 +136,12 @@ In case if commit got interrupted (i.e. failed tests, failed eslint etc.) you ca
   
 In this case you need to initialize commitizen locally  
 `$ commitizen init cz-conventional-changelog --save-dev --save-exact`
+
+### Connection pooling
+
+To calculate maximum number of connections use following formula:  
+`{DBInstanceClassMemory/12582880}` - for example t2.micro has 512 MB RAM so maximum connections will be `(512*1024*1024)/12582880 ~= 40,`  
+
+Then divide maximum connections number by number of maximum amount of IAM Cache Server instances.  
+If you are going to host 4 instances of ICS then `DB_MAXIMUM_CONNECTION_POOL` should be `40/4=10`  
+
