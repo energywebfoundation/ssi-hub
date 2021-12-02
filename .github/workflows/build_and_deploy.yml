@@ -84,7 +84,7 @@ jobs:
           options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
 
       - name: ArgoCD overvrite values.yaml
-        uses: clowdhaus/argo-cd-action/@main
+        uses: clowdhaus/argo-cd-action/@v1.4.2
         id: argocd_image_tag_overwrite
         with:
           command: app set iam-cache-server
