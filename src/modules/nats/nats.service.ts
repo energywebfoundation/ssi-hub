@@ -32,7 +32,7 @@ export class NatsService {
       dids.map(did =>
         this.messagesQueue.add('message', {
           subject: `${requestType}.${topic}.${did}.${this.natsEnvironmentName}`,
-          data,
+          data: { type: requestType, ...data },
         }),
       ),
     );
