@@ -38,9 +38,9 @@ export class DIDController {
     const did = new DID(id);
 
     if (did.method !== 'ethr') {
-      return this.didService.getDIDDocumentFromUniversalResolver(did.id);
+      return this.didService.getDIDDocumentFromUniversalResolver(did.did);
     }
 
-    return this.didService.getById(did.id);
+    return this.didService.getById(did.did);
   }
 }
