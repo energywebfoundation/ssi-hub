@@ -24,7 +24,7 @@ import {
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
 import {
-  ClaimRequestType,
+  ClaimEventType,
   IClaimIssuance,
   IClaimRejection,
   IClaimRequest,
@@ -92,10 +92,10 @@ export class ClaimController {
 
     const { sub } = new JWT(new Keys()).decode(claimData.issuedToken);
     await this.nats.publishForDids(
-      ClaimRequestType.ISSUE_CREDENTIAL,
+      ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       [claimData.requester, sub as string],
-      { claimId: claimData.id, url: `/claim/${claimData.requester}` },
+      { claimId: claimData.id },
     );
 
     this.logger.debug(`credentials issued for ${did}`);
@@ -150,10 +150,10 @@ export class ClaimController {
     }
 
     await this.nats.publishForDids(
-      ClaimRequestType.REQUEST_CREDENTIALS,
+      ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
       claimData.claimIssuer,
-      { claimId: claimData.id, url: `/claim/${claimData.id}` },
+      { claimId: claimData.id },
     );
 
     this.logger.debug(`credentials requested from ${did}`);
@@ -194,10 +194,10 @@ export class ClaimController {
     }
 
     await this.nats.publishForDids(
-      ClaimRequestType.REJECT_CREDENTIAL,
+      ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       claimData.claimIssuer,
-      { claimId: claimData.id, url: `/claim/${claimData.requester}` },
+      { claimId: claimData.id },
     );
 
     this.logger.debug(`credentials rejected for ${did}`);
