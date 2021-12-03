@@ -4,7 +4,7 @@
 
 ### Enumerations
 
-- [ClaimRequestType](../enums/modules_claim_claim_types.ClaimRequestType.md)
+- [ClaimEventType](../enums/modules_claim_claim_types.ClaimEventType.md)
 - [RegistrationTypes](../enums/modules_claim_claim_types.RegistrationTypes.md)
 
 ### Interfaces
