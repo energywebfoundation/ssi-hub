@@ -1,6 +1,6 @@
-# Enumeration: ClaimRequestType
+# Enumeration: ClaimEventType
 
-[modules/claim/claim.types](../modules/modules_claim_claim_types.md).ClaimRequestType
+[modules/claim/claim.types](../modules/modules_claim_claim_types.md).ClaimEventType
 
 Types inspired by Aries Issue-Credential protocol [https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md](https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md)
 
@@ -8,9 +8,9 @@ Types inspired by Aries Issue-Credential protocol [https://github.com/hyperledge
 
 ### Enumeration members
 
-- [ISSUE_CREDENTIAL](modules_claim_claim_types.ClaimRequestType.md#issue_credential)
-- [REJECT_CREDENTIAL](modules_claim_claim_types.ClaimRequestType.md#reject_credential)
-- [REQUEST_CREDENTIALS](modules_claim_claim_types.ClaimRequestType.md#request_credentials)
+- [ISSUE_CREDENTIAL](modules_claim_claim_types.ClaimEventType.md#issue_credential)
+- [REJECT_CREDENTIAL](modules_claim_claim_types.ClaimEventType.md#reject_credential)
+- [REQUEST_CREDENTIALS](modules_claim_claim_types.ClaimEventType.md#request_credentials)
 
 ## Enumeration members
 

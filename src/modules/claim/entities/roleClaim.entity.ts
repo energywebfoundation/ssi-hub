@@ -1,10 +1,10 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
-import { IRoleClaim, RegistrationTypes } from '../claim.types';
 import { IsArray } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
+import { IRoleClaim, RegistrationTypes } from '../claim.types';
 
 @ObjectType()
 @Entity({ name: 'role_claim' })
@@ -12,7 +12,7 @@ export class RoleClaim implements IRoleClaim {
   static create(data: Partial<RoleClaim>): RoleClaim {
     const entity = new RoleClaim();
     const jwt = new JWT(new Keys());
-    data.subject = jwt.decode(data.token).sub as string;
+    data.subject = (jwt.decode(data.token) as { sub: string }).sub;
     Object.assign(entity, data);
     return entity;
   }

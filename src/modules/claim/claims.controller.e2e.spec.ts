@@ -46,8 +46,12 @@ describe('ClaimsController', () => {
   let app: INestApplication;
   let service: ClaimService;
 
+  const randomDID = () => {
+    return `did:ethr:volta:${Wallet.createRandom().address}`;
+  };
+
   const didMock = jest.fn(
-    () => 'did:ethr:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
+    () => 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
   );
   const isAuthorizeMock = jest.fn(() => true);
 
@@ -70,7 +74,7 @@ describe('ClaimsController', () => {
     claimType,
     claimTypeVersion,
     requester,
-    issuer = Wallet.createRandom().address,
+    issuer = randomDID(),
   }) => {
     const token = await jwt.sign(
       { claimData: { claimType, claimTypeVersion } },
@@ -151,7 +155,7 @@ describe('ClaimsController', () => {
   it('getBySubject() should return claim requested for subject', async () => {
     const claimType = 'myRole.roles.myApp.apps.myOrg.iam.ewc';
     const claimTypeVersion = '1';
-    const requester = `did:ethr:requester`;
+    const requester = randomDID();
     const registrationTypes = [RegistrationTypes.OffChain];
     const { id, token } = await addClaim({
       claimType,
@@ -182,7 +186,7 @@ describe('ClaimsController', () => {
   it('should save issuedToken and fetch it by subject', async () => {
     const claimType = 'myRole.roles.myApp.apps.myOrg.iam.ewc';
     const claimTypeVersion = '1';
-    const requester = `did:ethr:requester`;
+    const requester = randomDID();
     const token = await jwt.sign(
       { claimData: { claimType, claimTypeVersion } },
       { subject: requester },
@@ -200,14 +204,14 @@ describe('ClaimsController', () => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
         expect(res.body[0].issuedToken).toEqual(token);
-        expect(res.body[0].issuedAt).toHaveLength(10);
+        expect(res.body[0].issuedAt).not.toBeNaN();
         expect(res.body[0].subject).toEqual(requester);
       });
   });
 
   it('`/user/:did` should return only claim related to authenticated user', async () => {
-    const requester = Wallet.createRandom().address;
-    const foreignRequester = Wallet.createRandom().address;
+    const requester = randomDID();
+    const foreignRequester = randomDID();
     const [ownedClaim] = await Promise.all([
       addClaim({
         claimType: 'myRole.roles.myOrg.iam.ewc',
@@ -250,8 +254,8 @@ describe('ClaimsController', () => {
   });
 
   it('`/issuer/:did` should return claims requested by authenticated user', async () => {
-    const requester = Wallet.createRandom().address;
-    const issuer = Wallet.createRandom().address;
+    const requester = randomDID();
+    const issuer = randomDID();
     const claims = await Promise.all([
       addClaim({
         claimType: 'myRole.roles.myOrg.iam.ewc',
@@ -307,8 +311,8 @@ describe('ClaimsController', () => {
   });
 
   it('`/requester/:did` should return only claims requested by authenticated user', async () => {
-    const requester = Wallet.createRandom().address;
-    const foreignRequester = Wallet.createRandom().address;
+    const requester = randomDID();
+    const foreignRequester = randomDID();
     const [ownedClaim] = await Promise.all([
       addClaim({
         claimType: 'myRole.roles.myOrg.iam.ewc',
@@ -351,8 +355,8 @@ describe('ClaimsController', () => {
   });
 
   it('`/subject/:did` should return only claim related to authenticated user', async () => {
-    const requester = Wallet.createRandom().address;
-    const foreignRequester = Wallet.createRandom().address;
+    const requester = randomDID();
+    const foreignRequester = randomDID();
     const [ownedClaim] = await Promise.all([
       addClaim({
         claimType: 'myRole.roles.myOrg.iam.ewc',
@@ -395,8 +399,8 @@ describe('ClaimsController', () => {
   });
 
   it('`/by/subjects` should return only claim related to authenticated user', async () => {
-    const requester = Wallet.createRandom().address;
-    const foreignRequester = Wallet.createRandom().address;
+    const requester = randomDID();
+    const foreignRequester = randomDID();
     const [ownedClaim] = await Promise.all([
       addClaim({
         claimType: 'myRole.roles.myOrg.iam.ewc',

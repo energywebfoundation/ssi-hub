@@ -31,7 +31,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `StakingPoolLaunched(bytes32,address)` | `any` |
+| `StakingPoolLaunched(bytes32,address)` | `EventFragment` |
 
 #### Overrides
 
@@ -47,11 +47,11 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `isPool(address)` | `any` |
-| `launchStakingPool(bytes32,uint256,uint256,bytes32[])` | `any` |
-| `orgsList()` | `any` |
-| `rewardPool()` | `any` |
-| `services(bytes32)` | `any` |
+| `isPool(address)` | `FunctionFragment` |
+| `launchStakingPool(bytes32,uint256,uint256,bytes32[])` | `FunctionFragment` |
+| `orgsList()` | `FunctionFragment` |
+| `rewardPool()` | `FunctionFragment` |
+| `services(bytes32)` | `FunctionFragment` |
 
 #### Overrides
 
@@ -61,7 +61,7 @@ ethers.utils.Interface.functions
 
 ### decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -72,13 +72,13 @@ ethers.utils.Interface.functions
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -89,13 +89,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -106,13 +106,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -123,13 +123,13 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
 ethers.utils.Interface.decodeFunctionResult
 
-▸ **decodeFunctionResult**(`functionFragment`, `data`): `any`
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
 #### Parameters
 
@@ -140,7 +140,7 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Returns
 
-`any`
+`Result`
 
 #### Overrides
 
@@ -239,7 +239,7 @@ ___
 
 ### getEvent
 
-▸ **getEvent**(`nameOrSignatureOrTopic`): `any`
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
 #### Parameters
 
@@ -249,7 +249,7 @@ ___
 
 #### Returns
 
-`any`
+`EventFragment`
 
 #### Overrides
 

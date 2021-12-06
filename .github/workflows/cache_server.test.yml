@@ -82,6 +82,7 @@ jobs:
           CI: true
           ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
           CHAIN_ID: ${{secrets.CHAIN_ID}}
+          CHAIN_NAME: volta
           PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
           RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
           DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
@@ -101,6 +102,7 @@ jobs:
           CI: true
           ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
           CHAIN_ID: ${{secrets.CHAIN_ID}}
+          CHAIN_NAME: volta
           PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
           RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
           DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
