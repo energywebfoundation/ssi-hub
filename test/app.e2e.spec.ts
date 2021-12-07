@@ -5,6 +5,7 @@ import { INestApplication } from '@nestjs/common';
 import { appConfig } from '../src/common/test.utils';
 import { AppModule } from '../src/app.module';
 import { authTestSuite } from './auth';
+import { claimTestSuite } from './claim';
 
 export let app: INestApplication;
 
@@ -29,5 +30,8 @@ describe('iam-cache-server E2E tests', () => {
     await app.close();
   }, 60_000); // 1min
 
-  describe('Auth module', authTestSuite);
+  describe('Modules v1', () => {
+    describe('Auth module', authTestSuite);
+    describe('Claim module', claimTestSuite);
+  });
 });
