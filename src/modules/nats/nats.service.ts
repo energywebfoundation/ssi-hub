@@ -4,7 +4,6 @@ import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
 import { NatsWrapper } from './nats.wrapper';
 
-
 export type IMessageJob = {
   subject: string;
   data: Record<string, unknown>;
