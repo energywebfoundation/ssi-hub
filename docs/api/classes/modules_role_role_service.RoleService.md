@@ -21,6 +21,7 @@
 - [remove](modules_role_role_service.RoleService.md#remove)
 - [removeByNameHash](modules_role_role_service.RoleService.md#removebynamehash)
 - [update](modules_role_role_service.RoleService.md#update)
+- [verifyEnrolmentIssuer](modules_role_role_service.RoleService.md#verifyenrolmentissuer)
 - [verifyEnrolmentPrecondition](modules_role_role_service.RoleService.md#verifyenrolmentprecondition)
 - [verifyUserRoles](modules_role_role_service.RoleService.md#verifyuserroles)
 
@@ -236,6 +237,24 @@ Update existing role with given namespace
 #### Returns
 
 `Promise`<[`Role`](modules_role_role_entity.Role.md)\>
+
+___
+
+### verifyEnrolmentIssuer
+
+▸ **verifyEnrolmentIssuer**(`__namedParameters`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.issuerDID` | `string` |
+
+#### Returns
+
+`Promise`<`void`\>
 
 ___
 
