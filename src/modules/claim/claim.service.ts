@@ -111,9 +111,9 @@ export class ClaimService {
   public async handleClaimIssuanceRequest(
     rq: IClaimIssuance,
   ): Promise<ClaimHandleResult> {
-    const claim: RoleClaim = await this.getById(rq.id);
+    const previouslyRequestedClaim: RoleClaim = await this.getById(rq.id);
 
-    if (!claim && rq.issuedToken) {
+    if (!previouslyRequestedClaim && rq.issuedToken) {
       const {
         claimData: { claimType, claimTypeVersion },
       } = jwt.decode(rq.issuedToken) as DecodedClaimToken;
@@ -136,13 +136,13 @@ export class ClaimService {
 
       await this.createAndIssue(dto);
     } else if (
-      claim &&
-      !claim.isRejected &&
+      previouslyRequestedClaim &&
+      !previouslyRequestedClaim.isRejected &&
       (rq.issuedToken || rq.onChainProof)
     ) {
       await this.roleService.verifyEnrolmentIssuer({
         issuerDID: rq.acceptedBy,
-        claimType: claim.claimType,
+        claimType: previouslyRequestedClaim.claimType,
       });
 
       const dto = await ClaimIssueDTO.create(rq);
