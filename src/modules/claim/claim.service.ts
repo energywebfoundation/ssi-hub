@@ -112,11 +112,12 @@ export class ClaimService {
     rq: IClaimIssuance,
   ): Promise<ClaimHandleResult> {
     const claim: RoleClaim = await this.getById(rq.id);
-    const {
-      claimData: { claimType, claimTypeVersion },
-    } = jwt.decode(rq.issuedToken) as DecodedClaimToken;
 
     if (!claim && rq.issuedToken) {
+      const {
+        claimData: { claimType, claimTypeVersion },
+      } = jwt.decode(rq.issuedToken) as DecodedClaimToken;
+
       const dto = await NewClaimIssueDTO.create({
         ...rq,
         claimType,
