@@ -24,25 +24,6 @@ export class Logger extends NestLogger implements LoggerService {
     private readonly sentryService: SentryService,
   ) {
     super();
-    const isProduction = configService.get<string>('NODE_ENV') === 'production';
-    const logFormat = isProduction
-      ? format.combine(format.timestamp(), format.json())
-      : format.combine(
-          format.timestamp(),
-          format.printf(
-            ({ level, message, timestamp, context }) =>
-              `${level} [${context || ''}] : ${timestamp} - ${message}`,
-          ),
-          format.colorize(),
-        );
-
-    const file = new transports.DailyRotateFile({
-      filename: 'iam-cache-server-%DATE%.log',
-      zippedArchive: true,
-      dirname: configService.get<string>('LOGS_DIRECTORY'),
-      maxFiles: '14d',
-    });
-
     this.redactor = new SyncRedactor({
       customRedactors: {
         before: [
@@ -54,14 +35,31 @@ export class Logger extends NestLogger implements LoggerService {
       },
     });
 
-    const console = new transports.Console({ format: logFormat });
+    const logFormat = format.combine(
+      format.timestamp(),
+      format.printf(
+        ({ level, message, timestamp, context }) =>
+          `${level} [${context || ''}] : ${timestamp} - ${this.redactor.redact(
+            message,
+          )}`,
+      ),
+      format.colorize(),
+    );
 
-    const transport = isProduction ? file : console;
+    const file = new transports.DailyRotateFile({
+      filename: 'iam-cache-server-%DATE%.log',
+      zippedArchive: true,
+      format: logFormat,
+      dirname: configService.get<string>('LOGS_DIRECTORY'),
+      maxFiles: '14d',
+    });
+
+    const console = new transports.Console({ format: logFormat });
 
     this.logger = createLogger({
       format: logFormat,
       level: 'debug',
-      transports: [transport],
+      transports: [console, file],
     });
   }
 
@@ -73,15 +71,13 @@ export class Logger extends NestLogger implements LoggerService {
     this.sentryService.captureException(error);
     if (Array.isArray(error)) {
       this.logger.error(
-        this.redactor.redact(
-          error.map(err => JSON.stringify(err, null, 2)).join(', '),
-        ),
+        error.map(err => JSON.stringify(err, null, 2)).join(', '),
       );
       return;
     }
     if (error instanceof Error) {
       const { message, stack, ...meta } = error;
-      return this.logger.error(this.redactor.redact(message), {
+      return this.logger.error(message, {
         context,
         stack: [trace || stack],
         ...meta,
@@ -89,28 +85,28 @@ export class Logger extends NestLogger implements LoggerService {
     }
     if ('object' === typeof error) {
       const { message, ...meta } = error as { message: string };
-      return this.logger.error(this.redactor.redact(message), {
+      return this.logger.error(message, {
         context,
         stack: [trace],
         ...meta,
       });
     }
-    this.logger.error(this.redactor.redact(error), { context });
+    this.logger.error(error, { context });
   }
 
   warn(message: any, context: string = this.context) {
-    return this.logger.warn(this.redactor.redact(message), { context });
+    return this.logger.warn(message, { context });
   }
 
   debug(message: any, context: string = this.context) {
-    return this.logger.debug(this.redactor.redact(message), { context });
+    return this.logger.debug(message, { context });
   }
 
   verbose(message: any, context: string = this.context) {
-    return this.logger.verbose(this.redactor.redact(message), { context });
+    return this.logger.verbose(message, { context });
   }
 
   info(message: any, context: string = this.context) {
-    return this.logger.info(this.redactor.redact(message), { context });
+    return this.logger.info(message, { context });
   }
 }
