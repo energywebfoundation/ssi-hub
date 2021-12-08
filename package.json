@@ -94,6 +94,7 @@
     "passport-did-auth": "1.0.0-alpha.28",
     "passport-jwt": "^4.0.0",
     "pg": "^8.5.1",
+    "redact-pii": "^3.2.3",
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.3.0",
