@@ -99,7 +99,7 @@ export class TokenService {
     if (token) {
       const decodedToken = jwt.decode(token) as TokenPayload;
       const isBrowserRequestFromAuthenticatedOrigin =
-        decodedToken.origin === req.headers['origin'];
+        decodedToken?.origin === req.headers['origin'];
       const isServerRequestOrGETFromSameDomain =
         req.headers['origin'] === undefined;
       if (
