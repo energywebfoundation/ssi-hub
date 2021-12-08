@@ -4,6 +4,7 @@ import {
   LoggerService,
   Scope,
 } from '@nestjs/common';
+import { SyncRedactor } from 'redact-pii';
 import {
   Logger as WinstonLogger,
   createLogger,
@@ -17,6 +18,7 @@ import { SentryService } from '../sentry/sentry.service';
 @Injectable({ scope: Scope.TRANSIENT })
 export class Logger extends NestLogger implements LoggerService {
   public readonly logger: WinstonLogger;
+  private readonly redactor: SyncRedactor;
   constructor(
     configService: ConfigService,
     private readonly sentryService: SentryService,
@@ -41,6 +43,17 @@ export class Logger extends NestLogger implements LoggerService {
       maxFiles: '14d',
     });
 
+    this.redactor = new SyncRedactor({
+      customRedactors: {
+        before: [
+          {
+            regexpPattern: /0x[a-f0-9\-]+/gi,
+            replaceWith: '0x***',
+          },
+        ],
+      },
+    });
+
     const console = new transports.Console({ format: logFormat });
 
     const transport = isProduction ? file : console;
@@ -60,13 +73,15 @@ export class Logger extends NestLogger implements LoggerService {
     this.sentryService.captureException(error);
     if (Array.isArray(error)) {
       this.logger.error(
-        error.map(err => JSON.stringify(err, null, 2)).join(', '),
+        this.redactor.redact(
+          error.map(err => JSON.stringify(err, null, 2)).join(', '),
+        ),
       );
       return;
     }
     if (error instanceof Error) {
       const { message, stack, ...meta } = error;
-      return this.logger.error(message, {
+      return this.logger.error(this.redactor.redact(message), {
         context,
         stack: [trace || stack],
         ...meta,
@@ -74,28 +89,28 @@ export class Logger extends NestLogger implements LoggerService {
     }
     if ('object' === typeof error) {
       const { message, ...meta } = error as { message: string };
-      return this.logger.error(message, {
+      return this.logger.error(this.redactor.redact(message), {
         context,
         stack: [trace],
         ...meta,
       });
     }
-    this.logger.error(error, { context });
+    this.logger.error(this.redactor.redact(error), { context });
   }
 
   warn(message: any, context: string = this.context) {
-    return this.logger.warn(message, { context });
+    return this.logger.warn(this.redactor.redact(message), { context });
   }
 
   debug(message: any, context: string = this.context) {
-    return this.logger.debug(message, { context });
+    return this.logger.debug(this.redactor.redact(message), { context });
   }
 
   verbose(message: any, context: string = this.context) {
-    return this.logger.verbose(message, { context });
+    return this.logger.verbose(this.redactor.redact(message), { context });
   }
 
   info(message: any, context: string = this.context) {
-    return this.logger.info(message, { context });
+    return this.logger.info(this.redactor.redact(message), { context });
   }
 }
