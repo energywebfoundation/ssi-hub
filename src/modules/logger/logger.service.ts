@@ -46,20 +46,12 @@ export class Logger extends NestLogger implements LoggerService {
       format.colorize(),
     );
 
-    const file = new transports.DailyRotateFile({
-      filename: 'iam-cache-server-%DATE%.log',
-      zippedArchive: true,
-      format: logFormat,
-      dirname: configService.get<string>('LOGS_DIRECTORY'),
-      maxFiles: '14d',
-    });
-
     const console = new transports.Console({ format: logFormat });
 
     this.logger = createLogger({
       format: logFormat,
       level: 'debug',
-      transports: [console, file],
+      transports: [console],
     });
   }
 
