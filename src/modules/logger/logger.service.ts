@@ -18,10 +18,10 @@ import { SentryService } from '../sentry/sentry.service';
 @Injectable({ scope: Scope.TRANSIENT })
 export class Logger extends NestLogger implements LoggerService {
   public readonly logger: WinstonLogger;
+  private readonly redactor: SyncRedactor;
   constructor(
     configService: ConfigService,
     private readonly sentryService: SentryService,
-    private readonly redactor: SyncRedactor = null,
   ) {
     super();
     const isProduction = configService.get<string>('NODE_ENV') === 'production';
@@ -43,18 +43,16 @@ export class Logger extends NestLogger implements LoggerService {
       maxFiles: '14d',
     });
 
-    this.redactor =
-      this.redactor ||
-      new SyncRedactor({
-        customRedactors: {
-          before: [
-            {
-              regexpPattern: /0x[a-f0-9\-]+/gi,
-              replaceWith: '0x***',
-            },
-          ],
-        },
-      });
+    this.redactor = new SyncRedactor({
+      customRedactors: {
+        before: [
+          {
+            regexpPattern: /0x[a-f0-9\-]+/gi,
+            replaceWith: '0x***',
+          },
+        ],
+      },
+    });
 
     const console = new transports.Console({ format: logFormat });
 
