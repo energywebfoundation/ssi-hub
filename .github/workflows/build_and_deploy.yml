@@ -67,11 +67,8 @@ jobs:
           BUILD_ID: ${{needs.unique_id.outputs.unique_id}}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build -t $ECR_REGISTRY/ics-api:$BUILD_ID -f docker/prod/Dockerfile .
+          docker build --build-arg SENTRY_RELEASE="${{needs.unique_id.outputs.unique_id}}" --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} -t $ECR_REGISTRY/ics-api:$BUILD_ID -f docker/prod/Dockerfile .
           docker push $ECR_REGISTRY/ics-api:$BUILD_ID
-          docker build -t $ECR_REGISTRY/ics-api:latest -f docker/prod/Dockerfile .
-          docker push $ECR_REGISTRY/ics-api:latest
-
       - name: Logout of Amazon ECR
         if: always()
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
@@ -82,7 +79,6 @@ jobs:
         with:
           command: login ${{ secrets.ARGOCD_URL }}
           options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
-
       - name: ArgoCD overvrite values.yaml
         uses: clowdhaus/argo-cd-action/@v1.4.2
         id: argocd_image_tag_overwrite
