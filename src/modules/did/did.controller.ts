@@ -6,6 +6,7 @@ import { Auth } from '../auth/auth.decorator';
 import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
 import { DID, getDIDFromAddress } from './did.types';
+import { DIDPipe } from './did.pipe';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -20,7 +21,7 @@ export class DIDController {
 
   /**
    * Retrieves a cached DID Document. If not in cache, retrieves from blockchain.
-   * @param id The DID to retrieve
+   * @param did The DID to retrieve
    * @param includeClaimsString true/false string as to whether or not to return full claim data
    * @returns A DID Document representation which optionally includes full claims.
    */
@@ -33,9 +34,8 @@ export class DIDController {
       'If DID Document is not yet cached, it is retrieved from the blockchain',
   })
   @UseInterceptors(NotFoundInterceptor)
-  public async getById(@Param('did') id: string) {
-    this.logger.info(`Received request for document for did: ${id}`);
-    const did = new DID(id);
+  public async getById(@Param('did', DIDPipe) did: DID) {
+    this.logger.info(`Received request for document for did: ${did}`);
 
     // If an ethr DID is received that doesn't have chain info, then add it.
     // This is because we want to be backwards compatible with EWF code that didn't include the chain info in the DID
