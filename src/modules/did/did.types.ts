@@ -1,3 +1,12 @@
+import { Chain, Methods } from '@ew-did-registry/did';
+
+/**
+ * @todo >> ew-did-registry/did
+ * matches did:ethr:volta:address and did:ethr:address
+ */
+export const didPattern =
+  '^(?:did:(?<method>[a-z0-9]+?):)(?<chain>[a-z0-9]+?:)?(?<id>0x[A-Fa-f0-9]{40})$';
+
 /**
  * A value object representing EIP-1056 DID
  */
@@ -7,39 +16,24 @@ export class DID {
    */
   readonly did: string;
 
-  readonly method: 'ethr' | string;
+  readonly method: Methods;
+
+  readonly chain: Chain;
 
   readonly id: string;
 
-  readonly chain?: string;
-
   constructor(did: string) {
-    const idParts = did.split(':');
-    if (idParts.length < 3) {
-      throw new Error('DID should consists of at least 3 components');
+    const match = did.match(didPattern);
+    if (!match) {
+      throw new Error(`${did} is malformed DID`);
     }
-
-    let didMethod: string;
-    let didChain: string | undefined;
-    let didId: string;
-
-    // Back compatibility with old format
-    if (idParts.length === 3) {
-      didMethod = idParts[1];
-      didChain = undefined;
-      didId = idParts[2];
-    } else if (idParts.length === 4) {
-      didMethod = idParts[1];
-      didChain = idParts[2];
-      didId = idParts[3];
-    } else {
-      throw new Error('Unsupported DID format');
-    }
-
+    const { method, chain = <Chain>process.env.CHAIN_NAME, id } = <
+      { method: Methods; chain?: Chain; id: string }
+    >match.groups;
+    this.method = method;
+    this.chain = chain;
+    this.id = id;
     this.did = did;
-    this.method = didMethod;
-    this.id = didId;
-    this.chain = didChain;
   }
 }
 
