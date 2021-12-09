@@ -118,6 +118,11 @@ export class ClaimService {
         claimData: { claimType, claimTypeVersion },
       } = jwt.decode(rq.issuedToken) as DecodedClaimToken;
 
+      await this.roleService.verifyEnrolmentIssuer({
+        issuerDID: rq.acceptedBy,
+        claimType,
+      });
+
       const dto = await NewClaimIssueDTO.create({
         ...rq,
         claimType,
@@ -135,6 +140,11 @@ export class ClaimService {
       !claim.isRejected &&
       (rq.issuedToken || rq.onChainProof)
     ) {
+      await this.roleService.verifyEnrolmentIssuer({
+        issuerDID: rq.acceptedBy,
+        claimType: claim.claimType,
+      });
+
       const dto = await ClaimIssueDTO.create(rq);
       await this.issue(dto);
     } else {

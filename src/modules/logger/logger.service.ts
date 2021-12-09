@@ -4,6 +4,7 @@ import {
   LoggerService,
   Scope,
 } from '@nestjs/common';
+import { SyncRedactor } from 'redact-pii';
 import {
   Logger as WinstonLogger,
   createLogger,
@@ -17,38 +18,40 @@ import { SentryService } from '../sentry/sentry.service';
 @Injectable({ scope: Scope.TRANSIENT })
 export class Logger extends NestLogger implements LoggerService {
   public readonly logger: WinstonLogger;
+  private readonly redactor: SyncRedactor;
   constructor(
     configService: ConfigService,
     private readonly sentryService: SentryService,
   ) {
     super();
-    const isProduction = configService.get<string>('NODE_ENV') === 'production';
-    const logFormat = isProduction
-      ? format.combine(format.timestamp(), format.json())
-      : format.combine(
-          format.timestamp(),
-          format.printf(
-            ({ level, message, timestamp, context }) =>
-              `${level} [${context || ''}] : ${timestamp} - ${message}`,
-          ),
-          format.colorize(),
-        );
-
-    const file = new transports.DailyRotateFile({
-      filename: 'iam-cache-server-%DATE%.log',
-      zippedArchive: true,
-      dirname: configService.get<string>('LOGS_DIRECTORY'),
-      maxFiles: '14d',
+    this.redactor = new SyncRedactor({
+      customRedactors: {
+        before: [
+          {
+            regexpPattern: /0x[a-f0-9\-]+/gi,
+            replaceWith: '0x***',
+          },
+        ],
+      },
     });
 
-    const console = new transports.Console({ format: logFormat });
+    const logFormat = format.combine(
+      format.timestamp(),
+      format.printf(
+        ({ level, message, timestamp, context }) =>
+          `${level} [${context || ''}] : ${timestamp} - ${this.redactor.redact(
+            message,
+          )}`,
+      ),
+      format.colorize(),
+    );
 
-    const transport = isProduction ? file : console;
+    const console = new transports.Console({ format: logFormat });
 
     this.logger = createLogger({
       format: logFormat,
       level: 'debug',
-      transports: [transport],
+      transports: [console],
     });
   }
 
