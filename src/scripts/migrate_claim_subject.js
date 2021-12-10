@@ -1,33 +1,33 @@
-const { createConnection, TableColumn } = require('typeorm');
+const { createConnection } = require('typeorm');
 const { JWT } = require('@ew-did-registry/jwt');
 const { Keys } = require('@ew-did-registry/keys');
-const { Claim } = require('../../dist/modules/claim/claim.entity.js');
+const {
+  RoleClaim,
+} = require('../../dist/modules/claim/entities/roleClaim.entity.js');
 
-(async function () {
+(async function() {
   const connection = await createConnection({
     // had to copy from orgmconfig because typeorm doesn't detect postgres driver
-    type: "postgres",
-    host: "localhost",
+    type: 'postgres',
+    host: 'localhost',
     port: 5432,
-    username: "postgres",
-    password: "password",
-    database: "dev",
-    "entities": [
-      "dist/**/*.entity.js"
-    ]
+    username: 'postgres',
+    password: 'password',
+    database: 'dev-test',
+    entities: ['dist/**/*.entity.js'],
   });
-  const claimsRepository = connection.getRepository(Claim);
+  const claimsRepository = connection.getRepository(RoleClaim);
   let claims = await claimsRepository.find();
 
   const jwt = new JWT(new Keys());
   for await (const claim of claims) {
     const payload = jwt.decode(claim.token);
     let subject = payload.sub;
-    if (!subject || subject.length === 0 || !subject.startsWith("did")) {
+    if (!subject || subject.length === 0 || !subject.startsWith('did')) {
       subject = payload.iss;
     }
     await claimsRepository.update(claim.id, { ...claim, subject });
   }
-  
+
   await connection.close();
-}());
+})();

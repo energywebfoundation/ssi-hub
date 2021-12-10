@@ -144,7 +144,7 @@ type DIDDocumentEntity {
   updated: String
 }
 
-type Claim {
+type RoleClaim {
   id: String!
   requester: String!
   claimType: String!
@@ -189,11 +189,11 @@ type Query {
   getAssetsByPreviousOwner(owner: String!): [Asset!]!
   getAssetsByOfferedTo(offeredTo: String!): [Asset!]!
   getAssetHistory(type: AssetHistoryEventType, order: Order, skip: Int = 0, take: Int = 10, id: String!): [AssetsHistory!]!
-  claim(id: String!): Claim!
-  claimsByParentNamespace(namespace: String!): [Claim!]!
-  claimsByUser(parentNamespace: String, accepted: Boolean, user: String!): [Claim!]!
-  claimsByIssuer(parentNamespace: String, accepted: Boolean, issuer: String!): [Claim!]!
-  claimsByRequester(parentNamespace: String, accepted: Boolean, requester: String!): [Claim!]!
+  claim(id: String!): RoleClaim!
+  claimsByParentNamespace(namespace: String!): [RoleClaim!]!
+  claimsByUser(parentNamespace: String, accepted: Boolean, user: String!): [RoleClaim!]!
+  claimsByIssuer(parentNamespace: String, accepted: Boolean, issuer: String!): [RoleClaim!]!
+  claimsByRequester(parentNamespace: String, accepted: Boolean, requester: String!): [RoleClaim!]!
 }
 
 enum AssetHistoryEventType {

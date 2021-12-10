@@ -24,21 +24,28 @@ import {
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
 import {
+  ClaimEventType,
   IClaimIssuance,
   IClaimRejection,
   IClaimRequest,
   NATS_EXCHANGE_TOPIC,
 } from './claim.types';
-import { NatsService } from '../nats/nats.service';
 import { validateOrReject } from 'class-validator';
-import { ClaimIssueDTO, ClaimRejectionDTO, ClaimRequestDTO } from './claim.dto';
+import {
+  ClaimIssueDTO,
+  ClaimRejectionDTO,
+  ClaimRequestDTO,
+  IssuedClaimDTO,
+} from './claim.dto';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { User } from '../../common/user.decorator';
 import { BooleanPipe } from '../../common/boolean.pipe';
 import { AssetsService } from '../assets/assets.service';
-import { DIDsQuery } from './claim.entity';
+import { DIDsQuery } from './entities/roleClaim.entity';
+import { RoleDTO } from '../role/role.dto';
+import { NatsService } from '../nats/nats.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -46,9 +53,9 @@ import { DIDsQuery } from './claim.entity';
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
-    private readonly nats: NatsService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
+    private readonly nats: NatsService,
   ) {
     this.logger.setContext(ClaimController.name);
   }
@@ -76,15 +83,22 @@ export class ClaimController {
     const claimDTO = ClaimIssueDTO.create(claimData);
 
     await validateOrReject(claimDTO);
-
-    const { sub } = new JWT(new Keys()).decode(data.issuedToken);
-
-    const payload = JSON.stringify(claimData);
-    this.nats.connection.publish(
-      `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
-      payload,
+    const result = await this.claimService.handleClaimIssuanceRequest(
+      claimData,
     );
-    this.nats.connection.publish(`${sub}.${NATS_EXCHANGE_TOPIC}`, payload);
+    if (!result.isSuccessful) {
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
+    }
+
+    const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as { sub:string };
+    await this.nats.publishForDids(
+      ClaimEventType.ISSUE_CREDENTIAL,
+      NATS_EXCHANGE_TOPIC,
+      [claimData.requester, sub as string],
+      { claimId: claimData.id },
+    );
+
+    this.logger.debug(`credentials issued for ${did}`);
   }
 
   @Post('/request/:did')
@@ -110,7 +124,7 @@ export class ClaimController {
   ) {
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
-    const { sub } = jwt.decode(token);
+    const { sub } = jwt.decode(token) as { sub: string };
     const ownedAssets = await this.assetsService.getByOwner(requester);
     if (requester !== sub && !ownedAssets.some(a => a.document.id === sub)) {
       throw new HttpException(
@@ -128,14 +142,22 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
-    const payload = JSON.stringify(claimData);
-    this.logger.debug(`publishing claims request ${payload} from ${did}`);
-    data.claimIssuer.map(issuerDid => {
-      this.nats.connection.publish(
-        `${issuerDid}.${NATS_EXCHANGE_TOPIC}`,
-        payload,
-      );
-    });
+    const result = await this.claimService.handleClaimEnrolmentRequest(
+      claimData,
+    );
+    if (!result.isSuccessful) {
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
+    }
+
+    await this.nats.publishForDids(
+      ClaimEventType.REQUEST_CREDENTIALS,
+      NATS_EXCHANGE_TOPIC,
+      claimData.claimIssuer,
+      { claimId: claimData.id },
+    );
+
+    this.logger.debug(`credentials requested from ${did}`);
+
     return claimData.id;
   }
 
@@ -164,21 +186,21 @@ export class ClaimController {
 
     await validateOrReject(claimDTO);
 
-    const payload = JSON.stringify(claimData);
-    this.logger.debug(`publishing claims rejection ${payload} from ${did}`);
-    this.nats.connection.publish(
-      `${data.requester}.${NATS_EXCHANGE_TOPIC}`,
-      payload,
+    const result = await this.claimService.handleClaimRejectionRequest(
+      claimData,
     );
-  }
+    if (!result.isSuccessful) {
+      throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
+    }
 
-  @Get('/:id')
-  @ApiTags('Claims')
-  @ApiOperation({
-    summary: 'returns claim with given ID',
-  })
-  public async getById(@Param('id') id: string) {
-    return await this.claimService.getById(id);
+    await this.nats.publishForDids(
+      ClaimEventType.REJECT_CREDENTIAL,
+      NATS_EXCHANGE_TOPIC,
+      claimData.claimIssuer,
+      { claimId: claimData.id },
+    );
+
+    this.logger.debug(`credentials rejected for ${did}`);
   }
 
   @Delete('/:id')
@@ -241,6 +263,21 @@ export class ClaimController {
       },
       currentUser: user,
     });
+  }
+
+  @Get('/issuer/roles/allowed/:did')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary:
+      'Returns the Roles that an issuer DID can issuer, given the permissions in the role definitions',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: [RoleDTO],
+    description: 'Roles that the issuer can issue',
+  })
+  public async getByAllowedRolesByIssuer(@Param('did') issuer: string) {
+    return await this.claimService.rolesByIssuer(issuer);
   }
 
   @Get('/requester/:did')
@@ -347,5 +384,37 @@ export class ClaimController {
       filters: { isAccepted, namespace },
       currentUser: user,
     });
+  }
+
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @Post('/issued')
+  @ApiExcludeEndpoint()
+  @ApiTags('Claims')
+  public async saveIssued(@Body() body: IssuedClaimDTO) {
+    return this.claimService.saveIssuedClaim(body);
+  }
+
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @Get('/issued')
+  @ApiQuery({
+    name: 'subjects',
+    required: true,
+    description: 'DIDs whose issued claims are being requested',
+  })
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns issued claims requested for given DIDs',
+  })
+  public async getIssuedClaimsBySubjects(@Query() { subjects }: DIDsQuery) {
+    return this.claimService.getIssuedClaimsBySubjects(subjects);
+  }
+
+  @Get('/:id')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns claim with given ID',
+  })
+  public async getById(@Param('id') id: string) {
+    return await this.claimService.getById(id);
   }
 }

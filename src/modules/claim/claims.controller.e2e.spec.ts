@@ -1,28 +1,34 @@
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { Connection, EntityManager, QueryRunner } from 'typeorm';
+import request from 'supertest';
+import { Keys } from '@ew-did-registry/keys';
+import { JWT } from '@ew-did-registry/jwt';
+import { v5 } from 'uuid';
 import * as TestDbCOnfig from '../../../test/config';
 import { LoggerModule } from '../logger/logger.module';
 import { SentryModule } from '../sentry/sentry.module';
-import { ConfigModule } from '@nestjs/config';
-import { Connection, EntityManager, QueryRunner } from 'typeorm';
-import request from 'supertest';
-import { INestApplication } from '@nestjs/common';
-import { Claim } from './claim.entity';
+import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
 import { ClaimService, UUID_NAMESPACE } from './claim.service';
 import { IClaimRequest, RegistrationTypes } from './claim.types';
-import { Keys } from '@ew-did-registry/keys';
-import { JWT } from '@ew-did-registry/jwt';
-import { BullModule } from '@nestjs/bull';
 import { NatsModule } from '../nats/nats.module';
 import { RoleService } from '../role/role.service';
 import { AssetsService } from '../assets/assets.service';
-import { ClaimProcessor } from './claim.processor';
-import { v5 } from 'uuid';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { appConfig } from '../../common/test.utils';
+import { Claim } from './entities/claim.entity';
+import { Provider } from '../../common/provider';
+import { Asset, AssetsHistory } from '../assets/assets.entity';
+import { DIDService } from '../did/did.service';
+import { Wallet } from '@ethersproject/wallet';
+import { BullModule } from '@nestjs/bull';
 
-const emptyAddress = '0x0000000000000000000000000000000000000000';
+// const emptyAddress = '0x0000000000000000000000000000000000000000';
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -30,6 +36,7 @@ const redisConfig = {
   password: process.env.REDIS_PASSWORD,
 };
 
+jest.setTimeout(60000);
 describe('ClaimsController', () => {
   const jwt = new JWT(new Keys());
   let module: TestingModule;
@@ -39,25 +46,67 @@ describe('ClaimsController', () => {
   let app: INestApplication;
   let service: ClaimService;
 
-  const MockRoleService = {
-    verifyEnrolmentPrecondition: jest.fn(),
-    getAll: jest.fn(),
+  const randomDID = () => {
+    return `did:ethr:volta:${Wallet.createRandom().address}`;
   };
 
-  const MockAssetService = {
-    getByOwner: jest.fn(),
-    getByOwnedTo: jest.fn(),
+  const didMock = jest.fn(
+    () => 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
+  );
+  const isAuthorizeMock = jest.fn(() => true);
+
+  const MockRoleService = {
+    verifyEnrolmentPrecondition: jest.fn(),
+    getAll: jest.fn().mockResolvedValue([]),
+  };
+
+  const MockJWTAuthGuard = {
+    canActivate: (context: ExecutionContext) => {
+      const req = context.switchToHttp().getRequest();
+      req.user = {
+        did: didMock(),
+      };
+      return isAuthorizeMock();
+    },
+  };
+
+  const addClaim = async ({
+    claimType,
+    claimTypeVersion,
+    requester,
+    issuer = randomDID(),
+  }) => {
+    const token = await jwt.sign(
+      { claimData: { claimType, claimTypeVersion } },
+      { subject: requester },
+    );
+    const id = v5(token, UUID_NAMESPACE);
+    const claimRequest: IClaimRequest = {
+      claimType,
+      claimTypeVersion,
+      id,
+      requester,
+      claimIssuer: [issuer],
+      token,
+    };
+
+    didMock.mockReturnValueOnce(requester);
+
+    await testHttpServer
+      .post(`/v1/claim/request/${requester}`)
+      .send(claimRequest)
+      .expect(201);
+
+    return { id, token };
   };
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
+        BullModule.forRoot({ redis: redisConfig }),
+
         TypeOrmModule.forRoot(TestDbCOnfig.default as TypeOrmModuleOptions),
-        TypeOrmModule.forFeature([Claim]),
-        BullModule.registerQueue({
-          name: 'claims',
-          redis: redisConfig,
-        }),
+        TypeOrmModule.forFeature([RoleClaim, Claim, Asset, AssetsHistory]),
         NatsModule,
         LoggerModule,
         ConfigModule.forRoot({
@@ -69,16 +118,15 @@ describe('ClaimsController', () => {
       providers: [
         ClaimService,
         { provide: RoleService, useValue: MockRoleService },
-        { provide: AssetsService, useValue: MockAssetService },
-        ClaimProcessor,
+        { provide: DIDService, useValue: {} },
+        AssetsService,
+        Provider,
+        EventEmitter2,
+        SchedulerRegistry,
       ],
     })
       .overrideGuard(JwtAuthGuard)
-      .useValue({
-        canActivate: () => {
-          return true;
-        },
-      })
+      .useValue(MockJWTAuthGuard)
       .compile();
 
     app = module.createNestApplication();
@@ -100,43 +148,22 @@ describe('ClaimsController', () => {
   });
 
   afterEach(async () => {
-    await queryRunner.rollbackTransaction();
+    await queryRunner?.rollbackTransaction();
     await app.close();
   });
 
   it('getBySubject() should return claim requested for subject', async () => {
     const claimType = 'myRole.roles.myApp.apps.myOrg.iam.ewc';
     const claimTypeVersion = '1';
-    const requester = `did:ethr:requester`;
+    const requester = randomDID();
     const registrationTypes = [RegistrationTypes.OffChain];
-    const token = await jwt.sign(
-      { claimData: { claimType, claimTypeVersion } },
-      { subject: requester },
-    );
-    const id = v5(token, UUID_NAMESPACE);
-    const claimRequest: IClaimRequest = {
+    const { id, token } = await addClaim({
       claimType,
       claimTypeVersion,
-      id,
       requester,
-      claimIssuer: [emptyAddress],
-      token,
-    };
+    });
 
-    await testHttpServer
-      .post(`/v1/claim/request/${requester}`)
-      .send(claimRequest)
-      .expect(201);
-
-    await new Promise(resolve =>
-      jest.spyOn(service, 'create').mockImplementationOnce(claimDto =>
-        service.create(claimDto).then(claim => {
-          resolve(claim);
-          return claim;
-        }),
-      ),
-    );
-
+    didMock.mockReturnValueOnce(requester);
     await testHttpServer
       .get(`/v1/claim/subject/${requester}`)
       .expect(200)
@@ -153,6 +180,265 @@ describe('ClaimsController', () => {
             registrationTypes,
           }),
         );
+      });
+  });
+
+  it('should save issuedToken and fetch it by subject', async () => {
+    const claimType = 'myRole.roles.myApp.apps.myOrg.iam.ewc';
+    const claimTypeVersion = '1';
+    const requester = randomDID();
+    const token = await jwt.sign(
+      { claimData: { claimType, claimTypeVersion } },
+      { subject: requester },
+    );
+
+    await testHttpServer
+      .post(`/v1/claim/issued`)
+      .send({ issuedToken: token })
+      .expect(201);
+
+    await testHttpServer
+      .get(`/v1/claim/issued?subjects=${requester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].issuedToken).toEqual(token);
+        expect(res.body[0].issuedAt).not.toBeNaN();
+        expect(res.body[0].subject).toEqual(requester);
+      });
+  });
+
+  it('`/user/:did` should return only claim related to authenticated user', async () => {
+    const requester = randomDID();
+    const foreignRequester = randomDID();
+    const [ownedClaim] = await Promise.all([
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+    ]);
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/user/${requester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].token).toEqual(ownedClaim.token);
+        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].subject).toEqual(requester);
+      });
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/user/${foreignRequester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(0);
+      });
+  });
+
+  it('`/issuer/:did` should return claims requested by authenticated user', async () => {
+    const requester = randomDID();
+    const issuer = randomDID();
+    const claims = await Promise.all([
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester,
+        issuer,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: issuer,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: issuer,
+      }),
+    ]);
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/issuer/${requester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(0);
+      });
+
+    jest.spyOn(service, 'rolesByIssuer').mockResolvedValueOnce([
+      {
+        id: 1,
+        name: 'myRole',
+        namespace: 'myRole.roles.myOrg.iam.ewc',
+        owner: issuer,
+        definition: {} as any,
+        parentOrg: {} as any,
+        parentApp: {} as any,
+      },
+    ]);
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/issuer/${issuer}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].token).toEqual(claims[0].token);
+        expect(res.body[0].id).toEqual(claims[0].id);
+        expect(res.body[0].subject).toEqual(requester);
+      });
+  });
+
+  it('`/requester/:did` should return only claims requested by authenticated user', async () => {
+    const requester = randomDID();
+    const foreignRequester = randomDID();
+    const [ownedClaim] = await Promise.all([
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+    ]);
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/requester/${requester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].token).toEqual(ownedClaim.token);
+        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].subject).toEqual(requester);
+      });
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/requester/${foreignRequester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(0);
+      });
+  });
+
+  it('`/subject/:did` should return only claim related to authenticated user', async () => {
+    const requester = randomDID();
+    const foreignRequester = randomDID();
+    const [ownedClaim] = await Promise.all([
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+    ]);
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/subject/${requester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].token).toEqual(ownedClaim.token);
+        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].subject).toEqual(requester);
+      });
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/subject/${foreignRequester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(0);
+      });
+  });
+
+  it('`/by/subjects` should return only claim related to authenticated user', async () => {
+    const requester = randomDID();
+    const foreignRequester = randomDID();
+    const [ownedClaim] = await Promise.all([
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+    ]);
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/by/subjects?subjects=${requester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].token).toEqual(ownedClaim.token);
+        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].subject).toEqual(requester);
+      });
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/by/subjects?subjects=${foreignRequester}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(0);
       });
   });
 });

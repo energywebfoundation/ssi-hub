@@ -264,13 +264,36 @@ describe('RoleService', () => {
     });
   });
 
+  describe('getByNamespaces', () => {
+    it('getByNamespaces() it should fetch roles using namespaces', async () => {
+      const testRoles = [...roles];
+      const resultRoles = await service.getByNamespaces(
+        testRoles.map(role => role.namespace),
+      );
+
+      expect(resultRoles).toHaveLength(testRoles.length);
+      testRoles.forEach(role => {
+        expect(resultRoles).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: role.name,
+              namespace: role.namespace,
+              namehash: role.namehash,
+            }),
+          ]),
+        );
+      });
+      resultRoles.forEach(role => {
+        expect(role).toBeInstanceOf(Role);
+      });
+    });
+  });
+
   describe('removeByNameHash', () => {
     it('removeByNameHash() it should remove role using namehash', async () => {
       const testRole = roles[0];
       await service.removeByNameHash(testRole.namehash);
-
       const role = await service.getByNamehash(testRole.namehash);
-
       expect(role).toBe(undefined);
     });
   });
@@ -279,9 +302,7 @@ describe('RoleService', () => {
     it('remove() it should remove role using namespace', async () => {
       const testRole = roles[0];
       await service.remove(testRole.namespace);
-
       const role = await service.getByNamespace(testRole.namespace);
-
       expect(role).toBe(undefined);
     });
   });

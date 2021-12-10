@@ -1,4 +1,14 @@
-export const NATS_EXCHANGE_TOPIC = 'claim.exchange';
+export const NATS_EXCHANGE_TOPIC = 'claim-exchange';
+
+/**
+ * Types inspired by Aries Issue-Credential protocol {@link https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md}
+ */
+
+export enum ClaimEventType {
+  ISSUE_CREDENTIAL = 'issue-credential',
+  REJECT_CREDENTIAL = 'reject-credential',
+  REQUEST_CREDENTIALS = 'request-credential',
+}
 
 export interface IMessage {
   id: string;
@@ -14,6 +24,7 @@ export interface IClaimRequest extends IMessage {
 
 export interface IClaimIssuance extends IMessage {
   issuedToken?: string;
+  onChainProof?: string;
   acceptedBy: string;
 }
 
@@ -30,7 +41,7 @@ export enum RegistrationTypes {
   OnChain = 'RegistrationTypes::OnChain',
 }
 
-export interface IClaim {
+export interface IRoleClaim {
   id: string;
   requester: string;
   claimType: string;
@@ -44,4 +55,10 @@ export interface IClaim {
   acceptedBy?: string;
   isRejected?: boolean;
   namespace: string;
+}
+
+export interface IClaim {
+  issuedToken: string;
+  subject: string;
+  issuedAt: string;
 }

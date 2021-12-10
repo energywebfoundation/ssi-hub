@@ -17,24 +17,41 @@ import { InterceptorsModule } from './modules/interceptors/interceptors.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ENSModule } from './modules/ens/ens.module';
 import { getDBConfig } from './db/config';
-import { GraphQLModule } from '@nestjs/graphql';
+// import { GraphQLModule } from '@nestjs/graphql';
 import { JSONObjectScalar } from './common/json.scalar';
-import { getGraphQlConfig } from './graphql/config';
+// import { getGraphQlConfig } from './graphql/config';
 import { AssetsModule } from './modules/assets/assets.module';
 import { StakingModule } from './modules/staking/staking.module';
+import { BullModule } from '@nestjs/bull';
+import { HealthCheckModule } from './health-check/health-check.module';
+import { DIDContactModule } from './modules/did-contact/did.contact.module';
 
 @Module({
   imports: [
-    GraphQLModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: getGraphQlConfig,
-    }),
+    // GraphQLModule.forRootAsync({
+    //   inject: [ConfigService],
+    //   useFactory: getGraphQlConfig,
+    // }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: getDBConfig,
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    BullModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          port: configService.get('REDIS_PORT'),
+          host: configService.get('REDIS_HOST'),
+          password: configService.get('REDIS_PASSWORD'),
+        },
+        defaultJobOptions: {
+          removeOnComplete: true,
+          removeOnFail: 20,
+        },
+      }),
+      inject: [ConfigService],
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
@@ -44,6 +61,7 @@ import { StakingModule } from './modules/staking/staking.module';
     ApplicationModule,
     ClaimModule,
     DIDModule,
+    DIDContactModule,
     OrganizationModule,
     NatsModule,
     RoleModule,
@@ -53,6 +71,7 @@ import { StakingModule } from './modules/staking/staking.module';
     InterceptorsModule,
     ENSModule,
     StakingModule,
+    HealthCheckModule,
   ],
   providers: [JSONObjectScalar],
 })
