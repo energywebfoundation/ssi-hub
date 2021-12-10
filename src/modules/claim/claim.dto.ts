@@ -8,6 +8,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsJWT,
   IsNumberString,
   IsOptional,
   IsString,
@@ -100,6 +101,39 @@ export class ClaimIssueDTO implements IClaimIssuance {
   onChainProof?: string;
 }
 
+export class NewClaimIssueDTO extends ClaimIssueDTO {
+  static async create(data: Partial<NewClaimIssueDTO>) {
+    data.claimTypeVersion =
+      data.claimTypeVersion?.toString().split('.')[0] ?? '1';
+    data.registrationTypes = [RegistrationTypes.OffChain];
+    const dto = new NewClaimIssueDTO();
+    Object.assign(dto, data);
+
+    await validateOrReject(dto, { whitelist: true });
+    return dto;
+  }
+
+  @IsString()
+  @ApiProperty()
+  claimType: string;
+
+  // Use number string validation because iam-client-lib is passing in number version
+  // Is advantageous to have versions be numbers to enable comparisons
+  @IsNumberString()
+  @ApiProperty()
+  claimTypeVersion: string;
+
+  @IsEnum(RegistrationTypes, { each: true })
+  // Optional so as to not break existing clients. Can be made mandatory in future.
+  @IsOptional()
+  @ApiProperty()
+  registrationTypes: [RegistrationTypes];
+
+  @IsString({ each: true })
+  @ApiProperty()
+  claimIssuer?: string[];
+}
+
 export class ClaimRejectionDTO implements IClaimRejection {
   static async create(data: Partial<ClaimRejectionDTO>) {
     const dto = new ClaimRejectionDTO();
@@ -123,4 +157,17 @@ export class ClaimRejectionDTO implements IClaimRejection {
   @IsBoolean()
   @ApiProperty()
   isRejected: boolean;
+}
+
+export class IssuedClaimDTO {
+  static async create(data: IssuedClaimDTO) {
+    const dto = new IssuedClaimDTO();
+    Object.assign(dto, data);
+    await validateOrReject(dto, { whitelist: true });
+    return dto;
+  }
+
+  @IsJWT()
+  @ApiProperty()
+  issuedToken: string;
 }

@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
 import { RoleDTO } from './role.dto';
 import { DIDService } from '../did/did.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
@@ -30,6 +34,14 @@ export class RoleService {
    */
   public async getByNamespace(namespace: string) {
     return this.roleRepository.findOne({ where: { namespace } });
+  }
+
+  /**
+   * returns multiple Role with matching namespaces
+   * @param {String} namespace
+   */
+  public async getByNamespaces(namespaces: string[]) {
+    return this.roleRepository.find({ where: { namespace: In(namespaces) } });
   }
 
   /**
@@ -209,6 +221,48 @@ export class RoleService {
           );
         }
       }
+    }
+  }
+
+  public async verifyEnrolmentIssuer({
+    issuerDID,
+    claimType,
+  }: {
+    issuerDID: string;
+    claimType: string;
+  }) {
+    const [didDocument, role] = await Promise.all([
+      this.didService.getById(issuerDID),
+      this.getByNamespace(claimType),
+    ]);
+
+    if (!role) {
+      throw new Error(`There is no created role for ${claimType} namespace`);
+    }
+
+    const {
+      definition: { issuer },
+    } = role;
+
+    const forbiddenError = new ForbiddenException(
+      `${issuerDID} is not allowed to issue ${claimType}`,
+    );
+    switch (issuer.issuerType) {
+      case 'DID': {
+        if (!issuer.did.includes(issuerDID)) throw forbiddenError;
+        break;
+      }
+      case 'ROLE': {
+        if (
+          !didDocument.service.some(
+            ({ claimType }) => claimType === issuer.roleName,
+          )
+        )
+          throw forbiddenError;
+        break;
+      }
+      default:
+        throw new InternalServerErrorException('unknown issuer type');
     }
   }
 

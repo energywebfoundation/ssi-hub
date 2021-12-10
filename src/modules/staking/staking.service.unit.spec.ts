@@ -1,3 +1,5 @@
+import d from 'dotenv';
+d.config();
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -15,6 +17,7 @@ const MockLogger = {
   setContext: jest.fn(),
   info: jest.fn(),
   debug: jest.fn(),
+  warn: jest.fn(),
 };
 
 const MockStakePoolRepo = {

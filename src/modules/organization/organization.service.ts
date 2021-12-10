@@ -94,14 +94,23 @@ export class OrganizationService {
   }
 
   /**
-   * returns single Org with matching namespace
+   * Returns organizations owned by `owner`
+   * Also returns the suborgs of the org and, optionally, associated apps and/or roles
    * @param {String} owner
+   * @param {object} [object.withRelations] if true each organization will include its immediate subdomains
    */
-  public async getByOwner(owner: string) {
-    return this.orgRepository.find({
-      where: { owner },
-      relations: ['subOrgs'],
-    });
+  public async getByOwner(
+    owner: string,
+    { withRelations = true }: { withRelations?: boolean } = {},
+  ) {
+    const qb = this.orgRepository.createQueryBuilder('organization');
+    qb.where('organization.owner = :owner', { owner });
+    if (withRelations) {
+      qb.leftJoinAndSelect('organization.apps', 'app');
+      qb.leftJoinAndSelect('organization.subOrgs', 'subOrg');
+      qb.leftJoinAndSelect('organization.roles', 'role');
+    }
+    return qb.getMany();
   }
 
   /**

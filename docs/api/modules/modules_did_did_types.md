@@ -1,0 +1,44 @@
+# Module: modules/did/did.types
+
+## Table of contents
+
+### Classes
+
+- [DID](../classes/modules_did_did_types.DID.md)
+
+### Variables
+
+- [ADD_DID_DOC_QUEUE_NAME](modules_did_did_types.md#add_did_doc_queue_name)
+- [UPDATE_DID_DOC_QUEUE_NAME](modules_did_did_types.md#update_did_doc_queue_name)
+
+### Functions
+
+- [getDIDFromAddress](modules_did_did_types.md#getdidfromaddress)
+
+## Variables
+
+### ADD\_DID\_DOC\_QUEUE\_NAME
+
+• **ADD\_DID\_DOC\_QUEUE\_NAME**: ``"addDIDDocument"``
+
+___
+
+### UPDATE\_DID\_DOC\_QUEUE\_NAME
+
+• **UPDATE\_DID\_DOC\_QUEUE\_NAME**: ``"refreshDIDDocument"``
+
+## Functions
+
+### getDIDFromAddress
+
+▸ `Const` **getDIDFromAddress**(`address`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `address` | `string` |
+
+#### Returns
+
+`string`

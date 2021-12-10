@@ -3,6 +3,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApplicationService } from './application.service';
@@ -11,6 +12,7 @@ import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Role } from '../role/role.entity';
 import { Application } from './application.entity';
+import { BooleanPipe } from '../../common/boolean.pipe';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -34,14 +36,19 @@ export class ApplicationController {
   @Get('/owner/:owner')
   @ApiTags('Application')
   @ApiOperation({
-    summary: 'Returns App with given owner',
+    summary:
+      'Returns applications owned by given identity optionally including roles',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: Application,
+    description: 'Applications owned by given identity',
   })
-  public async getByOwner(@Param('owner') owner: string) {
-    return await this.applicationService.getByOwner(owner);
+  public async getByOwner(
+    @Param('owner') owner: string,
+    @Query('withRelations', BooleanPipe) withRelations: boolean,
+  ) {
+    return this.applicationService.getByOwner(owner, { withRelations });
   }
 
   @Get('/:namespace/exists')

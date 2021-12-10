@@ -15,6 +15,15 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenRepository } from './refreshToken.repository';
 
+const MockConfigService = {
+  get: jest.fn((key: string) => {
+    if (key === 'ENABLE_AUTH') {
+      return 'true';
+    }
+    return null;
+  }),
+};
+
 // mock controller
 @Controller()
 class TestController {
@@ -35,7 +44,7 @@ class TestController {
     TokenService,
     {
       provide: ConfigService,
-      useValue: {},
+      useValue: MockConfigService,
     },
     {
       provide: JwtService,
@@ -108,4 +117,16 @@ describe('TokenService', () => {
   it('should NOT have origin in request headers', async () => {
     return mockRequest('get');
   });
+
+  it('should pass auth check if ENABLE_AUTH is disabled', async () => {
+    MockConfigService.get = jest.fn().mockImplementationOnce((key: string) => {
+      if (key === 'ENABLE_AUTH') {
+        return 'false';
+      }
+      return null;
+    });
+    request(app.getHttpServer())
+      .get(`test`)
+      .expect(200);
+  }, 30000);
 });

@@ -39,4 +39,4 @@ unset AWS_REGION
 unset IAM_CACHE_SERVER_IMAGE
 
 # remove deploy.sh
-rm deploy.sh
+# rm deploy.sh

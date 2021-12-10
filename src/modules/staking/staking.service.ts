@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { VOLTA_STAKING_POOL_FACTORY_ADDRESS } from '@energyweb/iam-contracts';
 import { StakingPool } from './entities/staking.pool.entity';
 import { StakingTerms } from './entities/staking.terms.entity';
 import { Logger } from '../logger/logger.service';
 import { StakingPoolFactory__factory } from '../../ethers/factories/StakingPoolFactory__factory';
 import { StakingPoolFactory } from '../../ethers/StakingPoolFactory';
 import { Provider } from '../../common/provider';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StakingService implements OnModuleDestroy {
@@ -23,10 +23,20 @@ export class StakingService implements OnModuleDestroy {
     private readonly stakingPoolRepository: Repository<StakingPool>,
     private readonly logger: Logger,
     private readonly provider: Provider,
+    config: ConfigService,
   ) {
     this.logger.setContext(StakingService.name);
+
+    const STAKING_POOL_FACTORY_ADDRESS = config.get<string>(
+      'STAKING_POOL_FACTORY_ADDRESS',
+    );
+
+    if (!STAKING_POOL_FACTORY_ADDRESS) {
+      this.logger.warn("'STAKING_POOL_FACTORY_ADDRESS' is not specified.");
+    }
+
     this.stakingPoolFactory = StakingPoolFactory__factory.connect(
-      VOLTA_STAKING_POOL_FACTORY_ADDRESS,
+      STAKING_POOL_FACTORY_ADDRESS,
       this.provider,
     );
     this.InitEventListeners();
