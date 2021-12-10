@@ -11,6 +11,8 @@ import {
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from '../../common/user.decorator';
 import { Auth } from '../auth/auth.decorator';
+import { DIDPipe } from '../did/did.pipe';
+import { DID } from '../did/did.types';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { HistoryQuery } from './assets.dto';
 import { AssetHistoryEventType } from './assets.event';
@@ -25,7 +27,10 @@ export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
   @Get(':id')
-  async getByID(@Param('id') id: string, @User() currentUser?: string) {
+  async getByID(
+    @Param('id', DIDPipe) { id }: DID,
+    @User() currentUser?: string,
+  ) {
     const asset = await this.assetsService.getById(id);
     if (
       currentUser &&
@@ -60,7 +65,7 @@ export class AssetsController {
     enum: AssetHistoryEventType,
   })
   async getHistoryByAssetId(
-    @Param('id') id: string,
+    @Param('id', DIDPipe) { id }: DID,
     @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
     @Query('order') order?: Order,
@@ -81,7 +86,10 @@ export class AssetsController {
   }
 
   @Get('owner/:owner')
-  getByOwner(@Param('owner') owner: string, @User() currentUser?: string) {
+  getByOwner(
+    @Param('owner', DIDPipe) { did: owner }: DID,
+    @User() currentUser?: string,
+  ) {
     if (currentUser && owner !== currentUser) {
       throw new ForbiddenException();
     }
@@ -90,7 +98,7 @@ export class AssetsController {
 
   @Get('owner/history/:owner')
   getByPreviousOwner(
-    @Param('owner') owner: string,
+    @Param('owner', DIDPipe) { did: owner }: DID,
     @User() currentUser?: string,
   ) {
     if (currentUser && owner !== currentUser) {
@@ -101,7 +109,7 @@ export class AssetsController {
 
   @Get('offered_to/:offered_to')
   getByOfferedTo(
-    @Param('offered_to') offeredTo: string,
+    @Param('offered_to', DIDPipe) { did: offeredTo }: DID,
     @User() currentUser?: string,
   ) {
     if (currentUser && offeredTo !== currentUser) {
