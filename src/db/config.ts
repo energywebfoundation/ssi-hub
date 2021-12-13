@@ -2,9 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { LoggerOptions } from 'typeorm';
 
 export const getDBConfig = (configService: ConfigService) => {
   const isProduction = configService.get<string>('NODE_ENV') === 'production';
+
+  const typeormLoggerOptions = configService
+    .get<string>('TYPEORM_LOGGING', 'error,migration,warn,info')
+    .split(',') as LoggerOptions;
 
   const config: TypeOrmModuleOptions = {
     type: 'postgres',
@@ -17,7 +22,7 @@ export const getDBConfig = (configService: ConfigService) => {
     cli: { migrationsDir: 'src/migrations' },
     migrationsRun: true,
     migrationsTableName: 'migrations_iam_cache_server',
-    logging: false,
+    logging: typeormLoggerOptions[0] === 'all' ? 'all' : typeormLoggerOptions,
     autoLoadEntities: true,
   };
 
