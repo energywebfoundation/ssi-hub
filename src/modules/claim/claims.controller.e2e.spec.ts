@@ -88,7 +88,7 @@ describe('ClaimsController', () => {
       claimTypeVersion,
       id,
       requester,
-      claimIssuer: [issuer],
+      claimIssuer: issuer,
       token,
     };
 

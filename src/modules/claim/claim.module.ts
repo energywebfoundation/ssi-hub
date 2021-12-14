@@ -8,6 +8,7 @@ import { Claim } from './entities/claim.entity';
 import { ClaimResolver } from './claim.resolver';
 import { ClaimService } from './claim.service';
 import { AssetsModule } from '../assets/assets.module';
+import { DIDModule } from '../did/did.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AssetsModule } from '../assets/assets.module';
     NatsModule,
     RoleModule,
     AssetsModule,
+    DIDModule,
   ],
   controllers: [ClaimController],
   providers: [ClaimService, TypeOrmModule, ClaimResolver],

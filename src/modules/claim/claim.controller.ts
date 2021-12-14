@@ -11,8 +11,10 @@ import {
   HttpStatus,
   ValidationPipe,
   UsePipes,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
+import { DIDService } from '../did/did.service';
 import {
   ApiBody,
   ApiExcludeEndpoint,
@@ -23,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
+import { ProofVerifier } from '@ew-did-registry/claims';
 import {
   ClaimEventType,
   IClaimIssuance,
@@ -53,6 +56,7 @@ import { NatsService } from '../nats/nats.service';
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
+    private readonly didService: DIDService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
     private readonly nats: NatsService,
@@ -75,14 +79,30 @@ export class ClaimController {
     @Param('did') did: string,
     @Body() data: IClaimIssuance,
   ) {
+    const didDoc = await this.didService.getById(did);
+    const proofVerifier = new ProofVerifier(didDoc);
+
+    if (
+      data.issuedToken &&
+      !(await proofVerifier.verifyAssertionProof(data.issuedToken))
+    ) {
+      throw new ForbiddenException('User signature not valid');
+    }
+
+    if (
+      data.onChainProof &&
+      !(await proofVerifier.verifyAssertionProof(data.onChainProof))
+    ) {
+      throw new ForbiddenException('User signature not valid');
+    }
+
     const claimData: IClaimIssuance = {
       ...data,
       acceptedBy: did,
     };
 
-    const claimDTO = ClaimIssueDTO.create(claimData);
+    await ClaimIssueDTO.create(claimData);
 
-    await validateOrReject(claimDTO);
     const result = await this.claimService.handleClaimIssuanceRequest(
       claimData,
     );
@@ -106,7 +126,7 @@ export class ClaimController {
       { claimId: claimData.id },
     );
 
-    this.logger.debug(`credentials issued for ${did}`);
+    this.logger.debug(`credentials issued by ${did}`);
   }
 
   @Post('/request/:did')
@@ -160,7 +180,7 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
+      [claimData.claimIssuer],
       { claimId: claimData.id },
     );
 
@@ -204,7 +224,7 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
+      [claimData.claimIssuer],
       { claimId: claimData.id },
     );
 

@@ -5,12 +5,12 @@ import { app } from '../app.e2e.spec';
 import { getIdentityToken } from '../utils';
 import { RoleService } from '../../src/modules/role/role.service';
 import { RoleDTO } from '../../src/modules/role/role.dto';
-import { Connection, EntityManager } from 'typeorm';
+import { Connection, EntityManager, Repository } from 'typeorm';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
-import { DIDService } from '../../src/modules/did/did.service';
+import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
-const jwt = new JWT(new Keys());
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
 export const claimTestSuite = () => {
@@ -67,7 +67,7 @@ export const claimTestSuite = () => {
         .expect(201);
 
       return {
-        address: wallet.address,
+        wallet: wallet,
         did: `did:ethr:volta:${wallet.address}`,
         cookies: [
           loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
@@ -79,12 +79,20 @@ export const claimTestSuite = () => {
     const createClaimRequest = async (
       role: string,
       requester: {
+        wallet: Wallet;
+        did: string;
+        cookies: string[];
+      },
+      issuer: {
+        wallet: Wallet;
         did: string;
         cookies: string[];
       },
       expectStatusCode: number,
     ) => {
       const claimId = v4();
+      const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
+      const jwt = new JWT(issKeys);
       await request(app.getHttpServer())
         .post(`/v1/claim/request/${requester.did}`)
         .set('Cookie', requester.cookies)
@@ -98,7 +106,7 @@ export const claimTestSuite = () => {
                 issuerFields: [],
               },
             },
-            { issuer: requester.did, subject: requester.did },
+            { issuer: issuer.did, subject: requester.did },
           ),
           claimType: role,
           claimTypeVersion: '1',
@@ -123,11 +131,14 @@ export const claimTestSuite = () => {
         claimTypeVersion: number;
       },
       issuer: {
+        wallet: Wallet;
         did: string;
         cookies: string[];
       },
       expectStatusCode: number,
     ) => {
+      const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
+      const jwt = new JWT(issKeys);
       return request(app.getHttpServer())
         .post(`/v1/claim/issue/${issuer.did}`)
         .set('Cookie', issuer.cookies)
@@ -177,12 +188,13 @@ export const claimTestSuite = () => {
       ]);
       await createRole({
         name: 'test1',
-        did: issuer.address,
-        ownerAddr: issuer.address,
+        did: issuer.wallet.address,
+        ownerAddr: issuer.wallet.address,
       });
       const claimData = await createClaimRequest(
         'test1.roles.e2e.iam.ewc',
         requester,
+        issuer,
         201,
       );
       await issueClaimRequest(claimData, issuer, 201);
@@ -197,32 +209,36 @@ export const claimTestSuite = () => {
       await createRole({
         name: 'test2',
         roleName: 'role.roles.iam.ewc',
-        ownerAddr: issuer.address,
+        ownerAddr: issuer.wallet.address,
       });
       const claimData = await createClaimRequest(
         'test2.roles.e2e.iam.ewc',
         requester,
+        issuerWithRole,
         201,
       );
-      const didService = app.get(DIDService);
-      jest.spyOn(didService, 'getById').mockReturnValueOnce(
-        Promise.resolve({
-          '@context': '',
-          id: '',
-          publicKey: [],
-          authentication: [],
-          service: [
-            {
-              id: '',
-              type: 'role.roles.iam.ewc',
-              claimType: 'role.roles.iam.ewc',
-              serviceEndpoint: '',
-              validity: BigNumber.from(0),
-              block: 1,
-            },
-          ],
-        }),
+      const didRepository = app.get<Repository<DIDDocumentEntity>>(
+        getRepositoryToken(DIDDocumentEntity),
       );
+
+      await didRepository.save({
+        id: `did:ethr:volta:${issuerWithRole.wallet.address}`,
+        service: [
+          {
+            id: `did:ethr:volta:${issuerWithRole.wallet.address}`,
+            type: 'role.roles.iam.ewc',
+            claimType: 'role.roles.iam.ewc',
+            serviceEndpoint: '',
+            validity: BigNumber.from(0),
+            block: 1,
+          },
+        ],
+        authentication: [],
+        publicKey: [],
+        '@context': '',
+        logs: '',
+      });
+
       await issueClaimRequest(claimData, issuerWithRole, 201);
     });
 
@@ -234,12 +250,13 @@ export const claimTestSuite = () => {
       ]);
       await createRole({
         name: 'test3',
-        did: issuer.address,
-        ownerAddr: issuer.address,
+        did: issuer.wallet.address,
+        ownerAddr: issuer.wallet.address,
       });
       const claimData = await createClaimRequest(
         'test3.roles.e2e.iam.ewc',
         requester,
+        issuer,
         201,
       );
       await issueClaimRequest(claimData, invalidIssuer, 403);
@@ -254,11 +271,12 @@ export const claimTestSuite = () => {
       await createRole({
         name: 'test4',
         roleName: 'role.roles.iam.ewc',
-        ownerAddr: issuer.address,
+        ownerAddr: issuer.wallet.address,
       });
       const claimData = await createClaimRequest(
         'test4.roles.e2e.iam.ewc',
         requester,
+        issuer,
         201,
       );
       await issueClaimRequest(claimData, invalidIssuer, 403);
