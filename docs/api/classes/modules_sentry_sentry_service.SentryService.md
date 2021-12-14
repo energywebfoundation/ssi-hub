@@ -18,14 +18,13 @@
 
 ### constructor
 
-• **new SentryService**(`configService`, `logger`)
+• **new SentryService**(`configService`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
-| `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
 

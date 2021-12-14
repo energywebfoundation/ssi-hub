@@ -29,7 +29,7 @@
 
 ### getById
 
-▸ **getById**(`id`): `Promise`<`any`\>
+▸ **getById**(`did`): `Promise`<`any`\>
 
 Retrieves a cached DID Document. If not in cache, retrieves from blockchain.
 
@@ -37,7 +37,7 @@ Retrieves a cached DID Document. If not in cache, retrieves from blockchain.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `id` | `string` | The DID to retrieve |
+| `did` | [`DID`](modules_did_did_types.DID.md) | The DID to retrieve |
 
 #### Returns
 
