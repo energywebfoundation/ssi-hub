@@ -28,8 +28,8 @@ export class Logger extends NestLogger implements LoggerService {
       customRedactors: {
         before: [
           {
-            regexpPattern: /0x[a-f0-9\-]+/gi,
-            replaceWith: '0x***',
+            regexpPattern: /(?<=0x[a-f0-9\-]{3})[a-f0-9\-]+/gi,
+            replaceWith: '***',
           },
         ],
       },

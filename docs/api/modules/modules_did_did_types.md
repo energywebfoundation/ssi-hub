@@ -10,6 +10,7 @@
 
 - [ADD_DID_DOC_QUEUE_NAME](modules_did_did_types.md#add_did_doc_queue_name)
 - [UPDATE_DID_DOC_QUEUE_NAME](modules_did_did_types.md#update_did_doc_queue_name)
+- [didPattern](modules_did_did_types.md#didpattern)
 
 ### Functions
 
@@ -26,6 +27,15 @@ ___
 ### UPDATE\_DID\_DOC\_QUEUE\_NAME
 
 • **UPDATE\_DID\_DOC\_QUEUE\_NAME**: ``"refreshDIDDocument"``
+
+___
+
+### didPattern
+
+• **didPattern**: ``"^(?:did:(?<method>[a-z0-9]+?):)((?<chain>[a-z0-9]+?):)?(?<id>0x[A-Fa-f0-9]{40})$"``
+
+**`todo`** >> ew-did-registry/did
+matches did:ethr:volta:address, did:ethr:vOLTa:address and did:ethr:address
 
 ## Functions
 
