@@ -33,7 +33,7 @@ A value object representing EIP-1056 DID
 
 ### chain
 
-• `Optional` `Readonly` **chain**: `string`
+• `Readonly` **chain**: `Chain`
 
 ___
 
@@ -53,4 +53,4 @@ ___
 
 ### method
 
-• `Readonly` **method**: `string`
+• `Readonly` **method**: `Methods`

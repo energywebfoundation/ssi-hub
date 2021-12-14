@@ -32,13 +32,13 @@
 
 ### getByID
 
-▸ **getByID**(`id`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
+▸ **getByID**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `id` | `string` |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -49,13 +49,13 @@ ___
 
 ### getByOfferedTo
 
-▸ **getByOfferedTo**(`offeredTo`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
+▸ **getByOfferedTo**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `offeredTo` | `string` |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -66,13 +66,13 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
+▸ **getByOwner**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `owner` | `string` |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -83,13 +83,13 @@ ___
 
 ### getByPreviousOwner
 
-▸ **getByPreviousOwner**(`owner`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
+▸ **getByPreviousOwner**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `owner` | `string` |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -100,13 +100,13 @@ ___
 
 ### getHistoryByAssetId
 
-▸ **getHistoryByAssetId**(`id`, `take?`, `skip?`, `order?`, `type?`): `Promise`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md)[]\>
+▸ **getHistoryByAssetId**(`__namedParameters`, `take?`, `skip?`, `order?`, `type?`): `Promise`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `id` | `string` |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `take?` | `number` |
 | `skip?` | `number` |
 | `order?` | [`Order`](../enums/modules_assets_assets_types.Order.md) |
