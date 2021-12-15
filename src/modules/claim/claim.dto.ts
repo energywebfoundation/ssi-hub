@@ -157,6 +157,10 @@ export class ClaimRejectionDTO implements IClaimRejection {
   @IsBoolean()
   @ApiProperty()
   isRejected: boolean;
+
+  @IsString()
+  @IsOptional()
+  rejectionReason?: string;
 }
 
 export class IssuedClaimDTO {

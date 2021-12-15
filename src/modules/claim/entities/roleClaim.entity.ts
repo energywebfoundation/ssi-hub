@@ -74,6 +74,10 @@ export class RoleClaim implements IRoleClaim {
   @Column({ nullable: true, type: 'bool', default: false })
   isRejected?: boolean | null;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  rejectionReason?: string;
+
   @Field()
   @Column()
   namespace: string;
