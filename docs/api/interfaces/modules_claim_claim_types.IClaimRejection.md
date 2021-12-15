@@ -19,6 +19,7 @@
 - [claimIssuer](modules_claim_claim_types.IClaimRejection.md#claimissuer)
 - [id](modules_claim_claim_types.IClaimRejection.md#id)
 - [isRejected](modules_claim_claim_types.IClaimRejection.md#isrejected)
+- [rejectionReson](modules_claim_claim_types.IClaimRejection.md#rejectionreson)
 - [requester](modules_claim_claim_types.IClaimRejection.md#requester)
 
 ## Properties
@@ -46,6 +47,12 @@ ___
 ### isRejected
 
 • **isRejected**: `boolean`
+
+___
+
+### rejectionReson
+
+• `Optional` **rejectionReson**: `string`
 
 ___
 

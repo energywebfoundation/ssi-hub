@@ -337,13 +337,14 @@ ___
 
 ### reject
 
-▸ **reject**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+▸ **reject**(`id`, `rejectionReason?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `id` | `string` |
+| `rejectionReason?` | `string` |
 
 #### Returns
 
