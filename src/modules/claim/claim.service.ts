@@ -165,7 +165,7 @@ export class ClaimService {
       return ClaimHandleResult.Failure('claim rejection criteria not met');
 
     const dto = await ClaimRejectionDTO.create(rq);
-    await this.reject(dto.id);
+    await this.reject(dto);
     return ClaimHandleResult.Success();
   }
 
@@ -207,9 +207,13 @@ export class ClaimService {
     return this.roleClaimRepository.save(claim);
   }
 
-  public async reject(id: string) {
+  public async reject({ id, rejectionReason }: ClaimRejectionDTO) {
     const claim = await this.roleClaimRepository.findOne(id);
-    const updatedClaim = RoleClaim.create({ ...claim, isRejected: true });
+    const updatedClaim = RoleClaim.create({
+      ...claim,
+      isRejected: true,
+      rejectionReason,
+    });
     return this.roleClaimRepository.save(updatedClaim);
   }
 
