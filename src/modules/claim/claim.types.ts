@@ -30,6 +30,7 @@ export interface IClaimIssuance extends IMessage {
 
 export interface IClaimRejection extends IMessage {
   isRejected: boolean;
+  rejectionReason?: string;
 }
 
 export type DecodedClaimToken = {
@@ -54,6 +55,7 @@ export interface IRoleClaim {
   isAccepted: boolean;
   acceptedBy?: string;
   isRejected?: boolean;
+  rejectionReason?: string;
   namespace: string;
 }
 

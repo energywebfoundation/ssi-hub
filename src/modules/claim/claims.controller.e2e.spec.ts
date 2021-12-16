@@ -15,7 +15,7 @@ import { SentryModule } from '../sentry/sentry.module';
 import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
 import { ClaimService, UUID_NAMESPACE } from './claim.service';
-import { IClaimRequest, RegistrationTypes } from './claim.types';
+import { IClaimRequest, IRoleClaim, RegistrationTypes } from './claim.types';
 import { NatsModule } from '../nats/nats.module';
 import { RoleService } from '../role/role.service';
 import { AssetsService } from '../assets/assets.service';
@@ -38,7 +38,9 @@ const redisConfig = {
 
 jest.setTimeout(60000);
 describe('ClaimsController', () => {
-  const jwt = new JWT(new Keys());
+  const issuer = new Keys();
+  const issuerDID = `did:ethr:volta:${issuer.getAddress()}`;
+  const jwt = new JWT(issuer);
   let module: TestingModule;
   let queryRunner: QueryRunner;
   let dbConnection: Connection;
@@ -440,5 +442,51 @@ describe('ClaimsController', () => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(0);
       });
+  });
+
+  describe('claim rejection', () => {
+    let requesterDID: string;
+    let claim: Pick<IRoleClaim, 'id' | 'token'>;
+    const rejectionReason = 'SMTP error';
+
+    beforeEach(async () => {
+      const claimType = 'patron.roles.staking.apps.auth.ewc';
+      const claimTypeVersion = '1';
+      requesterDID = randomDID();
+      [claim] = await Promise.all([
+        addClaim({
+          claimType,
+          claimTypeVersion,
+          requester: requesterDID,
+        }),
+      ]);
+
+      await testHttpServer
+        .post(`/v1/claim/reject/${issuerDID}`)
+        .send({
+          id: claim.id,
+          claimIssuer: [issuerDID],
+          requester: requesterDID,
+          isRejected: true,
+          rejectionReason,
+        })
+        .expect(201);
+    });
+
+    it('should be able to specify rejection reason', async () => {
+      didMock.mockReturnValueOnce(requesterDID);
+      await testHttpServer
+        .get(`/v1/claim/by/subjects?subjects=${requesterDID}`)
+        .expect(200)
+        .expect(res => {
+          expect(res.body).toBeInstanceOf(Array);
+          expect(res.body.length).toEqual(1);
+          expect(res.body[0]).toBeInstanceOf(Object);
+          expect(res.body[0].id).toEqual(claim.id);
+          expect(res.body[0].subject).toEqual(requesterDID);
+          expect(res.body[0].isRejected).toEqual(true);
+          expect(res.body[0].rejectionReason).toEqual(rejectionReason);
+        });
+    });
   });
 });
