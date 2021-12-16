@@ -37,6 +37,18 @@ export class SentryService {
         }),
         new Sentry.Integrations.OnUnhandledRejection({ mode: 'warn' }),
       ],
+      beforeSend(event) {
+        const request = event.request;
+        if (request) {
+          delete request.cookies;
+          const headers = request.headers;
+          if (headers) {
+            delete headers.cookie;
+          }
+        }
+
+        return event;
+      },
     });
   }
 
