@@ -41,7 +41,7 @@ export class SentryService {
         const request = event.request;
         if (request) {
           delete request.cookies;
-          delete request.data.identityToken;
+          delete request.data?.identityToken;
           request.url.replace(/refresh_token=.*/, 'refresh_token=[Filtered]');
           const headers = request.headers;
           if (headers) {
