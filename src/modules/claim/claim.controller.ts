@@ -90,11 +90,19 @@ export class ClaimController {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
-    const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as { sub:string };
+    const dids = [claimData.requester];
+
+    if (claimData.issuedToken) {
+      const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as {
+        sub: string;
+      };
+      dids.push(sub);
+    }
+
     await this.nats.publishForDids(
       ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
-      [claimData.requester, sub as string],
+      dids,
       { claimId: claimData.id },
     );
 
