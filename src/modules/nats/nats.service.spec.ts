@@ -6,7 +6,7 @@ import { Logger } from '../logger/logger.service';
 import { NatsService } from './nats.service';
 import { NatsWrapper } from './nats.wrapper';
 
-describe.only('NatsService', () => {
+describe('NatsService', () => {
   let mockedNats: jest.Mocked<NatsWrapper>;
   let service: NatsService;
   const QUEUE_NAME = 'nats-messages';
