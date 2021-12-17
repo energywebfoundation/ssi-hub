@@ -1,7 +1,12 @@
 import request from 'supertest';
 import { Wallet, providers } from 'ethers';
+import { ConfigService } from '@nestjs/config';
 import { app } from '../app.e2e.spec';
+import parseDuration from 'parse-duration';
 import { TokenService } from '../../src/modules/auth/token.service';
+import { RefreshTokenRepository } from '../../src/modules/auth/refreshToken.repository';
+import { RefreshToken } from '../../src/modules/auth/refreshToken.model';
+import { JwtService } from '@nestjs/jwt';
 
 export const authRefreshTokenTestSuite = () => {
   describe('Refresh token (version: 1)', () => {
@@ -58,6 +63,28 @@ export const authRefreshTokenTestSuite = () => {
         .set('Cookie', [`refreshToken=${refreshToken}`])
         .expect(200);
       return manualBeforeEach(refreshTokenResponse);
+    });
+
+    it('expired refresh token should be deleted', async () => {
+      const refreshTokenRepository = app.get(RefreshTokenRepository);
+      const configService = app.get(ConfigService);
+      const jwtService = app.get(JwtService);
+      const refreshToken = await getRefreshToken();
+      const {tokenId} = jwtService.decode(refreshToken) as RefreshToken;
+
+      const expireMs = parseDuration(
+        configService.get('JWT_REFRESH_TOKEN_EXPIRES_IN'),
+      );
+
+      jest.useFakeTimers();
+      const expiredRefreshToken = new Promise(resolve => {
+        setTimeout(async () => {
+          resolve(refreshTokenRepository.getRefreshTokenById(tokenId));
+        }, expireMs);
+      });
+      jest.runAllTimers();
+      jest.useRealTimers();
+      return expect(expiredRefreshToken).resolves.toBeNull;
     });
   });
 };
