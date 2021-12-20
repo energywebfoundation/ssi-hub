@@ -31,11 +31,15 @@
 
 | Name | Type |
 | :------ | :------ |
+| `AdminChanged(address,address)` | `EventFragment` |
+| `BeaconUpgraded(address)` | `EventFragment` |
 | `IdentityCreated(address,address,uint256)` | `EventFragment` |
 | `IdentityOfferCanceled(address,address,address,uint256)` | `EventFragment` |
 | `IdentityOfferRejected(address,address,address,uint256)` | `EventFragment` |
 | `IdentityOffered(address,address,address,uint256)` | `EventFragment` |
 | `IdentityTransferred(address,address,uint256)` | `EventFragment` |
+| `OwnershipTransferred(address,address)` | `EventFragment` |
+| `Upgraded(address)` | `EventFragment` |
 
 #### Overrides
 
@@ -59,7 +63,14 @@ ___
 | `identityOffered(address)` | `FunctionFragment` |
 | `identityOwner(address)` | `FunctionFragment` |
 | `identityRejected(address)` | `FunctionFragment` |
+| `initialize(address)` | `FunctionFragment` |
+| `owner()` | `FunctionFragment` |
+| `renounceOwnership()` | `FunctionFragment` |
+| `transferOwnership(address)` | `FunctionFragment` |
+| `upgradeTo(address)` | `FunctionFragment` |
+| `upgradeToAndCall(address,bytes)` | `FunctionFragment` |
 | `verified(address)` | `FunctionFragment` |
+| `version()` | `FunctionFragment` |
 
 #### Overrides
 
@@ -75,6 +86,108 @@ ethers.utils.Interface.functions
 
 | Name | Type |
 | :------ | :------ |
+| `functionFragment` | ``"owner"`` |
+| `data` | `BytesLike` |
+
+#### Returns
+
+`Result`
+
+#### Overrides
+
+ethers.utils.Interface.decodeFunctionResult
+
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"renounceOwnership"`` |
+| `data` | `BytesLike` |
+
+#### Returns
+
+`Result`
+
+#### Overrides
+
+ethers.utils.Interface.decodeFunctionResult
+
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"transferOwnership"`` |
+| `data` | `BytesLike` |
+
+#### Returns
+
+`Result`
+
+#### Overrides
+
+ethers.utils.Interface.decodeFunctionResult
+
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"upgradeTo"`` |
+| `data` | `BytesLike` |
+
+#### Returns
+
+`Result`
+
+#### Overrides
+
+ethers.utils.Interface.decodeFunctionResult
+
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"upgradeToAndCall"`` |
+| `data` | `BytesLike` |
+
+#### Returns
+
+`Result`
+
+#### Overrides
+
+ethers.utils.Interface.decodeFunctionResult
+
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"initialize"`` |
+| `data` | `BytesLike` |
+
+#### Returns
+
+`Result`
+
+#### Overrides
+
+ethers.utils.Interface.decodeFunctionResult
+
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
 | `functionFragment` | ``"verified"`` |
 | `data` | `BytesLike` |
 
@@ -212,6 +325,23 @@ ethers.utils.Interface.decodeFunctionResult
 | Name | Type |
 | :------ | :------ |
 | `functionFragment` | ``"identityOfferCanceled"`` |
+| `data` | `BytesLike` |
+
+#### Returns
+
+`Result`
+
+#### Overrides
+
+ethers.utils.Interface.decodeFunctionResult
+
+▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"version"`` |
 | `data` | `BytesLike` |
 
 #### Returns
@@ -226,6 +356,108 @@ ___
 
 ### encodeFunctionData
 
+▸ **encodeFunctionData**(`functionFragment`, `values?`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"owner"`` |
+| `values?` | `undefined` |
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+ethers.utils.Interface.encodeFunctionData
+
+▸ **encodeFunctionData**(`functionFragment`, `values?`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"renounceOwnership"`` |
+| `values?` | `undefined` |
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+ethers.utils.Interface.encodeFunctionData
+
+▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"transferOwnership"`` |
+| `values` | [`string`] |
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+ethers.utils.Interface.encodeFunctionData
+
+▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"upgradeTo"`` |
+| `values` | [`string`] |
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+ethers.utils.Interface.encodeFunctionData
+
+▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"upgradeToAndCall"`` |
+| `values` | [`string`, `BytesLike`] |
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+ethers.utils.Interface.encodeFunctionData
+
+▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"initialize"`` |
+| `values` | [`string`] |
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+ethers.utils.Interface.encodeFunctionData
+
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
 #### Parameters
@@ -379,9 +611,58 @@ ethers.utils.Interface.encodeFunctionData
 
 ethers.utils.Interface.encodeFunctionData
 
+▸ **encodeFunctionData**(`functionFragment`, `values?`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `functionFragment` | ``"version"`` |
+| `values?` | `undefined` |
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+ethers.utils.Interface.encodeFunctionData
+
 ___
 
 ### getEvent
+
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `nameOrSignatureOrTopic` | ``"AdminChanged"`` |
+
+#### Returns
+
+`EventFragment`
+
+#### Overrides
+
+ethers.utils.Interface.getEvent
+
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `nameOrSignatureOrTopic` | ``"BeaconUpgraded"`` |
+
+#### Returns
+
+`EventFragment`
+
+#### Overrides
+
+ethers.utils.Interface.getEvent
 
 ▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
@@ -454,6 +735,38 @@ ethers.utils.Interface.getEvent
 | Name | Type |
 | :------ | :------ |
 | `nameOrSignatureOrTopic` | ``"IdentityTransferred"`` |
+
+#### Returns
+
+`EventFragment`
+
+#### Overrides
+
+ethers.utils.Interface.getEvent
+
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `nameOrSignatureOrTopic` | ``"OwnershipTransferred"`` |
+
+#### Returns
+
+`EventFragment`
+
+#### Overrides
+
+ethers.utils.Interface.getEvent
+
+▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `nameOrSignatureOrTopic` | ``"Upgraded"`` |
 
 #### Returns
 

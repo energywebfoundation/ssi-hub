@@ -149,7 +149,7 @@ export class DIDService {
     } catch (err) {
       this.logger.error(err);
     } finally {
-      transaction.finish();
+      transaction && transaction.finish();
     }
   }
 

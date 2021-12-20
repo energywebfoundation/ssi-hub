@@ -4,6 +4,7 @@ FROM $IMAGE as build
 
 ARG SENTRY_RELEASE
 ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_COMMIT
 
 WORKDIR /app
 COPY . .
@@ -17,7 +18,7 @@ RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
   curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | sh && \
   npm ci && \
   npm run build && \
-  SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN ./sentry-upload.sh && \
+  SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_COMMIT=$SENTRY_COMMIT ./sentry-upload.sh && \
   rm -rf node_modules && \
   npm ci --production && \
   ./docker/node-modules-clean.sh && \

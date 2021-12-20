@@ -122,6 +122,7 @@
 - [modules/search/search.module](modules/modules_search_search_module.md)
 - [modules/search/search.service](modules/modules_search_search_service.md)
 - [modules/search/search.types](modules/modules_search_search_types.md)
+- [modules/sentry/sentry-tracing.service](modules/modules_sentry_sentry_tracing_service.md)
 - [modules/sentry/sentry.module](modules/modules_sentry_sentry_module.md)
 - [modules/sentry/sentry.service](modules/modules_sentry_sentry_service.md)
 - [modules/staking/controllers/staking.controller](modules/modules_staking_controllers_staking_controller.md)

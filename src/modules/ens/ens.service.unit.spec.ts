@@ -16,6 +16,7 @@ import * as dotenv from 'dotenv';
 import { Logger } from '../logger/logger.service';
 import { StakingService } from '../staking/staking.service';
 import { utils } from 'ethers';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 const { namehash } = utils;
 
@@ -49,6 +50,10 @@ const MockLogger = {
   setContext: jest.fn(),
   info: jest.fn(),
   debug: jest.fn(),
+};
+
+const MockSentryTracing = {
+  startTransaction: jest.fn(),
 };
 
 export const ORG_MOCK_DATA: IOrganizationDefinition = {
@@ -129,6 +134,10 @@ describe('EnsService', () => {
         {
           provide: Logger,
           useValue: MockLogger,
+        },
+        {
+          provide: SentryTracingService,
+          useValue: MockSentryTracing,
         },
       ],
     }).compile();

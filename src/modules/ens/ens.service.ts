@@ -318,7 +318,7 @@ export class EnsService implements OnModuleDestroy {
     } catch (err) {
       this.logger.error(err);
     } finally {
-      transaction.finish();
+      transaction && transaction.finish();
     }
     this.logger.info('### Finished ENS Sync ###');
   }

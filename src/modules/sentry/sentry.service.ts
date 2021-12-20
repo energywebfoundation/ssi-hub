@@ -13,7 +13,7 @@ import { Client, Options } from '@sentry/types';
 
 @Injectable()
 export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
-  protected sentryEnabled = false;
+  private sentryEnabled = false;
 
   constructor(protected readonly configService: ConfigService) {}
 
@@ -25,11 +25,11 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
     await this.drain();
   }
 
-  public getSentry() {
+  getSentry() {
     return Sentry;
   }
 
-  public init(app: Application) {
+  init(app: Application) {
     const dsn = this.configService.get<string>('SENTRY_DNS');
 
     if (!dsn) {
@@ -47,7 +47,10 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
       dsn: dsn,
       environment: env,
       release: release,
-      tracesSampleRate: 1.0,
+      tracesSampleRate: this.configService.get<number>(
+        'SENTRY_TRACES_SAMPLE_RATE',
+        1,
+      ),
       integrations: [
         new RewriteFrames({
           root: global.__rootdir__,

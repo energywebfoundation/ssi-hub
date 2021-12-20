@@ -8,7 +8,7 @@ export class SentryTracingService {
     operationTag: string,
     operationName: string,
     data?: Record<string, any>,
-  ): Transaction {
+  ): Transaction | undefined {
     return Sentry.startTransaction({
       op: operationTag,
       name: operationName,
