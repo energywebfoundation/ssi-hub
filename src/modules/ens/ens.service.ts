@@ -24,6 +24,7 @@ import { DomainNotifier__factory } from '../../ethers/factories/DomainNotifier__
 import { DomainNotifier } from '../../ethers/DomainNotifier';
 import { Logger } from '../logger/logger.service';
 import { Provider } from '../../common/provider';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -43,6 +44,7 @@ export class EnsService implements OnModuleDestroy {
     private readonly config: ConfigService,
     private readonly logger: Logger,
     private readonly provider: Provider,
+    private readonly sentryTracingService: SentryTracingService,
   ) {
     this.logger.setContext(EnsService.name);
     utils.Logger.setLogLevel(LogLevel.ERROR);
@@ -296,9 +298,15 @@ export class EnsService implements OnModuleDestroy {
 
   async syncENS() {
     this.logger.info('### Started ENS Sync ###');
+    const transaction = this.sentryTracingService.startTransaction(
+      'sync-ens',
+      'Sync ENS',
+    );
+
     try {
       const namespaces = await this.getAllNamespaces();
       const chunks = chunk(namespaces, 10);
+
       for (const part of chunks) {
         await Promise.allSettled(
           part.map((item: string) => {
@@ -309,6 +317,8 @@ export class EnsService implements OnModuleDestroy {
       }
     } catch (err) {
       this.logger.error(err);
+    } finally {
+      transaction.finish();
     }
     this.logger.info('### Finished ENS Sync ###');
   }
