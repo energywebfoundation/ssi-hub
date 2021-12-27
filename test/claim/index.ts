@@ -94,7 +94,7 @@ export const claimTestSuite = () => {
       const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
       const jwt = new JWT(issKeys);
       await request(app.getHttpServer())
-        .post(`/v1/claim/request/${requester.did}`)
+        .post(`/v1/claim/request`)
         .set('Cookie', requester.cookies)
         .send({
           token: await jwt.sign(

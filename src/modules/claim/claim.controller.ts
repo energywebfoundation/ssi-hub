@@ -129,7 +129,7 @@ export class ClaimController {
     this.logger.debug(`credentials issued by ${did}`);
   }
 
-  @Post('/request/:did')
+  @Post('/request')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
   @ApiBody({
@@ -146,10 +146,7 @@ export class ClaimController {
     type: String,
     description: 'ID of newly added claim',
   })
-  public async postRequesterClaim(
-    @Param('did') did: string,
-    @Body() data: IClaimRequest,
-  ) {
+  public async postRequesterClaim(@Body() data: IClaimRequest) {
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
     const { sub } = jwt.decode(token) as { sub: string };
@@ -184,7 +181,7 @@ export class ClaimController {
       { claimId: claimData.id },
     );
 
-    this.logger.debug(`credentials requested from ${did}`);
+    this.logger.debug(`credentials requested from ${requester} for ${sub}`);
 
     return claimData.id;
   }

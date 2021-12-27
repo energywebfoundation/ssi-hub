@@ -95,7 +95,7 @@ describe('ClaimsController', () => {
     didMock.mockReturnValueOnce(requester);
 
     await testHttpServer
-      .post(`/v1/claim/request/${requester}`)
+      .post(`/v1/claim/request`)
       .send(claimRequest)
       .expect(201);
 
