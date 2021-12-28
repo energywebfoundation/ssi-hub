@@ -58,6 +58,7 @@ export class AuthModule implements NestModule {
         { path: '/v1/health/live', method: RequestMethod.GET },
         { path: '/v1/health/ready', method: RequestMethod.GET },
         { path: '/v1/health', method: RequestMethod.GET },
+        { path: '/v1/auth/status', method: RequestMethod.GET },
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }
