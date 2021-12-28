@@ -95,6 +95,7 @@ jobs:
           NATS_CLIENTS_URL: localhost:4222
           STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
           ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
+          DID_SYNC_MODE_FULL: false
 
       - name: Running E2E tests
         run: npm run test:e2e
@@ -136,3 +137,4 @@ jobs:
           STRATEGY_PRIVATE_KEY: ${{secrets.STRATEGY_PRIVATE_KEY}}
           STRATEGY_NUM_BLOCKS_BACK: 10
           STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
+          DID_SYNC_MODE_FULL: false

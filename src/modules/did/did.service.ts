@@ -25,8 +25,8 @@ import jwt from 'jsonwebtoken';
 import { Provider } from '../../common/provider';
 import {
   documentFromLogs,
-  mergeLogs,
   Resolver,
+  mergeLogs,
   ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
 
@@ -115,7 +115,7 @@ export class DIDService {
   }
 
   /**
-   * Adds the DID Document cache for a given DID.
+   * Adds or fully refresh the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
    * @param {string} did
    */
@@ -142,11 +142,11 @@ export class DIDService {
   }
 
   /**
-   * Refresh the DID Document cache for a given DID.
+   * Add any incremental changes to the DID document that occurred since the last sync.
    * Also retrieves all claims from IPFS for the document.
    * @param {string} did
    */
-  public async refreshCachedDocument(did: string) {
+  public async incrementalRefreshCachedDocument(did: string) {
     try {
       this.logger.info(`refreshing cached document for did: ${did}`);
       const cachedDIDDocument = await this.didRepository.findOne(did);
