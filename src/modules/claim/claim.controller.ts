@@ -247,7 +247,7 @@ export class ClaimController {
     summary: 'returns claims of Issuer with given DID',
   })
   @ApiQuery({
-    name: 'accepted',
+    name: 'isAccepted',
     required: false,
     description:
       '**true** - show only accepted <br> **false** - show only pending',
