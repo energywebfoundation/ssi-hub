@@ -228,7 +228,7 @@ export class ClaimController {
       'should return claims for namespaces like ' +
       '`admin.roles.myApp.apps.myOrg.iam.ewc`',
   })
-  public async getByParentNamespace(@Param('id') id: string) {
+  public async getByParentNamespace(@Param('namespace') id: string) {
     return await this.claimService.getByParentNamespace(id);
   }
 
