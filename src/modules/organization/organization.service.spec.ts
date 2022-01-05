@@ -4,6 +4,7 @@ import {
   TypeOrmModule,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
+import { NotFoundException } from '@nestjs/common';
 import { Application } from '../application/application.entity';
 import { Organization } from './organization.entity';
 import { OrganizationService } from './organization.service';
@@ -181,6 +182,27 @@ describe('OrganizationService', () => {
       const org = await service.getByNamespace(testOrg.namespace);
 
       expect(org).toBe(undefined);
+    });
+  });
+
+  describe('getSubOrgs', () => {
+    it('getSubOrgs() it should fetch sub-organizations of given namespace', async () => {
+      const subOrgs = await service.getSubOrgs('parentOrg.iam.ewc');
+
+      expect(subOrgs.length).toBe(organizations.length);
+      expect(subOrgs).toEqual(
+        organizations.map(org => {
+          delete org.parentOrg;
+          return org;
+        }),
+      );
+    });
+
+    it('getSubOrgs() it should throw an error for unknown parent organization', async () => {
+      const subOrgs = async () =>
+        await service.getSubOrgs('notAParentOrg.iam.ewc');
+
+      await expect(subOrgs()).rejects.toThrow(NotFoundException);
     });
   });
 });
