@@ -25,7 +25,7 @@
 
 ### claimIssuer
 
-• `Optional` **claimIssuer**: `string`[]
+• `Optional` **claimIssuer**: `string`
 
 #### Inherited from
 

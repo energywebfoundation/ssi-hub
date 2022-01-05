@@ -33,7 +33,7 @@
 
 ### claimIssuer
 
-• **claimIssuer**: `string`[]
+• **claimIssuer**: `string`
 
 #### Implementation of
 

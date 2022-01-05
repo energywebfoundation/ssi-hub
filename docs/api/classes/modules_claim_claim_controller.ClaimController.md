@@ -30,13 +30,14 @@
 
 ### constructor
 
-• **new ClaimController**(`claimService`, `assetsService`, `logger`, `nats`)
+• **new ClaimController**(`claimService`, `didService`, `assetsService`, `logger`, `nats`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `claimService` | [`ClaimService`](modules_claim_claim_service.ClaimService.md) |
+| `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `assetsService` | [`AssetsService`](modules_assets_assets_service.AssetsService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `nats` | [`NatsService`](modules_nats_nats_service.NatsService.md) |
