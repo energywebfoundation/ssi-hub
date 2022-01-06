@@ -89,13 +89,6 @@ export class ClaimController {
       throw new ForbiddenException('User signature not valid');
     }
 
-    if (
-      data.onChainProof &&
-      !(await proofVerifier.verifyAssertionProof(data.onChainProof))
-    ) {
-      throw new ForbiddenException('User signature not valid');
-    }
-
     const claimData: IClaimIssuance = {
       ...data,
       acceptedBy: did,
