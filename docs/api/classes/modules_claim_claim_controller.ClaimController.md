@@ -254,13 +254,12 @@ ___
 
 ### postRequesterClaim
 
-▸ **postRequesterClaim**(`did`, `data`): `Promise`<`string`\>
+▸ **postRequesterClaim**(`data`): `Promise`<`string`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `did` | `string` |
 | `data` | [`IClaimRequest`](../interfaces/modules_claim_claim_types.IClaimRequest.md) |
 
 #### Returns
