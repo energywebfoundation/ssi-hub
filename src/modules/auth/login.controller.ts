@@ -132,4 +132,31 @@ export class LoginController {
 
     return res.send({ token, refreshToken });
   }
+
+  @Get('auth/status')
+  async status(@Req() req: Request) {
+    const accessTokenString =
+      req.headers['authorization']?.replace('Bearer ', '') ||
+      req.cookies[this.configService.get<string>('JWT_ACCESS_TOKEN_NAME')];
+
+    if (!accessTokenString) {
+      return {
+        user: null,
+      };
+    }
+
+    try {
+      const tokenData = await this.tokenService.verifyAccessToken(
+        accessTokenString,
+      );
+
+      return {
+        user: tokenData?.did || null,
+      };
+    } catch {
+      return {
+        user: null,
+      };
+    }
+  }
 }

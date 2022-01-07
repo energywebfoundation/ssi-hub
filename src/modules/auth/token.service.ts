@@ -33,8 +33,8 @@ export class TokenService {
     });
   }
 
-  verifyAccessToken(token: string) {
-    return this.jwtService.verifyAsync(token);
+  async verifyAccessToken(token: string) {
+    return this.jwtService.verifyAsync<TokenPayload>(token);
   }
 
   async verifyRefreshToken(token: string) {
