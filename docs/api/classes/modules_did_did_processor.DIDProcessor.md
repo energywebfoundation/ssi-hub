@@ -18,7 +18,7 @@
 
 ### constructor
 
-• **new DIDProcessor**(`didService`, `logger`, `configService`)
+• **new DIDProcessor**(`didService`, `logger`)
 
 #### Parameters
 
@@ -26,7 +26,6 @@
 | :------ | :------ |
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
 
 ## Methods
 

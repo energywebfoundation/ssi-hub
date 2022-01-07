@@ -2,10 +2,7 @@ name: Cache-Server Test
 
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events
-  push:
   pull_request:
-
   workflow_dispatch:
 
 jobs:
@@ -61,9 +58,6 @@ jobs:
 
       - name: Check linting
         run: npm run lint
-
-      - name: Run Commitlint
-        run: npx commitlint --from HEAD~1 --verbose
 
       - name: Audit package dependencies
         run: npm audit --audit-level=critical

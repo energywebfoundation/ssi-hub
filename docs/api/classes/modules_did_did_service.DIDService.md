@@ -13,7 +13,7 @@
 - [addCachedDocument](modules_did_did_service.DIDService.md#addcacheddocument)
 - [getById](modules_did_did_service.DIDService.md#getbyid)
 - [getDIDDocumentFromUniversalResolver](modules_did_did_service.DIDService.md#getdiddocumentfromuniversalresolver)
-- [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
+- [refreshCachedDocument](modules_did_did_service.DIDService.md#refreshcacheddocument)
 
 ## Constructors
 
@@ -39,7 +39,7 @@
 
 ▸ **addCachedDocument**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
 
-Adds or fully refresh the DID Document cache for a given DID.
+Adds the DID Document cache for a given DID.
 Also retrieves all claims from IPFS for the document.
 
 #### Parameters
@@ -90,11 +90,11 @@ ___
 
 ___
 
-### incrementalRefreshCachedDocument
+### refreshCachedDocument
 
-▸ **incrementalRefreshCachedDocument**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
+▸ **refreshCachedDocument**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
 
-Add any incremental changes to the DID document that occurred since the last sync.
+Refresh the DID Document cache for a given DID.
 Also retrieves all claims from IPFS for the document.
 
 #### Parameters
