@@ -20,6 +20,7 @@
 - [namespace](modules_claim_claim_types.IRoleClaim.md#namespace)
 - [onChainProof](modules_claim_claim_types.IRoleClaim.md#onchainproof)
 - [registrationTypes](modules_claim_claim_types.IRoleClaim.md#registrationtypes)
+- [rejectionReason](modules_claim_claim_types.IRoleClaim.md#rejectionreason)
 - [requester](modules_claim_claim_types.IRoleClaim.md#requester)
 - [subjectAgreement](modules_claim_claim_types.IRoleClaim.md#subjectagreement)
 - [token](modules_claim_claim_types.IRoleClaim.md#token)
@@ -83,6 +84,12 @@ ___
 ### registrationTypes
 
 • **registrationTypes**: [`RegistrationTypes`](../enums/modules_claim_claim_types.RegistrationTypes.md)[]
+
+___
+
+### rejectionReason
+
+• `Optional` **rejectionReason**: `string`
 
 ___
 
