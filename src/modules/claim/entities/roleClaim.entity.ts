@@ -85,6 +85,6 @@ export class RoleClaim implements IRoleClaim {
 
 export class DIDsQuery {
   @IsArray()
-  @Transform((value: string) => value.split(','))
+  @Transform(({ value }) => value.split(','))
   subjects: string[];
 }
