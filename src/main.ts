@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import compression from 'compression';
 import helmet from 'helmet';
+import { SentryService } from './modules/sentry/sentry.service';
+import * as SentryNode from '@sentry/node';
 
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
@@ -22,6 +24,16 @@ global.__rootdir__ = process.cwd();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const configService = app.get<ConfigService>(ConfigService);
+
+  const sentryService = new SentryService(configService);
+
+  sentryService.init(app.getHttpAdapter().getInstance());
+
+  app.use(SentryNode.Handlers.requestHandler());
+  app.use(SentryNode.Handlers.tracingHandler());
+
   app.enableVersioning({
     type: VersioningType.URI,
   });
@@ -57,8 +69,7 @@ async function bootstrap() {
 
   app.enableCors({ credentials: true, origin: true });
 
-  const configService = app.get(ConfigService);
-
+  app.use(SentryNode.Handlers.errorHandler());
   await app.listen(configService.get('NESTJS_PORT'));
 }
 bootstrap();

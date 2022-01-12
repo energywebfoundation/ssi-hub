@@ -22,7 +22,7 @@
 
 ### constructor
 
-• **new EnsService**(`roleService`, `applicationService`, `organizationService`, `schedulerRegistry`, `config`, `logger`, `provider`)
+• **new EnsService**(`roleService`, `applicationService`, `organizationService`, `schedulerRegistry`, `config`, `logger`, `provider`, `sentryTracingService`)
 
 #### Parameters
 
@@ -35,6 +35,7 @@
 | `config` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `provider` | [`Provider`](common_provider.Provider.md) |
+| `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 
 ## Methods
 

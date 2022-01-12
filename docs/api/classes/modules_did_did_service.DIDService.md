@@ -19,7 +19,7 @@
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`)
 
 #### Parameters
 
@@ -32,6 +32,7 @@
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `didRepository` | `Repository`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\> |
 | `provider` | [`Provider`](common_provider.Provider.md) |
+| `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 
 ## Methods
 

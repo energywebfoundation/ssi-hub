@@ -10,6 +10,7 @@ import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { BigNumber } from '@ethersproject/bignumber';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
 const MockLogger = {
@@ -20,6 +21,9 @@ const MockLogger = {
   setContext: jest.fn(),
 };
 const MockObject = {};
+const MockSentryTracing = {
+  startTransaction: jest.fn(),
+};
 const MockConfigService = {
   get: jest.fn((key: string) => {
     if (key === 'DID_SYNC_ENABLED') {
@@ -92,6 +96,7 @@ describe('DidDocumentService', () => {
           useFactory: repositoryMockFactory,
         },
         { provide: Provider, useValue: MockObject },
+        { provide: SentryTracingService, useValue: MockSentryTracing },
       ],
     }).compile();
 

@@ -29,6 +29,7 @@ import {
   Resolver,
   ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 @Injectable()
 export class DIDService {
@@ -44,6 +45,7 @@ export class DIDService {
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
+    private readonly sentryTracingService: SentryTracingService,
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -120,6 +122,14 @@ export class DIDService {
    * @param {string} did
    */
   public async addCachedDocument(did: string) {
+    const transaction = this.sentryTracingService.startTransaction(
+      'process-did',
+      'Process DID',
+      {
+        did,
+      },
+    );
+
     try {
       this.logger.debug(`Add cached document for did: ${did}`);
       const logs = await this.getAllLogs(did);
@@ -138,6 +148,8 @@ export class DIDService {
       return this.didRepository.save(updatedEntity);
     } catch (err) {
       this.logger.error(err);
+    } finally {
+      transaction && transaction.finish();
     }
   }
 
