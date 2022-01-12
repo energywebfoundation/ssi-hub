@@ -337,13 +337,13 @@ ___
 
 ### reject
 
-▸ **reject**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+▸ **reject**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `id` | `string` |
+| `__namedParameters` | [`ClaimRejectionDTO`](modules_claim_claim_dto.ClaimRejectionDTO.md) |
 
 #### Returns
 
