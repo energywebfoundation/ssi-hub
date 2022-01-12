@@ -29,7 +29,7 @@ export class NatsService {
     data: Record<string, unknown>,
   ) {
     await Promise.all(
-      dids.map(did =>
+      [...new Set(dids)].map(did =>
         this.messagesQueue.add('message', {
           subject: `${requestType}.${topic}.${did}.${this.natsEnvironmentName}`,
           data: { type: requestType, ...data },

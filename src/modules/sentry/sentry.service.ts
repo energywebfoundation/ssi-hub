@@ -72,6 +72,20 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
         }),
         new Sentry.Integrations.OnUnhandledRejection({ mode: 'warn' }),
       ],
+      beforeSend(event) {
+        const request = event.request;
+        if (request) {
+          delete request.cookies;
+          delete request.data?.identityToken;
+          request.url.replace(/refresh_token=.*/, 'refresh_token=[Filtered]');
+          const headers = request.headers;
+          if (headers) {
+            delete headers['Authorization'];
+            delete headers.cookie;
+          }
+        }
+        return event;
+      },
     });
   }
 

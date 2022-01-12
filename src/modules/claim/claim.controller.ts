@@ -11,8 +11,10 @@ import {
   HttpStatus,
   ValidationPipe,
   UsePipes,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ClaimService } from './claim.service';
+import { DIDService } from '../did/did.service';
 import {
   ApiBody,
   ApiExcludeEndpoint,
@@ -23,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
+import { ProofVerifier } from '@ew-did-registry/claims';
 import {
   ClaimEventType,
   IClaimIssuance,
@@ -53,6 +56,7 @@ import { NatsService } from '../nats/nats.service';
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
+    private readonly didService: DIDService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
     private readonly nats: NatsService,
@@ -75,14 +79,23 @@ export class ClaimController {
     @Param('did') did: string,
     @Body() data: IClaimIssuance,
   ) {
+    const didDoc = await this.didService.getById(did);
+    const proofVerifier = new ProofVerifier(didDoc);
+
+    if (
+      data.issuedToken &&
+      !(await proofVerifier.verifyAssertionProof(data.issuedToken))
+    ) {
+      throw new ForbiddenException('User signature not valid');
+    }
+
     const claimData: IClaimIssuance = {
       ...data,
       acceptedBy: did,
     };
 
-    const claimDTO = ClaimIssueDTO.create(claimData);
+    await ClaimIssueDTO.create(claimData);
 
-    await validateOrReject(claimDTO);
     const result = await this.claimService.handleClaimIssuanceRequest(
       claimData,
     );
@@ -90,18 +103,26 @@ export class ClaimController {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
-    const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as { sub:string };
+    const dids = [claimData.requester];
+
+    if (claimData.issuedToken) {
+      const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as {
+        sub: string;
+      };
+      dids.push(sub);
+    }
+
     await this.nats.publishForDids(
       ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
-      [claimData.requester, sub as string],
+      dids,
       { claimId: claimData.id },
     );
 
-    this.logger.debug(`credentials issued for ${did}`);
+    this.logger.debug(`credentials issued by ${did}`);
   }
 
-  @Post('/request/:did')
+  @Post('/request')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
   @ApiBody({
@@ -118,10 +139,7 @@ export class ClaimController {
     type: String,
     description: 'ID of newly added claim',
   })
-  public async postRequesterClaim(
-    @Param('did') did: string,
-    @Body() data: IClaimRequest,
-  ) {
+  public async postRequesterClaim(@Body() data: IClaimRequest) {
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
     const { sub } = jwt.decode(token) as { sub: string };
@@ -152,11 +170,11 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
+      [claimData.claimIssuer],
       { claimId: claimData.id },
     );
 
-    this.logger.debug(`credentials requested from ${did}`);
+    this.logger.debug(`credentials requested from ${requester} for ${sub}`);
 
     return claimData.id;
   }
@@ -196,7 +214,7 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
+      [claimData.claimIssuer],
       { claimId: claimData.id },
     );
 
