@@ -9,7 +9,7 @@
 
 ### Variables
 
-- [UUID_NAMESPACE](modules_claim_claim_service.md#uuid_namespace)
+- [UUID\_NAMESPACE](modules_claim_claim_service.md#uuid_namespace)
 
 ## Variables
 

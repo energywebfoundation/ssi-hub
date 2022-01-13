@@ -32,7 +32,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `value` | `any` |
+| `value` | `unknown` |
 
 #### Returns
 

@@ -60,7 +60,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Provider` \| `Signer` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
 
 #### Inherited from
 
@@ -130,16 +130,16 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `ApprovalForAll` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `boolean`], `Object`\> |
-| `ApprovalForAll(address,address,bool)` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `boolean`], `Object`\> |
-| `NewOwner` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
-| `NewOwner(bytes32,bytes32,address)` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
-| `NewResolver` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
-| `NewResolver(bytes32,address)` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
-| `NewTTL` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], `Object`\> |
-| `NewTTL(bytes32,uint64)` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], `Object`\> |
-| `Transfer` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
-| `Transfer(bytes32,address)` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `ApprovalForAll` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `boolean`], { `approved`: `boolean` ; `operator`: `string` ; `owner`: `string`  }\> |
+| `ApprovalForAll(address,address,bool)` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `boolean`], { `approved`: `boolean` ; `operator`: `string` ; `owner`: `string`  }\> |
+| `NewOwner` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `label`: `string` ; `node`: `string` ; `owner`: `string`  }\> |
+| `NewOwner(bytes32,bytes32,address)` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `label`: `string` ; `node`: `string` ; `owner`: `string`  }\> |
+| `NewResolver` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `resolver`: `string`  }\> |
+| `NewResolver(bytes32,address)` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `resolver`: `string`  }\> |
+| `NewTTL` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `node`: `string` ; `ttl`: `BigNumber`  }\> |
+| `NewTTL(bytes32,uint64)` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `node`: `string` ; `ttl`: `BigNumber`  }\> |
+| `Transfer` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `owner`: `string`  }\> |
+| `Transfer(bytes32,address)` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `owner`: `string`  }\> |
 
 #### Overrides
 

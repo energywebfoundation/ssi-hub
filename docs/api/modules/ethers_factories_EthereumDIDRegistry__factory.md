@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [EthereumDIDRegistry__factory](../classes/ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md)
+- [EthereumDIDRegistry\_\_factory](../classes/ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md)

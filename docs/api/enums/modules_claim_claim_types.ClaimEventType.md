@@ -8,9 +8,9 @@ Types inspired by Aries Issue-Credential protocol [https://github.com/hyperledge
 
 ### Enumeration members
 
-- [ISSUE_CREDENTIAL](modules_claim_claim_types.ClaimEventType.md#issue_credential)
-- [REJECT_CREDENTIAL](modules_claim_claim_types.ClaimEventType.md#reject_credential)
-- [REQUEST_CREDENTIALS](modules_claim_claim_types.ClaimEventType.md#request_credentials)
+- [ISSUE\_CREDENTIAL](modules_claim_claim_types.ClaimEventType.md#issue_credential)
+- [REJECT\_CREDENTIAL](modules_claim_claim_types.ClaimEventType.md#reject_credential)
+- [REQUEST\_CREDENTIALS](modules_claim_claim_types.ClaimEventType.md#request_credentials)
 
 ## Enumeration members
 
