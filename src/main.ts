@@ -73,3 +73,4 @@ async function bootstrap() {
   await app.listen(configService.get('NESTJS_PORT'));
 }
 bootstrap();
+// UPDATE
