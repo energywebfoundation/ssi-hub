@@ -30,7 +30,7 @@ export const getDBConfig = (configService: ConfigService) => {
   !isProduction &&
     fs.writeFileSync(
       'ormconfig.json',
-      JSON.stringify({ ...config, entities: ['dist/**/*.entity.js'] }, null, 2),
+      JSON.stringify({ ...config, entities: ['dist/**/*.entity.js'] }, null, 2)
     );
 
   return config;

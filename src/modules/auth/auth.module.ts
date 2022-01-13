@@ -50,7 +50,7 @@ export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply((req, res, next) =>
-        this.tokenService.handleOriginCheck(req, res, next),
+        this.tokenService.handleOriginCheck(req, res, next)
       )
       .exclude(
         { path: '/v1/login', method: RequestMethod.ALL },
@@ -58,7 +58,7 @@ export class AuthModule implements NestModule {
         { path: '/v1/health/live', method: RequestMethod.GET },
         { path: '/v1/health/ready', method: RequestMethod.GET },
         { path: '/v1/health', method: RequestMethod.GET },
-        { path: '/v1/auth/status', method: RequestMethod.GET },
+        { path: '/v1/auth/status', method: RequestMethod.GET }
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }

@@ -24,7 +24,7 @@ export class AssetResolver {
   @Query(() => Asset)
   async asset(
     @Args('id', { type: () => String }) id: string,
-    @UserGQL() currentUser?: string,
+    @UserGQL() currentUser?: string
   ) {
     const asset = await this.assetsService.getById(id);
     if (
@@ -40,7 +40,7 @@ export class AssetResolver {
   @Query(() => [Asset])
   getAssetsByOwner(
     @Args('owner', { type: () => String }) owner: string,
-    @UserGQL() currentUser?: string,
+    @UserGQL() currentUser?: string
   ) {
     if (currentUser && owner !== currentUser) {
       throw new ForbiddenException();
@@ -51,7 +51,7 @@ export class AssetResolver {
   @Query(() => [Asset])
   getAssetsByPreviousOwner(
     @Args('owner', { type: () => String }) owner: string,
-    @UserGQL() currentUser?: string,
+    @UserGQL() currentUser?: string
   ) {
     if (currentUser && owner !== currentUser) {
       throw new ForbiddenException();
@@ -62,7 +62,7 @@ export class AssetResolver {
   @Query(() => [Asset])
   getAssetsByOfferedTo(
     @Args('offeredTo', { type: () => String }) offeredTo: string,
-    @UserGQL() currentUser?: string,
+    @UserGQL() currentUser?: string
   ) {
     if (currentUser && offeredTo !== currentUser) {
       throw new ForbiddenException();
@@ -80,7 +80,7 @@ export class AssetResolver {
     @Args('order', { type: () => Order, nullable: true })
     order?: Order,
     @Args('type', { type: () => AssetHistoryEventType, nullable: true })
-    type?: AssetHistoryEventType,
+    type?: AssetHistoryEventType
   ) {
     const query = await HistoryQuery.create({
       order,

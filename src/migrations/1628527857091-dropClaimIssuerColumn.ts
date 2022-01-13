@@ -9,7 +9,7 @@ export class dropClaimIssuerColumn1628527857091 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "claim" ADD "claimIssuer" text array NOT NULL`,
+      `ALTER TABLE "claim" ADD "claimIssuer" text array NOT NULL`
     );
   }
 }

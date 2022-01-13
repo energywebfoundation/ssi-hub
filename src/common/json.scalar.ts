@@ -5,7 +5,8 @@ export class JSONObject {}
 
 @Scalar('JSONObject', () => JSONObject)
 export class JSONObjectScalar
-  implements CustomScalar<Record<string, unknown>, Record<string, unknown>> {
+  implements CustomScalar<Record<string, unknown>, Record<string, unknown>>
+{
   description = 'JSONObject custom scalar type';
 
   parseValue(value: Record<string, unknown>): Record<string, unknown> {
@@ -16,6 +17,7 @@ export class JSONObjectScalar
     return value; // this is the value the server sends to the client
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parseLiteral(ast: any): Record<string, unknown> {
     if (ast.kind === Kind.OBJECT) {
       return Object.assign({}, ast.value);

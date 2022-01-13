@@ -43,7 +43,7 @@ describe('NatsService', () => {
       'rt',
       'topic1',
       ['did1', 'did2', 'did3', 'did1', 'did2', 'did1'],
-      { data: 'some data' },
+      { data: 'some data' }
     );
 
     expect(mockQueue.add).toBeCalledTimes(3);

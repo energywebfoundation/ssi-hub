@@ -17,7 +17,7 @@ export class NatsService {
     private natsWrapper: NatsWrapper,
     private readonly config: ConfigService,
     @InjectQueue('nats-messages')
-    private readonly messagesQueue: Queue<IMessageJob>,
+    private readonly messagesQueue: Queue<IMessageJob>
   ) {
     this.natsEnvironmentName = this.config.get<string>('NATS_ENVIRONMENT_NAME');
   }
@@ -26,15 +26,15 @@ export class NatsService {
     requestType: string,
     topic: string,
     dids: string[],
-    data: Record<string, unknown>,
+    data: Record<string, unknown>
   ) {
     await Promise.all(
-      [...new Set(dids)].map(did =>
+      [...new Set(dids)].map((did) =>
         this.messagesQueue.add('message', {
           subject: `${requestType}.${topic}.${did}.${this.natsEnvironmentName}`,
           data: { type: requestType, ...data },
-        }),
-      ),
+        })
+      )
     );
   }
 

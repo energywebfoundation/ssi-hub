@@ -7,7 +7,7 @@ const deleteDuplicateOrgs = async (queryRunner: QueryRunner) => {
             SELECT FROM organization
             WHERE  namespace = org.namespace
             AND    id < org.id
-        );`,
+        );`
   );
 };
 
@@ -18,7 +18,7 @@ const deleteDuplicateApps = async (queryRunner: QueryRunner) => {
             SELECT FROM application
             WHERE  namespace = app.namespace
             AND    id < app.id
-        );`,
+        );`
   );
 };
 
@@ -29,7 +29,7 @@ const deleteDuplicateRoles = async (queryRunner: QueryRunner) => {
             SELECT FROM role
             WHERE  namespace = r.namespace
             AND    id < r.id
-        );`,
+        );`
   );
 };
 
@@ -40,6 +40,7 @@ export class RemoveDuplicates1630744507207 implements MigrationInterface {
     await deleteDuplicateRoles(queryRunner);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(): Promise<void> {
+    return;
+  }
 }

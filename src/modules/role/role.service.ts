@@ -4,7 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { IServiceEndpoint } from '@ew-did-registry/did-resolver-interface';
-import { RoleDTO } from './role.dto';
+import { RoleDefinitionDTO, RoleDTO } from './role.dto';
 import { DIDService } from '../did/did.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
@@ -23,7 +23,7 @@ export class RoleService {
     private readonly didService: DIDService,
     private readonly appService: ApplicationService,
     private readonly orgService: OrganizationService,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.logger.setContext(RoleService.name);
   }
@@ -80,7 +80,7 @@ export class RoleService {
   public async create({ appNamespace, orgNamespace, ...data }: RoleDTO) {
     if (appNamespace && orgNamespace) {
       this.logger.debug(
-        `Not able to create role: ${data.namespace}, namespace can only have one of parentApp and OrgApp`,
+        `Not able to create role: ${data.namespace}, namespace can only have one of parentApp and OrgApp`
       );
       return;
     }
@@ -91,7 +91,7 @@ export class RoleService {
       parentApp = await this.appService.getByNamespace(appNamespace);
       if (!parentApp) {
         this.logger.debug(
-          `Not able to create role: ${data.namespace}, parent application ${appNamespace} does not exists`,
+          `Not able to create role: ${data.namespace}, parent application ${appNamespace} does not exists`
         );
         return;
       }
@@ -100,7 +100,7 @@ export class RoleService {
       parentOrg = await this.orgService.getByNamespace(orgNamespace);
       if (!parentOrg) {
         this.logger.debug(
-          `Not able to create role: ${data.namespace}, parent organization ${orgNamespace} does not exists`,
+          `Not able to create role: ${data.namespace}, parent organization ${orgNamespace} does not exists`
         );
         return;
       }
@@ -173,17 +173,19 @@ export class RoleService {
   public async verifyUserRoles(did: string) {
     const { service } = await this.didService.getById(did);
     const verifiedRoles = await Promise.all(
-      ((service as unknown) as (IServiceEndpoint & {
-        claimType?: string;
-        claimTypeVersion?: number;
-        iss: string;
-      })[]).map(({ iss, claimTypeVersion, claimType }) =>
+      (
+        service as unknown as (IServiceEndpoint & {
+          claimType?: string;
+          claimTypeVersion?: number;
+          iss: string;
+        })[]
+      ).map(({ iss, claimTypeVersion, claimType }) =>
         this.verifyRole({
           issuer: iss,
           namespace: claimType,
           version: claimTypeVersion,
-        }),
-      ),
+        })
+      )
     );
     return verifiedRoles.filter(Boolean);
   }
@@ -213,11 +215,11 @@ export class RoleService {
       if (type === 'role' && conditions && conditions?.length > 0) {
         const conditionMet = didDocument.service.some(
           ({ claimType }) =>
-            claimType && conditions.includes(claimType as string),
+            claimType && conditions.includes(claimType as string)
         );
         if (!conditionMet) {
           throw new Error(
-            `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}`,
+            `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}`
           );
         }
       }
@@ -245,7 +247,7 @@ export class RoleService {
     } = role;
 
     const forbiddenError = new ForbiddenException(
-      `${issuerDID} is not allowed to issue ${claimType}`,
+      `${issuerDID} is not allowed to issue ${claimType}`
     );
     switch (issuer.issuerType) {
       case 'DID': {
@@ -255,7 +257,7 @@ export class RoleService {
       case 'ROLE': {
         if (
           !didDocument.service.some(
-            ({ claimType }) => claimType === issuer.roleName,
+            ({ claimType }) => claimType === issuer.roleName
           )
         )
           throw forbiddenError;
@@ -301,7 +303,7 @@ export class RoleService {
 
     if (role.issuer?.issuerType === 'Role') {
       const { service: issuerClaims } = await this.didService.getById(issuer);
-      const issuerRoles = issuerClaims.map(c => c.claimType);
+      const issuerRoles = issuerClaims.map((c) => c.claimType);
       if (issuerRoles.includes(role.issuer.roleName)) {
         return {
           name: role.roleName,
@@ -334,7 +336,7 @@ export class RoleService {
     try {
       dto = await RoleDTO.create({
         definition: {
-          ...(metadata as any),
+          ...(metadata as RoleDefinitionDTO),
         },
         orgNamespace,
         appNamespace,
@@ -348,8 +350,8 @@ export class RoleService {
         `Validation failed for ${namespace} with errors: ${JSON.stringify(
           err,
           null,
-          2,
-        )}`,
+          2
+        )}`
       );
       return;
     }

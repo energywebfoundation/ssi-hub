@@ -50,7 +50,7 @@ export const claimTestSuite = () => {
             roleType: 'org',
             version: 1,
           },
-        }),
+        })
       );
     };
 
@@ -88,7 +88,7 @@ export const claimTestSuite = () => {
         did: string;
         cookies: string[];
       },
-      expectStatusCode: number,
+      expectStatusCode: number
     ) => {
       const claimId = v4();
       const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
@@ -106,7 +106,7 @@ export const claimTestSuite = () => {
                 issuerFields: [],
               },
             },
-            { issuer: issuer.did, subject: requester.did },
+            { issuer: issuer.did, subject: requester.did }
           ),
           claimType: role,
           claimTypeVersion: '1',
@@ -135,7 +135,7 @@ export const claimTestSuite = () => {
         did: string;
         cookies: string[];
       },
-      expectStatusCode: number,
+      expectStatusCode: number
     ) => {
       const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
       const jwt = new JWT(issKeys);
@@ -154,7 +154,7 @@ export const claimTestSuite = () => {
                 claimTypeVersion: claimData.claimTypeVersion,
               },
             },
-            { issuer: issuer.did, subject: claimData.requester },
+            { issuer: issuer.did, subject: claimData.requester }
           ),
           requester: claimData.requester,
         })
@@ -171,9 +171,8 @@ export const claimTestSuite = () => {
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-        'master',
-      );
+      queryRunner = manager.queryRunner =
+        dbConnection.createQueryRunner('master');
       await queryRunner.startTransaction();
     });
 
@@ -195,7 +194,7 @@ export const claimTestSuite = () => {
         'test1.roles.e2e.iam.ewc',
         requester,
         issuer,
-        201,
+        201
       );
       await issueClaimRequest(claimData, issuer, 201);
     });
@@ -215,10 +214,10 @@ export const claimTestSuite = () => {
         'test2.roles.e2e.iam.ewc',
         requester,
         issuerWithRole,
-        201,
+        201
       );
       const didRepository = app.get<Repository<DIDDocumentEntity>>(
-        getRepositoryToken(DIDDocumentEntity),
+        getRepositoryToken(DIDDocumentEntity)
       );
 
       await didRepository.save({
@@ -257,7 +256,7 @@ export const claimTestSuite = () => {
         'test3.roles.e2e.iam.ewc',
         requester,
         issuer,
-        201,
+        201
       );
       await issueClaimRequest(claimData, invalidIssuer, 403);
     });
@@ -277,7 +276,7 @@ export const claimTestSuite = () => {
         'test4.roles.e2e.iam.ewc',
         requester,
         issuer,
-        201,
+        201
       );
       await issueClaimRequest(claimData, invalidIssuer, 403);
     });

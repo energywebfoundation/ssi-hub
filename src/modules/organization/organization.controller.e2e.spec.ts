@@ -60,15 +60,14 @@ describe('OrganizationController', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-      'master',
-    );
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
     await queryRunner.startTransaction();
     orgRepo = module.get<Repository<Organization>>(
-      getRepositoryToken(Organization),
+      getRepositoryToken(Organization)
     );
     appRepo = module.get<Repository<Application>>(
-      getRepositoryToken(Application),
+      getRepositoryToken(Application)
     );
     roleRepo = module.get<Repository<Role>>(getRepositoryToken(Role));
     organizations = await organizationFixture(orgRepo, 2);
@@ -85,7 +84,7 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/${testOrg.namespace}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body.id).toEqual(testOrg.id);
         expect(res.body.namespace).toEqual(testOrg.namespace);
         expect(res.body.owner).toEqual(testOrg.owner);
@@ -98,7 +97,7 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/${testOrgNamespace}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toEqual({});
       });
   });
@@ -108,10 +107,10 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/owner/${testOrg.owner}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         const response: Organization[] = res.body;
         expect(response.length).toBe(3);
-        response.map(res => {
+        response.map((res) => {
           expect(res).toHaveProperty('id');
           expect(res).toHaveProperty('name');
           expect(res).toHaveProperty('namespace');
@@ -126,7 +125,7 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/owner/${testOrgOwner}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         const response: Organization[] = res.body;
         expect(response.length).toBe(0);
       });
@@ -167,7 +166,7 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/owner/${parentOrg.owner}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         const response: Organization[] = res.body;
         expect(response.length).toBe(1);
         expect(response[0].apps.length).toBe(1);
@@ -179,7 +178,7 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/owner/${parentOrg.owner}?withRelations=false`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         const response: Organization[] = res.body;
         expect(response.length).toBe(1);
         expect(response[0].apps).toBe(undefined);
@@ -193,7 +192,7 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/${namespace}/exists`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.text).toBe('true');
       });
   });
@@ -203,7 +202,7 @@ describe('OrganizationController', () => {
     await testHttpServer
       .get(`/v1/org/${testOrgNamespace}/exists`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.text).toBe('false');
       });
   });

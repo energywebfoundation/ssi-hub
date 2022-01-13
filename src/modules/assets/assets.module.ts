@@ -11,7 +11,11 @@ import { AssetsEventSubscriber } from './assets.subscriber';
 import { NatsModule } from '../nats/nats.module';
 
 @Module({
-  imports: [DIDModule, TypeOrmModule.forFeature([Asset, AssetsHistory]), NatsModule],
+  imports: [
+    DIDModule,
+    TypeOrmModule.forFeature([Asset, AssetsHistory]),
+    NatsModule,
+  ],
   providers: [
     AssetsService,
     AssetResolver,
@@ -20,6 +24,6 @@ import { NatsModule } from '../nats/nats.module';
     AssetsEventSubscriber,
   ],
   controllers: [AssetsController],
-  exports: [AssetsService]
+  exports: [AssetsService],
 })
-export class AssetsModule { }
+export class AssetsModule {}

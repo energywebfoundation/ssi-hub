@@ -10,7 +10,7 @@ export class DIDProcessor {
   constructor(
     private readonly didService: DIDService,
     private readonly logger: Logger,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     this.logger.setContext(DIDProcessor.name);
   }

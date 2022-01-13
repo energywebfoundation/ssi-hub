@@ -44,7 +44,7 @@ async function bootstrap() {
     helmet({
       /// https://github.com/graphql/graphql-playground/issues/1283#issuecomment-703631091
       contentSecurityPolicy: false,
-    }),
+    })
   );
 
   // add cookie parser to read jwt token cookie
@@ -73,4 +73,3 @@ async function bootstrap() {
   await app.listen(configService.get('NESTJS_PORT'));
 }
 bootstrap();
-// UPDATE

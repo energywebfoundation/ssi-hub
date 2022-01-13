@@ -3,7 +3,7 @@ import base64url from 'base64url';
 
 export const getIdentityToken = async (
   provider: providers.Provider,
-  signer: Signer,
+  signer: Signer
 ) => {
   const [address, blockNumber] = await Promise.all([
     signer.getAddress(),
@@ -26,7 +26,7 @@ export const getIdentityToken = async (
   const encodedHeader = base64url(JSON.stringify(header));
   const encodedPayload = base64url(JSON.stringify(payload));
   const msg = `0x${Buffer.from(`${encodedHeader}.${encodedPayload}`).toString(
-    'hex',
+    'hex'
   )}`;
   const sig = await signer.signMessage(arrayify(keccak256(msg)));
   const encodedSignature = base64url(sig);

@@ -59,7 +59,7 @@ export class ClaimController {
     private readonly didService: DIDService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
-    private readonly nats: NatsService,
+    private readonly nats: NatsService
   ) {
     this.logger.setContext(ClaimController.name);
   }
@@ -77,7 +77,7 @@ export class ClaimController {
   })
   public async postIssuerClaim(
     @Param('did') did: string,
-    @Body() data: IClaimIssuance,
+    @Body() data: IClaimIssuance
   ) {
     const didDoc = await this.didService.getById(did);
     const proofVerifier = new ProofVerifier(didDoc);
@@ -97,7 +97,7 @@ export class ClaimController {
     await ClaimIssueDTO.create(claimData);
 
     const result = await this.claimService.handleClaimIssuanceRequest(
-      claimData,
+      claimData
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
@@ -116,7 +116,7 @@ export class ClaimController {
       ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       dids,
-      { claimId: claimData.id },
+      { claimId: claimData.id }
     );
 
     this.logger.debug(`credentials issued by ${did}`);
@@ -144,10 +144,10 @@ export class ClaimController {
     const { requester, token } = data;
     const { sub } = jwt.decode(token) as { sub: string };
     const ownedAssets = await this.assetsService.getByOwner(requester);
-    if (requester !== sub && !ownedAssets.some(a => a.document.id === sub)) {
+    if (requester !== sub && !ownedAssets.some((a) => a.document.id === sub)) {
       throw new HttpException(
         'Claim requester not authorized to request for subject',
-        HttpStatus.FORBIDDEN,
+        HttpStatus.FORBIDDEN
       );
     }
 
@@ -161,7 +161,7 @@ export class ClaimController {
     await validateOrReject(claimDTO);
 
     const result = await this.claimService.handleClaimEnrolmentRequest(
-      claimData,
+      claimData
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
@@ -171,7 +171,7 @@ export class ClaimController {
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
       [claimData.claimIssuer],
-      { claimId: claimData.id },
+      { claimId: claimData.id }
     );
 
     this.logger.debug(`credentials requested from ${requester} for ${sub}`);
@@ -194,7 +194,7 @@ export class ClaimController {
   })
   public async postClaimRejection(
     @Param('did') did: string,
-    @Body() data: IClaimRejection,
+    @Body() data: IClaimRejection
   ) {
     const claimData: IClaimRejection = {
       ...data,
@@ -205,7 +205,7 @@ export class ClaimController {
     await validateOrReject(claimDTO);
 
     const result = await this.claimService.handleClaimRejectionRequest(
-      claimData,
+      claimData
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
@@ -215,7 +215,7 @@ export class ClaimController {
       ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       [claimData.claimIssuer],
-      { claimId: claimData.id },
+      { claimId: claimData.id }
     );
 
     this.logger.debug(`credentials rejected for ${did}`);
@@ -271,7 +271,7 @@ export class ClaimController {
     @Param('did') issuer: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return await this.claimService.getByIssuer({
       issuer,
@@ -318,7 +318,7 @@ export class ClaimController {
     @Param('did') requester: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return await this.claimService.getByRequester({
       requester,
@@ -350,7 +350,7 @@ export class ClaimController {
     @Param('did') subject: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return await this.claimService.getBySubject({
       subject,
@@ -375,7 +375,7 @@ export class ClaimController {
   public async getDidsOfNamespace(
     @Param('namespace') namespace: string,
     @Query('accepted', BooleanPipe)
-    accepted?: boolean,
+    accepted?: boolean
   ) {
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
   }
@@ -395,7 +395,7 @@ export class ClaimController {
     @Query() { subjects }: DIDsQuery,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return this.claimService.getBySubjects({
       subjects,

@@ -63,11 +63,11 @@ class TestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply((req, res, next) =>
-        this.tokenService.handleOriginCheck(req, res, next),
+        this.tokenService.handleOriginCheck(req, res, next)
       )
       .exclude(
         { path: '/login', method: RequestMethod.ALL },
-        { path: '/refresh_token', method: RequestMethod.ALL },
+        { path: '/refresh_token', method: RequestMethod.ALL }
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }
@@ -79,13 +79,13 @@ describe('TokenService', () => {
   const mockRequest = (
     method: string,
     origin: string = undefined,
-    status = 200,
+    status = 200
   ) => {
     const token = jwt.sign(
       {
         origin: 'https://switchboard-dev.energyweb.org',
       },
-      'testToken',
+      'testToken'
     );
 
     const req = request(app.getHttpServer())
@@ -125,8 +125,6 @@ describe('TokenService', () => {
       }
       return null;
     });
-    request(app.getHttpServer())
-      .get(`test`)
-      .expect(200);
+    request(app.getHttpServer()).get(`test`).expect(200);
   }, 30000);
 });

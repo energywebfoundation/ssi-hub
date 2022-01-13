@@ -17,11 +17,11 @@ export class DIDContactService {
     private readonly didContactRepository: Repository<DIDContact>,
     @InjectRepository(DIDDocumentEntity)
     private readonly didDocumentRepository: Repository<DIDDocumentEntity>,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {}
   public async createDIDContact(
     didContact: DIDContactDTO,
-    userDID: string,
+    userDID: string
   ): Promise<DIDContact> {
     const { did } = didContact;
 
@@ -39,7 +39,7 @@ export class DIDContactService {
     if (didContactExists) {
       this.logger.debug(`DID contact with did ${did} already exists`);
       throw new BadRequestException(
-        `DID contact with did ${did} already exists`,
+        `DID contact with did ${did} already exists`
       );
     }
 
