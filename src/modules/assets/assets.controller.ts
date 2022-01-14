@@ -28,10 +28,10 @@ export class AssetsController {
 
   @Get(':id')
   async getByID(
-    @Param('id', DIDPipe) { id }: DID,
+    @Param('id', DIDPipe) { did }: DID,
     @User() currentUser?: string,
   ) {
-    const asset = await this.assetsService.getById(id);
+    const asset = await this.assetsService.getById(did);
     if (
       currentUser &&
       asset &&
