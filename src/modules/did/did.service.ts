@@ -215,7 +215,7 @@ export class DIDService {
       this.logger.info(`${DIDAttributeChanged} event received for did: ${did}`);
 
       const didObject = new DID(did);
-      const didDocEntity = await this.didRepository.findOne(didObject.id);
+      const didDocEntity = await this.didRepository.findOne(didObject.did);
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
