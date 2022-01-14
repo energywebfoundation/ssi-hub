@@ -1,15 +1,17 @@
-import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
+import { Wallet, BigNumber } from 'ethers';
+import { IDIDDocument, DidEventNames } from '@ew-did-registry/did-resolver-interface';
+import { addressOf, ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import {deployMockContract, loadFixture, MockContract, MockProvider} from 'ethereum-waffle';
 import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
-import { BigNumber } from '@ethersproject/bignumber';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
@@ -24,13 +26,18 @@ const MockObject = {};
 const MockSentryTracing = {
   startTransaction: jest.fn(),
 };
+let MockDidRegistry: MockContract;
 const MockConfigService = {
   get: jest.fn((key: string) => {
-    if (key === 'DID_SYNC_ENABLED') {
+    switch (key) {
+    case 'DID_SYNC_ENABLED':
       return 'false';
-    }
-    return null;
-  }),
+    case 'DID_REGISTRY_ADDRESS':
+      return MockDidRegistry.address;
+    default:
+      return null;
+  }
+}),
 };
 const didDoc: IDIDDocument = {
   id: '<id>',
@@ -79,10 +86,16 @@ jest.mock('../../ethers/factories/EthereumDIDRegistry__factory', () => ({
   },
 }));
 
+async function fixture([deployer]: Wallet[], provider: MockProvider) {
+  const didRegistry = await deployMockContract(deployer, ethrReg.abi);
+  return didRegistry;
+}
+
 describe('DidDocumentService', () => {
   let service: DIDService;
 
   beforeEach(async () => {
+    MockDidRegistry = await loadFixture(fixture);
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DIDService,
@@ -129,6 +142,11 @@ describe('DidDocumentService', () => {
     };
     const parsedLogs = (service as any).parseLogs(JSON.stringify(logs));
     expect(parsedLogs.topBlock).toBeInstanceOf(BigNumber);
+  });
+
+  it('should cache change of cached document', async () => {
+    MockDidRegistry.emit(DidEventNames.AttributeChanged, addressOf(didDoc.id));
+    expect(service.incrementalRefreshCachedDocument).toBeCalledWith(didDoc.id);
   });
 
   function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {
