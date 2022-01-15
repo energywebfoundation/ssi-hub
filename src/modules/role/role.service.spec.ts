@@ -77,17 +77,16 @@ describe('RoleService', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-      'master',
-    );
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
     await queryRunner.startTransaction();
     repo = module.get<Repository<Role>>(getRepositoryToken(Role));
     appRepo = module.get<Repository<Application>>(
-      getRepositoryToken(Application),
+      getRepositoryToken(Application)
     );
 
     orgRepo = module.get<Repository<Organization>>(
-      getRepositoryToken(Organization),
+      getRepositoryToken(Organization)
     );
 
     organizations = await organizationFixture(orgRepo);
@@ -132,7 +131,7 @@ describe('RoleService', () => {
       });
 
       expect(MockLogger.debug).toHaveBeenCalledWith(
-        expect.stringContaining(`Role namespace ${namespace} already exists`),
+        expect.stringContaining(`Role namespace ${namespace} already exists`)
       );
 
       const createdRoles = await repo.find({ namespace });
@@ -206,8 +205,8 @@ describe('RoleService', () => {
 
       expect(MockLogger.debug).toHaveBeenCalledWith(
         expect.stringContaining(
-          `Not able to create role: ${namespace}, namespace can only have one of parentApp and OrgApp`,
-        ),
+          `Not able to create role: ${namespace}, namespace can only have one of parentApp and OrgApp`
+        )
       );
     });
   });
@@ -245,7 +244,7 @@ describe('RoleService', () => {
 
     it('getByNamespace() it should return undefined when using namespace that does not exist', async () => {
       const role = await service.getByNamespace(
-        `nonexisting.roles.testApp.apps.iam.ewc`,
+        `nonexisting.roles.testApp.apps.iam.ewc`
       );
 
       expect(role).toBe(undefined);
@@ -268,11 +267,11 @@ describe('RoleService', () => {
     it('getByNamespaces() it should fetch roles using namespaces', async () => {
       const testRoles = [...roles];
       const resultRoles = await service.getByNamespaces(
-        testRoles.map(role => role.namespace),
+        testRoles.map((role) => role.namespace)
       );
 
       expect(resultRoles).toHaveLength(testRoles.length);
-      testRoles.forEach(role => {
+      testRoles.forEach((role) => {
         expect(resultRoles).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -280,10 +279,10 @@ describe('RoleService', () => {
               namespace: role.namespace,
               namehash: role.namehash,
             }),
-          ]),
+          ])
         );
       });
-      resultRoles.forEach(role => {
+      resultRoles.forEach((role) => {
         expect(role).toBeInstanceOf(Role);
       });
     });

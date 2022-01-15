@@ -81,14 +81,13 @@ describe('DIDContactController', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-      'master',
-    );
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
     didContactRepo = module.get<Repository<DIDContact>>(
-      getRepositoryToken(DIDContact),
+      getRepositoryToken(DIDContact)
     );
     didDocRepo = module.get<Repository<DIDDocumentEntity>>(
-      getRepositoryToken(DIDDocumentEntity),
+      getRepositoryToken(DIDDocumentEntity)
     );
     await queryRunner.startTransaction();
     didDoc = await didDocumentFixture(didDocRepo);
@@ -109,7 +108,7 @@ describe('DIDContactController', () => {
         .get(`/v1/didContact`)
         .send()
         .expect(200)
-        .expect(async res => {
+        .expect(async (res) => {
           expect(res.body.length).toBe(2);
           expect(res.body[0].id).toEqual(didContacts[0].id);
           expect(res.body[1].id).toEqual(didContacts[1].id);
@@ -122,7 +121,7 @@ describe('DIDContactController', () => {
         .get(`/v1/didContact`)
         .send()
         .expect(200)
-        .expect(async res => {
+        .expect(async (res) => {
           expect(res.body.length).toBe(0);
         });
     }, 30000);
@@ -139,7 +138,7 @@ describe('DIDContactController', () => {
         .post(`/v1/didContact`)
         .send(didContactToSave)
         .expect(201)
-        .expect(async res => {
+        .expect(async (res) => {
           expect(res.body.label).toEqual(`${didContactToSave.label}`);
           expect(res.body.did).toEqual(didContactToSave.did);
           expect(res.body.createdBy.id).toBe(userDID1);
@@ -160,9 +159,9 @@ describe('DIDContactController', () => {
         .post(`/v1/didContact`)
         .send(didContactToSave)
         .expect(400)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body.message).toEqual(
-            `DID contact with did ${didContactToSave.did} already exists`,
+            `DID contact with did ${didContactToSave.did} already exists`
           );
         });
     }, 30000);
@@ -174,7 +173,7 @@ describe('DIDContactController', () => {
         .post(`/v1/didContact`)
         .send(didContactToSave)
         .expect(404)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body.message).toContain(`cannot find DID document`);
         });
     }, 30000);
@@ -188,7 +187,7 @@ describe('DIDContactController', () => {
         .delete(`/v1/didContact/${id}`)
         .send()
         .expect(200)
-        .expect(async res => {
+        .expect(async (res) => {
           expect(res.body).not.toHaveProperty('id');
           const contacts = await didContactRepo.find();
           expect(contacts.length).toBe(1);
@@ -202,9 +201,9 @@ describe('DIDContactController', () => {
         .delete(`/v1/didContact/${id}`)
         .send()
         .expect(404)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body.message).toEqual(
-            `DID contact with id ${id} was not found`,
+            `DID contact with id ${id} was not found`
           );
         });
     }, 30000);
@@ -216,9 +215,9 @@ describe('DIDContactController', () => {
         .delete(`/v1/didContact/${id}`)
         .send()
         .expect(404)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body.message).toEqual(
-            `DID contact with id ${id} was not found`,
+            `DID contact with id ${id} was not found`
           );
         });
     }, 30000);

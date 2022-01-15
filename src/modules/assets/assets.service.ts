@@ -40,12 +40,12 @@ export class AssetsService {
     private readonly didService: DIDService,
     private readonly logger: Logger,
     private readonly schedulerRegistry: SchedulerRegistry,
-    private readonly eventEmitter: EventEmitter2,
+    private readonly eventEmitter: EventEmitter2
   ) {
     this.logger.setContext(AssetsService.name);
     this.assetsManager = IdentityManager__factory.connect(
       this.configService.get<string>('ASSETS_MANAGER_ADDRESS') || '',
-      this.provider,
+      this.provider
     );
     this.initializeListeners();
     this.initializeSyncInterval();
@@ -83,7 +83,7 @@ export class AssetsService {
       skip: number;
       order: 'ASC' | 'DESC';
       type: AssetHistoryEventType;
-    },
+    }
   ) {
     const filters: { assetId: string; type?: AssetHistoryEventType } = {
       assetId,
@@ -109,13 +109,13 @@ export class AssetsService {
       .where('assets_history.emittedBy = :owner', { owner })
       .andWhere('asset.owner != :owner', { owner })
       .andWhere(
-        new Brackets(qb => {
+        new Brackets((qb) => {
           qb.where('assets_history.type = :asset_transferred', {
             asset_transferred: AssetHistoryEventType.ASSET_TRANSFERRED,
           }).orWhere('assets_history.type = :asset_created', {
             asset_created: AssetHistoryEventType.ASSET_CREATED,
           });
-        }),
+        })
       )
       .getMany();
   }
@@ -149,11 +149,11 @@ export class AssetsService {
 
   private initializeSyncInterval() {
     const ASSETS_SYNC_INTERVAL = this.configService.get<string>(
-      'ASSETS_SYNC_INTERVAL_IN_HOURS',
+      'ASSETS_SYNC_INTERVAL_IN_HOURS'
     );
 
     const ASSETS_HISTORY_SYNC_INTERVAL = this.configService.get<string>(
-      'ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS',
+      'ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS'
     );
 
     const ASSETS_SYNC_ENABLED =
@@ -162,7 +162,7 @@ export class AssetsService {
     if (ASSETS_SYNC_ENABLED && ASSETS_SYNC_INTERVAL) {
       const interval = setInterval(
         this.syncAssets.bind(this),
-        +ASSETS_SYNC_INTERVAL * 3600000,
+        +ASSETS_SYNC_INTERVAL * 3600000
       );
       this.schedulerRegistry.addInterval('Assets Sync', interval);
     }
@@ -170,7 +170,7 @@ export class AssetsService {
     if (ASSETS_SYNC_ENABLED && ASSETS_HISTORY_SYNC_INTERVAL) {
       const interval = setInterval(
         this.syncAssetEvents.bind(this),
-        +ASSETS_HISTORY_SYNC_INTERVAL * 3600000,
+        +ASSETS_HISTORY_SYNC_INTERVAL * 3600000
       );
       this.schedulerRegistry.addInterval('Assets Events Sync', interval);
     }
@@ -196,9 +196,9 @@ export class AssetsService {
             emittedBy: getDIDFromAddress(owner),
             timestamp: new Date(atAsNumber * 1000).toISOString(),
             assetId: assetDto.id,
-          }),
+          })
         );
-      },
+      }
     );
     this.assetsManager.on(
       'IdentityOfferCanceled',
@@ -206,7 +206,7 @@ export class AssetsService {
         identity: string,
         owner: string,
         offeredTo: string,
-        at: BigNumber,
+        at: BigNumber
       ) => {
         const atNumbered = at.toNumber();
         const ownerDID = getDIDFromAddress(owner);
@@ -230,9 +230,9 @@ export class AssetsService {
             relatedTo: offeredToDID,
             timestamp: new Date(atNumbered * 1000).toISOString(),
             assetId: assetDID,
-          }),
+          })
         );
-      },
+      }
     );
     this.assetsManager.on(
       'IdentityOfferRejected',
@@ -240,7 +240,7 @@ export class AssetsService {
         identity: string,
         owner: string,
         offeredTo: string,
-        at: BigNumber,
+        at: BigNumber
       ) => {
         const assetDID = getDIDFromAddress(identity);
         const ownerDID = getDIDFromAddress(owner);
@@ -263,9 +263,9 @@ export class AssetsService {
             relatedTo: ownerDID,
             timestamp: new Date(numberedAt * 1000).toISOString(),
             assetId: assetDID,
-          }),
+          })
         );
-      },
+      }
     );
     this.assetsManager.on(
       'IdentityOffered',
@@ -273,7 +273,7 @@ export class AssetsService {
         identity: string,
         owner: string,
         offeredTo: string,
-        at: BigNumber,
+        at: BigNumber
       ) => {
         const ownerDID = getDIDFromAddress(owner);
         const assetDID = getDIDFromAddress(identity);
@@ -297,9 +297,9 @@ export class AssetsService {
             timestamp: new Date(numberedAt * 1000).toISOString(),
             assetId: assetDID,
             relatedTo: offeredToDID,
-          }),
+          })
         );
-      },
+      }
     );
     this.assetsManager.on(
       'IdentityTransferred',
@@ -326,9 +326,9 @@ export class AssetsService {
             emittedBy: newOwnerDID,
             timestamp: new Date(numberedAt * 1000).toISOString(),
             relatedTo: asset.owner,
-          }),
+          })
         );
-      },
+      }
     );
   }
 
@@ -337,7 +337,7 @@ export class AssetsService {
     const CreatedAssetEvent = this.assetsManager.filters.IdentityCreated(
       null,
       null,
-      null,
+      null
     );
     const filter = {
       fromBlock: 0,
@@ -346,7 +346,7 @@ export class AssetsService {
       topics: [...CreatedAssetEvent.topics],
     };
     const logs = await this.provider.getLogs(filter);
-    return logs.map(log => {
+    return logs.map((log) => {
       const parsedLog = assetsManagerInterface.parseLog(log);
       return {
         identity: parsedLog.args.identity,
@@ -361,11 +361,12 @@ export class AssetsService {
     contractInterface,
     mapChainEventToCacheEvent,
   }: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     event: any;
     contractInterface: utils.Interface;
     mapChainEventToCacheEvent(
       data: T,
-      previousData: T,
+      previousData: T
     ): AssetHistoryEvent & { type: AssetHistoryEventType };
   }) {
     const filter = {
@@ -377,14 +378,14 @@ export class AssetsService {
     const logs = await this.provider.getLogs(filter);
 
     const events = logs
-      .map(log => {
+      .map((log) => {
         const parsedLog = contractInterface.parseLog(log);
-        return ({
+        return {
           identity: parsedLog.args.identity,
           owner: parsedLog.args.owner,
           offeredTo: parsedLog.args.offeredTo,
           at: parsedLog.args.at as BigNumber,
-        } as unknown) as T;
+        } as unknown as T;
       })
       .sort((a, b) => a.at.toNumber() - b.at.toNumber());
 
@@ -392,10 +393,10 @@ export class AssetsService {
       events.map((event, index, array) => {
         const { type, ...rest } = mapChainEventToCacheEvent(
           event,
-          index === 0 ? ({} as T) : array[index - 1],
+          index === 0 ? ({} as T) : array[index - 1]
         );
         return this.eventEmitter.emit(type, rest);
-      }),
+      })
     );
   }
 
@@ -419,7 +420,7 @@ export class AssetsService {
       const CreatedEvent = this.assetsManager.filters.IdentityCreated(
         assetAddress,
         null,
-        null,
+        null
       );
 
       const logs = await this.provider.getLogs({
@@ -429,7 +430,7 @@ export class AssetsService {
         topics: [...CreatedEvent.topics],
       });
 
-      const [{ owner: firstOwner }] = logs.map(log => {
+      const [{ owner: firstOwner }] = logs.map((log) => {
         const parsedLog = assetsManagerInterface.parseLog(log);
         return {
           identity: parsedLog.args.identity,
@@ -439,31 +440,33 @@ export class AssetsService {
         } as AssetCreatedEventValues;
       });
 
-      const OfferCanceledEvent = this.assetsManager.filters.IdentityOfferCanceled(
-        assetAddress,
-        null,
-        null,
-        null,
-      );
+      const OfferCanceledEvent =
+        this.assetsManager.filters.IdentityOfferCanceled(
+          assetAddress,
+          null,
+          null,
+          null
+        );
 
-      const OfferRejectedEvent = this.assetsManager.filters.IdentityOfferRejected(
-        assetAddress,
-        null,
-        null,
-        null,
-      );
+      const OfferRejectedEvent =
+        this.assetsManager.filters.IdentityOfferRejected(
+          assetAddress,
+          null,
+          null,
+          null
+        );
 
       const OfferedEvent = this.assetsManager.filters.IdentityOffered(
         assetAddress,
         null,
         null,
-        null,
+        null
       );
 
       const TransferEvent = this.assetsManager.filters.IdentityTransferred(
         assetAddress,
         null,
-        null,
+        null
       );
 
       await this.syncEventForAsset<OfferCanceledEventValues>({
@@ -507,7 +510,7 @@ export class AssetsService {
         event: TransferEvent,
         mapChainEventToCacheEvent: (
           { at, owner },
-          { owner: previousOwner },
+          { owner: previousOwner }
         ) => ({
           at: at.toNumber(),
           emittedBy: getDIDFromAddress(owner),
@@ -529,7 +532,7 @@ export class AssetsService {
     for (const { at, identity, owner } of assets) {
       const assetContract = OfferableIdentity__factory.connect(
         identity,
-        this.provider,
+        this.provider
       );
       const [currentOwner, offeredTo] = await Promise.all([
         assetContract.owner(),
@@ -551,8 +554,8 @@ export class AssetsService {
           `Validation failed for asset of did: ${assetDID} with errors: ${JSON.stringify(
             err,
             null,
-            2,
-          )}`,
+            2
+          )}`
         );
         continue;
       }
@@ -565,7 +568,7 @@ export class AssetsService {
           at: assetDto.at,
           emittedBy: getDIDFromAddress(owner),
           timestamp: new Date(assetDto.at * 1000).toISOString(),
-        }),
+        })
       );
       continue;
     }

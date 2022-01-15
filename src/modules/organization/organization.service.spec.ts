@@ -52,12 +52,11 @@ describe('OrganizationService', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-      'master',
-    );
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
     await queryRunner.startTransaction();
     repo = module.get<Repository<Organization>>(
-      getRepositoryToken(Organization),
+      getRepositoryToken(Organization)
     );
 
     organizations = await organizationFixture(repo, 2);
@@ -84,7 +83,7 @@ describe('OrganizationService', () => {
       });
 
       expect(MockLogger.debug).toHaveBeenCalledWith(
-        expect.stringContaining(`namespace ${namespace} already exists`),
+        expect.stringContaining(`namespace ${namespace} already exists`)
       );
       const createdOrgs = await repo.find({ namespace });
       expect(createdOrgs.length).toBe(1);

@@ -45,7 +45,7 @@ export class DIDService {
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
-    private readonly sentryTracingService: SentryTracingService,
+    private readonly sentryTracingService: SentryTracingService
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -53,7 +53,7 @@ export class DIDService {
     this.ipfsStore = new DidStore(IPFS_URL);
 
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
-      'DID_REGISTRY_ADDRESS',
+      'DID_REGISTRY_ADDRESS'
     );
 
     this.resolver = new Resolver(this.provider, {
@@ -64,21 +64,21 @@ export class DIDService {
 
     this.didRegistry = EthereumDIDRegistry__factory.connect(
       DID_REGISTRY_ADDRESS,
-      this.provider,
+      this.provider
     );
 
     this.InitEventListeners();
 
     // Using setInterval so that interval can be set dynamically from config
     const didDocSyncInterval = this.config.get<string>(
-      'DIDDOC_SYNC_INTERVAL_IN_HOURS',
+      'DIDDOC_SYNC_INTERVAL_IN_HOURS'
     );
     const DID_SYNC_ENABLED =
       this.config.get<string>('DID_SYNC_ENABLED') !== 'false';
     if (didDocSyncInterval && DID_SYNC_ENABLED) {
       const interval = setInterval(
         () => this.syncDocuments(),
-        parseInt(didDocSyncInterval) * 3600000,
+        parseInt(didDocSyncInterval) * 3600000
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
@@ -109,7 +109,7 @@ export class DIDService {
     }
 
     this.logger.info(
-      `Requested document for did: ${did} not cached. Add to cache.`,
+      `Requested document for did: ${did} not cached. Add to cache.`
     );
 
     const entity = await this.addCachedDocument(did);
@@ -127,7 +127,7 @@ export class DIDService {
       'Process DID',
       {
         did,
-      },
+      }
     );
 
     try {
@@ -136,7 +136,7 @@ export class DIDService {
 
       const updatedDidDocument = this.resolveDocumentFromLogs(did, logs);
       const updatedServices = await this.resolveNotCachedClaims(
-        updatedDidDocument.service,
+        updatedDidDocument.service
       );
 
       const updatedEntity = DIDDocumentEntity.create({
@@ -165,17 +165,17 @@ export class DIDService {
 
       const logs = await this.updateLogs(
         cachedDIDDocument.id,
-        this.parseLogs(cachedDIDDocument.logs),
+        this.parseLogs(cachedDIDDocument.logs)
       );
 
       const updatedDidDocument = this.resolveDocumentFromLogs(
         cachedDIDDocument.id,
-        logs,
+        logs
       );
 
       const updatedServices = await this.resolveNotCachedClaims(
         updatedDidDocument.service,
-        cachedDIDDocument.service,
+        cachedDIDDocument.service
       );
 
       const updatedEntity = DIDDocumentEntity.create({
@@ -193,14 +193,14 @@ export class DIDService {
 
   public async getDIDDocumentFromUniversalResolver(did: string) {
     const universalResolverUrl = this.config.get<string>(
-      'UNIVERSAL_RESOLVER_URL',
+      'UNIVERSAL_RESOLVER_URL'
     );
     if (!universalResolverUrl) {
       throw new Error('universal resolver url not set');
     }
     const stripTrailingSlash = (s: string) => s.replace(/\/$/, ''); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
     const observableResponse = this.httpService.get(
-      `${stripTrailingSlash(universalResolverUrl)}/${did}`,
+      `${stripTrailingSlash(universalResolverUrl)}/${did}`
     );
     const { data } = await firstValueFrom(observableResponse);
 
@@ -209,7 +209,7 @@ export class DIDService {
 
   private async InitEventListeners(): Promise<void> {
     const DIDAttributeChanged = 'DIDAttributeChanged';
-    this.didRegistry.on(DIDAttributeChanged, async address => {
+    this.didRegistry.on(DIDAttributeChanged, async (address) => {
       const did = `did:${Methods.Erc1056}:${process.env.CHAIN_NAME}:${address}`;
 
       this.logger.info(`${DIDAttributeChanged} event received for did: ${did}`);
@@ -227,7 +227,7 @@ export class DIDService {
   private async syncDocuments() {
     this.logger.debug(`Beginning sync of DID Documents`);
     const cachedDIDs = await this.didRepository.find({ select: ['id'] });
-    cachedDIDs.forEach(async did => {
+    cachedDIDs.forEach(async (did) => {
       await this.didQueue.add(UPDATE_DID_DOC_QUEUE_NAME, did.id);
     });
   }
@@ -263,7 +263,7 @@ export class DIDService {
    */
   private async updateLogs(
     id: string,
-    logs: IDIDLogData,
+    logs: IDIDLogData
   ): Promise<IDIDLogData> {
     if (logs?.topBlock) {
       const readFromBlock = logs.topBlock.add(1); // Want to read from 1 more than previously last read to
@@ -290,12 +290,12 @@ export class DIDService {
 
   private resolveNotCachedClaims(
     services: IServiceEndpoint[],
-    cachedServices: IClaim[] = [],
+    cachedServices: IClaim[] = []
   ): Promise<IClaim[]> {
     return Promise.all(
       services.map(async ({ serviceEndpoint, ...rest }) => {
         const cachedService = cachedServices.find(
-          claim => claim.serviceEndpoint === serviceEndpoint,
+          (claim) => claim.serviceEndpoint === serviceEndpoint
         );
         if (cachedService) return cachedService;
 
@@ -310,7 +310,7 @@ export class DIDService {
           ...claimData,
           ...claimRest,
         };
-      }),
+      })
     );
   }
 }

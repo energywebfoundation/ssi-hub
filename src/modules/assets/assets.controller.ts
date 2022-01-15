@@ -29,7 +29,7 @@ export class AssetsController {
   @Get(':id')
   async getByID(
     @Param('id', DIDPipe) { id }: DID,
-    @User() currentUser?: string,
+    @User() currentUser?: string
   ) {
     const asset = await this.assetsService.getById(id);
     if (
@@ -69,7 +69,7 @@ export class AssetsController {
     @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
     @Query('order') order?: Order,
-    @Query('type') type?: AssetHistoryEventType,
+    @Query('type') type?: AssetHistoryEventType
   ) {
     const query = await HistoryQuery.create({
       order,
@@ -88,7 +88,7 @@ export class AssetsController {
   @Get('owner/:owner')
   getByOwner(
     @Param('owner', DIDPipe) { did: owner }: DID,
-    @User() currentUser?: string,
+    @User() currentUser?: string
   ) {
     if (currentUser && owner !== currentUser) {
       throw new ForbiddenException();
@@ -99,7 +99,7 @@ export class AssetsController {
   @Get('owner/history/:owner')
   getByPreviousOwner(
     @Param('owner', DIDPipe) { did: owner }: DID,
-    @User() currentUser?: string,
+    @User() currentUser?: string
   ) {
     if (currentUser && owner !== currentUser) {
       throw new ForbiddenException();
@@ -110,7 +110,7 @@ export class AssetsController {
   @Get('offered_to/:offered_to')
   getByOfferedTo(
     @Param('offered_to', DIDPipe) { did: offeredTo }: DID,
-    @User() currentUser?: string,
+    @User() currentUser?: string
   ) {
     if (currentUser && offeredTo !== currentUser) {
       throw new ForbiddenException();

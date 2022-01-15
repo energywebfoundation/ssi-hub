@@ -13,7 +13,7 @@ export class ApplicationService {
     @InjectRepository(Application)
     private readonly applicationRepository: Repository<Application>,
     private readonly organizationService: OrganizationService,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.logger.setContext(ApplicationService.name);
   }
@@ -45,7 +45,7 @@ export class ApplicationService {
    */
   public async getByOwner(
     owner: string,
-    { withRelations = true }: { withRelations?: boolean } = {},
+    { withRelations = true }: { withRelations?: boolean } = {}
   ) {
     const qb = this.applicationRepository.createQueryBuilder('application');
     qb.where('application.owner = :owner', { owner });
@@ -88,7 +88,7 @@ export class ApplicationService {
     const org = await this.organizationService.getByNamespace(parentOrg);
     if (!org) {
       this.logger.debug(
-        `Not able to create application: ${data.namespace}, parent organization ${parentOrg} does not exists`,
+        `Not able to create application: ${data.namespace}, parent organization ${parentOrg} does not exists`
       );
       return;
     }
@@ -97,7 +97,7 @@ export class ApplicationService {
 
     if (isAppExists) {
       this.logger.debug(
-        `Not able to create application: ${data.namespace} already exists`,
+        `Not able to create application: ${data.namespace} already exists`
       );
       return;
     }
@@ -174,8 +174,8 @@ export class ApplicationService {
         `Validation failed for ${namespace} with errors: ${JSON.stringify(
           err,
           null,
-          2,
-        )}`,
+          2
+        )}`
       );
       return;
     }

@@ -46,7 +46,7 @@ export class ApplicationController {
   })
   public async getByOwner(
     @Param('owner') owner: string,
-    @Query('withRelations', BooleanPipe) withRelations: boolean,
+    @Query('withRelations', BooleanPipe) withRelations: boolean
   ) {
     return this.applicationService.getByOwner(owner, { withRelations });
   }

@@ -14,14 +14,14 @@ export class AssetsEventSubscriber {
     @InjectRepository(AssetsHistory)
     private readonly historyRepository: Repository<AssetsHistory>,
     private readonly nats: NatsService,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.logger.setContext(AssetsEventSubscriber.name);
   }
 
   private async isEventAlreadySaved(
     type: AssetHistoryEventType,
-    { at, assetId, emittedBy }: AssetEvent,
+    { at, assetId, emittedBy }: AssetEvent
   ) {
     const savedEvent = await this.historyRepository.findOne({
       where: {
@@ -37,7 +37,7 @@ export class AssetsEventSubscriber {
   private async handleAssetEvent(
     event: AssetEvent,
     type: AssetHistoryEventType,
-    publish = true,
+    publish = true
   ) {
     if (await this.isEventAlreadySaved(type, event)) {
       return;
@@ -45,7 +45,7 @@ export class AssetsEventSubscriber {
 
     const saved = await this.historyRepository.save({ ...event, type });
     this.logger.debug(
-      `${type} event for ${event.assetId} saved: ${JSON.stringify(saved)}`,
+      `${type} event for ${event.assetId} saved: ${JSON.stringify(saved)}`
     );
 
     if (publish) {

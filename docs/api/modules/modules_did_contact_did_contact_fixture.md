@@ -29,7 +29,7 @@ ___
 
 ### didDocumentFixture
 
-▸ `Const` **didDocumentFixture**(`didDocRepo`): `Promise`<{ `@context`: `string` = '<context\>'; `authentication`: `any`[] = []; `created`: `string` = '<created\>'; `id`: `string` = 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9'; `logs`: `string` = '<logs\>'; `proof`: `any` ; `publicKey`: `any`[] = []; `service`: `any`[] = []; `updated`: `string` = '<updated\>' } & [`DIDDocumentEntity`](../classes/modules_did_did_entity.DIDDocumentEntity.md)\>
+▸ `Const` **didDocumentFixture**(`didDocRepo`): `Promise`<{ `@context`: `string` = '<context\>'; `authentication`: `any`[] = []; `created`: `string` = '<created\>'; `id`: `string` = 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9'; `logs`: `string` = '<logs\>'; `proof`: `any` = undefined; `publicKey`: `any`[] = []; `service`: `any`[] = []; `updated`: `string` = '<updated\>' } & [`DIDDocumentEntity`](../classes/modules_did_did_entity.DIDDocumentEntity.md)\>
 
 #### Parameters
 
@@ -39,4 +39,4 @@ ___
 
 #### Returns
 
-`Promise`<{ `@context`: `string` = '<context\>'; `authentication`: `any`[] = []; `created`: `string` = '<created\>'; `id`: `string` = 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9'; `logs`: `string` = '<logs\>'; `proof`: `any` ; `publicKey`: `any`[] = []; `service`: `any`[] = []; `updated`: `string` = '<updated\>' } & [`DIDDocumentEntity`](../classes/modules_did_did_entity.DIDDocumentEntity.md)\>
+`Promise`<{ `@context`: `string` = '<context\>'; `authentication`: `any`[] = []; `created`: `string` = '<created\>'; `id`: `string` = 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9'; `logs`: `string` = '<logs\>'; `proof`: `any` = undefined; `publicKey`: `any`[] = []; `service`: `any`[] = []; `updated`: `string` = '<updated\>' } & [`DIDDocumentEntity`](../classes/modules_did_did_entity.DIDDocumentEntity.md)\>

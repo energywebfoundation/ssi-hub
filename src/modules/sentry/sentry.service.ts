@@ -17,7 +17,7 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
 
   constructor(protected readonly configService: ConfigService) {}
 
-  async onApplicationShutdown(signal?: string): Promise<void> {
+  async onApplicationShutdown(): Promise<void> {
     await this.drain();
   }
 
@@ -49,7 +49,7 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
       release: release,
       tracesSampleRate: this.configService.get<number>(
         'SENTRY_TRACES_SAMPLE_RATE',
-        1,
+        1
       ),
       integrations: [
         new RewriteFrames({
@@ -60,14 +60,16 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
           app,
         }),
         new Sentry.Integrations.OnUncaughtException({
-          onFatalError: async err => {
+          onFatalError: async (err) => {
             if (this.shouldSkipException(err)) {
               return;
             }
 
-            (Sentry.getCurrentHub().getClient<Client<Options>>() as Client<
-              Options
-            >).captureException(err);
+            (
+              Sentry.getCurrentHub().getClient<
+                Client<Options>
+              >() as Client<Options>
+            ).captureException(err);
           },
         }),
         new Sentry.Integrations.OnUnhandledRejection({ mode: 'warn' }),
@@ -105,7 +107,7 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
 
   private async drain(): Promise<void> {
     await Sentry.close(
-      this.configService.get<number>('SENTRY_DRAIN_TIMEOUT', 2000),
+      this.configService.get<number>('SENTRY_DRAIN_TIMEOUT', 2000)
     );
   }
 }

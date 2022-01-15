@@ -10,7 +10,7 @@ export class HealthCheckService {
   constructor(
     private readonly terminusHealthCheckService: TerminusHealthCheckService,
     private readonly db: TypeOrmHealthIndicator,
-    private readonly redisHealthCheckIndicatorService: BullHealthCheckIndicatorService,
+    private readonly redisHealthCheckIndicatorService: BullHealthCheckIndicatorService
   ) {}
 
   async checkLiveness() {

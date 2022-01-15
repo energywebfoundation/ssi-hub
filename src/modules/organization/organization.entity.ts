@@ -17,8 +17,10 @@ interface OrganizationDefinition extends BaseEnsDefinition {
 }
 
 @ObjectType()
-class OrganizationDefinitionSchema extends BaseEnsDefinitionSchema
-  implements OrganizationDefinition {
+class OrganizationDefinitionSchema
+  extends BaseEnsDefinitionSchema
+  implements OrganizationDefinition
+{
   @Field()
   orgName: string;
 }
@@ -58,29 +60,17 @@ export class Organization implements BaseEnsEntity {
   definition: OrganizationDefinition;
 
   @Field(() => [Application])
-  @OneToMany(
-    () => Application,
-    app => app.parentOrg,
-  )
+  @OneToMany(() => Application, (app) => app.parentOrg)
   apps: Application[];
 
-  @ManyToOne(
-    () => Organization,
-    org => org.subOrgs,
-  )
+  @ManyToOne(() => Organization, (org) => org.subOrgs)
   parentOrg: Organization;
 
   @Field(() => [Organization])
-  @OneToMany(
-    () => Organization,
-    org => org.parentOrg,
-  )
+  @OneToMany(() => Organization, (org) => org.parentOrg)
   subOrgs: Organization[];
 
   @Field(() => [Role])
-  @OneToMany(
-    () => Role,
-    role => role.parentOrg,
-  )
+  @OneToMany(() => Role, (role) => role.parentOrg)
   roles: Role[];
 }

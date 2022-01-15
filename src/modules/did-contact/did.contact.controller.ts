@@ -27,7 +27,7 @@ import { RequestUserDTO } from '../auth/auth.dto';
 export class DIDContactController {
   constructor(
     private readonly didContactService: DIDContactService,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.logger.setContext(DIDContactController.name);
   }
@@ -45,7 +45,7 @@ export class DIDContactController {
   })
   public async createDIDContact(
     @Body() data: DIDContactDTO,
-    @Req() req: Request,
+    @Req() req: Request
   ): Promise<DIDContact> {
     const { did } = req.user as RequestUserDTO;
     return this.didContactService.createDIDContact(data, did);

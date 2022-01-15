@@ -16,14 +16,12 @@ export const authLoginTestSuite = () => {
       provider = new providers.JsonRpcProvider(process.env.ENS_URL);
       wallet = new Wallet(
         '779907598c747ff45a4f8e1b7e0fde0756585a9f936aecc95c1c738a3d85bbc4',
-        provider,
+        provider
       );
     });
 
     it(`should throw 401 error when user not logged in`, () => {
-      return request(app.getHttpServer())
-        .get('/v1/search/test')
-        .expect(401);
+      return request(app.getHttpServer()).get('/v1/search/test').expect(401);
     });
 
     it(`should login user`, async () => {
@@ -40,15 +38,15 @@ export const authLoginTestSuite = () => {
       expect(loginResponse.headers['set-cookie']).toEqual(
         expect.arrayContaining([
           expect.stringMatching(
-            /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/,
+            /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/
           ),
-        ]),
+        ])
       );
       expect(loginResponse.headers['set-cookie'][0]).toContain(
-        loginResponse.body.token,
+        loginResponse.body.token
       );
       expect(loginResponse.headers['set-cookie'][1]).toContain(
-        loginResponse.body.refreshToken,
+        loginResponse.body.refreshToken
       );
       return request(app.getHttpServer())
         .get('/v1/search/test')
@@ -63,10 +61,10 @@ export const authLoginTestSuite = () => {
       await waitForExpect(() => {
         expect(consoleLogSpy).toHaveBeenCalledWith(
           expect.stringContaining(
-            'DID Login Strategy is now logged into cache server',
-          ),
+            'DID Login Strategy is now logged into cache server'
+          )
         );
-      }, 20000);
+      }, 400000);
     });
   });
 };

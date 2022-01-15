@@ -16,7 +16,7 @@ export class ClaimResolver {
 
   @Query(() => [RoleClaim])
   async claimsByParentNamespace(
-    @Args('namespace', { type: () => String }) namespace: string,
+    @Args('namespace', { type: () => String }) namespace: string
   ) {
     return this.claimService.getByParentNamespace(namespace);
   }
@@ -29,7 +29,7 @@ export class ClaimResolver {
     @Args('parentNamespace', { type: () => String, nullable: true })
     parentNamespace?: string,
     @UserGQL()
-    user?: string,
+    user?: string
   ) {
     return this.claimService.getByUserDid({
       did,
@@ -46,7 +46,7 @@ export class ClaimResolver {
     @Args('parentNamespace', { type: () => String, nullable: true })
     parentNamespace?: string,
     @UserGQL()
-    user?: string,
+    user?: string
   ) {
     return this.claimService.getByIssuer({
       issuer,
@@ -64,7 +64,7 @@ export class ClaimResolver {
     @Args('parentNamespace', { type: () => String, nullable: true })
     parentNamespace?: string,
     @UserGQL()
-    user?: string,
+    user?: string
   ) {
     return this.claimService.getByRequester({
       requester,
@@ -76,7 +76,7 @@ export class ClaimResolver {
   @Mutation(() => Boolean)
   async deleteClaim(
     @Args('id', { type: () => String }) id: string,
-    @UserGQL() user?: string,
+    @UserGQL() user?: string
   ) {
     await this.claimService.removeById(id, user);
     return true;

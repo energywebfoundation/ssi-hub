@@ -9,7 +9,7 @@ export const authRefreshTokenTestSuite = () => {
       const provider = new providers.JsonRpcProvider(process.env.ENS_URL);
       const wallet = new Wallet(
         '779907598c747ff45a4f8e1b7e0fde0756585a9f936aecc95c1c738a3d85bbc4',
-        provider,
+        provider
       );
       const userAddress = await wallet.getAddress();
       const tokenService = app.get(TokenService);
@@ -23,15 +23,15 @@ export const authRefreshTokenTestSuite = () => {
       expect(refreshTokenResponse.headers['set-cookie']).toEqual(
         expect.arrayContaining([
           expect.stringMatching(
-            /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/,
+            /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/
           ),
-        ]),
+        ])
       );
       expect(refreshTokenResponse.headers['set-cookie'][0]).toContain(
-        refreshTokenResponse.body.token,
+        refreshTokenResponse.body.token
       );
       expect(refreshTokenResponse.headers['set-cookie'][1]).toContain(
-        refreshTokenResponse.body.refreshToken,
+        refreshTokenResponse.body.refreshToken
       );
 
       return request(app.getHttpServer())
