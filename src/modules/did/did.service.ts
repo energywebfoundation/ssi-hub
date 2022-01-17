@@ -2,7 +2,8 @@ import { Methods } from '@ew-did-registry/did';
 import {
   IDIDDocument,
   IDIDLogData,
-  IServiceEndpoint,
+  IServiceEndpoint, 
+  DidEventNames,
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
@@ -208,14 +209,13 @@ export class DIDService {
   }
 
   private async InitEventListeners(): Promise<void> {
-    const DIDAttributeChanged = 'DIDAttributeChanged';
-    this.didRegistry.on(DIDAttributeChanged, async (address) => {
+    this.didRegistry.on(DidEventNames.AttributeChanged, async address => {
       const did = `did:${Methods.Erc1056}:${process.env.CHAIN_NAME}:${address}`;
 
-      this.logger.info(`${DIDAttributeChanged} event received for did: ${did}`);
+      this.logger.info(`${DidEventNames.AttributeChanged} event received for did: ${did}`);
 
       const didObject = new DID(did);
-      const didDocEntity = await this.didRepository.findOne(didObject.id);
+      const didDocEntity = await this.didRepository.findOne(didObject.did);
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
