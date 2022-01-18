@@ -2,12 +2,12 @@ import { Methods } from '@ew-did-registry/did';
 import {
   IDIDDocument,
   IDIDLogData,
-  IServiceEndpoint, 
+  IServiceEndpoint,
   DidEventNames,
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -200,19 +200,30 @@ export class DIDService {
       throw new Error('universal resolver url not set');
     }
     const stripTrailingSlash = (s: string) => s.replace(/\/$/, ''); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
-    const observableResponse = this.httpService.get(
-      `${stripTrailingSlash(universalResolverUrl)}/${did}`
-    );
-    const { data } = await firstValueFrom(observableResponse);
 
-    return data.didDocument;
+    try {
+      const observableResponse = this.httpService.get(
+        `${stripTrailingSlash(universalResolverUrl)}/${did}`
+      );
+      const { data } = await firstValueFrom(observableResponse);
+      return data.didDocument;
+    } catch (e) {
+      if (e?.isAxiosError) {
+        throw new HttpException(
+          e?.response?.statusText || 'Unknown error',
+          e?.response?.status || 500
+        );
+      } else throw e;
+    }
   }
 
   private async InitEventListeners(): Promise<void> {
-    this.didRegistry.on(DidEventNames.AttributeChanged, async address => {
+    this.didRegistry.on(DidEventNames.AttributeChanged, async (address) => {
       const did = `did:${Methods.Erc1056}:${process.env.CHAIN_NAME}:${address}`;
 
-      this.logger.info(`${DidEventNames.AttributeChanged} event received for did: ${did}`);
+      this.logger.info(
+        `${DidEventNames.AttributeChanged} event received for did: ${did}`
+      );
 
       const didObject = new DID(did);
       const didDocEntity = await this.didRepository.findOne(didObject.did);
