@@ -238,7 +238,7 @@ export class ClaimController {
       'should return claims for namespaces like ' +
       '`admin.roles.myApp.apps.myOrg.iam.ewc`',
   })
-  public async getByParentNamespace(@Param('id') id: string) {
+  public async getByParentNamespace(@Param('namespace') id: string) {
     return await this.claimService.getByParentNamespace(id);
   }
 
@@ -257,7 +257,7 @@ export class ClaimController {
     summary: 'returns claims of Issuer with given DID',
   })
   @ApiQuery({
-    name: 'accepted',
+    name: 'isAccepted',
     required: false,
     description:
       '**true** - show only accepted <br> **false** - show only pending',

@@ -4,11 +4,17 @@ import redis, { RedisClient } from 'redis';
 import { ConfigService } from '@nestjs/config';
 import { promisify } from 'util';
 import { classToPlain } from 'class-transformer';
+import parseDuration from 'parse-duration';
 
 @Injectable()
 export class RefreshTokenRepository {
   private client: RedisClient;
-  private saveAsync: (key: string, value: string) => Promise<string>;
+  private saveAsync: (
+    key: string,
+    value: string,
+    mode: string,
+    duration: number
+  ) => Promise<string>;
   private readAsync: (key: string) => Promise<string | undefined>;
   private deleteAsync: (key: string) => Promise<void>;
 
@@ -25,7 +31,16 @@ export class RefreshTokenRepository {
 
   public async createRefreshToken({ userDid }: { userDid: string }) {
     const refreshToken = classToPlain(new RefreshToken({ userDid }));
-    await this.saveAsync(refreshToken.tokenId, JSON.stringify(refreshToken));
+    const expire = this.configService.get<string>(
+      'JWT_REFRESH_TOKEN_EXPIRES_IN'
+    );
+    const expireInSec = parseDuration(expire) / 1000;
+    await this.saveAsync(
+      refreshToken.tokenId,
+      JSON.stringify(refreshToken),
+      'EX',
+      expireInSec
+    );
     return refreshToken;
   }
 

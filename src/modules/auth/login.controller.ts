@@ -8,12 +8,13 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { LoginGuard } from './login.guard';
-import { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import ms from 'ms';
+import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
 import { CookiesServices } from './cookies.service';
-import { ConfigService } from '@nestjs/config';
 import { RoleService } from '../role/role.service';
 
 @ApiTags('Auth')
@@ -129,7 +130,13 @@ export class LoginController {
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
-      cookiesOptions
+      {
+        ...cookiesOptions,
+        expires: new Date(
+          Date.now() +
+            ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'))
+        ),
+      }
     );
 
     return res.send({ token, refreshToken });
