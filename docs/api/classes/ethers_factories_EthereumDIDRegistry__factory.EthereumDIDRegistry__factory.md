@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new EthereumDIDRegistry__factory**(...`args`)
+• **new EthereumDIDRegistry__factory**(`signer?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `...args` | [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] \| [signer: Signer] |
+| `signer?` | `Signer` |
 
 #### Overrides
 
@@ -48,7 +48,7 @@ ContractFactory.constructor
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `boolean` = true; `inputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `name`: `string` = "owners"; `outputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "view"; `type`: `string` = "function" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = false; `inputs`: { `indexed`: `boolean` = true; `name`: `string` = "identity"; `type`: `string` = "address" }[] ; `name`: `string` = "DIDOwnerChanged"; `outputs`: `undefined` = []; `payable`: `undefined` = false; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `boolean` = true; `inputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `name`: `string` = "owners"; `outputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "view"; `type`: `string` = "function" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = false; `inputs`: { `indexed`: `boolean` = true; `name`: `string` = "identity"; `type`: `string` = "address" }[] ; `name`: `string` = "DIDOwnerChanged"; `outputs`: `undefined` = []; `payable`: `undefined` = false; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" })[]
 
 ___
 

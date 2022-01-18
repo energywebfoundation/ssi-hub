@@ -57,7 +57,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Signer` \| `Provider` |
+| `signerOrProvider?` | `Provider` \| `Signer` |
 
 #### Inherited from
 
@@ -121,8 +121,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `TransactionSent` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `data`: `string` ; `value`: `BigNumber`  }\> |
-| `TransactionSent(bytes,uint256)` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `data`: `string` ; `value`: `BigNumber`  }\> |
+| `TransactionSent` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], `Object`\> |
+| `TransactionSent(bytes,uint256)` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], `Object`\> |
 
 #### Overrides
 

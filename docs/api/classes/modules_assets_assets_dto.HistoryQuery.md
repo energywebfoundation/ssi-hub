@@ -29,7 +29,7 @@
 
 ### order
 
-• `Optional` **order**: [`Order`](../enums/modules_assets_assets_types.Order.md) = `Order.ASC`
+• `Optional` **order**: [`Order`](../enums/modules_assets_assets_types.Order.md)
 
 ___
 

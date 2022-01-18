@@ -1,0 +1,50 @@
+name: Validate Helm
+
+on: [pull_request]
+
+jobs:
+  cancel-previous:
+    name: Cancel Previous Runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
+
+  helm-check:
+    environment:
+      name: sandbox
+    runs-on: ubuntu-latest
+    needs: [cancel-previous]
+    env:
+      HELM_EXPERIMENTAL_OCI: 1
+    steps:
+      - uses: actions/checkout@master
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.IAM_HELM_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.IAM_HELM_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.IAM_HELM_AWS_REGION }}
+      - name: Install helm
+        run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password \
+              --region us-west-2 | helm registry login \
+              --username AWS \
+              --password-stdin ${{ secrets.IAM_HELM_AWS_ECR_URL }}
+      - name: Update dependency
+        run: helm dependency update ./devops/sandbox
+      - name: helm-check
+        uses: igabaydulin/helm-check-action@0.1.4
+        env:
+          CHART_LOCATION: ./devops/sandbox
+          CHART_VALUES: ./devops/sandbox/values.yaml
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf ./devops/sandbox/charts
+          rm -rf ./devops/sandbox/tmpcharts
+          docker logout ${{ steps.login-ecr.outputs.registry }}

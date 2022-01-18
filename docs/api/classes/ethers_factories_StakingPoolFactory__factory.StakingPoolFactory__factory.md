@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new StakingPoolFactory__factory**(...`args`)
+• **new StakingPoolFactory__factory**(`signer?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `...args` | [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] \| [signer: Signer] |
+| `signer?` | `Signer` |
 
 #### Overrides
 
@@ -48,7 +48,7 @@ ContractFactory.constructor
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "uint256"; `name`: `string` = "\_principalThreshold"; `type`: `string` = "uint256" }[] ; `name`: `undefined` = "domainUpdated"; `outputs`: `undefined` = []; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes32"; `name`: `string` = "org"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "StakingPoolLaunched"; `outputs`: `undefined` = []; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = ""; `type`: `string` = "bytes32" }[] ; `name`: `string` = "services"; `outputs`: { `internalType`: `string` = "address"; `name`: `string` = "provider"; `type`: `string` = "address" }[] ; `stateMutability`: `string` = "view"; `type`: `string` = "function" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "uint256"; `name`: `string` = "\_principalThreshold"; `type`: `string` = "uint256" }[] ; `name`: `undefined` = "domainUpdated"; `outputs`: `undefined` = []; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes32"; `name`: `string` = "org"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "StakingPoolLaunched"; `outputs`: `undefined` = []; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = ""; `type`: `string` = "bytes32" }[] ; `name`: `string` = "services"; `outputs`: { `internalType`: `string` = "address"; `name`: `string` = "provider"; `type`: `string` = "address" }[] ; `stateMutability`: `string` = "view"; `type`: `string` = "function" })[]
 
 ___
 

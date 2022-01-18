@@ -26,7 +26,7 @@
 | :------ | :------ |
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
 
 ## Methods
 

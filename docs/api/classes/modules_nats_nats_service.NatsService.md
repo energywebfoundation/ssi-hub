@@ -28,7 +28,7 @@
 | Name | Type |
 | :------ | :------ |
 | `natsWrapper` | [`NatsWrapper`](modules_nats_nats_wrapper.NatsWrapper.md) |
-| `config` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `config` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
 | `messagesQueue` | `Queue`<[`IMessageJob`](../modules/modules_nats_nats_service.md#imessagejob)\> |
 
 ## Properties

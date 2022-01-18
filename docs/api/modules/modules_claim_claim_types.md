@@ -22,7 +22,7 @@
 
 ### Variables
 
-- [NATS\_EXCHANGE\_TOPIC](modules_claim_claim_types.md#nats_exchange_topic)
+- [NATS_EXCHANGE_TOPIC](modules_claim_claim_types.md#nats_exchange_topic)
 
 ## Type aliases
 
