@@ -22,6 +22,7 @@ import {
   ApiQuery,
   ApiResponse,
   ApiTags,
+  ApiParam,
 } from '@nestjs/swagger';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
@@ -122,9 +123,15 @@ export class ClaimController {
     this.logger.debug(`credentials issued by ${did}`);
   }
 
-  @Post('/request')
-  @ApiExcludeEndpoint()
+  @Post('/request/:did?')
+  // @ApiExcludeEndpoint()
   @ApiTags('Claims')
+  @ApiParam({
+    name: 'did',
+    required: false,
+    deprecated: true,
+    type: String,
+  })
   @ApiBody({
     type: ClaimRequestDTO,
     description: 'Claim data object, containing id and issuedToken',
