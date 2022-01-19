@@ -62,6 +62,8 @@ export class OrganizationService {
         where: {
           namespace,
         },
+        select: ['id'],
+        relations: ['subOrgs'],
       })) || {};
 
     if (!id) {
