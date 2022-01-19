@@ -13,7 +13,7 @@ export class OrganizationResolver {
 
   @Query(() => Organization)
   async organization(
-    @Args('namespace', { type: () => String }) namespace: string,
+    @Args('namespace', { type: () => String }) namespace: string
   ) {
     const org = await this.orgService.getByNamespace(namespace);
     if (!org) {

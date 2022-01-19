@@ -6,7 +6,7 @@ import { DIDContact } from './did.contact.entity';
 const chance = new Chance();
 
 export const didDocumentFixture = async (
-  didDocRepo: Repository<DIDDocumentEntity>,
+  didDocRepo: Repository<DIDDocumentEntity>
 ) => {
   const didDoc = {
     id: 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
@@ -26,7 +26,7 @@ export const didDocumentFixture = async (
 export const didContactFixture = async (
   didDoc: DIDDocumentEntity,
   repo: Repository<DIDContact>,
-  count = 1,
+  count = 1
 ) => {
   const contacts = [];
   const didConst = `did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E`;

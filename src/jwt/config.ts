@@ -6,7 +6,7 @@ import { JwtModuleOptions } from '@nestjs/jwt';
 const readFile = promisify(fs.readFile);
 
 export const getJWTConfig = async (
-  configService: ConfigService,
+  configService: ConfigService
 ): Promise<JwtModuleOptions> => {
   const [publicKey, privateKey] = await Promise.all([
     readFile(configService.get<string>('JWT_PUBLIC_KEY')),

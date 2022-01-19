@@ -32,7 +32,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 
 ## Methods
 
@@ -96,13 +96,7 @@ ___
 
 ### onApplicationShutdown
 
-▸ **onApplicationShutdown**(`signal?`): `Promise`<`void`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `signal?` | `string` |
+▸ **onApplicationShutdown**(): `Promise`<`void`\>
 
 #### Returns
 

@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { GqlModuleOptions } from '@nestjs/graphql';
 
 export const getGraphQlConfig = (
-  configService: ConfigService,
+  configService: ConfigService
 ): GqlModuleOptions => {
   const isProduction = configService.get<string>('NODE_ENV') === 'production';
   return {

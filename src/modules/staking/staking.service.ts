@@ -12,7 +12,7 @@ export class StakingService {
     private readonly stakingTermsRepository: Repository<StakingTerms>,
     @InjectRepository(StakingPool)
     private readonly stakingPoolRepository: Repository<StakingPool>,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.logger.setContext(StakingService.name);
   }
@@ -30,7 +30,7 @@ export class StakingService {
     if (stakeTermsExist) {
       this.logger.debug(`Staking terms and condition already exists`);
       throw new BadRequestException(
-        'Staking terms and condition already exists',
+        'Staking terms and condition already exists'
       );
     }
     return this.stakingTermsRepository.save(stakingTerms);

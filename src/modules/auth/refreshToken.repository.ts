@@ -13,7 +13,7 @@ export class RefreshTokenRepository {
     key: string,
     value: string,
     mode: string,
-    duration: number,
+    duration: number
   ) => Promise<string>;
   private readAsync: (key: string) => Promise<string | undefined>;
   private deleteAsync: (key: string) => Promise<void>;
@@ -32,14 +32,14 @@ export class RefreshTokenRepository {
   public async createRefreshToken({ userDid }: { userDid: string }) {
     const refreshToken = classToPlain(new RefreshToken({ userDid }));
     const expire = this.configService.get<string>(
-      'JWT_REFRESH_TOKEN_EXPIRES_IN',
+      'JWT_REFRESH_TOKEN_EXPIRES_IN'
     );
     const expireInSec = parseDuration(expire) / 1000;
     await this.saveAsync(
       refreshToken.tokenId,
       JSON.stringify(refreshToken),
       'EX',
-      expireInSec,
+      expireInSec
     );
     return refreshToken;
   }

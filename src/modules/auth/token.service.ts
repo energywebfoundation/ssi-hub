@@ -17,7 +17,7 @@ export class TokenService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
-    private refreshTokenRepository: RefreshTokenRepository,
+    private refreshTokenRepository: RefreshTokenRepository
   ) {}
   async generateAccessToken(data: TokenPayload) {
     return this.jwtService.signAsync(data);
@@ -33,8 +33,8 @@ export class TokenService {
     });
   }
 
-  verifyAccessToken(token: string) {
-    return this.jwtService.verifyAsync(token);
+  async verifyAccessToken(token: string) {
+    return this.jwtService.verifyAsync<TokenPayload>(token);
   }
 
   async verifyRefreshToken(token: string) {
@@ -53,7 +53,7 @@ export class TokenService {
     }
 
     const refreshToken = await this.refreshTokenRepository.getRefreshTokenById(
-      tokenId,
+      tokenId
     );
 
     if (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService } from '@nestjs/axios';
@@ -9,7 +10,7 @@ import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
-import { BigNumber } from '@ethersproject/bignumber';
+import { BigNumber } from 'ethers';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
@@ -47,7 +48,7 @@ const repositoryMockFactory = jest.fn(() => ({
   findOne: jest.fn(() => {
     return didDocEntity;
   }),
-  save: jest.fn(entity => entity),
+  save: jest.fn((entity) => entity),
 }));
 const queueMockFactory = jest.fn(() => ({}));
 jest.mock('@ew-did-registry/did-ipfs-store', () => {

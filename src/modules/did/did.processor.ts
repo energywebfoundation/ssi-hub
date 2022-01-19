@@ -1,4 +1,5 @@
 import { OnQueueError, Process, Processor } from '@nestjs/bull';
+import { ConfigService } from '@nestjs/config';
 import { Job } from 'bull';
 import { Logger } from '../logger/logger.service';
 import { DIDService } from './did.service';
@@ -9,6 +10,7 @@ export class DIDProcessor {
   constructor(
     private readonly didService: DIDService,
     private readonly logger: Logger,
+    private readonly configService: ConfigService
   ) {
     this.logger.setContext(DIDProcessor.name);
   }
@@ -27,6 +29,10 @@ export class DIDProcessor {
   @Process(UPDATE_DID_DOC_QUEUE_NAME)
   public async processDIDDocumentRefresh(job: Job<string>) {
     this.logger.debug(`processing cache refresh for ${job.data}`);
-    await this.didService.refreshCachedDocument(job.data);
+    if (this.configService.get('DID_SYNC_MODE_FULL') === 'true') {
+      await this.didService.addCachedDocument(job.data);
+    } else {
+      await this.didService.incrementalRefreshCachedDocument(job.data);
+    }
   }
 }

@@ -28,7 +28,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `assetsRepository` | `Repository`<[`Asset`](modules_assets_assets_entity.Asset.md)\> |
 | `assetsHistoryRepository` | `Repository`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md)\> |

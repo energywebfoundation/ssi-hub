@@ -12,6 +12,7 @@
 
 - [login](modules_auth_login_controller.LoginController.md#login)
 - [refreshToken](modules_auth_login_controller.LoginController.md#refreshtoken)
+- [status](modules_auth_login_controller.LoginController.md#status)
 
 ## Constructors
 
@@ -25,7 +26,7 @@
 | :------ | :------ |
 | `tokenService` | [`TokenService`](modules_auth_token_service.TokenService.md) |
 | `cookiesServices` | [`CookiesServices`](modules_auth_cookies_service.CookiesServices.md) |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 
 ## Methods
@@ -62,3 +63,19 @@ ___
 #### Returns
 
 `Promise`<`Response`<`any`, `Record`<`string`, `any`\>\>\>
+
+___
+
+### status
+
+▸ **status**(`req`): `Promise`<{ `user`: `string`  }\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
+
+#### Returns
+
+`Promise`<{ `user`: `string`  }\>

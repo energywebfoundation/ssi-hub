@@ -10,7 +10,7 @@ export class BullHealthCheckIndicatorService extends HealthIndicator {
     @InjectQueue('claims')
     private readonly claimQueue: Queue<string>,
     @InjectQueue('dids')
-    private readonly didQueue: Queue<string>,
+    private readonly didQueue: Queue<string>
   ) {
     super();
   }

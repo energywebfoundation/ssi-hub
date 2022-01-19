@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Injectable,
   Logger as NestLogger,
@@ -21,14 +22,14 @@ export class Logger extends NestLogger implements LoggerService {
   private readonly redactor: SyncRedactor;
   constructor(
     configService: ConfigService,
-    private readonly sentryService: SentryService,
+    private readonly sentryService: SentryService
   ) {
     super();
     this.redactor = new SyncRedactor({
       customRedactors: {
         before: [
           {
-            regexpPattern: /(?<=0x[a-f0-9\-]{3})[a-f0-9\-]+/gi,
+            regexpPattern: /(?<=0x[a-f0-9-]{3})[a-f0-9-]+/gi,
             replaceWith: '***',
           },
         ],
@@ -40,10 +41,10 @@ export class Logger extends NestLogger implements LoggerService {
       format.printf(
         ({ level, message, timestamp, context }) =>
           `${level} [${context || ''}] : ${timestamp} - ${this.redactor.redact(
-            message,
-          )}`,
+            message
+          )}`
       ),
-      format.colorize(),
+      format.colorize()
     );
 
     const console = new transports.Console({ format: logFormat });
@@ -63,7 +64,7 @@ export class Logger extends NestLogger implements LoggerService {
     this.sentryService.captureException(error);
     if (Array.isArray(error)) {
       this.logger.error(
-        error.map(err => JSON.stringify(err, null, 2)).join(', '),
+        error.map((err) => JSON.stringify(err, null, 2)).join(', ')
       );
       return;
     }

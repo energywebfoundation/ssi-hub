@@ -14,7 +14,7 @@ export const authRefreshTokenTestSuite = () => {
       const provider = new providers.JsonRpcProvider(process.env.ENS_URL);
       const wallet = new Wallet(
         '779907598c747ff45a4f8e1b7e0fde0756585a9f936aecc95c1c738a3d85bbc4',
-        provider,
+        provider
       );
       const userAddress = await wallet.getAddress();
       const tokenService = app.get(TokenService);
@@ -28,15 +28,15 @@ export const authRefreshTokenTestSuite = () => {
       expect(refreshTokenResponse.headers['set-cookie']).toEqual(
         expect.arrayContaining([
           expect.stringMatching(
-            /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/,
+            /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/
           ),
-        ]),
+        ])
       );
       expect(refreshTokenResponse.headers['set-cookie'][0]).toContain(
-        refreshTokenResponse.body.token,
+        refreshTokenResponse.body.token
       );
       expect(refreshTokenResponse.headers['set-cookie'][1]).toContain(
-        refreshTokenResponse.body.refreshToken,
+        refreshTokenResponse.body.refreshToken
       );
 
       return request(app.getHttpServer())
@@ -70,14 +70,14 @@ export const authRefreshTokenTestSuite = () => {
       const configService = app.get(ConfigService);
       const jwtService = app.get(JwtService);
       const refreshToken = await getRefreshToken();
-      const {tokenId} = jwtService.decode(refreshToken) as RefreshToken;
+      const { tokenId } = jwtService.decode(refreshToken) as RefreshToken;
 
       const expireMs = parseDuration(
-        configService.get('JWT_REFRESH_TOKEN_EXPIRES_IN'),
+        configService.get('JWT_REFRESH_TOKEN_EXPIRES_IN')
       );
 
       jest.useFakeTimers();
-      const expiredRefreshToken = new Promise(resolve => {
+      const expiredRefreshToken = new Promise((resolve) => {
         setTimeout(async () => {
           resolve(refreshTokenRepository.getRefreshTokenById(tokenId));
         }, expireMs);

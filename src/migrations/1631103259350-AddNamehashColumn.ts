@@ -5,20 +5,20 @@ export class AddNamehashColumn1631103259350 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "role" ADD "namehash" character varying`,
+      `ALTER TABLE "role" ADD "namehash" character varying`
     );
     await queryRunner.query(
-      `ALTER TABLE "organization" ADD "namehash" character varying`,
+      `ALTER TABLE "organization" ADD "namehash" character varying`
     );
     await queryRunner.query(
-      `ALTER TABLE "application" ADD "namehash" character varying`,
+      `ALTER TABLE "application" ADD "namehash" character varying`
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "application" DROP COLUMN "namehash"`);
     await queryRunner.query(
-      `ALTER TABLE "organization" DROP COLUMN "namehash"`,
+      `ALTER TABLE "organization" DROP COLUMN "namehash"`
     );
     await queryRunner.query(`ALTER TABLE "role" DROP COLUMN "namehash"`);
   }

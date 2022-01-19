@@ -8,7 +8,7 @@ const chance = new Chance();
 
 export const organizationFixture = async (
   repo: Repository<Organization>,
-  count = 1,
+  count = 1
 ) => {
   const parentOrg = Organization.create({
     name: 'parentOrg',

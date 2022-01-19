@@ -24,7 +24,7 @@ export class LoginController {
     private tokenService: TokenService,
     private cookiesServices: CookiesServices,
     private configService: ConfigService,
-    private roleService: RoleService,
+    private roleService: RoleService
   ) {}
 
   @UseGuards(LoginGuard)
@@ -52,9 +52,10 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions = this.cookiesServices.getCookiesOptionBasedOnUserAgent(
-      req.headers['user-agent'],
-    );
+    const cookiesOptions =
+      this.cookiesServices.getCookiesOptionBasedOnUserAgent(
+        req.headers['user-agent']
+      );
 
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
@@ -66,13 +67,13 @@ export class LoginController {
     res.cookie(
       this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
       token,
-      cookiesOptions,
+      cookiesOptions
     );
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
-      cookiesOptions,
+      cookiesOptions
     );
 
     return res.send({ token, refreshToken });
@@ -83,7 +84,7 @@ export class LoginController {
   async refreshToken(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('refresh_token') refresh_token?: string,
+    @Query('refresh_token') refresh_token?: string
   ) {
     const origin = req.headers['origin'];
     const refreshTokenString =
@@ -103,9 +104,10 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions = this.cookiesServices.getCookiesOptionBasedOnUserAgent(
-      req.headers['user-agent'],
-    );
+    const cookiesOptions =
+      this.cookiesServices.getCookiesOptionBasedOnUserAgent(
+        req.headers['user-agent']
+      );
 
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({
@@ -122,7 +124,7 @@ export class LoginController {
     res.cookie(
       this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
       token,
-      cookiesOptions,
+      cookiesOptions
     );
 
     res.cookie(
@@ -132,11 +134,38 @@ export class LoginController {
         ...cookiesOptions,
         expires: new Date(
           Date.now() +
-            ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN')),
+            ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'))
         ),
-      },
+      }
     );
 
     return res.send({ token, refreshToken });
+  }
+
+  @Get('auth/status')
+  async status(@Req() req: Request) {
+    const accessTokenString =
+      req.headers['authorization']?.replace('Bearer ', '') ||
+      req.cookies[this.configService.get<string>('JWT_ACCESS_TOKEN_NAME')];
+
+    if (!accessTokenString) {
+      return {
+        user: null,
+      };
+    }
+
+    try {
+      const tokenData = await this.tokenService.verifyAccessToken(
+        accessTokenString
+      );
+
+      return {
+        user: tokenData?.did || null,
+      };
+    } catch {
+      return {
+        user: null,
+      };
+    }
   }
 }

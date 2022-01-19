@@ -48,7 +48,7 @@ export class OrganizationController {
   })
   public async getByOwner(
     @Param('owner') owner: string,
-    @Query('withRelations', BooleanPipe) withRelations: boolean,
+    @Query('withRelations', BooleanPipe) withRelations: boolean
   ) {
     return this.organizationService.getByOwner(owner, { withRelations });
   }

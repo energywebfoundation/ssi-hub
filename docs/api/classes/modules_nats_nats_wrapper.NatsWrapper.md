@@ -27,7 +27,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `config` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `config` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods

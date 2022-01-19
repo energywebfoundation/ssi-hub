@@ -10,16 +10,14 @@ import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class NotFoundInterceptor implements NestInterceptor {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     {
       return next.handle().pipe(
-        tap(data => {
+        tap((data) => {
           if (data === null)
-            context
-              .switchToHttp()
-              .getResponse()
-              .status(HttpStatus.NOT_FOUND);
-        }),
+            context.switchToHttp().getResponse().status(HttpStatus.NOT_FOUND);
+        })
       );
     }
   }

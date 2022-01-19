@@ -26,14 +26,13 @@
 
 ### transform
 
-▸ **transform**(`did`, `metadata`): [`DID`](modules_did_did_types.DID.md)
+▸ **transform**(`did`): [`DID`](modules_did_did_types.DID.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `did` | `string` |
-| `metadata` | `ArgumentMetadata` |
 
 #### Returns
 

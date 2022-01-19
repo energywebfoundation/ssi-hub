@@ -17,8 +17,10 @@ interface ApplicationDefinition extends BaseEnsDefinition {
 }
 
 @ObjectType()
-class ApplicationDefinitionSchema extends BaseEnsDefinitionSchema
-  implements ApplicationDefinition {
+class ApplicationDefinitionSchema
+  extends BaseEnsDefinitionSchema
+  implements ApplicationDefinition
+{
   @Field()
   appName: string;
 }
@@ -57,16 +59,10 @@ export class Application implements BaseEnsEntity {
   @Column({ type: 'jsonb' })
   definition: ApplicationDefinition;
 
-  @ManyToOne(
-    () => Organization,
-    org => org.apps,
-  )
+  @ManyToOne(() => Organization, (org) => org.apps)
   parentOrg: Organization;
 
   @Field(() => [Role])
-  @OneToMany(
-    () => Role,
-    role => role.parentApp,
-  )
+  @OneToMany(() => Role, (role) => role.parentApp)
   roles: Role[];
 }

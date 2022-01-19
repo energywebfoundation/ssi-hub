@@ -13,7 +13,7 @@ export class SearchService {
     private readonly orgRepository: Repository<Organization>,
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
     @InjectRepository(Application)
-    private readonly appRepository: Repository<Application>,
+    private readonly appRepository: Repository<Application>
   ) {}
   /**
    * returns App/Org/Role with namespace matching or similar to provided text
@@ -62,7 +62,7 @@ export class SearchService {
     }
 
     const namespaces = await Promise.all(
-      types.flatMap(async type => {
+      types.flatMap(async (type) => {
         if (type === NamespaceEntities.Org) {
           return this.orgRepository
             .createQueryBuilder()
@@ -96,7 +96,7 @@ export class SearchService {
             .orWhere('namespace like :namespace', { namespace: textWithLike })
             .getMany();
         }
-      }),
+      })
     );
     return namespaces.flat();
   }

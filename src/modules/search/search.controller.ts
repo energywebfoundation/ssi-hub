@@ -39,12 +39,12 @@ export class SearchController {
   })
   public async search(
     @Param('search') search: string,
-    @Query('types') types?: NamespaceEntities[],
+    @Query('types') types?: NamespaceEntities[]
   ) {
     if (search.length < 3) {
       throw new HttpException(
         'Search phrase too short (min 3 characters)',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
     const searchByData = SearchDTO.create({ search, types });
@@ -54,7 +54,7 @@ export class SearchController {
     }
     return await this.searchService.searchByText(
       searchByData.search,
-      searchByData.types,
+      searchByData.types
     );
   }
 }

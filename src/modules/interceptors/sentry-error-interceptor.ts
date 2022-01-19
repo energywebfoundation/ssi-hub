@@ -14,17 +14,17 @@ export class SentryErrorInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       tap({
-        error: exception => {
+        error: (exception) => {
           const { withScope, captureException } =
             this.sentryService.getSentry() || {};
 
           if (!withScope || !captureException) return;
 
-          withScope(scope => {
+          withScope((scope) => {
             const data = Handlers.parseRequest(
-              <any>{},
-              context.switchToHttp().getRequest(),
               {},
+              context.switchToHttp().getRequest(),
+              {}
             );
 
             scope.setExtra('req', data.request);
@@ -35,7 +35,7 @@ export class SentryErrorInterceptor implements NestInterceptor {
             captureException(exception);
           });
         },
-      }),
+      })
     );
   }
 }

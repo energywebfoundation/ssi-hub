@@ -14,7 +14,7 @@ import { DIDPipe } from './did.pipe';
 export class DIDController {
   constructor(
     private readonly didService: DIDService,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.logger.setContext(DIDController.name);
   }

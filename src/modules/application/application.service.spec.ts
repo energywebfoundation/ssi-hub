@@ -66,13 +66,12 @@ describe('ApplicationService', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-      'master',
-    );
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
     await queryRunner.startTransaction();
     repo = module.get<Repository<Application>>(getRepositoryToken(Application));
     orgRepo = module.get<Repository<Organization>>(
-      getRepositoryToken(Organization),
+      getRepositoryToken(Organization)
     );
 
     organizations = await organizationFixture(orgRepo);
@@ -106,8 +105,8 @@ describe('ApplicationService', () => {
 
       expect(MockLogger.debug).toHaveBeenCalledWith(
         expect.stringContaining(
-          `Not able to create application: ${namespace} already exists`,
-        ),
+          `Not able to create application: ${namespace} already exists`
+        )
       );
       const createdApps = await repo.find({ namespace });
       expect(createdApps.length).toBe(1);
@@ -173,7 +172,7 @@ describe('ApplicationService', () => {
 
     it('getByNamespace() it should return undefined when using namespace that does not exist', async () => {
       const app = await service.getByNamespace(
-        `notexists.apps.testOrg.iam.ewc`,
+        `notexists.apps.testOrg.iam.ewc`
       );
 
       expect(app).toBe(undefined);
