@@ -143,7 +143,7 @@ describe('DidDocumentService', () => {
     expect(parsedLogs.topBlock).toBeInstanceOf(BigNumber);
   });
 
-  it('should syncronize not cached document', async () => {
+  it('should synchronize not cached document', async () => {
     const identity = provider.getWallets()[1];
     const did = `did:${Methods.Erc1056}:${Chain.VOLTA}:${identity}`;
     cachedDoc = { ...didDoc, logs: '<logs>' };
