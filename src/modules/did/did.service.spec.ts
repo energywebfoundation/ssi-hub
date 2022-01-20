@@ -1,19 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
+import { Methods, Chain } from '@ew-did-registry/did';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import {MockProvider, deployContract} from 'ethereum-waffle';
-import {BigNumber, Contract, Wallet } from 'ethers';
+import { MockProvider, deployContract } from 'ethereum-waffle';
+import { BigNumber, utils } from 'ethers';
 import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
+import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+
+const { formatBytes32String } = utils;
 
 const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
 const MockLogger = {
@@ -27,16 +31,10 @@ const MockObject = {};
 const MockSentryTracing = {
   startTransaction: jest.fn(),
 };
-const MockConfigService = {
-  get: jest.fn((key: string) => {
-    if (key === 'DID_SYNC_ENABLED') {
-      return 'false';
-    }
-    return null;
-  }),
-};
+const provider = new MockProvider();
+const didOwner = provider.getWallets()[0];
 const didDoc: IDIDDocument = {
-  id: '<id>',
+  id: `did:${Methods.Erc1056}:${Chain.VOLTA}:${didOwner.address}`,
   service: [],
   authentication: [],
   publicKey: [],
@@ -72,25 +70,29 @@ jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
     };
   }),
 }));
-jest.mock('../../ethers/factories/EthereumDIDRegistry__factory', () => ({
-  EthereumDIDRegistry__factory: {
-    connect: jest.fn(() => {
-      return {
-        on: jest.fn(),
-      };
-    }),
-  },
-}));
 
 describe('DidDocumentService', () => {
   let service: DIDService;
-  let wallets: Wallet[];
-  let didRegistry: Contract;
+  let didRegistry: EthereumDIDRegistry;
 
   beforeEach(async () => {
-      wallets = new MockProvider().getWallets();
-      didRegistry = (await deployContract(wallets[0], ethrReg));
-      await didRegistry.deployed();
+    didRegistry = (await deployContract(
+      didOwner,
+      ethrReg
+    )) as EthereumDIDRegistry;
+    await didRegistry.deployed();
+
+    const MockConfigService = {
+      get: jest.fn((key: string) => {
+        if (key === 'DID_SYNC_ENABLED') {
+          return 'false';
+        } else if (key === 'DID_REGISTRY_ADDRESS') {
+          return didRegistry.address;
+        } else {
+          return null;
+        }
+      }),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -104,10 +106,11 @@ describe('DidDocumentService', () => {
           provide: getRepositoryToken(DIDDocumentEntity),
           useFactory: repositoryMockFactory,
         },
-        { provide: Provider, useValue: MockObject },
+        { provide: Provider, useValue: provider },
         { provide: SentryTracingService, useValue: MockSentryTracing },
       ],
     }).compile();
+    await module.init();
 
     service = module.get<DIDService>(DIDService);
   });
@@ -140,11 +143,28 @@ describe('DidDocumentService', () => {
     expect(parsedLogs.topBlock).toBeInstanceOf(BigNumber);
   });
 
-  it('should not update not cached document', async () =>{});
+  it('should not update not cached document', async () => {});
 
   it('should update cached document', async () => {
-
-  })
+    didDocEntity = Object.assign({}, didDoc, { logs: '<logs>' });
+    const refreshedDID = new Promise((resolve) =>
+      jest
+        .spyOn(service, 'incrementalRefreshCachedDocument')
+        .mockImplementationOnce((did: string) => {
+          resolve(did);
+          return Promise.resolve(didDocEntity);
+        })
+    );
+    await (
+      await didRegistry.setAttribute(
+        didOwner.address,
+        formatBytes32String('publicKey'),
+        '0x12',
+        47
+      )
+    ).wait();
+    expect(refreshedDID).resolves.toEqual(didDocEntity.id);
+  });
 
   function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {
     for (const property in returnedDoc) {
