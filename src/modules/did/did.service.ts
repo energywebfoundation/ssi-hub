@@ -222,7 +222,7 @@ export class DIDService implements OnModuleInit {
   private async InitEventListeners(): Promise<void> {
     this.didRegistry.on(DidEventNames.AttributeChanged, async (address) => {
       const did = `did:${Methods.Erc1056}:${process.env.CHAIN_NAME}:${address}`;
-      
+
       this.logger.info(
         `${DidEventNames.AttributeChanged} event received for did: ${did}`
       );

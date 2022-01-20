@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
-import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
+import { addressOf, ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { Methods, Chain } from '@ew-did-registry/did';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService } from '@nestjs/axios';
@@ -32,9 +32,9 @@ const MockSentryTracing = {
   startTransaction: jest.fn(),
 };
 const provider = new MockProvider();
-const didOwner = provider.getWallets()[0];
+const cachedIdentity = provider.getWallets()[0];
 const didDoc: IDIDDocument = {
-  id: `did:${Methods.Erc1056}:${Chain.VOLTA}:${didOwner.address}`,
+  id: `did:${Methods.Erc1056}:${Chain.VOLTA}:${cachedIdentity.address}`,
   service: [],
   authentication: [],
   publicKey: [],
@@ -43,10 +43,10 @@ const didDoc: IDIDDocument = {
   updated: '<updated>',
   '@context': '<context>',
 };
-let didDocEntity: DIDDocumentEntity;
+let cachedDoc: DIDDocumentEntity;
 const repositoryMockFactory = jest.fn(() => ({
-  findOne: jest.fn(() => {
-    return didDocEntity;
+  findOne: jest.fn((did: string) => {
+    return did === cachedDoc?.id ? cachedDoc : null;
   }),
   save: jest.fn((entity) => entity),
 }));
@@ -77,7 +77,7 @@ describe('DidDocumentService', () => {
 
   beforeEach(async () => {
     didRegistry = (await deployContract(
-      didOwner,
+      cachedIdentity,
       ethrReg
     )) as EthereumDIDRegistry;
     await didRegistry.deployed();
@@ -123,14 +123,14 @@ describe('DidDocumentService', () => {
     expect(service).toBeDefined();
   });
 
-  it('getByID should return only IDIDDocument params from cached document', async () => {
-    didDocEntity = Object.assign({}, didDoc, { logs: '<logs>' });
-    const returnedDoc = await service.getById('<any DID>');
+  it('getByID should return cached document', async () => {
+    cachedDoc = { ...didDoc, logs: '<logs>' };
+    const returnedDoc = await service.getById(cachedDoc.id);
     checkReturnedDIDDoc(returnedDoc);
   });
 
-  it('getByID should return only IDIDDocument params from non-cached document', async () => {
-    didDocEntity = undefined;
+  it('getByID should not return non-cached document', async () => {
+    cachedDoc = undefined;
     const returnedDoc = await service.getById('<any DID>');
     checkReturnedDIDDoc(returnedDoc);
   });
@@ -143,27 +143,50 @@ describe('DidDocumentService', () => {
     expect(parsedLogs.topBlock).toBeInstanceOf(BigNumber);
   });
 
-  it('should not update not cached document', async () => {});
+  it('should syncronize not cached document', async () => {
+    const identity = provider.getWallets()[1];
+    const did = `did:${Methods.Erc1056}:${Chain.VOLTA}:${identity}`;
+    cachedDoc = { ...didDoc, logs: '<logs>' };
+    const cachedDID = new Promise((resolve) =>
+      jest
+        .spyOn(service, 'addCachedDocument')
+        .mockImplementationOnce((did: string) => {
+          resolve(did);
+          return Promise.resolve({ ...cachedDoc, id: did });
+        })
+    );
+    await (
+      await didRegistry
+        .connect(identity)
+        .setAttribute(
+          identity.address,
+          formatBytes32String('publicKey'),
+          '0x12',
+          47
+        )
+    ).wait();
+    expect(cachedDID).resolves.toEqual(did);
+  });
 
   it('should update cached document', async () => {
-    didDocEntity = Object.assign({}, didDoc, { logs: '<logs>' });
+    cachedDoc = { ...didDoc, logs: '<logs>' };
     const refreshedDID = new Promise((resolve) =>
       jest
         .spyOn(service, 'incrementalRefreshCachedDocument')
         .mockImplementationOnce((did: string) => {
           resolve(did);
-          return Promise.resolve(didDocEntity);
+          return Promise.resolve(cachedDoc);
         })
     );
     await (
       await didRegistry.setAttribute(
-        didOwner.address,
+        addressOf(cachedDoc.id),
         formatBytes32String('publicKey'),
         '0x12',
         47
       )
     ).wait();
-    expect(refreshedDID).resolves.toEqual(didDocEntity.id);
+    expect(refreshedDID).resolves.toEqual(cachedDoc.id);
   });
 
   function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {
