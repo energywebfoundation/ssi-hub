@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
+import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import {MockProvider, deployContract} from 'ethereum-waffle';
+import {BigNumber, Contract, Wallet } from 'ethers';
 import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
-import { BigNumber } from 'ethers';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 const nameof = <T>(name: Extract<keyof T, string>): string => name; // https://stackoverflow.com/a/50470026
@@ -82,8 +84,14 @@ jest.mock('../../ethers/factories/EthereumDIDRegistry__factory', () => ({
 
 describe('DidDocumentService', () => {
   let service: DIDService;
+  let wallets: Wallet[];
+  let didRegistry: Contract;
 
   beforeEach(async () => {
+      wallets = new MockProvider().getWallets();
+      didRegistry = (await deployContract(wallets[0], ethrReg));
+      await didRegistry.deployed();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DIDService,
@@ -131,6 +139,12 @@ describe('DidDocumentService', () => {
     const parsedLogs = (service as any).parseLogs(JSON.stringify(logs));
     expect(parsedLogs.topBlock).toBeInstanceOf(BigNumber);
   });
+
+  it('should not update not cached document', async () =>{});
+
+  it('should update cached document', async () => {
+
+  })
 
   function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {
     for (const property in returnedDoc) {
