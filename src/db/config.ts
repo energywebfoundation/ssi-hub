@@ -24,6 +24,14 @@ export const getDBConfig = (configService: ConfigService) => {
     migrationsTableName: 'migrations_iam_cache_server',
     logging: typeormLoggerOptions[0] === 'all' ? 'all' : typeormLoggerOptions,
     autoLoadEntities: true,
+    // Options from pool config https://node-postgres.com/api/pool
+    extra: {
+      max: configService.get<number>('DB_MAXIMUM_CONNECTION_POOL', 10),
+      connectionTimeoutMillis: configService.get<number>(
+        'DB_CONNECTION_TIMEOUT',
+        1000
+      ),
+    },
   };
 
   // Generating ormconfig.json for running typeOrm CLI in dev env
