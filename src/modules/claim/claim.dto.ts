@@ -127,7 +127,7 @@ export class NewClaimIssueDTO extends ClaimIssueDTO {
   // Optional so as to not break existing clients. Can be made mandatory in future.
   @IsOptional()
   @ApiProperty()
-  registrationTypes: [RegistrationTypes];
+  registrationTypes: [RegistrationTypes, RegistrationTypes?];
 
   @IsString({ each: true })
   @ApiProperty()

@@ -45,8 +45,8 @@ export class RoleClaim implements IRoleClaim {
   claimTypeVersion: string;
 
   @Field()
-  @Column()
-  token: string;
+  @Column({ nullable: true })
+  token?: string;
 
   @Column({ nullable: true })
   subjectAgreement?: string;

@@ -13,7 +13,6 @@ import {
   UsePipes,
   ForbiddenException,
 } from '@nestjs/common';
-import { ClaimService } from './claim.service';
 import { DIDService } from '../did/did.service';
 import {
   ApiBody,
@@ -50,6 +49,7 @@ import { AssetsService } from '../assets/assets.service';
 import { DIDsQuery } from './entities/roleClaim.entity';
 import { RoleDTO } from '../role/role.dto';
 import { NatsService } from '../nats/nats.service';
+import { ClaimIssuanceService, ClaimService } from './services';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -57,6 +57,7 @@ import { NatsService } from '../nats/nats.service';
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
+    private readonly claimIssuanceService: ClaimIssuanceService,
     private readonly didService: DIDService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
@@ -97,8 +98,12 @@ export class ClaimController {
 
     await ClaimIssueDTO.create(claimData);
 
-    const result = await this.claimService.handleClaimIssuanceRequest(
-      claimData
+    const previouslyRequestedClaim = await this.claimService.getById(
+      claimData.id
+    );
+    const result = await this.claimIssuanceService.handleClaimIssuanceRequest(
+      claimData,
+      previouslyRequestedClaim
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
@@ -159,7 +164,7 @@ export class ClaimController {
     }
 
     const claimData: IClaimRequest = {
-      id: ClaimService.idOfClaim(data),
+      id: ClaimService.idOfClaim({ ...data, subject: sub }),
       ...data,
     };
 
