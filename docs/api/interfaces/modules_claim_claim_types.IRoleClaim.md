@@ -107,4 +107,4 @@ ___
 
 ### token
 
-• **token**: `string`
+• `Optional` **token**: `string`

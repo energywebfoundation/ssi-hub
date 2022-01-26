@@ -4,7 +4,7 @@
 
 ## Hierarchy
 
-- `NestLogger`
+- `Logger`
 
   ↳ **`Logger`**
 

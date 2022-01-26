@@ -37,6 +37,7 @@
 | `claimData` | `Object` |
 | `claimData.claimType` | `string` |
 | `claimData.claimTypeVersion` | `string` |
+| `sub` | `string` |
 
 ## Variables
 

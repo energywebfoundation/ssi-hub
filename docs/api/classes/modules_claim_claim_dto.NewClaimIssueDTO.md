@@ -102,7 +102,7 @@ ___
 
 ### registrationTypes
 
-• **registrationTypes**: [[`RegistrationTypes`](../enums/modules_claim_claim_types.RegistrationTypes.md)]
+• **registrationTypes**: [[`RegistrationTypes`](../enums/modules_claim_claim_types.RegistrationTypes.md), RegistrationTypes?]
 
 ___
 

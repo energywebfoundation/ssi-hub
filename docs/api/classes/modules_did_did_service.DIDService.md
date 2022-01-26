@@ -2,6 +2,10 @@
 
 [modules/did/did.service](../modules/modules_did_did_service.md).DIDService
 
+## Implements
+
+- `OnModuleInit`
+
 ## Table of contents
 
 ### Constructors
@@ -14,6 +18,7 @@
 - [getById](modules_did_did_service.DIDService.md#getbyid)
 - [getDIDDocumentFromUniversalResolver](modules_did_did_service.DIDService.md#getdiddocumentfromuniversalresolver)
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
+- [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
 
 ## Constructors
 
@@ -107,3 +112,17 @@ Also retrieves all claims from IPFS for the document.
 #### Returns
 
 `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
+
+___
+
+### onModuleInit
+
+▸ **onModuleInit**(): `Promise`<`void`\>
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Implementation of
+
+OnModuleInit.onModuleInit
