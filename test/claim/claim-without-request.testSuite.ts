@@ -110,7 +110,6 @@ export const claimWithoutRequestTestSuite = () => {
     // @ts-ignore
     queryRunner = manager.queryRunner =
       dbConnection.createQueryRunner('master');
-    queryRunner;
     await queryRunner.startTransaction();
   });
 

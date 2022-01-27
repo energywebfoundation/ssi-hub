@@ -1,5 +1,5 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -14,7 +14,7 @@ import { LoggerModule } from '../logger/logger.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
-import { ClaimService } from './services';
+import { ClaimIssuanceService, ClaimService } from './services';
 import { UUID_NAMESPACE } from './claim.const';
 import { IClaimRequest, IRoleClaim, RegistrationTypes } from './claim.types';
 import { NatsModule } from '../nats/nats.module';
@@ -45,7 +45,6 @@ describe('ClaimsController', () => {
   const issuer = new Keys();
   const issuerDID = `did:ethr:volta:${issuer.getAddress()}`;
   const jwt = new JWT(issuer);
-  let module: TestingModule;
   let queryRunner: QueryRunner;
   let dbConnection: Connection;
   let testHttpServer: request.SuperTest<request.Test>;
@@ -106,8 +105,8 @@ describe('ClaimsController', () => {
     return { id, token };
   };
 
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
       imports: [
         BullModule.forRoot({ redis: redisConfig }),
 
@@ -123,6 +122,7 @@ describe('ClaimsController', () => {
       controllers: [ClaimController],
       providers: [
         ClaimService,
+        ClaimIssuanceService,
         { provide: RoleService, useValue: MockRoleService },
         { provide: DIDService, useValue: {} },
         AssetsService,
@@ -140,21 +140,26 @@ describe('ClaimsController', () => {
     await app.init();
     service = app.get(ClaimService);
 
-    dbConnection = module.get(Connection);
-    const manager = module.get(EntityManager);
+    testHttpServer = request(app.getHttpServer());
+  });
+
+  beforeEach(async () => {
+    dbConnection = app.get(Connection);
+    const manager = app.get(EntityManager);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     queryRunner = manager.queryRunner =
       dbConnection.createQueryRunner('master');
-    await queryRunner.connect();
     await queryRunner.startTransaction();
-    testHttpServer = request(app.getHttpServer());
   });
 
   afterEach(async () => {
     await queryRunner?.rollbackTransaction();
-    await app.close();
+  });
+
+  afterAll(async () => {
+    await app?.close();
   });
 
   it('getBySubject() should return claim requested for subject', async () => {
