@@ -12,7 +12,9 @@ export class RoleClaim implements IRoleClaim {
   static create(data: Partial<RoleClaim>): RoleClaim {
     const entity = new RoleClaim();
     const jwt = new JWT(new Keys());
-    data.subject = (jwt.decode(data.token) as { sub: string }).sub;
+    if (!data.subject && data.token) {
+      data.subject = (jwt.decode(data.token) as { sub: string }).sub;
+    }
     Object.assign(entity, data);
     return entity;
   }

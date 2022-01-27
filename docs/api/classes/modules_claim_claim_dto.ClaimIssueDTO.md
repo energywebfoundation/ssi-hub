@@ -21,6 +21,8 @@
 ### Properties
 
 - [acceptedBy](modules_claim_claim_dto.ClaimIssueDTO.md#acceptedby)
+- [claimType](modules_claim_claim_dto.ClaimIssueDTO.md#claimtype)
+- [claimTypeVersion](modules_claim_claim_dto.ClaimIssueDTO.md#claimtypeversion)
 - [id](modules_claim_claim_dto.ClaimIssueDTO.md#id)
 - [issuedToken](modules_claim_claim_dto.ClaimIssueDTO.md#issuedtoken)
 - [onChainProof](modules_claim_claim_dto.ClaimIssueDTO.md#onchainproof)
@@ -45,6 +47,26 @@
 #### Implementation of
 
 [IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[acceptedBy](../interfaces/modules_claim_claim_types.IClaimIssuance.md#acceptedby)
+
+___
+
+### claimType
+
+• `Optional` **claimType**: `string`
+
+#### Implementation of
+
+[IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[claimType](../interfaces/modules_claim_claim_types.IClaimIssuance.md#claimtype)
+
+___
+
+### claimTypeVersion
+
+• `Optional` **claimTypeVersion**: `string`
+
+#### Implementation of
+
+[IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[claimTypeVersion](../interfaces/modules_claim_claim_types.IClaimIssuance.md#claimtypeversion)
 
 ___
 

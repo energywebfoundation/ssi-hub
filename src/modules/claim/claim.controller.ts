@@ -83,7 +83,6 @@ export class ClaimController {
   ) {
     const didDoc = await this.didService.getById(did);
     const proofVerifier = new ProofVerifier(didDoc);
-
     if (
       data.issuedToken &&
       !(await proofVerifier.verifyAssertionProof(data.issuedToken))
@@ -126,10 +125,11 @@ export class ClaimController {
     );
 
     this.logger.debug(`credentials issued by ${did}`);
+    return result;
   }
 
   @Post('/request/:did?')
-  // @ApiExcludeEndpoint()
+  @ApiExcludeEndpoint()
   @ApiTags('Claims')
   @ApiParam({
     name: 'did',

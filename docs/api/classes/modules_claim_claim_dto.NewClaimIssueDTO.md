@@ -62,11 +62,19 @@ ___
 
 • **claimType**: `string`
 
+#### Overrides
+
+[ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[claimType](modules_claim_claim_dto.ClaimIssueDTO.md#claimtype)
+
 ___
 
 ### claimTypeVersion
 
 • **claimTypeVersion**: `string`
+
+#### Overrides
+
+[ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[claimTypeVersion](modules_claim_claim_dto.ClaimIssueDTO.md#claimtypeversion)
 
 ___
 

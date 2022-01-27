@@ -99,13 +99,40 @@ export class ClaimIssueDTO implements IClaimIssuance {
   @IsOptional()
   @ApiProperty()
   onChainProof?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  claimType?: string;
+
+  @IsNumberString()
+  @IsOptional()
+  @ApiProperty()
+  claimTypeVersion?: string;
 }
 
 export class NewClaimIssueDTO extends ClaimIssueDTO {
   static async create(data: Partial<NewClaimIssueDTO>) {
     data.claimTypeVersion =
       data.claimTypeVersion?.toString().split('.')[0] ?? '1';
-    data.registrationTypes = [RegistrationTypes.OffChain];
+
+    const registrationTypes = [];
+
+    if (data.onChainProof) {
+      registrationTypes.push(RegistrationTypes.OnChain);
+    }
+
+    if (data.issuedToken) {
+      registrationTypes.push(RegistrationTypes.OffChain);
+    }
+
+    if (registrationTypes.length === 0) {
+      throw Error('At least one registration type must be specified');
+    }
+
+    data.registrationTypes =
+      registrationTypes as NewClaimIssueDTO['registrationTypes'];
+
     const dto = new NewClaimIssueDTO();
     Object.assign(dto, data);
 
@@ -124,8 +151,6 @@ export class NewClaimIssueDTO extends ClaimIssueDTO {
   claimTypeVersion: string;
 
   @IsEnum(RegistrationTypes, { each: true })
-  // Optional so as to not break existing clients. Can be made mandatory in future.
-  @IsOptional()
   @ApiProperty()
   registrationTypes: [RegistrationTypes, RegistrationTypes?];
 

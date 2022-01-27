@@ -238,7 +238,7 @@ ___
 
 ### postIssuerClaim
 
-▸ **postIssuerClaim**(`did`, `data`): `Promise`<`void`\>
+▸ **postIssuerClaim**(`did`, `data`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 #### Parameters
 
@@ -249,7 +249,7 @@ ___
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 ___
 

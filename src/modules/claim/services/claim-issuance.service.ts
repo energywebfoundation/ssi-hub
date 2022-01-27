@@ -1,16 +1,12 @@
+<<<<<<< HEAD
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+=======
+import { Injectable } from '@nestjs/common';
+>>>>>>> 2d87aeb... test(claim): add test for claims without previous request
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
-import { utils } from 'ethers';
-import {
-  erc712_type_hash,
-  proof_type_hash,
-  typedMsgPrefix,
-  defaultClaimExpiry,
-} from 'iam-client-lib';
-import { addressOf } from '@ew-did-registry/did-ethr-resolver';
 import { IClaimIssuance, DecodedClaimToken } from '../claim.types';
 import { RoleService } from '../../role/role.service';
 import { Logger } from '../../logger/logger.service';
@@ -25,8 +21,7 @@ export class ClaimIssuanceService {
     private readonly roleService: RoleService,
     private readonly logger: Logger,
     @InjectRepository(RoleClaim)
-    private readonly roleClaimRepository: Repository<RoleClaim>,
-    private readonly configService: ConfigService
+    private readonly roleClaimRepository: Repository<RoleClaim>
   ) {
     this.logger.setContext(ClaimIssuanceService.name);
   }
@@ -46,9 +41,10 @@ export class ClaimIssuanceService {
 
     if (!previouslyRequestedClaim) {
       return this.handleClaimWithoutPreviousRequest(rq);
-    }
-
-    if (previouslyRequestedClaim && !previouslyRequestedClaim.isRejected) {
+    } else if (
+      previouslyRequestedClaim &&
+      !previouslyRequestedClaim.isRejected
+    ) {
       return this.handleClaimWithPreviousRequest(rq, previouslyRequestedClaim);
     }
 
@@ -70,26 +66,17 @@ export class ClaimIssuanceService {
       claimTypeVersion = rq.claimTypeVersion;
     }
 
-    if (
-      rq.onChainProof &&
-      !this.verifyOnChainProof(rq.onChainProof, {
-        subject: rq.requester,
-        roleType: claimType,
-        roleVersion: claimTypeVersion,
-        signer: rq.acceptedBy,
-      })
-    ) {
-      return ClaimHandleResult.Failure('on-chain proof verification failed');
-    }
+    // TODO: add verification of on-chain proof
+    // if (
+    //   rq.onChainProof &&
+    //   !this.verifyOnChainProof
+    // ) {
+    //   return ClaimHandleResult.Failure('on-chain proof verification failed');
+    // }
 
     if (!claimType || !claimTypeVersion) {
       return ClaimHandleResult.Failure('claim type or version not provided');
     }
-
-    await this.roleService.verifyEnrolmentIssuer({
-      issuerDID: rq.acceptedBy,
-      claimType,
-    });
 
     const dto = await NewClaimIssueDTO.create({
       ...rq,
@@ -97,12 +84,17 @@ export class ClaimIssuanceService {
       claimTypeVersion,
     });
 
+    await this.roleService.verifyEnrolmentIssuer({
+      issuerDID: dto.acceptedBy,
+      claimType: dto.claimType,
+    });
+
     await this.roleService.verifyEnrolmentPrecondition({
-      claimType,
+      claimType: dto.claimType,
       userDID: dto.requester,
     });
 
-    await this.createAndIssue(dto, rq.requester);
+    await this.createAndIssue(dto, dto.requester);
 
     return ClaimHandleResult.Success();
   }
@@ -116,17 +108,13 @@ export class ClaimIssuanceService {
       claimType: previouslyRequestedClaim.claimType,
     });
 
-    if (
-      rq.onChainProof &&
-      !this.verifyOnChainProof(rq.onChainProof, {
-        subject: rq.requester,
-        roleType: previouslyRequestedClaim.claimType,
-        roleVersion: previouslyRequestedClaim.claimTypeVersion,
-        signer: rq.acceptedBy,
-      })
-    ) {
-      return ClaimHandleResult.Failure('on-chain proof verification failed');
-    }
+    // TODO: add verification of on-chain proof
+    // if (
+    //   rq.onChainProof &&
+    //   !this.verifyOnChainProof
+    // ) {
+    //   return ClaimHandleResult.Failure('on-chain proof verification failed');
+    // }
 
     const dto = await ClaimIssueDTO.create(rq);
     await this.issue(dto);
@@ -147,6 +135,7 @@ export class ClaimIssuanceService {
     const claim = RoleClaim.create({
       id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
+      subject,
       namespace: parent,
       isAccepted: true,
     });
@@ -165,54 +154,5 @@ export class ClaimIssuanceService {
       isAccepted: true,
     });
     return this.roleClaimRepository.save(updatedClaim);
-  }
-
-  private verifyOnChainProof(
-    onChainProof: string,
-    data: {
-      subject: string;
-      roleType: string;
-      roleVersion: string;
-      signer: string;
-    }
-  ) {
-    const domainSeparator = utils.keccak256(
-      utils.defaultAbiCoder.encode(
-        ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
-        [
-          erc712_type_hash,
-          utils.id('Claim Manager'),
-          utils.id('1.0'),
-          this.configService.get<number>('CHAIN_ID'),
-          this.configService.get<string>('CLAIM_MANAGER_ADDRESS'),
-        ]
-      )
-    );
-
-    const proofHash = utils.solidityKeccak256(
-      ['bytes', 'bytes32', 'bytes32'],
-      [
-        Buffer.from(typedMsgPrefix, 'hex'),
-        domainSeparator,
-        utils.keccak256(
-          utils.defaultAbiCoder.encode(
-            ['bytes32', 'address', 'bytes32', 'uint', 'uint', 'address'],
-            [
-              proof_type_hash,
-              addressOf(data.subject),
-              utils.namehash(data.roleType),
-              data.roleVersion,
-              defaultClaimExpiry,
-              addressOf(data.signer),
-            ]
-          )
-        ),
-      ]
-    );
-
-    return (
-      utils.verifyMessage(utils.arrayify(proofHash), onChainProof) ===
-      addressOf(data.signer)
-    );
   }
 }
