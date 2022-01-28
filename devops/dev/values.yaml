@@ -4,8 +4,6 @@ iam-cache-server-helm:
   image:
     repository: "098061033856.dkr.ecr.us-west-2.amazonaws.com/ics-api"
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
 
   imagePullSecrets: [ ]
   nameOverride: "ics"
