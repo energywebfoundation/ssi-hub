@@ -4,7 +4,6 @@ iam-cache-server-helm:
   image:
     repository: "124847487737.dkr.ecr.us-west-2.amazonaws.com/ics-api"
     pullPolicy: IfNotPresent
-    tag: "latest"
 
   imagePullSecrets: [ ]
   nameOverride: "ics"
