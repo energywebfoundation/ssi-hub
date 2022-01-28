@@ -2,22 +2,22 @@ iam-cache-server-helm:
   replicaCount: 1
 
   image:
-    repository: '124847487737.dkr.ecr.us-west-2.amazonaws.com/ics-api'
+    repository: "124847487737.dkr.ecr.us-west-2.amazonaws.com/ics-api"
     pullPolicy: IfNotPresent
 
-  imagePullSecrets: []
-  nameOverride: 'ics'
-  fullnameOverride: 'ics'
+  imagePullSecrets: [ ]
+  nameOverride: "ics"
+  fullnameOverride: "ics"
 
   serviceAccount:
     create: true
-    annotations: {}
-    name: ''
+    annotations: { }
+    name: ""
 
-  podAnnotations: {}
+  podAnnotations: { }
 
-  podSecurityContext: {}
-  securityContext: {}
+  podSecurityContext: { }
+  securityContext: { }
 
   service:
     type: NodePort
@@ -34,21 +34,21 @@ iam-cache-server-helm:
     hosts:
       - host: ics.sandbox.energyweb.org
         paths:
-          - path: '/'
+          - path: "/"
             pathType: Prefix
             backend:
               service:
                 name: ssl-redirect
                 port:
                   name: use-annotation
-          - path: '/'
+          - path: "/"
             pathType: Prefix
             backend:
               service:
                 name: ics
                 port:
                   number: 80
-    tls: []
+    tls: [ ]
 
   config:
     secretRefName: ics-secrets
@@ -56,7 +56,7 @@ iam-cache-server-helm:
 
   sealedSecret:
     enabled: true
-    annotations: {}
+    annotations: { }
     encryptedData:
       SENTRY_DNS: AgB6Cjvjl4ykIZAadTyJSKH/QbkVN9QFTDrIPyevC2aOjU30EQDospRyd19KT6VuSA9O748/iCxZzpuwtzp2toHvzTaio211bFKDdkXi/FyHfOSLAGtx3c+vfot0ZC+TsCJU+5C7mGLAfeRo5GaRTxA4yCPSIt3Bz9/QmRnyTXW+LP/pg19ERIJCLs8D3osd3av79xfmNID4EkTnFqKCKKTju2cEXd4Vh87dXX6oq0Cd2LJ8F25J/gE2NKJsGkQAiNOToZChbjXsTU1WL/JwNaH+CydhdDt7A+GGlGcByvEpBTA5d+MkDm+bTCMe5pMuysuUbI49VyxYkNMIsXRbfPd8CezzGPd54BcI79opPEWe+xcBo3odPIoGP+2BwyEcoyPSa0SZ1wMHmzgyevDIOUS3ktRn6luTvtTDGbZoV9g9qKMRrgk2fYfH81yPNClR+AAUa/L09A83rqUSsKFP7fQIBb5nUjy8SPRh6hFyA5dFk+LMJGwB4q/NhPPEl2zmoP84VNqOGsXSTZjI7lrhy6HTYfN2gj2YNLHILHCggZn+nMOEeZLRczRX8OlnVzcSITZICe7/cWyynIsEY7p3HdYJ+k0iVZUe3ySxGQEFvWhUkXWUBYC1kN34G3R+TUxFdOgBoGcJKGoDXAHw5cDrW2LcQ2Um6T7b49Ta+NH7yJdLzRYQ1yuVs2E16oiM2GXHfQXpA0RJ8qlSFY8j10+8FNMPUsnSslHaSzF8dKzs+y8yBD+xE+vi3CGSeesBUz/xPnGYY6WiCsAREIu0KZp8vgLT5yDSlfhM94i0jQ==
       STRATEGY_PRIVATE_KEY: AgBM4BIbZIvZ9ErUDLWmmgw0UMEGk4k9hO54/tos4Rf9bUeewlDyAOrnz+gcl8uXuwFiGazQYNia2JFOjCapKnVt0h3LUjvubN4G2cVoQQl9E2+BDzSb7Ucji2UsdleN1ScOwd6XOADdw7Pa1LUXdpf32rf5YADhdYLGDiYy6hqpJ0OPd+61s92HgtyKHioTSP3fJ4YyFqgXQ4wORRR15rdwJdvzSxUrzGnft/ceuB+ilGJc0qSu/jT+SifQ1411zZ6/vsvhfvSq7q4wXEibn2OWSy7MxxNdYafVC7PbyFgc9i6t8V2YKJzUigIGV53ds9GuMK8i8CeGVg2R3e4iHyuOuWv6LeNjbdUd6QeAynOFVos9rBWwS/L7g+Rv0aUUnD016GYSoPwLGPRwvpyhk3jRtJ94uj4FAkUwWGWKagTA+F0uZyIjq2emO4opE8J5FwbPJOA3SKxfo0yPxgQF7S7uTAGlslQdxSrBk9ICUb5FuMVZ32Bxv3fbJ4R3xIS6D8g9hfPG3/P+zpvTxMzPlOjn7bgXHpbV6qOtt47OjTb9A+ELEVnwF/hOY6efSNa/MYlDU0wjF8CGveKFmYkSo9QHnTx7ruGu1s18yXMQZGK47WEERFR3WS0JqB7iQKv2KhPlMJLQapbROLP3MEYGWpEExDdfQRksmvCpQvQhM/7rtBpjobktxKfP6FVsiCTiL0A8Lkbo+i48oVti3SK6vNF2kDBhy4b6uLWwztYNvz3XL1ZalmcWSwe6iMtscD8Vcjms4FVe3hBRPZbXK5/wOpMq
@@ -78,7 +78,7 @@ iam-cache-server-helm:
     DID_SYNC_MODE_FULL: false
     ENS_SYNC_INTERVAL_IN_HOURS: 11
     ENS_SYNC_ENABLED: true
-    ENABLE_AUTH: true
+    ENABLE_AUTH: false
     JWT_PRIVATE_KEY: /app/private.pem
     JWT_PUBLIC_KEY: /app/public.pem
     STRATEGY_CACHE_SERVER: https://ics-dev.energyweb.org/v1
@@ -99,7 +99,7 @@ iam-cache-server-helm:
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
 
-  resources: {}
+  resources: { }
 
   autoscaling:
     enabled: false
@@ -107,8 +107,8 @@ iam-cache-server-helm:
     maxReplicas: 1
     targetCPUUtilizationPercentage: 80
 
-  nodeSelector: {}
+  nodeSelector: { }
 
-  tolerations: []
+  tolerations: [ ]
 
-  affinity: {}
+  affinity: { }

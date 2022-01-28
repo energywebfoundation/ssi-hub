@@ -26,7 +26,7 @@
 | :------ | :------ |
 | `tokenService` | [`TokenService`](modules_auth_token_service.TokenService.md) |
 | `cookiesServices` | [`CookiesServices`](modules_auth_cookies_service.CookiesServices.md) |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 
 ## Methods
@@ -68,7 +68,7 @@ ___
 
 ### status
 
-▸ **status**(`req`): `Promise`<`Object`\>
+▸ **status**(`req`): `Promise`<{ `user`: `string`  }\>
 
 #### Parameters
 
@@ -78,4 +78,4 @@ ___
 
 #### Returns
 
-`Promise`<`Object`\>
+`Promise`<{ `user`: `string`  }\>

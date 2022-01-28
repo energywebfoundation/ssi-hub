@@ -1,0 +1,8 @@
+dist/
+docs/
+node_modules
+build/
+*.md
+devops/
+config/
+dcoker/

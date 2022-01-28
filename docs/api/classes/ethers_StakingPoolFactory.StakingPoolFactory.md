@@ -53,7 +53,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Provider` \| `Signer` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
 
 #### Inherited from
 
@@ -109,8 +109,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `StakingPoolLaunched` | (`org?`: `BytesLike`, `pool?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
-| `StakingPoolLaunched(bytes32,address)` | (`org?`: `BytesLike`, `pool?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `StakingPoolLaunched` | (`org?`: `BytesLike`, `pool?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `org`: `string` ; `pool`: `string`  }\> |
+| `StakingPoolLaunched(bytes32,address)` | (`org?`: `BytesLike`, `pool?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `org`: `string` ; `pool`: `string`  }\> |
 
 #### Overrides
 
