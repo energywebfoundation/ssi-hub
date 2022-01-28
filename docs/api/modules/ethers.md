@@ -13,8 +13,8 @@
 
 Re-exports [DomainNotifier](../classes/ethers_DomainNotifier.DomainNotifier.md)
 
----
+___
 
 ### DomainNotifier\_\_factory
 
-Re-exports [DomainNotifier\_\_factory](../classes/ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md)
+Re-exports [DomainNotifier__factory](../classes/ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md)

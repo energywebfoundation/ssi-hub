@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-=======
-import { Injectable } from '@nestjs/common';
->>>>>>> 2d87aeb... test(claim): add test for claims without previous request
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';

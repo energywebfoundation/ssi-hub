@@ -64,7 +64,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Provider` \| `Signer` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
 
 #### Inherited from
 
@@ -142,12 +142,12 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `DIDAttributeChanged` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], `Object`\> |
-| `DIDAttributeChanged(address,bytes32,bytes,uint256,uint256)` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], `Object`\> |
-| `DIDDelegateChanged` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], `Object`\> |
-| `DIDDelegateChanged(address,bytes32,address,uint256,uint256)` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], `Object`\> |
-| `DIDOwnerChanged` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], `Object`\> |
-| `DIDOwnerChanged(address,address,uint256)` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], `Object`\> |
+| `DIDAttributeChanged` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `identity`: `string` ; `name`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber` ; `value`: `string`  }\> |
+| `DIDAttributeChanged(address,bytes32,bytes,uint256,uint256)` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `identity`: `string` ; `name`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber` ; `value`: `string`  }\> |
+| `DIDDelegateChanged` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `delegate`: `string` ; `delegateType`: `string` ; `identity`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber`  }\> |
+| `DIDDelegateChanged(address,bytes32,address,uint256,uint256)` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `delegate`: `string` ; `delegateType`: `string` ; `identity`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber`  }\> |
+| `DIDOwnerChanged` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `identity`: `string` ; `owner`: `string` ; `previousChange`: `BigNumber`  }\> |
+| `DIDOwnerChanged(address,address,uint256)` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `identity`: `string` ; `owner`: `string` ; `previousChange`: `BigNumber`  }\> |
 
 #### Overrides
 

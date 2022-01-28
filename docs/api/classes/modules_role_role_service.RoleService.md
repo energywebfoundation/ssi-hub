@@ -278,7 +278,7 @@ ___
 
 ### verifyUserRoles
 
-▸ **verifyUserRoles**(`did`): `Promise`<{ `name`: `string` ; `namespace`: `string`  }[]\>
+▸ **verifyUserRoles**(`did`): `Promise`<{ `name`: `string` = role.roleName; `namespace`: `string`  }[]\>
 
 #### Parameters
 
@@ -288,4 +288,4 @@ ___
 
 #### Returns
 
-`Promise`<{ `name`: `string` ; `namespace`: `string`  }[]\>
+`Promise`<{ `name`: `string` = role.roleName; `namespace`: `string`  }[]\>

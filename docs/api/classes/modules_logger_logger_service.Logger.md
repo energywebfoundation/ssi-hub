@@ -41,7 +41,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `sentryService` | [`SentryService`](modules_sentry_sentry_service.SentryService.md) |
 
 #### Overrides

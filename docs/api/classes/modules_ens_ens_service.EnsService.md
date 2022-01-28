@@ -32,7 +32,7 @@
 | `applicationService` | [`ApplicationService`](modules_application_application_service.ApplicationService.md) |
 | `organizationService` | [`OrganizationService`](modules_organization_organization_service.OrganizationService.md) |
 | `schedulerRegistry` | `SchedulerRegistry` |
-| `config` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `config` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
