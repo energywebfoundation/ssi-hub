@@ -8,8 +8,8 @@
 
 ### Variables
 
-- [ADD\_DID\_DOC\_QUEUE\_NAME](modules_did_did_types.md#add_did_doc_queue_name)
-- [UPDATE\_DID\_DOC\_QUEUE\_NAME](modules_did_did_types.md#update_did_doc_queue_name)
+- [ADD_DID_DOC_QUEUE_NAME](modules_did_did_types.md#add_did_doc_queue_name)
+- [UPDATE_DID_DOC_QUEUE_NAME](modules_did_did_types.md#update_did_doc_queue_name)
 - [didPattern](modules_did_did_types.md#didpattern)
 
 ### Functions

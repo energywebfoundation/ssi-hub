@@ -26,8 +26,8 @@
 ### Methods
 
 - [ABI](ethers_PublicResolver.PublicResolver.md#abi)
-- [addr(bytes32)](ethers_PublicResolver.PublicResolver.md#addr(bytes32))
-- [addr(bytes32,uint256)](ethers_PublicResolver.PublicResolver.md#addr(bytes32,uint256))
+- [addr%28bytes32%29](ethers_PublicResolver.PublicResolver.md#addr(bytes32))
+- [addr%28bytes32%2Cuint256%29](ethers_PublicResolver.PublicResolver.md#addr(bytes32,uint256))
 - [attach](ethers_PublicResolver.PublicResolver.md#attach)
 - [authorisations](ethers_PublicResolver.PublicResolver.md#authorisations)
 - [clearDNSZone](ethers_PublicResolver.PublicResolver.md#cleardnszone)
@@ -48,8 +48,8 @@
 - [removeAllListeners](ethers_PublicResolver.PublicResolver.md#removealllisteners)
 - [removeListener](ethers_PublicResolver.PublicResolver.md#removelistener)
 - [setABI](ethers_PublicResolver.PublicResolver.md#setabi)
-- [setAddr(bytes32,address)](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,address))
-- [setAddr(bytes32,uint256,bytes)](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,uint256,bytes))
+- [setAddr%28bytes32%2Caddress%29](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,address))
+- [setAddr%28bytes32%2Cuint256%2Cbytes%29](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,uint256,bytes))
 - [setAuthorisation](ethers_PublicResolver.PublicResolver.md#setauthorisation)
 - [setContenthash](ethers_PublicResolver.PublicResolver.md#setcontenthash)
 - [setDNSRecords](ethers_PublicResolver.PublicResolver.md#setdnsrecords)
@@ -72,7 +72,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Signer` \| `Provider` |
+| `signerOrProvider?` | `Provider` \| `Signer` |
 
 #### Inherited from
 
@@ -166,30 +166,30 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `ABIChanged` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `contentType`: `BigNumber` ; `node`: `string`  }\> |
-| `ABIChanged(bytes32,uint256)` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `contentType`: `BigNumber` ; `node`: `string`  }\> |
-| `AddrChanged` | (`node?`: `BytesLike`, `a?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `a`: `string` ; `node`: `string`  }\> |
-| `AddrChanged(bytes32,address)` | (`node?`: `BytesLike`, `a?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `a`: `string` ; `node`: `string`  }\> |
-| `AddressChanged` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`, `string`], { `coinType`: `BigNumber` ; `newAddress`: `string` ; `node`: `string`  }\> |
-| `AddressChanged(bytes32,uint256,bytes)` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`, `string`], { `coinType`: `BigNumber` ; `newAddress`: `string` ; `node`: `string`  }\> |
-| `AuthorisationChanged` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `boolean`], { `isAuthorised`: `boolean` ; `node`: `string` ; `owner`: `string` ; `target`: `string`  }\> |
-| `AuthorisationChanged(bytes32,address,address,bool)` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `boolean`], { `isAuthorised`: `boolean` ; `node`: `string` ; `owner`: `string` ; `target`: `string`  }\> |
-| `ContenthashChanged` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `hash`: `string` ; `node`: `string`  }\> |
-| `ContenthashChanged(bytes32,bytes)` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `hash`: `string` ; `node`: `string`  }\> |
-| `DNSRecordChanged` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`, `string`], { `name`: `string` ; `node`: `string` ; `record`: `string` ; `resource`: `number`  }\> |
-| `DNSRecordChanged(bytes32,bytes,uint16,bytes)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`, `string`], { `name`: `string` ; `node`: `string` ; `record`: `string` ; `resource`: `number`  }\> |
-| `DNSRecordDeleted` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`], { `name`: `string` ; `node`: `string` ; `resource`: `number`  }\> |
-| `DNSRecordDeleted(bytes32,bytes,uint16)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`], { `name`: `string` ; `node`: `string` ; `resource`: `number`  }\> |
-| `DNSZoneCleared` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `node`: `string`  }\> |
-| `DNSZoneCleared(bytes32)` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `node`: `string`  }\> |
-| `InterfaceChanged` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `implementer`: `string` ; `interfaceID`: `string` ; `node`: `string`  }\> |
-| `InterfaceChanged(bytes32,bytes4,address)` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `implementer`: `string` ; `interfaceID`: `string` ; `node`: `string`  }\> |
-| `NameChanged` | (`node?`: `BytesLike`, `name?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `name`: `string` ; `node`: `string`  }\> |
-| `NameChanged(bytes32,string)` | (`node?`: `BytesLike`, `name?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `name`: `string` ; `node`: `string`  }\> |
-| `PubkeyChanged` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `node`: `string` ; `x`: `string` ; `y`: `string`  }\> |
-| `PubkeyChanged(bytes32,bytes32,bytes32)` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `node`: `string` ; `x`: `string` ; `y`: `string`  }\> |
-| `TextChanged` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `indexedKey`: `string` ; `key`: `string` ; `node`: `string`  }\> |
-| `TextChanged(bytes32,string,string)` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `indexedKey`: `string` ; `key`: `string` ; `node`: `string`  }\> |
+| `ABIChanged` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], `Object`\> |
+| `ABIChanged(bytes32,uint256)` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], `Object`\> |
+| `AddrChanged` | (`node?`: `BytesLike`, `a?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `AddrChanged(bytes32,address)` | (`node?`: `BytesLike`, `a?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `AddressChanged` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`, `string`], `Object`\> |
+| `AddressChanged(bytes32,uint256,bytes)` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`, `string`], `Object`\> |
+| `AuthorisationChanged` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `boolean`], `Object`\> |
+| `AuthorisationChanged(bytes32,address,address,bool)` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `boolean`], `Object`\> |
+| `ContenthashChanged` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `ContenthashChanged(bytes32,bytes)` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `DNSRecordChanged` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`, `string`], `Object`\> |
+| `DNSRecordChanged(bytes32,bytes,uint16,bytes)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`, `string`], `Object`\> |
+| `DNSRecordDeleted` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`], `Object`\> |
+| `DNSRecordDeleted(bytes32,bytes,uint16)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`], `Object`\> |
+| `DNSZoneCleared` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
+| `DNSZoneCleared(bytes32)` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
+| `InterfaceChanged` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
+| `InterfaceChanged(bytes32,bytes4,address)` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
+| `NameChanged` | (`node?`: `BytesLike`, `name?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `NameChanged(bytes32,string)` | (`node?`: `BytesLike`, `name?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], `Object`\> |
+| `PubkeyChanged` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
+| `PubkeyChanged(bytes32,bytes32,bytes32)` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
+| `TextChanged` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
+| `TextChanged(bytes32,string,string)` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], `Object`\> |
 
 #### Overrides
 

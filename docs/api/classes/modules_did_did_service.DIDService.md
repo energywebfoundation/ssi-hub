@@ -25,7 +25,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `config` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `config` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
 | `schedulerRegistry` | `SchedulerRegistry` |
 | `httpService` | `HttpService` |
 | `didQueue` | `Queue`<`string`\> |

@@ -16,7 +16,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
 
 #### Returns
 
