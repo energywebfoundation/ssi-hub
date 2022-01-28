@@ -7,7 +7,7 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { Injectable, HttpException } from '@nestjs/common';
+import { Injectable, HttpException, OnModuleInit } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -33,7 +33,7 @@ import {
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 @Injectable()
-export class DIDService {
+export class DIDService implements OnModuleInit {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly ipfsStore: IDidStore;
   private readonly resolver: Resolver;
@@ -68,8 +68,6 @@ export class DIDService {
       this.provider
     );
 
-    this.InitEventListeners();
-
     // Using setInterval so that interval can be set dynamically from config
     const didDocSyncInterval = this.config.get<string>(
       'DIDDOC_SYNC_INTERVAL_IN_HOURS'
@@ -83,6 +81,10 @@ export class DIDService {
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
+  }
+
+  async onModuleInit() {
+    await this.InitEventListeners();
   }
 
   /**

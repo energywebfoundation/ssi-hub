@@ -51,6 +51,17 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
         'SENTRY_TRACES_SAMPLE_RATE',
         1
       ),
+      tracesSampler: (samplingContext) => {
+        if (
+          samplingContext.transactionContext.name.startsWith('GET /v1/health')
+        ) {
+          // Drop this transaction, by setting its sample rate to 0%
+          return 0;
+        } else {
+          // Default sample rate for all others (replaces tracesSampleRate)
+          return 0.2;
+        }
+      },
       integrations: [
         new RewriteFrames({
           root: global.__rootdir__,
