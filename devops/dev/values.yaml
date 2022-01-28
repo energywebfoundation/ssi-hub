@@ -98,7 +98,7 @@ iam-cache-server-helm:
     ASSETS_SYNC_ENABLED: false
     DIDDOC_SYNC_INTERVAL_IN_HOURS: 12
     DID_SYNC_ENABLED: true
-    DID_SYNC_MODE_FULL: true # Temporarily set to true to fix https://energyweb.atlassian.net/browse/ICS-132
+    DID_SYNC_MODE_FULL: false
     ENS_SYNC_INTERVAL_IN_HOURS: 11
     ENS_SYNC_ENABLED: true
     ENABLE_AUTH: true
