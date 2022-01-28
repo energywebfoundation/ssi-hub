@@ -1,4 +1,4 @@
-iam-cache-server-helm:
+iam-cache-server:
   replicaCount: 3
 
   image:
