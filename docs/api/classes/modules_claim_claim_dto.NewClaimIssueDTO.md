@@ -62,11 +62,19 @@ ___
 
 • **claimType**: `string`
 
+#### Overrides
+
+[ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[claimType](modules_claim_claim_dto.ClaimIssueDTO.md#claimtype)
+
 ___
 
 ### claimTypeVersion
 
 • **claimTypeVersion**: `string`
+
+#### Overrides
+
+[ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[claimTypeVersion](modules_claim_claim_dto.ClaimIssueDTO.md#claimtypeversion)
 
 ___
 
@@ -102,7 +110,7 @@ ___
 
 ### registrationTypes
 
-• **registrationTypes**: [[`RegistrationTypes`](../enums/modules_claim_claim_types.RegistrationTypes.md)]
+• **registrationTypes**: [[`RegistrationTypes`](../enums/modules_claim_claim_types.RegistrationTypes.md), RegistrationTypes?]
 
 ___
 

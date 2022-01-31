@@ -27,7 +27,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `jwtService` | `JwtService` |
 | `refreshTokenRepository` | [`RefreshTokenRepository`](modules_auth_refreshToken_repository.RefreshTokenRepository.md) |
 

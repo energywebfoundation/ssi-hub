@@ -27,7 +27,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `claimService` | [`ClaimService`](modules_claim_claim_service.ClaimService.md) |
+| `claimService` | [`ClaimService`](modules_claim_services_claim_service.ClaimService.md) |
 
 ## Methods
 

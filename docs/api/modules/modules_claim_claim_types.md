@@ -22,7 +22,7 @@
 
 ### Variables
 
-- [NATS_EXCHANGE_TOPIC](modules_claim_claim_types.md#nats_exchange_topic)
+- [NATS\_EXCHANGE\_TOPIC](modules_claim_claim_types.md#nats_exchange_topic)
 
 ## Type aliases
 
@@ -37,6 +37,7 @@
 | `claimData` | `Object` |
 | `claimData.claimType` | `string` |
 | `claimData.claimTypeVersion` | `string` |
+| `sub` | `string` |
 
 ## Variables
 

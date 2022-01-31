@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [DomainNotifier__factory](../classes/ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md)
+- [DomainNotifier\_\_factory](../classes/ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md)

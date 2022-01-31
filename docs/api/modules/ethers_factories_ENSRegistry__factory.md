@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [ENSRegistry__factory](../classes/ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md)
+- [ENSRegistry\_\_factory](../classes/ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md)
