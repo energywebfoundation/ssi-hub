@@ -1,18 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
-import { Transaction } from '@sentry/types';
+import { Transaction, TransactionContext } from '@sentry/types';
 
 @Injectable()
 export class SentryTracingService {
-  public startTransaction(
-    operationTag: string,
-    operationName: string,
-    data?: Record<string, any>,
-  ): Transaction | undefined {
-    return Sentry.startTransaction({
-      op: operationTag,
-      name: operationName,
-      data,
-    });
+  public startTransaction(params: TransactionContext): Transaction | undefined {
+    return Sentry.startTransaction(params);
   }
 }
