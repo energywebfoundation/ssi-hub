@@ -22,15 +22,13 @@
 
 ### startTransaction
 
-▸ **startTransaction**(`operationTag`, `operationName`, `data?`): `Transaction`
+▸ **startTransaction**(`params`): `Transaction`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `operationTag` | `string` |
-| `operationName` | `string` |
-| `data?` | `Record`<`string`, `any`\> |
+| `params` | `TransactionContext` |
 
 #### Returns
 

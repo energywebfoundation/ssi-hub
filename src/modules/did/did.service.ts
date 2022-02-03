@@ -124,23 +124,41 @@ export class DIDService implements OnModuleInit {
    * Also retrieves all claims from IPFS for the document.
    * @param {string} did
    */
-  public async addCachedDocument(did: string) {
-    const transaction = this.sentryTracingService.startTransaction(
-      'process-did',
-      'Process DID',
-      {
-        did,
-      }
-    );
+  public async addCachedDocument(did: string, isSync = false) {
+    const obscuredDid = this.obscureDid(did);
+
+    const transaction = this.sentryTracingService.startTransaction({
+      op: 'retrieve_did_document',
+      name: 'Adds or fully refresh the DID Document',
+      data: { did: obscuredDid },
+      tags: { service: DIDService.name, operation: isSync ? 'sync' : 'add' },
+    });
 
     try {
       this.logger.debug(`Add cached document for did: ${did}`);
-      const logs = await this.getAllLogs(did);
 
+      let span = transaction?.startChild({
+        op: 'get_all_logs',
+        description: 'Get all logs for DID',
+      });
+      const logs = await this.getAllLogs(did);
+      span?.finish();
+
+      span = transaction?.startChild({
+        op: 'resolve_document_from_logs',
+        description: 'Resolve document from logs',
+      });
       const updatedDidDocument = this.resolveDocumentFromLogs(did, logs);
+      span?.finish();
+
+      span = transaction?.startChild({
+        op: 'resolve_not_cached_claims',
+        description: 'Resolve not cached claims',
+      });
       const updatedServices = await this.resolveNotCachedClaims(
         updatedDidDocument.service
       );
+      span?.finish();
 
       const updatedEntity = DIDDocumentEntity.create({
         ...updatedDidDocument,
@@ -152,8 +170,12 @@ export class DIDService implements OnModuleInit {
     } catch (err) {
       this.logger.error(err);
     } finally {
-      transaction && transaction.finish();
+      transaction?.finish();
     }
+  }
+
+  obscureDid(did: string) {
+    return did.replace(/(?<=0x[a-f0-9-]{3})[a-f0-9-]+/gi, '***');
   }
 
   /**
@@ -162,24 +184,53 @@ export class DIDService implements OnModuleInit {
    * @param {string} did
    */
   public async incrementalRefreshCachedDocument(did: string) {
+    const obscuredDid = this.obscureDid(did);
+
+    const transaction = this.sentryTracingService.startTransaction({
+      op: 'incremental_refresh_did_document',
+      name: 'Incremental refresh the DID Document',
+      data: { did: obscuredDid },
+      tags: { service: DIDService.name, operation: 'sync' },
+    });
+
     try {
       this.logger.info(`refreshing cached document for did: ${did}`);
+      let span = transaction?.startChild({
+        op: 'find_did_document',
+        description: 'Find DID Document',
+      });
       const cachedDIDDocument = await this.didRepository.findOne(did);
+      span?.finish();
 
+      span = transaction?.startChild({
+        op: 'update_logs',
+        description: 'Update logs',
+      });
       const logs = await this.updateLogs(
         cachedDIDDocument.id,
         this.parseLogs(cachedDIDDocument.logs)
       );
+      span?.finish();
 
+      span = transaction?.startChild({
+        op: 'resolve_document_from_logs',
+        description: 'Resolve document from logs',
+      });
       const updatedDidDocument = this.resolveDocumentFromLogs(
         cachedDIDDocument.id,
         logs
       );
+      span?.finish();
 
+      span = transaction?.startChild({
+        op: 'resolve_not_cached_claims',
+        description: 'Resolve not cached claims',
+      });
       const updatedServices = await this.resolveNotCachedClaims(
         updatedDidDocument.service,
         cachedDIDDocument.service
       );
+      span?.finish();
 
       const updatedEntity = DIDDocumentEntity.create({
         ...cachedDIDDocument,
@@ -191,6 +242,8 @@ export class DIDService implements OnModuleInit {
       return this.didRepository.save(updatedEntity);
     } catch (err) {
       this.logger.error(err);
+    } finally {
+      transaction?.finish();
     }
   }
 

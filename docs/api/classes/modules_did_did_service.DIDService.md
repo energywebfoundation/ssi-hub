@@ -18,6 +18,7 @@
 - [getById](modules_did_did_service.DIDService.md#getbyid)
 - [getDIDDocumentFromUniversalResolver](modules_did_did_service.DIDService.md#getdiddocumentfromuniversalresolver)
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
+- [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
 
 ## Constructors
@@ -43,16 +44,17 @@
 
 ### addCachedDocument
 
-▸ **addCachedDocument**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
+▸ **addCachedDocument**(`did`, `isSync?`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
 
 Adds or fully refresh the DID Document cache for a given DID.
 Also retrieves all claims from IPFS for the document.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `did` | `string` |
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `did` | `string` | `undefined` |
+| `isSync` | `boolean` | `false` |
 
 #### Returns
 
@@ -112,6 +114,22 @@ Also retrieves all claims from IPFS for the document.
 #### Returns
 
 `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
+
+___
+
+### obscureDid
+
+▸ **obscureDid**(`did`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
+
+#### Returns
+
+`string`
 
 ___
 

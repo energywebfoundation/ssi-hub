@@ -30,7 +30,7 @@ export class DIDProcessor {
   public async processDIDDocumentRefresh(job: Job<string>) {
     this.logger.debug(`processing cache refresh for ${job.data}`);
     if (this.configService.get('DID_SYNC_MODE_FULL') === 'true') {
-      await this.didService.addCachedDocument(job.data);
+      await this.didService.addCachedDocument(job.data, true);
     } else {
       await this.didService.incrementalRefreshCachedDocument(job.data);
     }
