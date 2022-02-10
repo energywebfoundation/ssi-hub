@@ -87,3 +87,9 @@ jobs:
         with:
           command: app set iam-cache-server
           options: -p image.tag=${{needs.unique_id.outputs.unique_id}}
+      - name: ArgoCD overvrite HELM values.yaml
+        uses: clowdhaus/argo-cd-action/@v1.10.0
+        id: argocd_image_helm_tag_overwrite
+        with:
+          command: app set iam-cache-server
+          options: -p iam-cache-server-helm.image.tag=${{needs.unique_id.outputs.unique_id}}
