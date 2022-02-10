@@ -149,7 +149,7 @@
     "husky": "^4.3.8",
     "i": "^0.3.7",
     "iam-client-lib": "^4.1.0-alpha.1",
-    "jest": "27.5.0",
+    "jest": "27.5.1",
     "jest-create-mock-instance": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "lint-staged": "^11.1.1",
