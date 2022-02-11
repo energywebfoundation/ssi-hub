@@ -298,10 +298,10 @@ export class EnsService implements OnModuleDestroy {
 
   async syncENS() {
     this.logger.info('### Started ENS Sync ###');
-    const transaction = this.sentryTracingService.startTransaction(
-      'sync-ens',
-      'Sync ENS'
-    );
+    const transaction = this.sentryTracingService.startTransaction({
+      op: 'sync-ens',
+      name: 'Sync ENS',
+    });
 
     try {
       const namespaces = await this.getAllNamespaces();

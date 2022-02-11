@@ -2,7 +2,7 @@ import { Args, Resolver, Query, Mutation } from '@nestjs/graphql';
 import { UserGQL } from '../../common/user.decorator';
 import { AuthGQL } from '../auth/auth.decorator';
 import { RoleClaim } from './entities/roleClaim.entity';
-import { ClaimService } from './claim.service';
+import { ClaimService } from './services';
 
 @AuthGQL()
 @Resolver(() => RoleClaim)

@@ -1,44 +1,29 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
-  IClaimIssuance,
   IClaimRejection,
   IClaimRequest,
   DecodedClaimToken,
-} from './claim.types';
-import { RoleService } from '../role/role.service';
-import { Logger } from '../logger/logger.service';
+} from '../claim.types';
+import { RoleService } from '../../role/role.service';
+import { Logger } from '../../logger/logger.service';
 import {
-  ClaimIssueDTO,
   ClaimRejectionDTO,
   ClaimRequestDTO,
   IssuedClaimDTO,
-  NewClaimIssueDTO,
-} from './claim.dto';
-import { Claim } from './entities/claim.entity';
-import { RoleClaim } from './entities/roleClaim.entity';
+} from '../claim.dto';
+import { Claim } from '../entities/claim.entity';
+import { RoleClaim } from '../entities/roleClaim.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
 import jwt from 'jsonwebtoken';
 import { v5 } from 'uuid';
-import { AssetsService } from '../assets/assets.service';
-import { Role } from '../role/role.entity';
+import { AssetsService } from '../../assets/assets.service';
+import { Role } from '../../role/role.entity';
+import { ClaimHandleResult } from '../claim-handle-result.dto';
+import { UUID_NAMESPACE } from '../claim.const';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
-}
-
-export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
-
-export class ClaimHandleResult {
-  isSuccessful: boolean;
-  details?: string;
-  static Success(): ClaimHandleResult {
-    return { isSuccessful: true };
-  }
-
-  static Failure(details: string): ClaimHandleResult {
-    return { isSuccessful: false, details: details };
-  }
 }
 
 @Injectable()
@@ -85,6 +70,7 @@ export class ClaimService {
 
     const {
       claimData: { claimType, claimTypeVersion },
+      sub,
     } = jwt.decode(rq.token) as DecodedClaimToken;
 
     const dto = await ClaimRequestDTO.create({
@@ -98,58 +84,8 @@ export class ClaimService {
       userDID: dto.requester,
     });
 
-    await this.create(dto);
+    await this.create(dto, sub);
 
-    return ClaimHandleResult.Success();
-  }
-
-  /**
-   * Handles claim issuance request saving and updates.
-   * Two scenarios are handled - issue requested claim and issue not-requested claim
-   * @param rq IClaimIssuance request
-   */
-  public async handleClaimIssuanceRequest(
-    rq: IClaimIssuance
-  ): Promise<ClaimHandleResult> {
-    const previouslyRequestedClaim: RoleClaim = await this.getById(rq.id);
-
-    if (!previouslyRequestedClaim && rq.issuedToken) {
-      const {
-        claimData: { claimType, claimTypeVersion },
-      } = jwt.decode(rq.issuedToken) as DecodedClaimToken;
-
-      await this.roleService.verifyEnrolmentIssuer({
-        issuerDID: rq.acceptedBy,
-        claimType,
-      });
-
-      const dto = await NewClaimIssueDTO.create({
-        ...rq,
-        claimType,
-        claimTypeVersion,
-      });
-
-      await this.roleService.verifyEnrolmentPrecondition({
-        claimType,
-        userDID: dto.requester,
-      });
-
-      await this.createAndIssue(dto);
-    } else if (
-      previouslyRequestedClaim &&
-      !previouslyRequestedClaim.isRejected &&
-      (rq.issuedToken || rq.onChainProof)
-    ) {
-      await this.roleService.verifyEnrolmentIssuer({
-        issuerDID: rq.acceptedBy,
-        claimType: previouslyRequestedClaim.claimType,
-      });
-
-      const dto = await ClaimIssueDTO.create(rq);
-      await this.issue(dto);
-    } else {
-      return ClaimHandleResult.Failure('claim issuance criteria not met');
-    }
     return ClaimHandleResult.Success();
   }
 
@@ -173,30 +109,16 @@ export class ClaimService {
    * Saves claim to database
    * @param data Raw claim data
    */
-  public async create(data: ClaimRequestDTO): Promise<RoleClaim> {
+  public async create(
+    data: ClaimRequestDTO,
+    subject: string
+  ): Promise<RoleClaim> {
     const parent = data.claimType.split('.').slice(2).join('.');
 
     const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim(data),
+      id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
       namespace: parent,
-    });
-    return this.roleClaimRepository.save(claim);
-  }
-
-  /**
-   * Saves and issue claim to database
-   * @param data Raw claim data
-   */
-  public async createAndIssue(data: NewClaimIssueDTO): Promise<RoleClaim> {
-    const parent = data.claimType.split('.').slice(2).join('.');
-
-    const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim({ ...data, token: data.issuedToken }),
-      ...data,
-      namespace: parent,
-      token: data.issuedToken,
-      isAccepted: true,
     });
     return this.roleClaimRepository.save(claim);
   }
@@ -207,16 +129,6 @@ export class ClaimService {
       ...claim,
       isRejected: true,
       rejectionReason,
-    });
-    return this.roleClaimRepository.save(updatedClaim);
-  }
-
-  public async issue(data: ClaimIssueDTO) {
-    const claim = await this.roleClaimRepository.findOne(data.id);
-    const updatedClaim = RoleClaim.create({
-      ...claim,
-      ...data,
-      isAccepted: true,
     });
     return this.roleClaimRepository.save(updatedClaim);
   }
@@ -475,12 +387,11 @@ export class ClaimService {
   }
 
   static idOfClaim(claimReq: {
-    token: string;
+    subject: string;
     claimType: string;
     claimTypeVersion: string;
   }) {
-    const { token, claimType: role, claimTypeVersion: version } = claimReq;
-    const { sub: subject } = jwt.decode(token);
+    const { subject, claimType: role, claimTypeVersion: version } = claimReq;
     return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
   }
 

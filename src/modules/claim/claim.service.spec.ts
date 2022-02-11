@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ClaimService } from './claim.service';
+import { ClaimService } from './services';
 
 // TODO: fix test so pending can be removed
 xdescribe('ClaimService', () => {

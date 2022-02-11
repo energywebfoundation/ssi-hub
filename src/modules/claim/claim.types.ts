@@ -25,6 +25,8 @@ export interface IClaimRequest extends IMessage {
 export interface IClaimIssuance extends IMessage {
   issuedToken?: string;
   onChainProof?: string;
+  claimType?: string;
+  claimTypeVersion?: string;
   acceptedBy: string;
 }
 
@@ -35,6 +37,7 @@ export interface IClaimRejection extends IMessage {
 
 export type DecodedClaimToken = {
   claimData: { claimType: string; claimTypeVersion: string };
+  sub: string;
 };
 
 export enum RegistrationTypes {
@@ -48,7 +51,7 @@ export interface IRoleClaim {
   claimType: string;
   claimTypeVersion: string;
   registrationTypes: RegistrationTypes[];
-  token: string;
+  token?: string;
   subjectAgreement?: string;
   onChainProof?: string;
   issuedToken?: string;

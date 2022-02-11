@@ -187,7 +187,7 @@ ___
 
 ### token
 
-• **token**: `string`
+• `Optional` **token**: `string`
 
 #### Implementation of
 

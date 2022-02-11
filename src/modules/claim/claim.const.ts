@@ -1,0 +1,1 @@
+export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';

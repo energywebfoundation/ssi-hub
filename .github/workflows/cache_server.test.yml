@@ -23,16 +23,16 @@ jobs:
         image: synadia/jsm:latest
         options: >-
           -e JSM_MODE=server
+
+
       redis:
         image: redis
         ports:
           - 6379:6379
         options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --entrypoint redis-server
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5 --entrypoint redis-server
+
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16.10.0'
 
       - name: Cache Dependencies
         uses: actions/cache@v2
@@ -55,9 +55,6 @@ jobs:
 
       - name: Generate keys
         run: npm run generate:jwtkeys
-
-      - name: Check linting
-        run: npm run lint
 
       - name: Audit package dependencies
         run: npm audit --audit-level=critical

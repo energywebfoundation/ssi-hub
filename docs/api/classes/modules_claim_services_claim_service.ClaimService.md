@@ -1,35 +1,32 @@
 # Class: ClaimService
 
-[modules/claim/claim.service](../modules/modules_claim_claim_service.md).ClaimService
+[modules/claim/services/claim.service](../modules/modules_claim_services_claim_service.md).ClaimService
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](modules_claim_claim_service.ClaimService.md#constructor)
+- [constructor](modules_claim_services_claim_service.ClaimService.md#constructor)
 
 ### Methods
 
-- [create](modules_claim_claim_service.ClaimService.md#create)
-- [createAndIssue](modules_claim_claim_service.ClaimService.md#createandissue)
-- [getById](modules_claim_claim_service.ClaimService.md#getbyid)
-- [getByIssuer](modules_claim_claim_service.ClaimService.md#getbyissuer)
-- [getByParentNamespace](modules_claim_claim_service.ClaimService.md#getbyparentnamespace)
-- [getByRequester](modules_claim_claim_service.ClaimService.md#getbyrequester)
-- [getBySubject](modules_claim_claim_service.ClaimService.md#getbysubject)
-- [getBySubjects](modules_claim_claim_service.ClaimService.md#getbysubjects)
-- [getByUserDid](modules_claim_claim_service.ClaimService.md#getbyuserdid)
-- [getDidOfClaimsOfNamespace](modules_claim_claim_service.ClaimService.md#getdidofclaimsofnamespace)
-- [getIssuedClaimsBySubjects](modules_claim_claim_service.ClaimService.md#getissuedclaimsbysubjects)
-- [handleClaimEnrolmentRequest](modules_claim_claim_service.ClaimService.md#handleclaimenrolmentrequest)
-- [handleClaimIssuanceRequest](modules_claim_claim_service.ClaimService.md#handleclaimissuancerequest)
-- [handleClaimRejectionRequest](modules_claim_claim_service.ClaimService.md#handleclaimrejectionrequest)
-- [issue](modules_claim_claim_service.ClaimService.md#issue)
-- [reject](modules_claim_claim_service.ClaimService.md#reject)
-- [removeById](modules_claim_claim_service.ClaimService.md#removebyid)
-- [rolesByIssuer](modules_claim_claim_service.ClaimService.md#rolesbyissuer)
-- [saveIssuedClaim](modules_claim_claim_service.ClaimService.md#saveissuedclaim)
-- [idOfClaim](modules_claim_claim_service.ClaimService.md#idofclaim)
+- [create](modules_claim_services_claim_service.ClaimService.md#create)
+- [getById](modules_claim_services_claim_service.ClaimService.md#getbyid)
+- [getByIssuer](modules_claim_services_claim_service.ClaimService.md#getbyissuer)
+- [getByParentNamespace](modules_claim_services_claim_service.ClaimService.md#getbyparentnamespace)
+- [getByRequester](modules_claim_services_claim_service.ClaimService.md#getbyrequester)
+- [getBySubject](modules_claim_services_claim_service.ClaimService.md#getbysubject)
+- [getBySubjects](modules_claim_services_claim_service.ClaimService.md#getbysubjects)
+- [getByUserDid](modules_claim_services_claim_service.ClaimService.md#getbyuserdid)
+- [getDidOfClaimsOfNamespace](modules_claim_services_claim_service.ClaimService.md#getdidofclaimsofnamespace)
+- [getIssuedClaimsBySubjects](modules_claim_services_claim_service.ClaimService.md#getissuedclaimsbysubjects)
+- [handleClaimEnrolmentRequest](modules_claim_services_claim_service.ClaimService.md#handleclaimenrolmentrequest)
+- [handleClaimRejectionRequest](modules_claim_services_claim_service.ClaimService.md#handleclaimrejectionrequest)
+- [reject](modules_claim_services_claim_service.ClaimService.md#reject)
+- [removeById](modules_claim_services_claim_service.ClaimService.md#removebyid)
+- [rolesByIssuer](modules_claim_services_claim_service.ClaimService.md#rolesbyissuer)
+- [saveIssuedClaim](modules_claim_services_claim_service.ClaimService.md#saveissuedclaim)
+- [idOfClaim](modules_claim_services_claim_service.ClaimService.md#idofclaim)
 
 ## Constructors
 
@@ -51,7 +48,7 @@
 
 ### create
 
-▸ **create**(`data`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+▸ **create**(`data`, `subject`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 Saves claim to database
 
@@ -60,24 +57,7 @@ Saves claim to database
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `data` | [`ClaimRequestDTO`](modules_claim_claim_dto.ClaimRequestDTO.md) | Raw claim data |
-
-#### Returns
-
-`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
-
-___
-
-### createAndIssue
-
-▸ **createAndIssue**(`data`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
-
-Saves and issue claim to database
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `data` | [`NewClaimIssueDTO`](modules_claim_claim_dto.NewClaimIssueDTO.md) | Raw claim data |
+| `subject` | `string` | - |
 
 #### Returns
 
@@ -266,7 +246,7 @@ ___
 
 ### handleClaimEnrolmentRequest
 
-▸ **handleClaimEnrolmentRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+▸ **handleClaimEnrolmentRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 Handles claim enrolment request saving and updates.
 
@@ -278,32 +258,13 @@ Handles claim enrolment request saving and updates.
 
 #### Returns
 
-`Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
-
-___
-
-### handleClaimIssuanceRequest
-
-▸ **handleClaimIssuanceRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
-
-Handles claim issuance request saving and updates.
-Two scenarios are handled - issue requested claim and issue not-requested claim
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `rq` | [`IClaimIssuance`](../interfaces/modules_claim_claim_types.IClaimIssuance.md) | IClaimIssuance request |
-
-#### Returns
-
-`Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+`Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 ___
 
 ### handleClaimRejectionRequest
 
-▸ **handleClaimRejectionRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
+▸ **handleClaimRejectionRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 Handles claim rejection request saving and updates.
 
@@ -315,23 +276,7 @@ Handles claim rejection request saving and updates.
 
 #### Returns
 
-`Promise`<[`ClaimHandleResult`](modules_claim_claim_service.ClaimHandleResult.md)\>
-
-___
-
-### issue
-
-▸ **issue**(`data`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`ClaimIssueDTO`](modules_claim_claim_dto.ClaimIssueDTO.md) |
-
-#### Returns
-
-`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+`Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 ___
 
@@ -416,7 +361,7 @@ ___
 | `claimReq` | `Object` |
 | `claimReq.claimType` | `string` |
 | `claimReq.claimTypeVersion` | `string` |
-| `claimReq.token` | `string` |
+| `claimReq.subject` | `string` |
 
 #### Returns
 

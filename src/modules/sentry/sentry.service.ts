@@ -70,6 +70,9 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
         new SentryTracing.Integrations.Express({
           app,
         }),
+        new SentryTracing.Integrations.Postgres({
+          usePgNative: false,
+        }),
         new Sentry.Integrations.OnUncaughtException({
           onFatalError: async (err) => {
             if (this.shouldSkipException(err)) {
