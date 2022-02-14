@@ -32,7 +32,7 @@ export class SentryErrorInterceptor implements NestInterceptor {
             if (data.extra) scope.setExtras(data.extra);
             if (data.user) scope.setUser(data.user);
 
-            captureException(exception);
+            this.sentryService.captureException(exception);
           });
         },
       })
