@@ -1,8 +1,12 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   OnApplicationShutdown,
   OnModuleDestroy,
+  ServiceUnavailableException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Application } from 'express';
@@ -14,8 +18,19 @@ import { Client, Options } from '@sentry/types';
 @Injectable()
 export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
   private sentryEnabled = false;
+  private readonly EXCLUDED_EXCEPTIONS = [
+    BadRequestException,
+    NotFoundException,
+    ServiceUnavailableException,
+    ForbiddenException,
+    UnauthorizedException,
+  ];
 
   constructor(protected readonly configService: ConfigService) {}
+
+  private isExcludedExceptions(exception: unknown): boolean {
+    return this.EXCLUDED_EXCEPTIONS.some((item) => exception instanceof item);
+  }
 
   async onApplicationShutdown(): Promise<void> {
     await this.drain();
@@ -106,6 +121,7 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
   }
 
   captureException(error: Error | string) {
+    if (this.isExcludedExceptions(error)) return;
     this.sentryEnabled && Sentry.captureException(error);
   }
 
