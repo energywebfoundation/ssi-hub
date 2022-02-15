@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new EthereumDIDRegistry__factory**(...`args`)
+• **new EthereumDIDRegistry__factory**(`signer?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `...args` | [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] \| [signer: Signer] |
+| `signer?` | `Signer` |
 
 #### Overrides
 

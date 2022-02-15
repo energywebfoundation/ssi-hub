@@ -1,4 +1,13 @@
-### IAM Cache Server
+### EWF SSI Hub
+
+## Description
+
+The SSI Hub aims to be a server application to provide SSI and IAM functionality as a part of an SSI wallet system. It performs the following functions:
+- Facilitates the credentials exchange between credential requesters and issuers.
+- Account multi-tenancy. Multiple users can store their data and data access is authorized appropriately.
+- Caches smart contract data such  DID documents in order to improve read-query performance.
+
+This repository was formerly refered to as the `iam-cache-server`.
 
 ## Prepare
 
