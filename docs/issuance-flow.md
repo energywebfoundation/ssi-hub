@@ -57,6 +57,28 @@ An example Exchange Definition is an shown.
 ```json
 {
     // "exchangeId" identifies the exchange at the server (https://w3c-ccg.github.io/vc-api/#initiate-exchange)
+    "exchangeId": "permanent-resident-card-presentation",
+    // "query" defines what information should be required from the requester (https://w3c-ccg.github.io/vp-request-spec/#query-types)
+    "query": [
+      {
+        "type": "PresentationDefinition",
+        "credentialQuery": [{
+          ...some presentation definition
+        }]
+      }
+    ],
+    // "interactServices" defines where a credential exchange can be initiated (https://w3c-ccg.github.io/vp-request-spec/#interaction-types)
+    "interactServices": [
+      {
+        "type": "UnmediatedHttpPresentationService2021",
+        "baseUrl": "http://localhost:3000"
+      }
+    ]
+}
+```
+```json
+{
+    // "exchangeId" identifies the exchange at the server (https://w3c-ccg.github.io/vc-api/#initiate-exchange)
     "exchangeId": "permanent-resident-card-issuance",
     // "query" defines what information should be required from the requester (https://w3c-ccg.github.io/vp-request-spec/#query-types)
     "query": [
@@ -111,6 +133,7 @@ Additional properties which may be helpful include:
         "fieldType": "number"
       }
     ],
+    "presenationDefinition: []
     // "issuer" defines which DIDs are allowed to read 
     "issuer": {
       "did": [
