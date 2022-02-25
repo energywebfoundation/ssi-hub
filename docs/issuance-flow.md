@@ -2,9 +2,7 @@
 
 This document describes a generic HTTP duplex (client-server) verifiable credential issuance flow.
 
-## Issuance Flow Diagram
-
-The following is a sequence diagram of an issuance flow.
+## Issuance Flow
 
 Points of notes:
 - The issuing `ssi-hub` must be able to authorize the approval of the credential issuance request
@@ -13,6 +11,22 @@ Points of notes:
 
 Deviations from current SB->ssi-hub flow:
 - Currently SB prepares credential application from credential governance definition directly
+
+### Standard vs Custom Endpoints
+
+#### Issuer SSI Hub
+
+| Purpose | Standard | Client Party | Spec Link
+| --- | --- | --- | --- |
+| Issue Credential | Yes | Issuer | https://w3c-ccg.github.io/vc-api/#issue-credential
+| Initiate Exchange | Yes | Holder | https://w3c-ccg.github.io/vc-api/#initiate-exchange
+| Continue Exchange | Yes | Holder | https://w3c-ccg.github.io/vc-api/#continue-exchange
+| Query Submissions | No | Issuer | 
+| Submit Processing Result | No | Issuer
+
+### Issuance Flow Diagram
+
+The following is a sequence diagram of an issuance flow.
 
 ```mermaid
 sequenceDiagram
@@ -53,7 +67,7 @@ sequenceDiagram
   alt mediated application processing
     RSB->>ISH: submit credential application to issuer hub
     activate ISH
-      ISH-->>RSB: reply with "mediation in progress"
+      ISH-->>RSB: reply with "mediation in progress" VP Request
     deactivate ISH
 
     par review credential application
@@ -77,7 +91,7 @@ sequenceDiagram
         deactivate ISH
         IService->>IService: process credential application
         IService->>ISH: issue credential
-        ISH-->>IService: return VC (in a VP)
+        ISH-->>IService: return VC
         IService->>ISH: submit application result
       end
     and query application status
@@ -87,7 +101,7 @@ sequenceDiagram
       alt application is processed
         ISH-->>RSB: return issued VC (in the VP
       else application not yet process
-        ISH-->>RSB: return "mediation in progress"
+        ISH-->>RSB: return "mediation in progress" VP Request
       end
       
     end
