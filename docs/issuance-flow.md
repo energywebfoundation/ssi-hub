@@ -75,14 +75,14 @@ sequenceDiagram
         deactivate ISH
         IService->>IService: process credential application
         IService->>ISH: issue credential
-        ISH-->>IService: return VC
+        ISH-->>IService: return VC (in a VP)
         IService->>ISH: submit application result
       end
     R->>RSB: query outstanding credential applications
     RSB->>RSH: query outstanding credential applications
     RSB->>ISH: query credential application status
-    ISH-->>RSB: return issued credential
-    RSB->>RSH: store issued credential
+    ISH-->>RSB: return issued VC (in the VP)
+    RSB->>RSH: store VC
     RSB-->>R: display issued credential to requester
   else unmediated application processing
     RSB->>ISH: submit credential application to issuer hub
@@ -94,9 +94,9 @@ sequenceDiagram
     deactivate ISH
     IService->>IService: process credential application
     IService->>ISH: issue credential
-    ISH-->>IService: return VC
+    ISH-->>IService: return VC (in a VP)
     IService->>ISH: submit application result
-    ISH-->>RSB: return VC
+    ISH-->>RSB: return VC (in a VP)
     deactivate ISH
   end
   end
