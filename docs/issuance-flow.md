@@ -55,6 +55,8 @@ sequenceDiagram
     activate ISH
       ISH-->>RSB: reply with "mediation in progress"
     deactivate ISH
+
+    par review credential application
       alt human mediated application review
         I->>ISB: query outstanding credential applications
         activate ISB
@@ -78,10 +80,17 @@ sequenceDiagram
         ISH-->>IService: return VC (in a VP)
         IService->>ISH: submit application result
       end
-    R->>RSB: query outstanding credential applications
-    RSB->>RSH: query outstanding credential applications
-    RSB->>ISH: query credential application status
-    ISH-->>RSB: return issued VC (in the VP)
+    and query application status
+      R->>RSB: query outstanding credential applications
+      RSB->>RSH: query outstanding credential applications
+      RSB->>ISH: query credential application status
+      alt application is processed
+        ISH-->>RSB: return issued VC (in the VP
+      else application not yet process
+        ISH-->>RSB: return "mediation in progress"
+      end
+      
+    end
     RSB->>RSH: store VC
     RSB-->>R: display issued credential to requester
   else unmediated application processing
