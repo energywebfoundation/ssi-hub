@@ -26,19 +26,18 @@ Can we issue directly from the SSI Hub somehow? -> would be nice to be able to p
 | Query Submissions | No | Issuer | 
 | Submit Processing Result | No | Issuer
 
-### Issuance Flow Diagram
+### Credential Exchange Flow Diagram
 
-The following is a sequence diagram of an issuance flow.
+The following is a sequence diagram of an credential exchange flow.
+This flow can be either a credential verification exchange (an exchange between a holder and a verifier) or a credential issuance exchange (an exchange between an issuer and a verifier).
 
 ```mermaid
 sequenceDiagram
   actor R as Holder
   participant RSH as Holder SSI Hub
   participant RSB as Web UI
-  participant ISH as Issuer SSI Hub
-  participant IService as Issuance Service
-  actor I as issuer
-  participant ISB as Web UI
+  participant ISH as Verifier SSI Hub
+  participant IService as Verification Service
   participant CD as Credential Definition Repository
 
   rect rgb(243, 255, 255)
@@ -65,133 +64,31 @@ sequenceDiagram
   end
   
   rect rgb(255, 255, 235)
-  note right of R: process credential application
-  alt mediated application processing
-    RSB->>ISH: submit credential application to issuer hub
-    activate ISH
-      ISH-->>RSB: reply with "mediation in progress" VP Request
-    deactivate ISH
-
-    par review credential application
-      alt human mediated application review
-        I->>ISB: query outstanding credential applications
-        activate ISB
-          ISB->>ISH: query outstanding credential applications
-          activate ISH
-            ISH-->>ISB: return credential application
-          deactivate ISH
-          ISB-->>I: display outstanding credential applications
-        deactivate ISB
-        I->>I: review application
-        I->>ISB: approve application (issue VC)
-        ISB->>ISH: store issued VC
-      else service mediated application review
-        ISH->>IService: notify issuance service of new application
-        IService->>ISH: query outstanding credential applications
-        activate ISH
-          ISH-->>IService: return credential application
-        deactivate ISH
-        IService->>IService: process credential application
-        IService->>ISH: issue credential
-        ISH-->>IService: return VC
-        IService->>ISH: submit application result
-      end
-    and query application status
-      R->>RSB: query outstanding credential applications
-      RSB->>RSH: query outstanding credential applications
-      RSB->>ISH: query credential application status
-      alt application is processed
-        ISH-->>RSB: return issued VC (in the VP
-      else application not yet process
-        ISH-->>RSB: return "mediation in progress" VP Request
-      end
-      
-    end
-    RSB->>RSH: store VC
-    RSB-->>R: display issued credential to requester
-  else unmediated application processing
-    RSB->>ISH: submit credential application to issuer hub
-    activate ISH
-    ISH->>IService: notify issuance service of new application
-    IService->>ISH: query outstanding credential applications
-    activate ISH
-      ISH-->>IService: return credential application
-    deactivate ISH
-    IService->>IService: process credential application
-    IService->>ISH: issue credential
-    ISH-->>IService: return VC (in a VP)
-    IService->>ISH: submit application result
-    ISH-->>RSB: return VC (in a VP)
-    deactivate ISH
-  end
-  end
-```
-
-### Verification Flow Diagram
-
-The following is a sequence diagram of an verification flow.
-
-```mermaid
-sequenceDiagram
-  actor R as Holder
-  participant RSH as Holder SSI Hub
-  participant RSB as Web UI
-  participant ISH as Verifier SSI Hub
-  participant IService as Verification Service
-  actor I as Verifier
-  participant ISB as Web UI
-  participant CD as Credential Definition Repository
-
-  rect rgb(243, 255, 255)
-  note right of R: initiate exchange
-    R->>RSB: provide exchange url (e.g. from QR code or link)
-    RSB->>ISH: initiate credential exchange
-  end
-
-  rect rgb(255, 243, 255)
-  note right of R: submit credential application
-    RSB->>R: display required presentation data
-    R-->>RSB: enter required input and/or select credentials
-    RSB->>R: request credential application (presentation) signature
-    R-->>RSB: approve signature
-  end
-  
-  rect rgb(255, 255, 235)
   note right of R: process presention
   alt mediated presention processing
     RSB->>ISH: submit presentation 
     activate ISH
+      ISH->>ISH: Verify presentation signatures and satisfaction of credential query
       ISH-->>RSB: reply with "mediation in progress" VP Request
     deactivate ISH
 
     par review presentation
-      alt human mediated presentation review
-        I->>ISB: query outstanding credential applications
-        activate ISB
-          ISB->>ISH: query outstanding presentations to review 
-          activate ISH
-            ISH-->>ISB: return presentation
-          deactivate ISH
-          ISB-->>I: display presentation 
-        deactivate ISB
-        I->>I: review presentation
-        I->>ISB: approve presentation
-        ISB->>ISH: store issued VC
-      else service mediated presentation review
-        ISH->>IService: notify verification service of new presentation
-        IService->>ISH: query outstanding presentations to review
-        activate ISH
-          ISH-->>IService: return presentation to review
-        deactivate ISH
-        IService->>IService: process presentation
-        IService->>ISH: submit presentation processing result
+      ISH->>IService: notify verification service of new presentation
+      IService->>ISH: query outstanding presentations to review
+      activate ISH
+        ISH-->>IService: return presentation to review
+      deactivate ISH
+      IService->>IService: process presentation
+      opt credential issuance
+        IService->>IService: prepare & issue VCs (as a VP)
       end
+      IService->>ISH: submit presentation processing result (possibly including VCs)
     and query presentation status
       R->>RSB: query presentation submissions 
       RSB->>RSH: query outstanding presentations
       RSB->>ISH: query presentation review status
       alt presentation is processed
-        ISH-->>RSB: return review result
+        ISH-->>RSB: return review result (possibly including VP with VC)
       else application not yet process
         ISH-->>RSB: return "mediation in progress" VP Request
       end
@@ -202,16 +99,8 @@ sequenceDiagram
   else unmediated application processing
     RSB->>ISH: submit credential application to issuer hub
     activate ISH
-    ISH->>IService: notify issuance service of new application
-    IService->>ISH: query outstanding credential applications
-    activate ISH
-      ISH-->>IService: return credential application
-    deactivate ISH
-    IService->>IService: process credential application
-    IService->>ISH: issue credential
-    ISH-->>IService: return VC (in a VP)
-    IService->>ISH: submit application result
-    ISH-->>RSB: return VC (in a VP)
+      ISH->>ISH: Verify presentation signatures and satisfaction of credential query
+      ISH-->>RSB: return review result 
     deactivate ISH
   end
   end
@@ -259,7 +148,7 @@ An example Exchange Definition is an shown.
     // "interactServices" defines where a credential exchange can be initiated (https://w3c-ccg.github.io/vp-request-spec/#interaction-types)
     "interactServices": [
       {
-        "type": "UnmediatedHttpPresentationService2021",
+        "type": "MediatedHttpPresentationService2021",
         "baseUrl": "http://localhost:3000"
       }
     ]
