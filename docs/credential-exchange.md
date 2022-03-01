@@ -1,4 +1,4 @@
-# Issuance approaches
+# Credential Exchange
 
 This document describes a generic HTTP duplex (client-server) verifiable credential issuance flow.
 
@@ -11,6 +11,8 @@ Points of notes:
 
 Deviations from current SB->ssi-hub flow:
 - Currently SB prepares credential application from credential governance definition directly
+
+Can we issue directly from the SSI Hub somehow? -> would be nice to be able to pre-fill a VC
 
 ### Standard vs Custom Endpoints
 
@@ -30,18 +32,18 @@ The following is a sequence diagram of an issuance flow.
 
 ```mermaid
 sequenceDiagram
-  actor R as requester
-  participant RSH as Requester SSI Hub
-  participant RSB as Web SSI Wallet (Switchboard)
+  actor R as Holder
+  participant RSH as Holder SSI Hub
+  participant RSB as Web UI
   participant ISH as Issuer SSI Hub
   participant IService as Issuance Service
   actor I as issuer
-  participant ISB as Web SSI Wallet (Switchboard)
+  participant ISB as Web UI
   participant CD as Credential Definition Repository
 
   rect rgb(243, 255, 255)
   note right of R: initiate exchange
-    R->>RSB: provide vc_request_url (e.g. from QR code or link)
+    R->>RSB: provide exchange url (e.g. from QR code or link)
     RSB->>ISH: initiate credential exchange
 
     activate ISH
@@ -123,8 +125,96 @@ sequenceDiagram
     deactivate ISH
   end
   end
+```
 
+### Verification Flow Diagram
 
+The following is a sequence diagram of an verification flow.
+
+```mermaid
+sequenceDiagram
+  actor R as Holder
+  participant RSH as Holder SSI Hub
+  participant RSB as Web UI
+  participant ISH as Verifier SSI Hub
+  participant IService as Verification Service
+  actor I as Verifier
+  participant ISB as Web UI
+  participant CD as Credential Definition Repository
+
+  rect rgb(243, 255, 255)
+  note right of R: initiate exchange
+    R->>RSB: provide exchange url (e.g. from QR code or link)
+    RSB->>ISH: initiate credential exchange
+  end
+
+  rect rgb(255, 243, 255)
+  note right of R: submit credential application
+    RSB->>R: display required presentation data
+    R-->>RSB: enter required input and/or select credentials
+    RSB->>R: request credential application (presentation) signature
+    R-->>RSB: approve signature
+  end
+  
+  rect rgb(255, 255, 235)
+  note right of R: process presention
+  alt mediated presention processing
+    RSB->>ISH: submit presentation 
+    activate ISH
+      ISH-->>RSB: reply with "mediation in progress" VP Request
+    deactivate ISH
+
+    par review presentation
+      alt human mediated presentation review
+        I->>ISB: query outstanding credential applications
+        activate ISB
+          ISB->>ISH: query outstanding presentations to review 
+          activate ISH
+            ISH-->>ISB: return presentation
+          deactivate ISH
+          ISB-->>I: display presentation 
+        deactivate ISB
+        I->>I: review presentation
+        I->>ISB: approve presentation
+        ISB->>ISH: store issued VC
+      else service mediated presentation review
+        ISH->>IService: notify verification service of new presentation
+        IService->>ISH: query outstanding presentations to review
+        activate ISH
+          ISH-->>IService: return presentation to review
+        deactivate ISH
+        IService->>IService: process presentation
+        IService->>ISH: submit presentation processing result
+      end
+    and query presentation status
+      R->>RSB: query presentation submissions 
+      RSB->>RSH: query outstanding presentations
+      RSB->>ISH: query presentation review status
+      alt presentation is processed
+        ISH-->>RSB: return review result
+      else application not yet process
+        ISH-->>RSB: return "mediation in progress" VP Request
+      end
+      
+    end
+    RSB->>RSH: store VC
+    RSB-->>R: display issued credential to requester
+  else unmediated application processing
+    RSB->>ISH: submit credential application to issuer hub
+    activate ISH
+    ISH->>IService: notify issuance service of new application
+    IService->>ISH: query outstanding credential applications
+    activate ISH
+      ISH-->>IService: return credential application
+    deactivate ISH
+    IService->>IService: process credential application
+    IService->>ISH: issue credential
+    ISH-->>IService: return VC (in a VP)
+    IService->>ISH: submit application result
+    ISH-->>RSB: return VC (in a VP)
+    deactivate ISH
+  end
+  end
 ```
 
 ## Exchange Definitions
