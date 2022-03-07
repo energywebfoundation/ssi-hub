@@ -11,6 +11,7 @@ import {
   DomainReader,
   DomainHierarchy,
   ResolverContractType,
+  VOLTA_CHAIN_ID,
 } from '@energyweb/iam-contracts';
 import { PublicResolver__factory } from '../../ethers/factories/PublicResolver__factory';
 import { RoleService } from '../role/role.service';
@@ -49,12 +50,12 @@ export class EnsService implements OnModuleDestroy {
     this.logger.setContext(EnsService.name);
     utils.Logger.setLogLevel(LogLevel.ERROR);
 
-    // Get config values from .env file
     const CHAIN_ID = parseInt(this.config.get<string>('CHAIN_ID'));
+    const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
+    const RESOLVER_V2_ADDRESS = this.config.get<string>('RESOLVER_V2_ADDRESS');
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS'
     );
-    const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
     const DOMAIN_NOTIFIER_ADDRESS = this.config.get<string>(
       'DOMAIN_NOTIFIER_ADDRESS'
     );
@@ -80,14 +81,21 @@ export class EnsService implements OnModuleDestroy {
     });
     this.domainReader.addKnownResolver({
       chainId: CHAIN_ID,
-      address: RESOLVER_V1_ADDRESS,
-      type: ResolverContractType.RoleDefinitionResolver_v1,
+      address: RESOLVER_V2_ADDRESS,
+      type: ResolverContractType.RoleDefinitionResolver_v2,
     });
-    this.domainReader.addKnownResolver({
-      chainId: CHAIN_ID,
-      address: PUBLIC_RESOLVER_ADDRESS,
-      type: ResolverContractType.PublicResolver,
-    });
+    if (CHAIN_ID === VOLTA_CHAIN_ID) {
+      this.domainReader.addKnownResolver({
+        chainId: CHAIN_ID,
+        address: RESOLVER_V1_ADDRESS,
+        type: ResolverContractType.RoleDefinitionResolver_v1,
+      });
+      this.domainReader.addKnownResolver({
+        chainId: CHAIN_ID,
+        address: PUBLIC_RESOLVER_ADDRESS,
+        type: ResolverContractType.PublicResolver,
+      });
+    }
 
     this.domainHierarchy = new DomainHierarchy({
       domainReader: this.domainReader,
