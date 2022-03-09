@@ -4,17 +4,17 @@
 
 ### References
 
-- [DomainNotifier](ethers.md#domainnotifier)
-- [DomainNotifier\_\_factory](ethers.md#domainnotifier__factory)
+- [StakingPoolFactory](ethers.md#stakingpoolfactory)
+- [StakingPoolFactory\_\_factory](ethers.md#stakingpoolfactory__factory)
 
 ## References
 
-### DomainNotifier
+### StakingPoolFactory
 
-Re-exports [DomainNotifier](../classes/ethers_DomainNotifier.DomainNotifier.md)
+Re-exports [StakingPoolFactory](../classes/ethers_StakingPoolFactory.StakingPoolFactory.md)
 
 ___
 
-### DomainNotifier\_\_factory
+### StakingPoolFactory\_\_factory
 
-Re-exports [DomainNotifier__factory](../classes/ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md)
+Re-exports [StakingPoolFactory__factory](../classes/ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md)

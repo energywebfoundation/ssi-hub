@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new DomainNotifier__factory**(...`args`)
+• **new DomainNotifier__factory**(`signer?`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `...args` | [signer: Signer] \| [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] |
+| `signer?` | `Signer` |
 
 #### Overrides
 
