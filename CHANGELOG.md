@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.1.0...v2.2.0) (2022-03-09)
+
+
+### Features
+
+* add ICS production to devops ([cd50cc5](https://github.com/energywebfoundation/ssi-hub/commit/cd50cc5101197e2f19bdcf5b55bdee182bd0755d))
+* avoid HTTP exceptions in sentry logging ([431adc4](https://github.com/energywebfoundation/ssi-hub/commit/431adc44e7b6523a5507d02ed5d6759192bd253f))
+
+
+### Bug Fixes
+
+* **docker-compose.dev:** remove backticks ([196c5f1](https://github.com/energywebfoundation/ssi-hub/commit/196c5f1b37711d57d10d66e0abbee5a902fa5e9f))
+
 ## 2.1.0 (2022-02-04)
 
 
