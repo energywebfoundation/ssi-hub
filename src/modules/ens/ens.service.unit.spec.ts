@@ -217,7 +217,7 @@ describe('EnsService', () => {
       expect(MockApplicationService.removeByNameHash).toHaveBeenCalledWith(
         hash
       );
-    }, 30000);
+    }, 60000);
 
     it('syncENS() malfunctioned metadata should not be sync', async () => {
       jest.spyOn(service, 'syncNamespace');

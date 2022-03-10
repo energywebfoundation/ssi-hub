@@ -14,6 +14,7 @@ import { organizationFixture } from './organization.fixture';
 import { Chance } from 'chance';
 import { Logger } from '../logger/logger.service';
 import { namehash } from '../../ethers/utils';
+import { Wallet } from 'ethers';
 
 const chance = new Chance();
 
@@ -31,6 +32,7 @@ describe('OrganizationService', () => {
   let repo: Repository<Organization>;
   let organizations: Organization[];
   let queryRunner: QueryRunner;
+  let owner: string;
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -60,7 +62,8 @@ describe('OrganizationService', () => {
       getRepositoryToken(Organization)
     );
 
-    organizations = await organizationFixture(repo, 2);
+    owner = Wallet.createRandom().address;
+    organizations = await organizationFixture(repo, owner, 2);
 
     service = module.get<OrganizationService>(OrganizationService);
   });
@@ -92,13 +95,20 @@ describe('OrganizationService', () => {
 
     it('create() it should create organization', async () => {
       const testOrg = chance.pickone(organizations);
-      const name = 'testorg';
-      const namespace = `testorg.iam.ewc`;
+      const name = chance.string({
+        alpha: true,
+        casing: 'lower',
+        numeric: false,
+        symbols: false,
+      });
+      console.log(`creating organization ${name}`);
+
+      const namespace = `${name}.iam.ewc`;
 
       const org = await service.create({
         name,
         namespace,
-        owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+        owner,
         definition: testOrg.definition,
         parentOrg: testOrg.parentOrg.namespace,
         namehash: namehash(namespace),
