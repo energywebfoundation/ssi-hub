@@ -22,10 +22,7 @@ export class DIDContact {
   @Column({ type: 'text' })
   label: string;
 
-  @ManyToOne(
-    () => DIDDocumentEntity,
-    didDoc => didDoc.id,
-  )
+  @ManyToOne(() => DIDDocumentEntity, (didDoc) => didDoc.id)
   @JoinColumn({ name: 'created_by' })
   createdBy: DIDDocumentEntity;
 

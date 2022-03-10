@@ -62,15 +62,14 @@ describe('ApplicationController', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-      'master',
-    );
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
     await queryRunner.startTransaction();
     orgRepo = module.get<Repository<Organization>>(
-      getRepositoryToken(Organization),
+      getRepositoryToken(Organization)
     );
     appRepo = module.get<Repository<Application>>(
-      getRepositoryToken(Application),
+      getRepositoryToken(Application)
     );
     roleRepo = module.get<Repository<Role>>(getRepositoryToken(Role));
     testHttpServer = request(app.getHttpServer());
@@ -92,7 +91,7 @@ describe('ApplicationController', () => {
           description: chance.paragraph(),
           websiteUrl: chance.url(),
         },
-      }),
+      })
     );
 
     const app = await appRepo.save(
@@ -102,7 +101,7 @@ describe('ApplicationController', () => {
         namespace: 'app',
         definition: { appName: 'app' },
         parentOrg,
-      }),
+      })
     );
 
     const role = await roleRepo.save(
@@ -112,13 +111,13 @@ describe('ApplicationController', () => {
         owner: parentOrg.owner,
         definition: {} as IRoleDefinition,
         parentApp: app,
-      }),
+      })
     );
 
     await testHttpServer
       .get(`/v1/app/owner/${parentOrg.owner}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         const response: Application[] = res.body;
         expect(response.length).toBe(1);
         expect(response[0].roles.length).toBe(1);
@@ -128,7 +127,7 @@ describe('ApplicationController', () => {
     await testHttpServer
       .get(`/v1/app/owner/${parentOrg.owner}?withRelations=false`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         const response: Application[] = res.body;
         expect(response.length).toBe(1);
         expect(response[0].roles).toBe(undefined);

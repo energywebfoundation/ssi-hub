@@ -1,5 +1,5 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -14,7 +14,8 @@ import { LoggerModule } from '../logger/logger.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
-import { ClaimService, UUID_NAMESPACE } from './claim.service';
+import { ClaimIssuanceService, ClaimService } from './services';
+import { UUID_NAMESPACE } from './claim.const';
 import { IClaimRequest, IRoleClaim, RegistrationTypes } from './claim.types';
 import { NatsModule } from '../nats/nats.module';
 import { RoleService } from '../role/role.service';
@@ -27,6 +28,9 @@ import { Asset, AssetsHistory } from '../assets/assets.entity';
 import { DIDService } from '../did/did.service';
 import { Wallet } from '@ethersproject/wallet';
 import { BullModule } from '@nestjs/bull';
+import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { Organization } from '../organization/organization.entity';
+import { Application } from '../application/application.entity';
 
 // const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -41,7 +45,6 @@ describe('ClaimsController', () => {
   const issuer = new Keys();
   const issuerDID = `did:ethr:volta:${issuer.getAddress()}`;
   const jwt = new JWT(issuer);
-  let module: TestingModule;
   let queryRunner: QueryRunner;
   let dbConnection: Connection;
   let testHttpServer: request.SuperTest<request.Test>;
@@ -53,7 +56,7 @@ describe('ClaimsController', () => {
   };
 
   const didMock = jest.fn(
-    () => 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9',
+    () => 'did:ethr:volta:0x0C2021qb2085C8AA0f686caA011de1cB53a615E9'
   );
   const isAuthorizeMock = jest.fn(() => true);
 
@@ -80,7 +83,7 @@ describe('ClaimsController', () => {
   }) => {
     const token = await jwt.sign(
       { claimData: { claimType, claimTypeVersion } },
-      { subject: requester },
+      { subject: requester }
     );
     const id = v5(token, UUID_NAMESPACE);
     const claimRequest: IClaimRequest = {
@@ -88,22 +91,22 @@ describe('ClaimsController', () => {
       claimTypeVersion,
       id,
       requester,
-      claimIssuer: [issuer],
+      claimIssuer: issuer,
       token,
     };
 
     didMock.mockReturnValueOnce(requester);
 
     await testHttpServer
-      .post(`/v1/claim/request/${requester}`)
+      .post(`/v1/claim/request`)
       .send(claimRequest)
       .expect(201);
 
     return { id, token };
   };
 
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
       imports: [
         BullModule.forRoot({ redis: redisConfig }),
 
@@ -119,6 +122,7 @@ describe('ClaimsController', () => {
       controllers: [ClaimController],
       providers: [
         ClaimService,
+        ClaimIssuanceService,
         { provide: RoleService, useValue: MockRoleService },
         { provide: DIDService, useValue: {} },
         AssetsService,
@@ -136,22 +140,26 @@ describe('ClaimsController', () => {
     await app.init();
     service = app.get(ClaimService);
 
-    dbConnection = module.get(Connection);
-    const manager = module.get(EntityManager);
+    testHttpServer = request(app.getHttpServer());
+  });
+
+  beforeEach(async () => {
+    dbConnection = app.get(Connection);
+    const manager = app.get(EntityManager);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    queryRunner = manager.queryRunner = dbConnection.createQueryRunner(
-      'master',
-    );
-    await queryRunner.connect();
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
     await queryRunner.startTransaction();
-    testHttpServer = request(app.getHttpServer());
   });
 
   afterEach(async () => {
     await queryRunner?.rollbackTransaction();
-    await app.close();
+  });
+
+  afterAll(async () => {
+    await app?.close();
   });
 
   it('getBySubject() should return claim requested for subject', async () => {
@@ -169,7 +177,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/subject/${requester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toStrictEqual(
           expect.objectContaining({
@@ -180,7 +188,7 @@ describe('ClaimsController', () => {
             subject: requester,
             token,
             registrationTypes,
-          }),
+          })
         );
       });
   });
@@ -191,7 +199,7 @@ describe('ClaimsController', () => {
     const requester = randomDID();
     const token = await jwt.sign(
       { claimData: { claimType, claimTypeVersion } },
-      { subject: requester },
+      { subject: requester }
     );
 
     await testHttpServer
@@ -202,7 +210,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/issued?subjects=${requester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
         expect(res.body[0].issuedToken).toEqual(token);
@@ -236,7 +244,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/user/${requester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
@@ -249,7 +257,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/user/${foreignRequester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(0);
       });
@@ -281,7 +289,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/issuer/${requester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(0);
       });
@@ -292,9 +300,9 @@ describe('ClaimsController', () => {
         name: 'myRole',
         namespace: 'myRole.roles.myOrg.iam.ewc',
         owner: issuer,
-        definition: {} as any,
-        parentOrg: {} as any,
-        parentApp: {} as any,
+        definition: {} as IRoleDefinition,
+        parentOrg: {} as Organization,
+        parentApp: {} as Application,
       },
     ]);
 
@@ -302,7 +310,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/issuer/${issuer}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
@@ -337,7 +345,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/requester/${requester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
@@ -350,7 +358,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/requester/${foreignRequester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(0);
       });
@@ -381,7 +389,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/subject/${requester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
@@ -394,7 +402,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/subject/${foreignRequester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(0);
       });
@@ -425,7 +433,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/by/subjects?subjects=${requester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
@@ -438,7 +446,7 @@ describe('ClaimsController', () => {
     await testHttpServer
       .get(`/v1/claim/by/subjects?subjects=${foreignRequester}`)
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toEqual(0);
       });
@@ -478,7 +486,7 @@ describe('ClaimsController', () => {
       await testHttpServer
         .get(`/v1/claim/by/subjects?subjects=${requesterDID}`)
         .expect(200)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body).toBeInstanceOf(Array);
           expect(res.body.length).toEqual(1);
           expect(res.body[0]).toBeInstanceOf(Object);

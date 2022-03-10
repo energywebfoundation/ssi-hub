@@ -11,6 +11,7 @@ import {
   DomainReader,
   DomainHierarchy,
   ResolverContractType,
+  VOLTA_CHAIN_ID,
 } from '@energyweb/iam-contracts';
 import { PublicResolver__factory } from '../../ethers/factories/PublicResolver__factory';
 import { RoleService } from '../role/role.service';
@@ -24,6 +25,7 @@ import { DomainNotifier__factory } from '../../ethers/factories/DomainNotifier__
 import { DomainNotifier } from '../../ethers/DomainNotifier';
 import { Logger } from '../logger/logger.service';
 import { Provider } from '../../common/provider';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 export const emptyAddress = '0x'.padEnd(42, '0');
 
@@ -43,34 +45,35 @@ export class EnsService implements OnModuleDestroy {
     private readonly config: ConfigService,
     private readonly logger: Logger,
     private readonly provider: Provider,
+    private readonly sentryTracingService: SentryTracingService
   ) {
     this.logger.setContext(EnsService.name);
     utils.Logger.setLogLevel(LogLevel.ERROR);
 
-    // Get config values from .env file
     const CHAIN_ID = parseInt(this.config.get<string>('CHAIN_ID'));
-    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
-      'PUBLIC_RESOLVER_ADDRESS',
-    );
     const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
+    const RESOLVER_V2_ADDRESS = this.config.get<string>('RESOLVER_V2_ADDRESS');
+    const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
+      'PUBLIC_RESOLVER_ADDRESS'
+    );
     const DOMAIN_NOTIFIER_ADDRESS = this.config.get<string>(
-      'DOMAIN_NOTIFIER_ADDRESS',
+      'DOMAIN_NOTIFIER_ADDRESS'
     );
     const ENS_REGISTRY_ADDRESS = this.config.get<string>(
-      'ENS_REGISTRY_ADDRESS',
+      'ENS_REGISTRY_ADDRESS'
     );
     // Connect to smart contracts
     this.publicResolver = PublicResolver__factory.connect(
       PUBLIC_RESOLVER_ADDRESS,
-      this.provider,
+      this.provider
     );
     this.domainNotifier = DomainNotifier__factory.connect(
       DOMAIN_NOTIFIER_ADDRESS,
-      this.provider,
+      this.provider
     );
     this.ensRegistry = ENSRegistry__factory.connect(
       ENS_REGISTRY_ADDRESS,
-      this.provider,
+      this.provider
     );
     this.domainReader = new DomainReader({
       ensRegistryAddress: ENS_REGISTRY_ADDRESS,
@@ -78,14 +81,21 @@ export class EnsService implements OnModuleDestroy {
     });
     this.domainReader.addKnownResolver({
       chainId: CHAIN_ID,
-      address: RESOLVER_V1_ADDRESS,
-      type: ResolverContractType.RoleDefinitionResolver_v1,
+      address: RESOLVER_V2_ADDRESS,
+      type: ResolverContractType.RoleDefinitionResolver_v2,
     });
-    this.domainReader.addKnownResolver({
-      chainId: CHAIN_ID,
-      address: PUBLIC_RESOLVER_ADDRESS,
-      type: ResolverContractType.PublicResolver,
-    });
+    if (CHAIN_ID === VOLTA_CHAIN_ID) {
+      this.domainReader.addKnownResolver({
+        chainId: CHAIN_ID,
+        address: RESOLVER_V1_ADDRESS,
+        type: ResolverContractType.RoleDefinitionResolver_v1,
+      });
+      this.domainReader.addKnownResolver({
+        chainId: CHAIN_ID,
+        address: PUBLIC_RESOLVER_ADDRESS,
+        type: ResolverContractType.PublicResolver,
+      });
+    }
 
     this.domainHierarchy = new DomainHierarchy({
       domainReader: this.domainReader,
@@ -97,7 +107,7 @@ export class EnsService implements OnModuleDestroy {
 
     // Using setInterval so that interval can be set dynamically from config
     const ensSyncInterval = this.config.get<string>(
-      'ENS_SYNC_INTERVAL_IN_HOURS',
+      'ENS_SYNC_INTERVAL_IN_HOURS'
     );
     const ENS_SYNC_ENABLED =
       this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
@@ -106,7 +116,7 @@ export class EnsService implements OnModuleDestroy {
     if (ensSyncInterval && ENS_SYNC_ENABLED && !isTestEnv) {
       const interval = setInterval(
         () => this.syncENS(),
-        parseInt(ensSyncInterval) * 3600000,
+        parseInt(ensSyncInterval) * 3600000
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
       this.InitEventListeners();
@@ -120,7 +130,7 @@ export class EnsService implements OnModuleDestroy {
       if (isOrg) {
         await this.organizationService.removeByNameHash(hash);
         this.logger.log(
-          `OrgDeleted: successfully removed deregistered org with namehash ${hash}`,
+          `OrgDeleted: successfully removed deregistered org with namehash ${hash}`
         );
       }
 
@@ -128,7 +138,7 @@ export class EnsService implements OnModuleDestroy {
       if (isRole) {
         await this.roleService.removeByNameHash(hash);
         this.logger.log(
-          `RoleDeleted: successfully removed deregistered role with namehash ${hash}`,
+          `RoleDeleted: successfully removed deregistered role with namehash ${hash}`
         );
       }
 
@@ -136,20 +146,20 @@ export class EnsService implements OnModuleDestroy {
       if (isApp) {
         await this.applicationService.removeByNameHash(hash);
         this.logger.log(
-          `AppDeleted: successfully removed deregistered app with namehash ${hash}`,
+          `AppDeleted: successfully removed deregistered app with namehash ${hash}`
         );
       }
       return;
     } catch (err) {
       this.logger.debug(
-        `NamespaceDelete: An error occurred while try to remove ${namehash} namehash: ${err}`,
+        `NamespaceDelete: An error occurred while try to remove ${namehash} namehash: ${err}`
       );
     }
   }
 
   private InitEventListeners(): void {
     // Register event handler for legacy PublicResolver definitions
-    this.publicResolver.on('TextChanged', async hash => {
+    this.publicResolver.on('TextChanged', async (hash) => {
       await this.eventHandler({ hash });
     });
 
@@ -164,7 +174,7 @@ export class EnsService implements OnModuleDestroy {
     });
 
     // Register event handler for domain definition updates
-    this.domainNotifier.on('DomainUpdated', async node => {
+    this.domainNotifier.on('DomainUpdated', async (node) => {
       const namespace = await this.domainReader.readName(node);
       if (!namespace) return;
       await this.eventHandler({ hash: node });
@@ -206,7 +216,7 @@ export class EnsService implements OnModuleDestroy {
 
       if (!namespaceOwner || !data) {
         this.logger.debug(
-          `Role: ${name} not supported lack of owner or metadata`,
+          `Role: ${name} not supported lack of owner or metadata`
         );
         return;
       }
@@ -219,7 +229,7 @@ export class EnsService implements OnModuleDestroy {
       });
     } catch (err) {
       this.logger.error(
-        `Error syncing namespace ${name}, owner ${owner}, ${err}`,
+        `Error syncing namespace ${name}, owner ${owner}, ${err}`
       );
       return;
     }
@@ -261,7 +271,7 @@ export class EnsService implements OnModuleDestroy {
         });
       }
       this.logger.debug(
-        `Bailed: App with namespace:${namespace} does not have 'apps' subdomain`,
+        `Bailed: App with namespace:${namespace} does not have 'apps' subdomain`
       );
     }
     if (DomainReader.isRoleDefinition(data)) {
@@ -286,29 +296,37 @@ export class EnsService implements OnModuleDestroy {
         });
       }
       this.logger.debug(
-        `Bailed: Roletype ${data.roleType} is not a valid roletype`,
+        `Bailed: Roletype ${data.roleType} is not a valid roletype`
       );
     }
     this.logger.debug(
-      `Bailed: Data not supported ${namespace}, ${JSON.stringify(data)}`,
+      `Bailed: Data not supported ${namespace}, ${JSON.stringify(data)}`
     );
   }
 
   async syncENS() {
     this.logger.info('### Started ENS Sync ###');
+    const transaction = this.sentryTracingService.startTransaction({
+      op: 'sync-ens',
+      name: 'Sync ENS',
+    });
+
     try {
       const namespaces = await this.getAllNamespaces();
       const chunks = chunk(namespaces, 10);
+
       for (const part of chunks) {
         await Promise.allSettled(
           part.map((item: string) => {
             const hash = namehash(item);
             return this.eventHandler({ hash });
-          }),
+          })
         );
       }
     } catch (err) {
       this.logger.error(err);
+    } finally {
+      transaction && transaction.finish();
     }
     this.logger.info('### Finished ENS Sync ###');
   }

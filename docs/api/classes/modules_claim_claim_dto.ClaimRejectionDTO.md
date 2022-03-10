@@ -17,6 +17,7 @@
 - [claimIssuer](modules_claim_claim_dto.ClaimRejectionDTO.md#claimissuer)
 - [id](modules_claim_claim_dto.ClaimRejectionDTO.md#id)
 - [isRejected](modules_claim_claim_dto.ClaimRejectionDTO.md#isrejected)
+- [rejectionReason](modules_claim_claim_dto.ClaimRejectionDTO.md#rejectionreason)
 - [requester](modules_claim_claim_dto.ClaimRejectionDTO.md#requester)
 
 ### Methods
@@ -33,7 +34,7 @@
 
 ### claimIssuer
 
-• **claimIssuer**: `string`[]
+• **claimIssuer**: `string`
 
 #### Implementation of
 
@@ -58,6 +59,16 @@ ___
 #### Implementation of
 
 [IClaimRejection](../interfaces/modules_claim_claim_types.IClaimRejection.md).[isRejected](../interfaces/modules_claim_claim_types.IClaimRejection.md#isrejected)
+
+___
+
+### rejectionReason
+
+• `Optional` **rejectionReason**: `string`
+
+#### Implementation of
+
+[IClaimRejection](../interfaces/modules_claim_claim_types.IClaimRejection.md).[rejectionReason](../interfaces/modules_claim_claim_types.IClaimRejection.md#rejectionreason)
 
 ___
 

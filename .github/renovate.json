@@ -1,0 +1,5 @@
+{
+  "extends": ["github>energywebfoundation/shared-configs"],
+  "assignees": ["Harasz", "JGiter"],
+  "reviewers": ["Harasz", "jrhender", "JGiter"]
+}

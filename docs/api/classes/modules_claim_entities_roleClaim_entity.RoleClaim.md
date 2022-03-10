@@ -25,6 +25,7 @@
 - [namespace](modules_claim_entities_roleClaim_entity.RoleClaim.md#namespace)
 - [onChainProof](modules_claim_entities_roleClaim_entity.RoleClaim.md#onchainproof)
 - [registrationTypes](modules_claim_entities_roleClaim_entity.RoleClaim.md#registrationtypes)
+- [rejectionReason](modules_claim_entities_roleClaim_entity.RoleClaim.md#rejectionreason)
 - [requester](modules_claim_entities_roleClaim_entity.RoleClaim.md#requester)
 - [subject](modules_claim_entities_roleClaim_entity.RoleClaim.md#subject)
 - [subjectAgreement](modules_claim_entities_roleClaim_entity.RoleClaim.md#subjectagreement)
@@ -148,6 +149,16 @@ ___
 
 ___
 
+### rejectionReason
+
+• `Optional` **rejectionReason**: `string`
+
+#### Implementation of
+
+[IRoleClaim](../interfaces/modules_claim_claim_types.IRoleClaim.md).[rejectionReason](../interfaces/modules_claim_claim_types.IRoleClaim.md#rejectionreason)
+
+___
+
 ### requester
 
 • **requester**: `string`
@@ -176,7 +187,7 @@ ___
 
 ### token
 
-• **token**: `string`
+• `Optional` **token**: `string`
 
 #### Implementation of
 

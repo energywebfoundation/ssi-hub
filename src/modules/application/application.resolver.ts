@@ -12,7 +12,7 @@ export class ApplicationResolver {
 
   @Query(() => Application)
   async application(
-    @Args('namespace', { type: () => String }) namespace: string,
+    @Args('namespace', { type: () => String }) namespace: string
   ) {
     const app = await this.applicationService.getByNamespace(namespace);
     if (!app) {

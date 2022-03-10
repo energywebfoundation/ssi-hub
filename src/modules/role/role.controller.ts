@@ -52,9 +52,9 @@ export class RoleController {
   public async getByIds(
     @Query(
       'namespaces',
-      new ParseArrayPipe({ items: String, separator: ',', optional: false }),
+      new ParseArrayPipe({ items: String, separator: ',', optional: false })
     )
-    namespaces: string[],
+    namespaces: string[]
   ) {
     return this.roleService.getByNamespaces(namespaces);
   }

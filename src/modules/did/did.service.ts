@@ -3,10 +3,11 @@ import {
   IDIDDocument,
   IDIDLogData,
   IServiceEndpoint,
+  DidEventNames,
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, OnModuleInit } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -25,13 +26,14 @@ import jwt from 'jsonwebtoken';
 import { Provider } from '../../common/provider';
 import {
   documentFromLogs,
-  mergeLogs,
   Resolver,
+  mergeLogs,
   ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 @Injectable()
-export class DIDService {
+export class DIDService implements OnModuleInit {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly ipfsStore: IDidStore;
   private readonly resolver: Resolver;
@@ -44,6 +46,7 @@ export class DIDService {
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
+    private readonly sentryTracingService: SentryTracingService
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -51,7 +54,7 @@ export class DIDService {
     this.ipfsStore = new DidStore(IPFS_URL);
 
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
-      'DID_REGISTRY_ADDRESS',
+      'DID_REGISTRY_ADDRESS'
     );
 
     this.resolver = new Resolver(this.provider, {
@@ -62,24 +65,26 @@ export class DIDService {
 
     this.didRegistry = EthereumDIDRegistry__factory.connect(
       DID_REGISTRY_ADDRESS,
-      this.provider,
+      this.provider
     );
-
-    this.InitEventListeners();
 
     // Using setInterval so that interval can be set dynamically from config
     const didDocSyncInterval = this.config.get<string>(
-      'DIDDOC_SYNC_INTERVAL_IN_HOURS',
+      'DIDDOC_SYNC_INTERVAL_IN_HOURS'
     );
     const DID_SYNC_ENABLED =
       this.config.get<string>('DID_SYNC_ENABLED') !== 'false';
     if (didDocSyncInterval && DID_SYNC_ENABLED) {
       const interval = setInterval(
         () => this.syncDocuments(),
-        parseInt(didDocSyncInterval) * 3600000,
+        parseInt(didDocSyncInterval) * 3600000
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
+  }
+
+  async onModuleInit() {
+    await this.InitEventListeners();
   }
 
   /**
@@ -107,7 +112,7 @@ export class DIDService {
     }
 
     this.logger.info(
-      `Requested document for did: ${did} not cached. Add to cache.`,
+      `Requested document for did: ${did} not cached. Add to cache.`
     );
 
     const entity = await this.addCachedDocument(did);
@@ -115,19 +120,45 @@ export class DIDService {
   }
 
   /**
-   * Adds the DID Document cache for a given DID.
+   * Adds or fully refresh the DID Document cache for a given DID.
    * Also retrieves all claims from IPFS for the document.
    * @param {string} did
    */
-  public async addCachedDocument(did: string) {
+  public async addCachedDocument(did: string, isSync = false) {
+    const obscuredDid = this.obscureDid(did);
+
+    const transaction = this.sentryTracingService.startTransaction({
+      op: 'retrieve_did_document',
+      name: 'Adds or fully refresh the DID Document',
+      data: { did: obscuredDid },
+      tags: { service: DIDService.name, operation: isSync ? 'sync' : 'add' },
+    });
+
     try {
       this.logger.debug(`Add cached document for did: ${did}`);
-      const logs = await this.getAllLogs(did);
 
+      let span = transaction?.startChild({
+        op: 'get_all_logs',
+        description: 'Get all logs for DID',
+      });
+      const logs = await this.getAllLogs(did);
+      span?.finish();
+
+      span = transaction?.startChild({
+        op: 'resolve_document_from_logs',
+        description: 'Resolve document from logs',
+      });
       const updatedDidDocument = this.resolveDocumentFromLogs(did, logs);
+      span?.finish();
+
+      span = transaction?.startChild({
+        op: 'resolve_not_cached_claims',
+        description: 'Resolve not cached claims',
+      });
       const updatedServices = await this.resolveNotCachedClaims(
-        updatedDidDocument.service,
+        updatedDidDocument.service
       );
+      span?.finish();
 
       const updatedEntity = DIDDocumentEntity.create({
         ...updatedDidDocument,
@@ -138,33 +169,68 @@ export class DIDService {
       return this.didRepository.save(updatedEntity);
     } catch (err) {
       this.logger.error(err);
+    } finally {
+      transaction?.finish();
     }
   }
 
+  obscureDid(did: string) {
+    return did.replace(/(?<=0x[a-f0-9-]{3})[a-f0-9-]+/gi, '***');
+  }
+
   /**
-   * Refresh the DID Document cache for a given DID.
+   * Add any incremental changes to the DID document that occurred since the last sync.
    * Also retrieves all claims from IPFS for the document.
    * @param {string} did
    */
-  public async refreshCachedDocument(did: string) {
+  public async incrementalRefreshCachedDocument(did: string) {
+    const obscuredDid = this.obscureDid(did);
+
+    const transaction = this.sentryTracingService.startTransaction({
+      op: 'incremental_refresh_did_document',
+      name: 'Incremental refresh the DID Document',
+      data: { did: obscuredDid },
+      tags: { service: DIDService.name, operation: 'sync' },
+    });
+
     try {
       this.logger.info(`refreshing cached document for did: ${did}`);
+      let span = transaction?.startChild({
+        op: 'find_did_document',
+        description: 'Find DID Document',
+      });
       const cachedDIDDocument = await this.didRepository.findOne(did);
+      span?.finish();
 
+      span = transaction?.startChild({
+        op: 'update_logs',
+        description: 'Update logs',
+      });
       const logs = await this.updateLogs(
         cachedDIDDocument.id,
-        this.parseLogs(cachedDIDDocument.logs),
+        this.parseLogs(cachedDIDDocument.logs)
       );
+      span?.finish();
 
+      span = transaction?.startChild({
+        op: 'resolve_document_from_logs',
+        description: 'Resolve document from logs',
+      });
       const updatedDidDocument = this.resolveDocumentFromLogs(
         cachedDIDDocument.id,
-        logs,
+        logs
       );
+      span?.finish();
 
+      span = transaction?.startChild({
+        op: 'resolve_not_cached_claims',
+        description: 'Resolve not cached claims',
+      });
       const updatedServices = await this.resolveNotCachedClaims(
         updatedDidDocument.service,
-        cachedDIDDocument.service,
+        cachedDIDDocument.service
       );
+      span?.finish();
 
       const updatedEntity = DIDDocumentEntity.create({
         ...cachedDIDDocument,
@@ -176,34 +242,46 @@ export class DIDService {
       return this.didRepository.save(updatedEntity);
     } catch (err) {
       this.logger.error(err);
+    } finally {
+      transaction?.finish();
     }
   }
 
   public async getDIDDocumentFromUniversalResolver(did: string) {
     const universalResolverUrl = this.config.get<string>(
-      'UNIVERSAL_RESOLVER_URL',
+      'UNIVERSAL_RESOLVER_URL'
     );
     if (!universalResolverUrl) {
       throw new Error('universal resolver url not set');
     }
     const stripTrailingSlash = (s: string) => s.replace(/\/$/, ''); //https://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
-    const observableResponse = this.httpService.get(
-      `${stripTrailingSlash(universalResolverUrl)}/${did}`,
-    );
-    const { data } = await firstValueFrom(observableResponse);
 
-    return data.didDocument;
+    try {
+      const observableResponse = this.httpService.get(
+        `${stripTrailingSlash(universalResolverUrl)}/${did}`
+      );
+      const { data } = await firstValueFrom(observableResponse);
+      return data.didDocument;
+    } catch (e) {
+      if (e?.isAxiosError) {
+        throw new HttpException(
+          e?.response?.statusText || 'Unknown error',
+          e?.response?.status || 500
+        );
+      } else throw e;
+    }
   }
 
   private async InitEventListeners(): Promise<void> {
-    const DIDAttributeChanged = 'DIDAttributeChanged';
-    this.didRegistry.on(DIDAttributeChanged, async address => {
+    this.didRegistry.on(DidEventNames.AttributeChanged, async (address) => {
       const did = `did:${Methods.Erc1056}:${process.env.CHAIN_NAME}:${address}`;
 
-      this.logger.info(`${DIDAttributeChanged} event received for did: ${did}`);
+      this.logger.info(
+        `${DidEventNames.AttributeChanged} event received for did: ${did}`
+      );
 
       const didObject = new DID(did);
-      const didDocEntity = await this.didRepository.findOne(didObject.id);
+      const didDocEntity = await this.didRepository.findOne(didObject.did);
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
@@ -215,7 +293,7 @@ export class DIDService {
   private async syncDocuments() {
     this.logger.debug(`Beginning sync of DID Documents`);
     const cachedDIDs = await this.didRepository.find({ select: ['id'] });
-    cachedDIDs.forEach(async did => {
+    cachedDIDs.forEach(async (did) => {
       await this.didQueue.add(UPDATE_DID_DOC_QUEUE_NAME, did.id);
     });
   }
@@ -251,7 +329,7 @@ export class DIDService {
    */
   private async updateLogs(
     id: string,
-    logs: IDIDLogData,
+    logs: IDIDLogData
   ): Promise<IDIDLogData> {
     if (logs?.topBlock) {
       const readFromBlock = logs.topBlock.add(1); // Want to read from 1 more than previously last read to
@@ -278,12 +356,12 @@ export class DIDService {
 
   private resolveNotCachedClaims(
     services: IServiceEndpoint[],
-    cachedServices: IClaim[] = [],
+    cachedServices: IClaim[] = []
   ): Promise<IClaim[]> {
     return Promise.all(
       services.map(async ({ serviceEndpoint, ...rest }) => {
         const cachedService = cachedServices.find(
-          claim => claim.serviceEndpoint === serviceEndpoint,
+          (claim) => claim.serviceEndpoint === serviceEndpoint
         );
         if (cachedService) return cachedService;
 
@@ -298,7 +376,7 @@ export class DIDService {
           ...claimData,
           ...claimRest,
         };
-      }),
+      })
     );
   }
 }

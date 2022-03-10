@@ -11,7 +11,7 @@ export class OrganizationService {
   constructor(
     @InjectRepository(Organization)
     private readonly orgRepository: Repository<Organization>,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.logger.setContext(OrganizationService.name);
   }
@@ -62,6 +62,8 @@ export class OrganizationService {
         where: {
           namespace,
         },
+        select: ['id'],
+        relations: ['subOrgs'],
       })) || {};
 
     if (!id) {
@@ -101,7 +103,7 @@ export class OrganizationService {
    */
   public async getByOwner(
     owner: string,
-    { withRelations = true }: { withRelations?: boolean } = {},
+    { withRelations = true }: { withRelations?: boolean } = {}
   ) {
     const qb = this.orgRepository.createQueryBuilder('organization');
     qb.where('organization.owner = :owner', { owner });
@@ -213,8 +215,8 @@ export class OrganizationService {
         `Validation failed for ${namespace} with errors: ${JSON.stringify(
           err,
           null,
-          2,
-        )}`,
+          2
+        )}`
       );
       return;
     }

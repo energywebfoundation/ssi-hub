@@ -1,44 +1,29 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
-  IClaimIssuance,
   IClaimRejection,
   IClaimRequest,
   DecodedClaimToken,
-} from './claim.types';
-import { RoleService } from '../role/role.service';
-import { Logger } from '../logger/logger.service';
+} from '../claim.types';
+import { RoleService } from '../../role/role.service';
+import { Logger } from '../../logger/logger.service';
 import {
-  ClaimIssueDTO,
   ClaimRejectionDTO,
   ClaimRequestDTO,
   IssuedClaimDTO,
-  NewClaimIssueDTO,
-} from './claim.dto';
-import { Claim } from './entities/claim.entity';
-import { RoleClaim } from './entities/roleClaim.entity';
+} from '../claim.dto';
+import { Claim } from '../entities/claim.entity';
+import { RoleClaim } from '../entities/roleClaim.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
 import jwt from 'jsonwebtoken';
 import { v5 } from 'uuid';
-import { AssetsService } from '../assets/assets.service';
-import { Role } from '../role/role.entity';
+import { AssetsService } from '../../assets/assets.service';
+import { Role } from '../../role/role.entity';
+import { ClaimHandleResult } from '../claim-handle-result.dto';
+import { UUID_NAMESPACE } from '../claim.const';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
-}
-
-export const UUID_NAMESPACE = '5193850c-2367-4ec4-8c22-95dfbd4a2880';
-
-export class ClaimHandleResult {
-  isSuccessful: boolean;
-  details?: string;
-  static Success(): ClaimHandleResult {
-    return { isSuccessful: true };
-  }
-
-  static Failure(details: string): ClaimHandleResult {
-    return { isSuccessful: false, details: details };
-  }
 }
 
 @Injectable()
@@ -50,7 +35,7 @@ export class ClaimService {
     private readonly roleClaimRepository: Repository<RoleClaim>,
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
-    private readonly assetService: AssetsService,
+    private readonly assetService: AssetsService
   ) {
     this.logger.setContext(ClaimService.name);
   }
@@ -77,7 +62,7 @@ export class ClaimService {
    * @param rq IClaimRequest request
    */
   public async handleClaimEnrolmentRequest(
-    rq: IClaimRequest,
+    rq: IClaimRequest
   ): Promise<ClaimHandleResult> {
     const claim: RoleClaim = await this.getById(rq.id);
     if (claim || !rq.token)
@@ -85,6 +70,7 @@ export class ClaimService {
 
     const {
       claimData: { claimType, claimTypeVersion },
+      sub,
     } = jwt.decode(rq.token) as DecodedClaimToken;
 
     const dto = await ClaimRequestDTO.create({
@@ -98,58 +84,8 @@ export class ClaimService {
       userDID: dto.requester,
     });
 
-    await this.create(dto);
+    await this.create(dto, sub);
 
-    return ClaimHandleResult.Success();
-  }
-
-  /**
-   * Handles claim issuance request saving and updates.
-   * Two scenarios are handled - issue requested claim and issue not-requested claim
-   * @param rq IClaimIssuance request
-   */
-  public async handleClaimIssuanceRequest(
-    rq: IClaimIssuance,
-  ): Promise<ClaimHandleResult> {
-    const claim: RoleClaim = await this.getById(rq.id);
-
-    if (!claim && rq.issuedToken) {
-      const {
-        claimData: { claimType, claimTypeVersion },
-      } = jwt.decode(rq.issuedToken) as DecodedClaimToken;
-
-      await this.roleService.verifyEnrolmentIssuer({
-        issuerDID: rq.acceptedBy,
-        claimType,
-      });
-
-      const dto = await NewClaimIssueDTO.create({
-        ...rq,
-        claimType,
-        claimTypeVersion,
-      });
-
-      await this.roleService.verifyEnrolmentPrecondition({
-        claimType,
-        userDID: dto.requester,
-      });
-
-      await this.createAndIssue(dto);
-    } else if (
-      claim &&
-      !claim.isRejected &&
-      (rq.issuedToken || rq.onChainProof)
-    ) {
-      await this.roleService.verifyEnrolmentIssuer({
-        issuerDID: rq.acceptedBy,
-        claimType: claim.claimType,
-      });
-
-      const dto = await ClaimIssueDTO.create(rq);
-      await this.issue(dto);
-    } else {
-      return ClaimHandleResult.Failure('claim issuance criteria not met');
-    }
     return ClaimHandleResult.Success();
   }
 
@@ -158,7 +94,7 @@ export class ClaimService {
    * @param rq IClaimRejection request
    */
   public async handleClaimRejectionRequest(
-    rq: IClaimRejection,
+    rq: IClaimRejection
   ): Promise<ClaimHandleResult> {
     const claim: RoleClaim = await this.getById(rq.id);
     if (!claim || claim.isAccepted || !rq.isRejected)
@@ -173,36 +109,16 @@ export class ClaimService {
    * Saves claim to database
    * @param data Raw claim data
    */
-  public async create(data: ClaimRequestDTO): Promise<RoleClaim> {
-    const parent = data.claimType
-      .split('.')
-      .slice(2)
-      .join('.');
+  public async create(
+    data: ClaimRequestDTO,
+    subject: string
+  ): Promise<RoleClaim> {
+    const parent = data.claimType.split('.').slice(2).join('.');
 
     const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim(data),
+      id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
       namespace: parent,
-    });
-    return this.roleClaimRepository.save(claim);
-  }
-
-  /**
-   * Saves and issue claim to database
-   * @param data Raw claim data
-   */
-  public async createAndIssue(data: NewClaimIssueDTO): Promise<RoleClaim> {
-    const parent = data.claimType
-      .split('.')
-      .slice(2)
-      .join('.');
-
-    const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim({ ...data, token: data.issuedToken }),
-      ...data,
-      namespace: parent,
-      token: data.issuedToken,
-      isAccepted: true,
     });
     return this.roleClaimRepository.save(claim);
   }
@@ -213,16 +129,6 @@ export class ClaimService {
       ...claim,
       isRejected: true,
       rejectionReason,
-    });
-    return this.roleClaimRepository.save(updatedClaim);
-  }
-
-  public async issue(data: ClaimIssueDTO) {
-    const claim = await this.roleClaimRepository.findOne(data.id);
-    const updatedClaim = RoleClaim.create({
-      ...claim,
-      ...data,
-      isAccepted: true,
     });
     return this.roleClaimRepository.save(updatedClaim);
   }
@@ -312,9 +218,9 @@ export class ClaimService {
 
     if (currentUser) {
       qb.andWhere(
-        new Brackets(query => {
+        new Brackets((query) => {
           query.where(':currentUser = requester', { currentUser });
-        }),
+        })
       );
     }
     return qb.getMany();
@@ -335,7 +241,7 @@ export class ClaimService {
     currentUser?: string;
   }) {
     const rolesByIssuer = (await this.rolesByIssuer(issuer, namespace)).map(
-      r => r.namespace,
+      (r) => r.namespace
     );
 
     if (rolesByIssuer.length === 0) {
@@ -390,9 +296,9 @@ export class ClaimService {
 
     if (currentUser) {
       qb.andWhere(
-        new Brackets(query => {
+        new Brackets((query) => {
           query.where(':currentUser = requester', { currentUser });
-        }),
+        })
       );
     }
     return qb.getMany();
@@ -439,13 +345,13 @@ export class ClaimService {
    */
   public async getDidOfClaimsOfNamespace(
     namespace: string,
-    isAccepted?: boolean,
+    isAccepted?: boolean
   ): Promise<string[]> {
     const parsedFilters = this.parseFilters({ isAccepted });
     const claims = await this.roleClaimRepository.find({
       where: [{ ...parsedFilters, claimType: namespace }],
     });
-    return claims.map(claim => claim.requester);
+    return claims.map((claim) => claim.requester);
   }
 
   /**
@@ -481,29 +387,28 @@ export class ClaimService {
   }
 
   static idOfClaim(claimReq: {
-    token: string;
+    subject: string;
     claimType: string;
     claimTypeVersion: string;
   }) {
-    const { token, claimType: role, claimTypeVersion: version } = claimReq;
-    const { sub: subject } = jwt.decode(token);
+    const { subject, claimType: role, claimTypeVersion: version } = claimReq;
     return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
   }
 
   public async rolesByIssuer(
     issuer: string,
-    namespace?: string,
+    namespace?: string
   ): Promise<Role[]> {
     const rolesOfIssuer = (
       await this.getBySubject({
         subject: issuer,
         filters: { isAccepted: true },
       })
-    ).map(r => r.claimType);
+    ).map((r) => r.claimType);
     const roles = (await this.roleService.getAll()).filter(
-      r =>
+      (r) =>
         r.definition.issuer.did?.includes(issuer) ||
-        rolesOfIssuer.includes(r.definition.issuer.roleName),
+        rolesOfIssuer.includes(r.definition.issuer.roleName)
     );
     return namespace
       ? roles.filter((r: Role) => r.namespace === namespace)
@@ -512,21 +417,21 @@ export class ClaimService {
 
   private async filterUserRelatedClaims(
     currentUser: string,
-    qb: SelectQueryBuilder<RoleClaim>,
+    qb: SelectQueryBuilder<RoleClaim>
   ) {
     const ownedAssets = (await this.assetService.getByOwner(currentUser)).map(
-      a => a.id,
+      (a) => a.id
     );
     const offeredAssets = (
       await this.assetService.getByOfferedTo(currentUser)
-    ).map(a => a.id);
+    ).map((a) => a.id);
 
     const rolesByUser = (await this.rolesByIssuer(currentUser)).map(
-      r => r.namespace,
+      (r) => r.namespace
     );
 
     qb.andWhere(
-      new Brackets(query => {
+      new Brackets((query) => {
         query
           .where('claim.subject = :currentUser', { currentUser })
           .orWhere('claim.requester = :currentUser', { currentUser });
@@ -543,7 +448,7 @@ export class ClaimService {
             offeredAssets,
           });
         }
-      }),
+      })
     );
   }
 }

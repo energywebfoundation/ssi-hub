@@ -11,8 +11,9 @@ import {
   HttpStatus,
   ValidationPipe,
   UsePipes,
+  ForbiddenException,
 } from '@nestjs/common';
-import { ClaimService } from './claim.service';
+import { DIDService } from '../did/did.service';
 import {
   ApiBody,
   ApiExcludeEndpoint,
@@ -20,9 +21,11 @@ import {
   ApiQuery,
   ApiResponse,
   ApiTags,
+  ApiParam,
 } from '@nestjs/swagger';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
+import { ProofVerifier } from '@ew-did-registry/claims';
 import {
   ClaimEventType,
   IClaimIssuance,
@@ -46,6 +49,7 @@ import { AssetsService } from '../assets/assets.service';
 import { DIDsQuery } from './entities/roleClaim.entity';
 import { RoleDTO } from '../role/role.dto';
 import { NatsService } from '../nats/nats.service';
+import { ClaimIssuanceService, ClaimService } from './services';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -53,9 +57,11 @@ import { NatsService } from '../nats/nats.service';
 export class ClaimController {
   constructor(
     private readonly claimService: ClaimService,
+    private readonly claimIssuanceService: ClaimIssuanceService,
+    private readonly didService: DIDService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
-    private readonly nats: NatsService,
+    private readonly nats: NatsService
   ) {
     this.logger.setContext(ClaimController.name);
   }
@@ -73,18 +79,30 @@ export class ClaimController {
   })
   public async postIssuerClaim(
     @Param('did') did: string,
-    @Body() data: IClaimIssuance,
+    @Body() data: IClaimIssuance
   ) {
+    const didDoc = await this.didService.getById(did);
+    const proofVerifier = new ProofVerifier(didDoc);
+    if (
+      data.issuedToken &&
+      !(await proofVerifier.verifyAssertionProof(data.issuedToken))
+    ) {
+      throw new ForbiddenException('User signature not valid');
+    }
+
     const claimData: IClaimIssuance = {
       ...data,
       acceptedBy: did,
     };
 
-    const claimDTO = ClaimIssueDTO.create(claimData);
+    await ClaimIssueDTO.create(claimData);
 
-    await validateOrReject(claimDTO);
-    const result = await this.claimService.handleClaimIssuanceRequest(
+    const previouslyRequestedClaim = await this.claimService.getById(
+      claimData.id
+    );
+    const result = await this.claimIssuanceService.handleClaimIssuanceRequest(
       claimData,
+      previouslyRequestedClaim
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
@@ -103,15 +121,22 @@ export class ClaimController {
       ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       dids,
-      { claimId: claimData.id },
+      { claimId: claimData.id }
     );
 
-    this.logger.debug(`credentials issued for ${did}`);
+    this.logger.debug(`credentials issued by ${did}`);
+    return result;
   }
 
-  @Post('/request/:did')
+  @Post('/request/:did?')
   @ApiExcludeEndpoint()
   @ApiTags('Claims')
+  @ApiParam({
+    name: 'did',
+    required: false,
+    deprecated: true,
+    type: String,
+  })
   @ApiBody({
     type: ClaimRequestDTO,
     description: 'Claim data object, containing id and issuedToken',
@@ -126,23 +151,20 @@ export class ClaimController {
     type: String,
     description: 'ID of newly added claim',
   })
-  public async postRequesterClaim(
-    @Param('did') did: string,
-    @Body() data: IClaimRequest,
-  ) {
+  public async postRequesterClaim(@Body() data: IClaimRequest) {
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
     const { sub } = jwt.decode(token) as { sub: string };
     const ownedAssets = await this.assetsService.getByOwner(requester);
-    if (requester !== sub && !ownedAssets.some(a => a.document.id === sub)) {
+    if (requester !== sub && !ownedAssets.some((a) => a.document.id === sub)) {
       throw new HttpException(
         'Claim requester not authorized to request for subject',
-        HttpStatus.FORBIDDEN,
+        HttpStatus.FORBIDDEN
       );
     }
 
     const claimData: IClaimRequest = {
-      id: ClaimService.idOfClaim(data),
+      id: ClaimService.idOfClaim({ ...data, subject: sub }),
       ...data,
     };
 
@@ -151,7 +173,7 @@ export class ClaimController {
     await validateOrReject(claimDTO);
 
     const result = await this.claimService.handleClaimEnrolmentRequest(
-      claimData,
+      claimData
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
@@ -160,11 +182,11 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
-      { claimId: claimData.id },
+      [claimData.claimIssuer],
+      { claimId: claimData.id }
     );
 
-    this.logger.debug(`credentials requested from ${did}`);
+    this.logger.debug(`credentials requested from ${requester} for ${sub}`);
 
     return claimData.id;
   }
@@ -184,7 +206,7 @@ export class ClaimController {
   })
   public async postClaimRejection(
     @Param('did') did: string,
-    @Body() data: IClaimRejection,
+    @Body() data: IClaimRejection
   ) {
     const claimData: IClaimRejection = {
       ...data,
@@ -195,7 +217,7 @@ export class ClaimController {
     await validateOrReject(claimDTO);
 
     const result = await this.claimService.handleClaimRejectionRequest(
-      claimData,
+      claimData
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
@@ -204,8 +226,8 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
-      { claimId: claimData.id },
+      [claimData.claimIssuer],
+      { claimId: claimData.id }
     );
 
     this.logger.debug(`credentials rejected for ${did}`);
@@ -228,7 +250,7 @@ export class ClaimController {
       'should return claims for namespaces like ' +
       '`admin.roles.myApp.apps.myOrg.iam.ewc`',
   })
-  public async getByParentNamespace(@Param('id') id: string) {
+  public async getByParentNamespace(@Param('namespace') id: string) {
     return await this.claimService.getByParentNamespace(id);
   }
 
@@ -247,7 +269,7 @@ export class ClaimController {
     summary: 'returns claims of Issuer with given DID',
   })
   @ApiQuery({
-    name: 'accepted',
+    name: 'isAccepted',
     required: false,
     description:
       '**true** - show only accepted <br> **false** - show only pending',
@@ -261,7 +283,7 @@ export class ClaimController {
     @Param('did') issuer: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return await this.claimService.getByIssuer({
       issuer,
@@ -308,7 +330,7 @@ export class ClaimController {
     @Param('did') requester: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return await this.claimService.getByRequester({
       requester,
@@ -340,7 +362,7 @@ export class ClaimController {
     @Param('did') subject: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return await this.claimService.getBySubject({
       subject,
@@ -365,7 +387,7 @@ export class ClaimController {
   public async getDidsOfNamespace(
     @Param('namespace') namespace: string,
     @Query('accepted', BooleanPipe)
-    accepted?: boolean,
+    accepted?: boolean
   ) {
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
   }
@@ -385,7 +407,7 @@ export class ClaimController {
     @Query() { subjects }: DIDsQuery,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string,
+    @User() user?: string
   ) {
     return this.claimService.getBySubjects({
       subjects,

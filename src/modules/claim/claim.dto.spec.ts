@@ -114,7 +114,7 @@ describe('ClaimRequestDTO', () => {
           target: { ...claimRequest },
           value: ['NotRealRegistrationType'],
         },
-      ]),
+      ])
     );
   });
 });

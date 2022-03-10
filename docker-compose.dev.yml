@@ -60,3 +60,4 @@ networks:
 
 volumes:
   dgraph:
+

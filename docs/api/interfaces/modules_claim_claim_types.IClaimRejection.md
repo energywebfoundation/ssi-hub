@@ -19,13 +19,14 @@
 - [claimIssuer](modules_claim_claim_types.IClaimRejection.md#claimissuer)
 - [id](modules_claim_claim_types.IClaimRejection.md#id)
 - [isRejected](modules_claim_claim_types.IClaimRejection.md#isrejected)
+- [rejectionReason](modules_claim_claim_types.IClaimRejection.md#rejectionreason)
 - [requester](modules_claim_claim_types.IClaimRejection.md#requester)
 
 ## Properties
 
 ### claimIssuer
 
-• `Optional` **claimIssuer**: `string`[]
+• `Optional` **claimIssuer**: `string`
 
 #### Inherited from
 
@@ -46,6 +47,12 @@ ___
 ### isRejected
 
 • **isRejected**: `boolean`
+
+___
+
+### rejectionReason
+
+• `Optional` **rejectionReason**: `string`
 
 ___
 

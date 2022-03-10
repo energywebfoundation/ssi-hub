@@ -1,0 +1,78 @@
+name: Validate Helm
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+      - release
+      - sandbox
+
+jobs:
+  cancel-previous:
+    name: Cancel Previous Runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+  env_name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get GHA environment name
+        id: env_name
+        run: |
+          echo "Running on branch ${{ github.event.pull_request.base.ref }}"
+          if [ "${{ github.event.pull_request.base.ref }}" = "develop" ]; then
+            echo "::set-output name=env_name::dev"
+          elif [ "${{ github.event.pull_request.base.ref }}" = "sandbox" ]; then
+            echo "::set-output name=env_name::sandbox"
+          elif [ "${{ github.event.pull_request.base.ref }}" = "master" ]; then
+            echo "::set-output name=env_name::staging"
+          elif [ "${{ github.event.pull_request.base.ref }}" = "release" ]; then
+            echo "::set-output name=env_name::prod"
+          else
+            echo "Branch ${{ github.event.pull_request.base.ref }} is not configured for deployment"
+            exit 1
+          fi
+      - name: Use specified environment secrets from previous step
+        run: echo "Environment secrets set name ${{ steps.env_name.outputs.env_name }}"
+    outputs:
+      env_name: ${{ steps.env_name.outputs.env_name }}
+  helm-check:
+    needs: [ cancel-previous, env_name ]
+    environment:
+      name: ${{ needs.env_name.outputs.env_name }}
+    runs-on: ubuntu-latest
+    env:
+      HELM_EXPERIMENTAL_OCI: 1
+    steps:
+      - uses: actions/checkout@master
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.IAM_HELM_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.IAM_HELM_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.IAM_HELM_AWS_REGION }}
+      - name: Install helm
+        run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password \
+              --region us-west-2 | helm registry login \
+              --username AWS \
+              --password-stdin ${{ secrets.IAM_HELM_AWS_ECR_URL }}
+      - name: Update dependency
+        run: helm dependency update ./devops/${{ needs.env_name.outputs.env_name }}
+      - name: helm-check
+        uses: igabaydulin/helm-check-action@0.2.0
+        env:
+          CHART_LOCATION: ./devops/${{ needs.env_name.outputs.env_name }}
+          CHART_VALUES: ./devops/${{ needs.env_name.outputs.env_name }}/values.yaml
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf ./devops/${{ needs.env_name.outputs.env_name }}/charts
+          rm -rf ./devops/${{ needs.env_name.outputs.env_name }}/tmpcharts
+          docker logout ${{ steps.login-ecr.outputs.registry }}

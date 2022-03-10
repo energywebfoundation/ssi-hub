@@ -30,13 +30,15 @@
 
 ### constructor
 
-• **new ClaimController**(`claimService`, `assetsService`, `logger`, `nats`)
+• **new ClaimController**(`claimService`, `claimIssuanceService`, `didService`, `assetsService`, `logger`, `nats`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `claimService` | [`ClaimService`](modules_claim_claim_service.ClaimService.md) |
+| `claimService` | [`ClaimService`](modules_claim_services_claim_service.ClaimService.md) |
+| `claimIssuanceService` | [`ClaimIssuanceService`](modules_claim_services_claim_issuance_service.ClaimIssuanceService.md) |
+| `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `assetsService` | [`AssetsService`](modules_assets_assets_service.AssetsService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `nats` | [`NatsService`](modules_nats_nats_service.NatsService.md) |
@@ -236,7 +238,7 @@ ___
 
 ### postIssuerClaim
 
-▸ **postIssuerClaim**(`did`, `data`): `Promise`<`void`\>
+▸ **postIssuerClaim**(`did`, `data`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 #### Parameters
 
@@ -247,19 +249,18 @@ ___
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 ___
 
 ### postRequesterClaim
 
-▸ **postRequesterClaim**(`did`, `data`): `Promise`<`string`\>
+▸ **postRequesterClaim**(`data`): `Promise`<`string`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `did` | `string` |
 | `data` | [`IClaimRequest`](../interfaces/modules_claim_claim_types.IClaimRequest.md) |
 
 #### Returns

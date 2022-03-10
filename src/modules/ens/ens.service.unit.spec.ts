@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -16,6 +17,7 @@ import * as dotenv from 'dotenv';
 import { Logger } from '../logger/logger.service';
 import { StakingService } from '../staking/staking.service';
 import { utils } from 'ethers';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 const { namehash } = utils;
 
@@ -49,6 +51,10 @@ const MockLogger = {
   setContext: jest.fn(),
   info: jest.fn(),
   debug: jest.fn(),
+};
+
+const MockSentryTracing = {
+  startTransaction: jest.fn(),
 };
 
 export const ORG_MOCK_DATA: IOrganizationDefinition = {
@@ -130,6 +136,10 @@ describe('EnsService', () => {
           provide: Logger,
           useValue: MockLogger,
         },
+        {
+          provide: SentryTracingService,
+          useValue: MockSentryTracing,
+        },
       ],
     }).compile();
 
@@ -159,8 +169,8 @@ describe('EnsService', () => {
       await service.syncENS();
       expect(MockLogger.log).toHaveBeenCalledWith(
         expect.stringContaining(
-          `OrgDeleted: successfully removed deregistered org with namehash ${hash}`,
-        ),
+          `OrgDeleted: successfully removed deregistered org with namehash ${hash}`
+        )
       );
       expect(MockOrgService.removeByNameHash).toHaveBeenCalledWith(hash);
     }, 30000);
@@ -179,8 +189,8 @@ describe('EnsService', () => {
       await service.syncENS();
       expect(MockLogger.log).toHaveBeenCalledWith(
         expect.stringContaining(
-          `RoleDeleted: successfully removed deregistered role with namehash ${hash}`,
-        ),
+          `RoleDeleted: successfully removed deregistered role with namehash ${hash}`
+        )
       );
       expect(MockRoleService.removeByNameHash).toHaveBeenCalledWith(hash);
     }, 30000);
@@ -201,11 +211,11 @@ describe('EnsService', () => {
       await service.syncENS();
       expect(MockLogger.log).toHaveBeenCalledWith(
         expect.stringContaining(
-          `AppDeleted: successfully removed deregistered app with namehash ${hash}`,
-        ),
+          `AppDeleted: successfully removed deregistered app with namehash ${hash}`
+        )
       );
       expect(MockApplicationService.removeByNameHash).toHaveBeenCalledWith(
-        hash,
+        hash
       );
     }, 30000);
 
@@ -219,7 +229,7 @@ describe('EnsService', () => {
         .mockResolvedValueOnce('apps.daniel.iam.ewc');
       const serviceDomainReaderReadFn = jest.spyOn(
         (service as any).domainReader,
-        'read',
+        'read'
       );
       const serviceSyncNamespaceFn = jest.spyOn(service, 'syncNamespace');
 
@@ -237,7 +247,7 @@ describe('EnsService', () => {
 
       const serviceDomainReaderReadFn = jest.spyOn(
         (service as any).domainReader,
-        'read',
+        'read'
       );
       const serviceSyncNamespaceFn = jest.spyOn(service, 'syncNamespace');
 
@@ -255,7 +265,7 @@ describe('EnsService', () => {
       const namespacehash = namehash('onionapp.app.onion.iam.ewc');
       const mockAppServiceSpy = jest.spyOn(
         MockApplicationService,
-        'handleAppSyncWithEns',
+        'handleAppSyncWithEns'
       );
       await service.syncNamespace({
         data: APP_MOCK_DATA,
@@ -270,7 +280,7 @@ describe('EnsService', () => {
           namespace: 'onionapp.apps.onion.iam.ewc',
           owner: 'onion',
           namehash: namespacehash,
-        }),
+        })
       );
     }, 30000);
 
@@ -285,11 +295,11 @@ describe('EnsService', () => {
 
       const mockAppServiceSpy = jest.spyOn(
         MockApplicationService,
-        'handleAppSyncWithEns',
+        'handleAppSyncWithEns'
       );
       await service.syncNamespace(appSyncData);
       expect(MockLogger.debug).toHaveBeenCalledWith(
-        `Bailed: App with namespace:${appSyncData.namespace} does not have 'apps' subdomain`,
+        `Bailed: App with namespace:${appSyncData.namespace} does not have 'apps' subdomain`
       );
       expect(mockAppServiceSpy).not.toHaveBeenCalled();
     }, 30000);
@@ -298,7 +308,7 @@ describe('EnsService', () => {
       const namespacehash = namehash('test.roles.onion.apps.myorg.org.iam.ewc');
       const mockRoleServiceSpy = jest.spyOn(
         MockRoleService,
-        'handleRoleSyncWithEns',
+        'handleRoleSyncWithEns'
       );
       await service.syncNamespace({
         data: ROLE_MOCK_DATA,
@@ -313,7 +323,7 @@ describe('EnsService', () => {
           namespace: 'test.roles.onion.apps.myorg.org.iam.ewc',
           owner: 'carrot',
           namehash: namespacehash,
-        }),
+        })
       );
     }, 30000);
 
@@ -322,7 +332,7 @@ describe('EnsService', () => {
       ROLE_MOCK_DATA.roleType = 'org';
       const mockRoleServiceSpy = jest.spyOn(
         MockRoleService,
-        'handleRoleSyncWithEns',
+        'handleRoleSyncWithEns'
       );
       await service.syncNamespace({
         data: ROLE_MOCK_DATA,
@@ -337,7 +347,7 @@ describe('EnsService', () => {
           namespace: 'test.roles.onion.iam.ewc',
           owner: 'carrot',
           namehash: namespacehash,
-        }),
+        })
       );
     }, 30000);
 
@@ -346,7 +356,7 @@ describe('EnsService', () => {
       ROLE_MOCK_DATA.roleType = 'custom';
       const mockRoleServiceSpy = jest.spyOn(
         MockRoleService,
-        'handleRoleSyncWithEns',
+        'handleRoleSyncWithEns'
       );
       await service.syncNamespace({
         data: ROLE_MOCK_DATA,
@@ -355,7 +365,7 @@ describe('EnsService', () => {
         hash: namespacehash,
       });
       expect(MockLogger.debug).toHaveBeenCalledWith(
-        `Bailed: Roletype ${ROLE_MOCK_DATA.roleType} is not a valid roletype`,
+        `Bailed: Roletype ${ROLE_MOCK_DATA.roleType} is not a valid roletype`
       );
       expect(mockRoleServiceSpy).not.toHaveBeenCalled();
     }, 30000);
@@ -364,7 +374,7 @@ describe('EnsService', () => {
       const namespacehash = namehash('onion.iam.ewc');
       const mockOrgServiceSpy = jest.spyOn(
         MockOrgService,
-        'handleOrgSyncWithEns',
+        'handleOrgSyncWithEns'
       );
       await service.syncNamespace({
         data: ORG_MOCK_DATA,
@@ -378,7 +388,7 @@ describe('EnsService', () => {
           namespace: 'onion.iam.ewc',
           owner: 'onion',
           namehash: namespacehash,
-        }),
+        })
       );
     }, 30000);
   });

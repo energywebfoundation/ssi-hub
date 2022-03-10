@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: styfle/cancel-workflow-action@0.9.0
+      - uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ github.token }}
 
@@ -69,21 +69,27 @@ jobs:
           BUILD_ID: ${{needs.unique_id.outputs.unique_id}}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build --build-arg SENTRY_RELEASE="${{needs.unique_id.outputs.unique_id}}" --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} -t $ECR_REGISTRY/ics-api:$BUILD_ID -f docker/prod/Dockerfile .
+          docker build --build-arg SENTRY_COMMIT="$GITHUB_SHA" --build-arg SENTRY_RELEASE="${{needs.unique_id.outputs.unique_id}}" --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} -t $ECR_REGISTRY/ics-api:$BUILD_ID -f docker/prod/Dockerfile .
           docker push $ECR_REGISTRY/ics-api:$BUILD_ID
       - name: Logout of Amazon ECR
         if: always()
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
       - name: ArgoCD login
-        uses: clowdhaus/argo-cd-action/@v1.4.2
+        uses: clowdhaus/argo-cd-action/@v1.10.0
         id: argocd_login
         with:
           command: login ${{ secrets.ARGOCD_URL }}
           options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
       - name: ArgoCD overvrite values.yaml
-        uses: clowdhaus/argo-cd-action/@v1.4.2
+        uses: clowdhaus/argo-cd-action/@v1.10.0
         id: argocd_image_tag_overwrite
         with:
           command: app set iam-cache-server
           options: -p image.tag=${{needs.unique_id.outputs.unique_id}}
+      - name: ArgoCD overvrite HELM values.yaml
+        uses: clowdhaus/argo-cd-action/@v1.10.0
+        id: argocd_image_helm_tag_overwrite
+        with:
+          command: app set iam-cache-server
+          options: -p iam-cache-server-helm.image.tag=${{needs.unique_id.outputs.unique_id}}

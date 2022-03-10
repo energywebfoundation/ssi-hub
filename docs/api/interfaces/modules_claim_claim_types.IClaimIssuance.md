@@ -18,6 +18,8 @@
 
 - [acceptedBy](modules_claim_claim_types.IClaimIssuance.md#acceptedby)
 - [claimIssuer](modules_claim_claim_types.IClaimIssuance.md#claimissuer)
+- [claimType](modules_claim_claim_types.IClaimIssuance.md#claimtype)
+- [claimTypeVersion](modules_claim_claim_types.IClaimIssuance.md#claimtypeversion)
 - [id](modules_claim_claim_types.IClaimIssuance.md#id)
 - [issuedToken](modules_claim_claim_types.IClaimIssuance.md#issuedtoken)
 - [onChainProof](modules_claim_claim_types.IClaimIssuance.md#onchainproof)
@@ -33,11 +35,23 @@ ___
 
 ### claimIssuer
 
-• `Optional` **claimIssuer**: `string`[]
+• `Optional` **claimIssuer**: `string`
 
 #### Inherited from
 
 [IMessage](modules_claim_claim_types.IMessage.md).[claimIssuer](modules_claim_claim_types.IMessage.md#claimissuer)
+
+___
+
+### claimType
+
+• `Optional` **claimType**: `string`
+
+___
+
+### claimTypeVersion
+
+• `Optional` **claimTypeVersion**: `string`
 
 ___
 

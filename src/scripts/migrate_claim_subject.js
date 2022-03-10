@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { createConnection } = require('typeorm');
 const { JWT } = require('@ew-did-registry/jwt');
 const { Keys } = require('@ew-did-registry/keys');
@@ -5,7 +6,7 @@ const {
   RoleClaim,
 } = require('../../dist/modules/claim/entities/roleClaim.entity.js');
 
-(async function() {
+(async function () {
   const connection = await createConnection({
     // had to copy from orgmconfig because typeorm doesn't detect postgres driver
     type: 'postgres',

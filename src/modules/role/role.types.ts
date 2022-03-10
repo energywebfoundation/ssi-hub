@@ -1,4 +1,4 @@
-import { PreconditionType } from "@energyweb/iam-contracts";
+import { PreconditionType } from '@energyweb/iam-contracts';
 
 export interface Fields {
   fieldType: string;
@@ -22,4 +22,5 @@ export interface Issuer {
 export interface EnrolmentPrecondition {
   type: PreconditionType;
   conditions: string[];
-}[]
+}
+[];

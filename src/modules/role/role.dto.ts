@@ -149,13 +149,13 @@ export class RoleDTO implements BaseEnsEntity {
   }: Partial<RoleDTO>): Promise<RoleDTO> {
     // This way of creating DTO's was enforced by class-validator being not able to whitelist deeply nested objects
     const fieldsDTO = await Promise.all(
-      fields?.map(field => FieldsDTO.create(field)),
+      fields?.map((field) => FieldsDTO.create(field))
     );
     const issuerDTO = await IssuerDTO.create(issuer);
     const enrolmentPreconditionsDTO = await Promise.all(
-      enrolmentPreconditions?.map(precondition =>
-        PreconditionsDTO.create(precondition),
-      ),
+      enrolmentPreconditions?.map((precondition) =>
+        PreconditionsDTO.create(precondition)
+      )
     );
     const definitionDto = {
       ...(definition || {}),

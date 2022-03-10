@@ -40,19 +40,12 @@ export class Asset {
   @Field()
   updatedAt: string;
 
-  @OneToOne(
-    () => DIDDocumentEntity,
-    did => did.id,
-    { eager: true },
-  )
+  @OneToOne(() => DIDDocumentEntity, (did) => did.id, { eager: true })
   @JoinColumn()
   @Field(() => DIDDocumentEntity)
   document: DIDDocumentEntity;
 
-  @OneToMany(
-    () => AssetsHistory,
-    history => history.asset,
-  )
+  @OneToMany(() => AssetsHistory, (history) => history.asset)
   history: AssetsHistory[];
 }
 
@@ -60,7 +53,7 @@ export class Asset {
 @Entity()
 export class AssetsHistory implements AssetHistoryEvent {
   static create(
-    data: Omit<AssetsHistory, 'id'> & ({ asset: Asset } | { assetId: string }),
+    data: Omit<AssetsHistory, 'id'> & ({ asset: Asset } | { assetId: string })
   ) {
     const entity = new AssetsHistory();
     Object.assign(entity, data);
@@ -90,10 +83,7 @@ export class AssetsHistory implements AssetHistoryEvent {
   @Field()
   timestamp: string;
 
-  @ManyToOne(
-    () => Asset,
-    asset => asset.history,
-  )
+  @ManyToOne(() => Asset, (asset) => asset.history)
   @JoinColumn({ name: 'assetId' })
   asset?: Asset;
 

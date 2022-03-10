@@ -1,0 +1,10 @@
+dist/
+docs/
+node_modules
+build/
+*.md
+.eslintrc.js
+devops/
+docker/
+config/
+abi/

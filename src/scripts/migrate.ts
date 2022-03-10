@@ -13,10 +13,7 @@ export class DgraphService {
   }
 
   public async createInstance() {
-    const policy = Policy.handleAll()
-      .retry()
-      .attempts(5)
-      .delay(1000);
+    const policy = Policy.handleAll().retry().attempts(5).delay(1000);
     return await policy.execute(async () => {
       this._stub = new DgraphClientStub(process.env['DGRAPH_GRPC_HOST']);
 
@@ -83,7 +80,7 @@ const migrate = async () => {
       RoleClaim.create({
         claimTypeVersion: '1',
         ...rest,
-      }),
+      })
     );
     return acc;
   }, [] as RoleClaim[]);

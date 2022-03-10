@@ -7,7 +7,7 @@ export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
   private checkForChainID(): void {
     if (!this.CHAIN_NAME) {
       throw new Error(
-        'CHAIN_NAME environment variable is not set. Please set it to your chain ID',
+        'CHAIN_NAME environment variable is not set. Please set it to your chain ID'
       );
     }
   }
@@ -33,10 +33,10 @@ export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
 
     // assets_history table
     await queryRunner.query(
-      this.getUpUpdateSQL('assets_history', `"emittedBy"`),
+      this.getUpUpdateSQL('assets_history', `"emittedBy"`)
     );
     await queryRunner.query(
-      this.getUpUpdateSQL('assets_history', `"relatedTo"`),
+      this.getUpUpdateSQL('assets_history', `"relatedTo"`)
     );
     await queryRunner.query(this.getUpUpdateSQL('assets_history', `"assetId"`));
 
@@ -68,13 +68,13 @@ export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
 
     // assets_history table
     await queryRunner.query(
-      this.getDownUpdateSQL('assets_history', `"emittedBy"`),
+      this.getDownUpdateSQL('assets_history', `"emittedBy"`)
     );
     await queryRunner.query(
-      this.getDownUpdateSQL('assets_history', `"relatedTo"`),
+      this.getDownUpdateSQL('assets_history', `"relatedTo"`)
     );
     await queryRunner.query(
-      this.getDownUpdateSQL('assets_history', `"assetId"`),
+      this.getDownUpdateSQL('assets_history', `"assetId"`)
     );
 
     // did_contact table
@@ -84,14 +84,14 @@ export class AddChainIDToDIDs1638185287373 implements MigrationInterface {
     // did_document_entity table
     await queryRunner.query(this.getDownUpdateSQL('did_document_entity', 'id'));
     await queryRunner.query(
-      this.getDownUpdateSQL('did_document_entity', 'created_by'),
+      this.getDownUpdateSQL('did_document_entity', 'created_by')
     );
 
     // role_claim table
     await queryRunner.query(this.getDownUpdateSQL('role_claim', 'requester'));
     await queryRunner.query(this.getDownUpdateSQL('role_claim', 'subject'));
     await queryRunner.query(
-      this.getDownUpdateSQL('role_claim', `"acceptedBy"`),
+      this.getDownUpdateSQL('role_claim', `"acceptedBy"`)
     );
 
     await queryRunner.query("SET session_replication_role = 'origin';");

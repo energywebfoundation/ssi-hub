@@ -49,7 +49,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Provider` \| `Signer` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
 
 #### Inherited from
 
@@ -97,8 +97,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `DomainUpdated` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
-| `DomainUpdated(bytes32)` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], `Object`\> |
+| `DomainUpdated` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `node`: `string`  }\> |
+| `DomainUpdated(bytes32)` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `node`: `string`  }\> |
 
 #### Overrides
 

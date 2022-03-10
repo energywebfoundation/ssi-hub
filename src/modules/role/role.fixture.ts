@@ -8,7 +8,7 @@ export const roleFixture = async (
   repo: Repository<Role>,
   organization?: Organization,
   application?: Application,
-  count = 1,
+  count = 1
 ) => {
   const roles = [];
   for (let i = 0; i < count; i++) {

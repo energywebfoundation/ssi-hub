@@ -2,6 +2,11 @@
 
 [modules/sentry/sentry.service](../modules/modules_sentry_sentry_service.md).SentryService
 
+## Implements
+
+- `OnModuleDestroy`
+- `OnApplicationShutdown`
+
 ## Table of contents
 
 ### Constructors
@@ -13,6 +18,9 @@
 - [captureException](modules_sentry_sentry_service.SentryService.md#captureexception)
 - [captureMessage](modules_sentry_sentry_service.SentryService.md#capturemessage)
 - [getSentry](modules_sentry_sentry_service.SentryService.md#getsentry)
+- [init](modules_sentry_sentry_service.SentryService.md#init)
+- [onApplicationShutdown](modules_sentry_sentry_service.SentryService.md#onapplicationshutdown)
+- [onModuleDestroy](modules_sentry_sentry_service.SentryService.md#onmoduledestroy)
 
 ## Constructors
 
@@ -24,7 +32,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>\> |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 
 ## Methods
 
@@ -67,3 +75,47 @@ ___
 #### Returns
 
 `__module`
+
+___
+
+### init
+
+▸ **init**(`app`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `app` | `Application` |
+
+#### Returns
+
+`void`
+
+___
+
+### onApplicationShutdown
+
+▸ **onApplicationShutdown**(): `Promise`<`void`\>
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Implementation of
+
+OnApplicationShutdown.onApplicationShutdown
+
+___
+
+### onModuleDestroy
+
+▸ **onModuleDestroy**(): `Promise`<`void`\>
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Implementation of
+
+OnModuleDestroy.onModuleDestroy

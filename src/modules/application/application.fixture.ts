@@ -10,7 +10,7 @@ const chance = new Chance();
 export const applicationFixture = async (
   repo: Repository<Application>,
   organization: Organization,
-  count = 1,
+  count = 1
 ) => {
   const apps = [];
   for (let i = 0; i < count; i++) {
