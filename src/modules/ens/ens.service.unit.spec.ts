@@ -173,7 +173,7 @@ describe('EnsService', () => {
         )
       );
       expect(MockOrgService.removeByNameHash).toHaveBeenCalledWith(hash);
-    }, 30000);
+    });
 
     it('syncENS() it should attempt to delete a deregistered namespace using roleService', async () => {
       const name = 'myrole.daniel.iam.ewc';
@@ -193,7 +193,7 @@ describe('EnsService', () => {
         )
       );
       expect(MockRoleService.removeByNameHash).toHaveBeenCalledWith(hash);
-    }, 30000);
+    });
 
     it('syncENS() it should attempt to delete a deregistered namespace using appService', async () => {
       const name = 'myapplication.daniel.iam.ewc';
@@ -217,7 +217,7 @@ describe('EnsService', () => {
       expect(MockApplicationService.removeByNameHash).toHaveBeenCalledWith(
         hash
       );
-    }, 60000);
+    });
 
     it('syncENS() malfunctioned metadata should not be sync', async () => {
       jest.spyOn(service, 'syncNamespace');
@@ -257,7 +257,7 @@ describe('EnsService', () => {
       expect(serviceDomainReaderReadFn).toHaveBeenCalledTimes(0);
       expect(serviceSyncNamespaceFn).toHaveBeenCalledTimes(0);
       expect(MockLogger.error).toHaveBeenCalledTimes(0);
-    }, 60000);
+    });
   });
 
   describe('ENS Sync Validation', () => {
@@ -282,7 +282,7 @@ describe('EnsService', () => {
           namehash: namespacehash,
         })
       );
-    }, 30000);
+    });
 
     it('syncNamespace() Validate and reject APP Sync Data', async () => {
       const namespacehash = namehash('onionapp.app.onion.iam.ewc');
@@ -302,7 +302,7 @@ describe('EnsService', () => {
         `Bailed: App with namespace:${appSyncData.namespace} does not have 'apps' subdomain`
       );
       expect(mockAppServiceSpy).not.toHaveBeenCalled();
-    }, 30000);
+    });
 
     it('syncNamespace() Validate and accept ROLE Sync Data with roleType app', async () => {
       const namespacehash = namehash('test.roles.onion.apps.myorg.org.iam.ewc');
@@ -325,7 +325,7 @@ describe('EnsService', () => {
           namehash: namespacehash,
         })
       );
-    }, 30000);
+    });
 
     it('syncNamespace() Validate and accept ROLE Sync Data with roleType org', async () => {
       const namespacehash = namehash('test.roles.onion.iam.ewc');
@@ -349,7 +349,7 @@ describe('EnsService', () => {
           namehash: namespacehash,
         })
       );
-    }, 30000);
+    });
 
     it('syncNamespace() Validate and reject ROLE Sync Data with roleType custom', async () => {
       const namespacehash = namehash('test.roles.onionapp.apps.onion.iam.ewc');
@@ -368,7 +368,7 @@ describe('EnsService', () => {
         `Bailed: Roletype ${ROLE_MOCK_DATA.roleType} is not a valid roletype`
       );
       expect(mockRoleServiceSpy).not.toHaveBeenCalled();
-    }, 30000);
+    });
 
     it('syncNamespace() Validate ORG Sync Data', async () => {
       const namespacehash = namehash('onion.iam.ewc');
@@ -390,6 +390,6 @@ describe('EnsService', () => {
           namehash: namespacehash,
         })
       );
-    }, 30000);
+    });
   });
 });

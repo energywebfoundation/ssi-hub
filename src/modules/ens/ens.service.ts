@@ -123,7 +123,6 @@ export class EnsService implements OnModuleDestroy {
       this.InitEventListeners();
       this.syncENS();
     }
-    this.syncENS();
   }
 
   private async deleteNamespace(hash: string) {

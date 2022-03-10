@@ -40,7 +40,6 @@ const redisConfig = {
   password: process.env.REDIS_PASSWORD,
 };
 
-jest.setTimeout(60000);
 describe('ClaimsController', () => {
   const issuer = new Keys();
   const issuerDID = `did:ethr:volta:${issuer.getAddress()}`;

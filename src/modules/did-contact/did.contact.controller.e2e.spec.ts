@@ -113,7 +113,7 @@ describe('DIDContactController', () => {
           expect(res.body[0].id).toEqual(didContacts[0].id);
           expect(res.body[1].id).toEqual(didContacts[1].id);
         });
-    }, 30000);
+    });
 
     it('getDIDContacts(), return empty list of saved contacts', async () => {
       MockJWTAuthGuard.canActivate = MockEmptyDIDGuardImplementation;
@@ -124,7 +124,7 @@ describe('DIDContactController', () => {
         .expect(async (res) => {
           expect(res.body.length).toBe(0);
         });
-    }, 30000);
+    });
   });
 
   describe('createDIDContact()', () => {
@@ -150,7 +150,7 @@ describe('DIDContactController', () => {
           expect(savedContact.id).toEqual(res.body.id);
           expect(savedContact.did).toEqual(res.body.did);
         });
-    }, 30000);
+    });
 
     it('createDIDContact(), should throw an error when trying to create a didContact with an already existing did value', async () => {
       MockJWTAuthGuard.canActivate = MockGuardImplementation;
@@ -164,7 +164,7 @@ describe('DIDContactController', () => {
             `DID contact with did ${didContactToSave.did} already exists`
           );
         });
-    }, 30000);
+    });
 
     it('createDIDContact(), should throw an error when passed userDID could not be found in DID Document', async () => {
       MockJWTAuthGuard.canActivate = MockEmptyDIDGuardImplementation;
@@ -176,7 +176,7 @@ describe('DIDContactController', () => {
         .expect((res) => {
           expect(res.body.message).toContain(`cannot find DID document`);
         });
-    }, 30000);
+    });
   });
 
   describe('deleteDIDContact()', () => {
@@ -192,7 +192,7 @@ describe('DIDContactController', () => {
           const contacts = await didContactRepo.find();
           expect(contacts.length).toBe(1);
         });
-    }, 30000);
+    });
 
     it('deleteDIDContact(), should throw an error when trying to delete a didContact record that does not exist', async () => {
       MockJWTAuthGuard.canActivate = MockGuardImplementation;
@@ -206,7 +206,7 @@ describe('DIDContactController', () => {
             `DID contact with id ${id} was not found`
           );
         });
-    }, 30000);
+    });
 
     it('deleteDIDContact(), should throw an error when authenticated user tries to delete a didContact record not created by them', async () => {
       const id = didContacts[0].id;
@@ -220,6 +220,6 @@ describe('DIDContactController', () => {
             `DID contact with id ${id} was not found`
           );
         });
-    }, 30000);
+    });
   });
 });
