@@ -10,6 +10,7 @@ const chance = new Chance();
 export const applicationFixture = async (
   repo: Repository<Application>,
   organization: Organization,
+  owner:string,
   count = 1
 ) => {
   const apps = [];
@@ -27,7 +28,7 @@ export const applicationFixture = async (
     const app = Application.create({
       name,
       namespace: `testapp.apps.${name}.iam.ewc`,
-      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+      owner,
       definition,
       parentOrg: organization,
       namehash: namespaceHash,
