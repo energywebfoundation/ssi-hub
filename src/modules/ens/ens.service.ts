@@ -167,7 +167,7 @@ export class EnsService implements OnModuleDestroy {
     // Register event handler for owner change or namespace deletion
     this.ensRegistry.on('NewOwner', async (node, label, owner) => {
       await this.eventHandler({
-        hash: solidityKeccak256(['bytes', 'bytes'], [label, node]),
+        hash: solidityKeccak256(['bytes32', 'bytes32'], [node, label]),
         owner,
       });
     });
