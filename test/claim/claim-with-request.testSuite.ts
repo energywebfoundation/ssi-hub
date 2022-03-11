@@ -28,7 +28,8 @@ export const claimWithRequestTestSuite = () => {
       did: string;
       cookies: string[];
     },
-    expectStatusCode: number
+    expectStatusCode: number,
+    Origin?: string
   ) => {
     const claimId = v4();
     const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
@@ -36,6 +37,7 @@ export const claimWithRequestTestSuite = () => {
     await request(app.getHttpServer())
       .post(`/v1/claim/request`)
       .set('Cookie', requester.cookies)
+      .set(Origin ? { Origin } : {})
       .send({
         token: await jwt.sign(
           {
@@ -75,13 +77,15 @@ export const claimWithRequestTestSuite = () => {
       did: string;
       cookies: string[];
     },
-    expectStatusCode: number
+    expectStatusCode: number,
+    Origin?: string
   ) => {
     const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
     const jwt = new JWT(issKeys);
     return request(app.getHttpServer())
       .post(`/v1/claim/issue/${issuer.did}`)
       .set('Cookie', issuer.cookies)
+      .set(Origin ? { Origin } : {})
       .send({
         id: claimData.id,
         acceptedBy: issuer.did,
@@ -228,5 +232,55 @@ export const claimWithRequestTestSuite = () => {
       201
     );
     await issueClaimRequest(claimData, invalidIssuer, 403);
+  });
+
+  it(`should save request origin along with claim`, async () => {
+    const requestOrigin = 'http://localhost:3000';
+    const [requester] = await Promise.all([randomUser(requestOrigin)]);
+    await createRole(
+      {
+        name: 'test5',
+        roleName: 'role.roles.iam.ewc',
+        ownerAddr: requester.wallet.address,
+      },
+      roleService
+    );
+
+    const { id } = await createClaimRequest(
+      'test5.roles.e2e.iam.ewc',
+      requester,
+      requester,
+      201,
+      requestOrigin
+    );
+
+    const { body } = await request(app.getHttpServer())
+      .get(`/v1/claim/${id}`)
+      .set('Cookie', requester.cookies)
+      .set({ Origin: requestOrigin })
+      .expect(200);
+
+    expect(body.redirectUri).toBe(requestOrigin);
+  });
+
+  it(`should throw an error when request origin is invalid`, async () => {
+    const requestOrigin = 'invalid request origin';
+    const [requester] = await Promise.all([randomUser(requestOrigin)]);
+    await createRole(
+      {
+        name: 'test5',
+        roleName: 'role.roles.iam.ewc',
+        ownerAddr: requester.wallet.address,
+      },
+      roleService
+    );
+
+    await createClaimRequest(
+      'test5.roles.e2e.iam.ewc',
+      requester,
+      requester,
+      500,
+      requestOrigin
+    );
   });
 };

@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new ENSRegistry__factory**(`signer?`)
+• **new ENSRegistry__factory**(...`args`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `signer?` | `Signer` |
+| `...args` | [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] \| [signer: Signer] |
 
 #### Overrides
 

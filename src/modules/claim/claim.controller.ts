@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   UsePipes,
   ForbiddenException,
+  Headers,
 } from '@nestjs/common';
 import { DIDService } from '../did/did.service';
 import {
@@ -151,7 +152,10 @@ export class ClaimController {
     type: String,
     description: 'ID of newly added claim',
   })
-  public async postRequesterClaim(@Body() data: IClaimRequest) {
+  public async postRequesterClaim(
+    @Body() data: IClaimRequest,
+    @Headers('origin') originUrl?: string
+  ) {
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
     const { sub } = jwt.decode(token) as { sub: string };
@@ -173,7 +177,8 @@ export class ClaimController {
     await validateOrReject(claimDTO);
 
     const result = await this.claimService.handleClaimEnrolmentRequest(
-      claimData
+      claimData,
+      originUrl
     );
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);

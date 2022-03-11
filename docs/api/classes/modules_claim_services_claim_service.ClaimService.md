@@ -48,7 +48,7 @@
 
 ### create
 
-▸ **create**(`data`, `subject`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+▸ **create**(`data`, `subject`, `redirectUri`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 Saves claim to database
 
@@ -58,6 +58,7 @@ Saves claim to database
 | :------ | :------ | :------ |
 | `data` | [`ClaimRequestDTO`](modules_claim_claim_dto.ClaimRequestDTO.md) | Raw claim data |
 | `subject` | `string` | - |
+| `redirectUri` | `string` | - |
 
 #### Returns
 
@@ -246,7 +247,7 @@ ___
 
 ### handleClaimEnrolmentRequest
 
-▸ **handleClaimEnrolmentRequest**(`rq`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
+▸ **handleClaimEnrolmentRequest**(`rq`, `redirectUri`): `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
 
 Handles claim enrolment request saving and updates.
 
@@ -255,6 +256,7 @@ Handles claim enrolment request saving and updates.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `rq` | [`IClaimRequest`](../interfaces/modules_claim_claim_types.IClaimRequest.md) | IClaimRequest request |
+| `redirectUri` | `string` | redirect URI |
 
 #### Returns
 
