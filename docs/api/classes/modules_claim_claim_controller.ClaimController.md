@@ -255,13 +255,14 @@ ___
 
 ### postRequesterClaim
 
-▸ **postRequesterClaim**(`data`): `Promise`<`string`\>
+▸ **postRequesterClaim**(`data`, `originUrl?`): `Promise`<`string`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `data` | [`IClaimRequest`](../interfaces/modules_claim_claim_types.IClaimRequest.md) |
+| `originUrl?` | `string` |
 
 #### Returns
 

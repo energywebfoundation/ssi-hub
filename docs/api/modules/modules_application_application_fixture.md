@@ -10,7 +10,7 @@
 
 ### applicationFixture
 
-▸ `Const` **applicationFixture**(`repo`, `organization`, `count?`): `Promise`<`any`[]\>
+▸ `Const` **applicationFixture**(`repo`, `organization`, `owner`, `count?`): `Promise`<`any`[]\>
 
 #### Parameters
 
@@ -18,6 +18,7 @@
 | :------ | :------ | :------ |
 | `repo` | `Repository`<[`Application`](../classes/modules_application_application_entity.Application.md)\> | `undefined` |
 | `organization` | [`Organization`](../classes/modules_organization_organization_entity.Organization.md) | `undefined` |
+| `owner` | `string` | `undefined` |
 | `count` | `number` | `1` |
 
 #### Returns

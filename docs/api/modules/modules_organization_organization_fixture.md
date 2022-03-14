@@ -10,13 +10,14 @@
 
 ### organizationFixture
 
-▸ `Const` **organizationFixture**(`repo`, `count?`): `Promise`<`any`[]\>
+▸ `Const` **organizationFixture**(`repo`, `owner`, `count?`): `Promise`<`any`[]\>
 
 #### Parameters
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
 | `repo` | `Repository`<[`Organization`](../classes/modules_organization_organization_entity.Organization.md)\> | `undefined` |
+| `owner` | `string` | `undefined` |
 | `count` | `number` | `1` |
 
 #### Returns

@@ -60,9 +60,11 @@ export class ClaimService {
   /**
    * Handles claim enrolment request saving and updates.
    * @param rq IClaimRequest request
+   * @param redirectUri redirect URI
    */
   public async handleClaimEnrolmentRequest(
-    rq: IClaimRequest
+    rq: IClaimRequest,
+    redirectUri: string
   ): Promise<ClaimHandleResult> {
     const claim: RoleClaim = await this.getById(rq.id);
     if (claim || !rq.token)
@@ -84,7 +86,7 @@ export class ClaimService {
       userDID: dto.requester,
     });
 
-    await this.create(dto, sub);
+    await this.create(dto, sub, redirectUri);
 
     return ClaimHandleResult.Success();
   }
@@ -111,7 +113,8 @@ export class ClaimService {
    */
   public async create(
     data: ClaimRequestDTO,
-    subject: string
+    subject: string,
+    redirectUri: string
   ): Promise<RoleClaim> {
     const parent = data.claimType.split('.').slice(2).join('.');
 
@@ -119,6 +122,7 @@ export class ClaimService {
       id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
       namespace: parent,
+      redirectUri,
     });
     return this.roleClaimRepository.save(claim);
   }
