@@ -1,4 +1,4 @@
-# Class: EthereumDIDRegistry
+# Interface: EthereumDIDRegistry
 
 [ethers/EthereumDIDRegistry](../modules/ethers_EthereumDIDRegistry.md).EthereumDIDRegistry
 
@@ -10,18 +10,19 @@
 
 ## Table of contents
 
-### Constructors
-
-- [constructor](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#constructor)
-
 ### Properties
 
 - [callStatic](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#callstatic)
+- [contractName](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#contractname)
 - [estimateGas](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#estimategas)
 - [filters](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#filters)
 - [functions](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#functions)
 - [interface](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#interface)
+- [off](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#off)
+- [on](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#on)
+- [once](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#once)
 - [populateTransaction](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#populatetransaction)
+- [removeListener](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#removelistener)
 
 ### Methods
 
@@ -37,13 +38,9 @@
 - [identityOwner](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#identityowner)
 - [listeners](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#listeners)
 - [nonce](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#nonce)
-- [off](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#off)
-- [on](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#on)
-- [once](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#once)
 - [owners](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#owners)
 - [queryFilter](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#queryfilter)
 - [removeAllListeners](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#removealllisteners)
-- [removeListener](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#removelistener)
 - [revokeAttribute](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#revokeattribute)
 - [revokeAttributeSigned](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#revokeattributesigned)
 - [revokeDelegate](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#revokedelegate)
@@ -51,24 +48,6 @@
 - [setAttribute](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#setattribute)
 - [setAttributeSigned](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#setattributesigned)
 - [validDelegate](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md#validdelegate)
-
-## Constructors
-
-### constructor
-
-• **new EthereumDIDRegistry**(`addressOrName`, `contractInterface`, `signerOrProvider?`)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `addressOrName` | `string` |
-| `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Signer` \| `Provider` |
-
-#### Inherited from
-
-BaseContract.constructor
 
 ## Properties
 
@@ -100,6 +79,12 @@ BaseContract.constructor
 #### Overrides
 
 BaseContract.callStatic
+
+___
+
+### contractName
+
+• **contractName**: ``"EthereumDIDRegistry"``
 
 ___
 
@@ -142,12 +127,12 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `DIDAttributeChanged` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `identity`: `string` ; `name`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber` ; `value`: `string`  }\> |
-| `DIDAttributeChanged(address,bytes32,bytes,uint256,uint256)` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `identity`: `string` ; `name`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber` ; `value`: `string`  }\> |
-| `DIDDelegateChanged` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `delegate`: `string` ; `delegateType`: `string` ; `identity`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber`  }\> |
-| `DIDDelegateChanged(address,bytes32,address,uint256,uint256)` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`, `BigNumber`], { `delegate`: `string` ; `delegateType`: `string` ; `identity`: `string` ; `previousChange`: `BigNumber` ; `validTo`: `BigNumber`  }\> |
-| `DIDOwnerChanged` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `identity`: `string` ; `owner`: `string` ; `previousChange`: `BigNumber`  }\> |
-| `DIDOwnerChanged(address,address,uint256)` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `identity`: `string` ; `owner`: `string` ; `previousChange`: `BigNumber`  }\> |
+| `DIDAttributeChanged` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`DIDAttributeChangedEventFilter`](../modules/ethers_EthereumDIDRegistry.md#didattributechangedeventfilter) |
+| `DIDAttributeChanged(address,bytes32,bytes,uint256,uint256)` | (`identity?`: `string`, `name?`: ``null``, `value?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`DIDAttributeChangedEventFilter`](../modules/ethers_EthereumDIDRegistry.md#didattributechangedeventfilter) |
+| `DIDDelegateChanged` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`DIDDelegateChangedEventFilter`](../modules/ethers_EthereumDIDRegistry.md#diddelegatechangedeventfilter) |
+| `DIDDelegateChanged(address,bytes32,address,uint256,uint256)` | (`identity?`: `string`, `delegateType?`: ``null``, `delegate?`: ``null``, `validTo?`: ``null``, `previousChange?`: ``null``) => [`DIDDelegateChangedEventFilter`](../modules/ethers_EthereumDIDRegistry.md#diddelegatechangedeventfilter) |
+| `DIDOwnerChanged` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`DIDOwnerChangedEventFilter`](../modules/ethers_EthereumDIDRegistry.md#didownerchangedeventfilter) |
+| `DIDOwnerChanged(address,address,uint256)` | (`identity?`: `string`, `owner?`: ``null``, `previousChange?`: ``null``) => [`DIDOwnerChangedEventFilter`](../modules/ethers_EthereumDIDRegistry.md#didownerchangedeventfilter) |
 
 #### Overrides
 
@@ -188,11 +173,41 @@ ___
 
 ### interface
 
-• **interface**: [`EthereumDIDRegistryInterface`](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistryInterface.md)
+• **interface**: [`EthereumDIDRegistryInterface`](ethers_EthereumDIDRegistry.EthereumDIDRegistryInterface.md)
 
 #### Overrides
 
 BaseContract.interface
+
+___
+
+### off
+
+• **off**: [`OnEvent`](ethers_common.OnEvent.md)<[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
+
+#### Overrides
+
+BaseContract.off
+
+___
+
+### on
+
+• **on**: [`OnEvent`](ethers_common.OnEvent.md)<[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
+
+#### Overrides
+
+BaseContract.on
+
+___
+
+### once
+
+• **once**: [`OnEvent`](ethers_common.OnEvent.md)<[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
+
+#### Overrides
+
+BaseContract.once
 
 ___
 
@@ -224,6 +239,16 @@ ___
 #### Overrides
 
 BaseContract.populateTransaction
+
+___
+
+### removeListener
+
+• **removeListener**: [`OnEvent`](ethers_common.OnEvent.md)<[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
+
+#### Overrides
+
+BaseContract.removeListener
 
 ## Methods
 
@@ -418,24 +443,23 @@ ___
 
 ### listeners
 
-▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
+▸ **listeners**<`TEvent`\>(`eventFilter?`): [`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
+| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter?` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `eventFilter?` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
 
 #### Returns
 
-[`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
+[`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
 
 #### Overrides
 
@@ -476,141 +500,6 @@ ___
 
 ___
 
-### off
-
-▸ **off**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.off
-
-▸ **off**(`eventName`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.off
-
-___
-
-### on
-
-▸ **on**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.on
-
-▸ **on**(`eventName`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.on
-
-___
-
-### once
-
-▸ **once**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.once
-
-▸ **once**(`eventName`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.once
-
-___
-
 ### owners
 
 ▸ **owners**(`arg0`, `overrides?`): `Promise`<`string`\>
@@ -630,26 +519,25 @@ ___
 
 ### queryFilter
 
-▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
+▸ **queryFilter**<`TEvent`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<`TEvent`[]\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
+| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `event` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `event` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
 | `fromBlockOrBlockhash?` | `string` \| `number` |
 | `toBlock?` | `string` \| `number` |
 
 #### Returns
 
-`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
+`Promise`<`TEvent`[]\>
 
 #### Overrides
 
@@ -659,20 +547,19 @@ ___
 
 ### removeAllListeners
 
-▸ **removeAllListeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
+▸ **removeAllListeners**<`TEvent`\>(`eventFilter`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
+| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `eventFilter` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
 
 #### Returns
 
@@ -697,51 +584,6 @@ BaseContract.removeAllListeners
 #### Overrides
 
 BaseContract.removeAllListeners
-
-___
-
-### removeListener
-
-▸ **removeListener**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.removeListener
-
-▸ **removeListener**(`eventName`, `listener`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
-
-#### Overrides
-
-BaseContract.removeListener
 
 ___
 

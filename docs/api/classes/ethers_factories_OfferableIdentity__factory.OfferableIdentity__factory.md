@@ -60,7 +60,7 @@ ___
 
 ### attach
 
-▸ **attach**(`address`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+▸ **attach**(`address`): [`OfferableIdentity`](../interfaces/ethers_OfferableIdentity.OfferableIdentity.md)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ ___
 
 #### Returns
 
-[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+[`OfferableIdentity`](../interfaces/ethers_OfferableIdentity.OfferableIdentity.md)
 
 #### Overrides
 
@@ -100,7 +100,7 @@ ___
 
 ### deploy
 
-▸ **deploy**(`overrides?`): `Promise`<[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)\>
+▸ **deploy**(`overrides?`): `Promise`<[`OfferableIdentity`](../interfaces/ethers_OfferableIdentity.OfferableIdentity.md)\>
 
 #### Parameters
 
@@ -110,7 +110,7 @@ ___
 
 #### Returns
 
-`Promise`<[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)\>
+`Promise`<[`OfferableIdentity`](../interfaces/ethers_OfferableIdentity.OfferableIdentity.md)\>
 
 #### Overrides
 
@@ -140,7 +140,7 @@ ___
 
 ### connect
 
-▸ `Static` **connect**(`address`, `signerOrProvider`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+▸ `Static` **connect**(`address`, `signerOrProvider`): [`OfferableIdentity`](../interfaces/ethers_OfferableIdentity.OfferableIdentity.md)
 
 #### Parameters
 
@@ -151,7 +151,7 @@ ___
 
 #### Returns
 
-[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+[`OfferableIdentity`](../interfaces/ethers_OfferableIdentity.OfferableIdentity.md)
 
 ___
 

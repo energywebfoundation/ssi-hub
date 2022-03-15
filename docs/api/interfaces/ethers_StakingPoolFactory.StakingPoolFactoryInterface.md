@@ -12,6 +12,7 @@
 
 ### Properties
 
+- [contractName](ethers_StakingPoolFactory.StakingPoolFactoryInterface.md#contractname)
 - [events](ethers_StakingPoolFactory.StakingPoolFactoryInterface.md#events)
 - [functions](ethers_StakingPoolFactory.StakingPoolFactoryInterface.md#functions)
 
@@ -22,6 +23,12 @@
 - [getEvent](ethers_StakingPoolFactory.StakingPoolFactoryInterface.md#getevent)
 
 ## Properties
+
+### contractName
+
+• **contractName**: ``"StakingPoolFactory"``
+
+___
 
 ### events
 
@@ -35,7 +42,7 @@
 
 #### Overrides
 
-ethers.utils.Interface.events
+utils.Interface.events
 
 ___
 
@@ -55,7 +62,7 @@ ___
 
 #### Overrides
 
-ethers.utils.Interface.functions
+utils.Interface.functions
 
 ## Methods
 
@@ -76,7 +83,7 @@ ethers.utils.Interface.functions
 
 #### Overrides
 
-ethers.utils.Interface.decodeFunctionResult
+utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -93,7 +100,7 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-ethers.utils.Interface.decodeFunctionResult
+utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -110,7 +117,7 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-ethers.utils.Interface.decodeFunctionResult
+utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -127,7 +134,7 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-ethers.utils.Interface.decodeFunctionResult
+utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -144,7 +151,7 @@ ethers.utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-ethers.utils.Interface.decodeFunctionResult
+utils.Interface.decodeFunctionResult
 
 ___
 
@@ -165,7 +172,7 @@ ___
 
 #### Overrides
 
-ethers.utils.Interface.encodeFunctionData
+utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -182,7 +189,7 @@ ethers.utils.Interface.encodeFunctionData
 
 #### Overrides
 
-ethers.utils.Interface.encodeFunctionData
+utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -199,7 +206,7 @@ ethers.utils.Interface.encodeFunctionData
 
 #### Overrides
 
-ethers.utils.Interface.encodeFunctionData
+utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values?`): `string`
 
@@ -216,7 +223,7 @@ ethers.utils.Interface.encodeFunctionData
 
 #### Overrides
 
-ethers.utils.Interface.encodeFunctionData
+utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -233,7 +240,7 @@ ethers.utils.Interface.encodeFunctionData
 
 #### Overrides
 
-ethers.utils.Interface.encodeFunctionData
+utils.Interface.encodeFunctionData
 
 ___
 
@@ -253,4 +260,4 @@ ___
 
 #### Overrides
 
-ethers.utils.Interface.getEvent
+utils.Interface.getEvent

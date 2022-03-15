@@ -60,7 +60,7 @@ ___
 
 ### attach
 
-▸ **attach**(`address`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+▸ **attach**(`address`): [`IdentityManager`](../interfaces/ethers_IdentityManager.IdentityManager.md)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ ___
 
 #### Returns
 
-[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+[`IdentityManager`](../interfaces/ethers_IdentityManager.IdentityManager.md)
 
 #### Overrides
 
@@ -100,7 +100,7 @@ ___
 
 ### deploy
 
-▸ **deploy**(`overrides?`): `Promise`<[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)\>
+▸ **deploy**(`overrides?`): `Promise`<[`IdentityManager`](../interfaces/ethers_IdentityManager.IdentityManager.md)\>
 
 #### Parameters
 
@@ -110,7 +110,7 @@ ___
 
 #### Returns
 
-`Promise`<[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)\>
+`Promise`<[`IdentityManager`](../interfaces/ethers_IdentityManager.IdentityManager.md)\>
 
 #### Overrides
 
@@ -140,7 +140,7 @@ ___
 
 ### connect
 
-▸ `Static` **connect**(`address`, `signerOrProvider`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+▸ `Static` **connect**(`address`, `signerOrProvider`): [`IdentityManager`](../interfaces/ethers_IdentityManager.IdentityManager.md)
 
 #### Parameters
 
@@ -151,7 +151,7 @@ ___
 
 #### Returns
 
-[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+[`IdentityManager`](../interfaces/ethers_IdentityManager.IdentityManager.md)
 
 ___
 

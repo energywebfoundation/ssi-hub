@@ -60,7 +60,7 @@ ___
 
 ### attach
 
-▸ **attach**(`address`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
+▸ **attach**(`address`): [`PublicResolver`](../interfaces/ethers_PublicResolver.PublicResolver.md)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ ___
 
 #### Returns
 
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
+[`PublicResolver`](../interfaces/ethers_PublicResolver.PublicResolver.md)
 
 #### Overrides
 
@@ -100,7 +100,7 @@ ___
 
 ### deploy
 
-▸ **deploy**(`_ens`, `overrides?`): `Promise`<[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)\>
+▸ **deploy**(`_ens`, `overrides?`): `Promise`<[`PublicResolver`](../interfaces/ethers_PublicResolver.PublicResolver.md)\>
 
 #### Parameters
 
@@ -111,7 +111,7 @@ ___
 
 #### Returns
 
-`Promise`<[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)\>
+`Promise`<[`PublicResolver`](../interfaces/ethers_PublicResolver.PublicResolver.md)\>
 
 #### Overrides
 
@@ -142,7 +142,7 @@ ___
 
 ### connect
 
-▸ `Static` **connect**(`address`, `signerOrProvider`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
+▸ `Static` **connect**(`address`, `signerOrProvider`): [`PublicResolver`](../interfaces/ethers_PublicResolver.PublicResolver.md)
 
 #### Parameters
 
@@ -153,7 +153,7 @@ ___
 
 #### Returns
 
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
+[`PublicResolver`](../interfaces/ethers_PublicResolver.PublicResolver.md)
 
 ___
 
