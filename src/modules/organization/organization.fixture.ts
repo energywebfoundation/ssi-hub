@@ -8,12 +8,13 @@ const chance = new Chance();
 
 export const organizationFixture = async (
   repo: Repository<Organization>,
+  owner:string,
   count = 1
 ) => {
   const parentOrg = Organization.create({
     name: 'parentOrg',
     namespace: `parentOrg.iam.ewc`,
-    owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+    owner,
     definition: {
       orgName: 'parentOrg.iam.ewc',
       description: chance.paragraph(),
@@ -38,7 +39,7 @@ export const organizationFixture = async (
     const org = Organization.create({
       name,
       namespace,
-      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+      owner,
       definition,
       parentOrg,
       namehash: namespacehash,

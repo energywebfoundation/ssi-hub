@@ -60,6 +60,7 @@ export interface IRoleClaim {
   isRejected?: boolean;
   rejectionReason?: string;
   namespace: string;
+  redirectUri?: string;
 }
 
 export interface IClaim {

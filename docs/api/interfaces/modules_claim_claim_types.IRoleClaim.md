@@ -19,6 +19,7 @@
 - [issuedToken](modules_claim_claim_types.IRoleClaim.md#issuedtoken)
 - [namespace](modules_claim_claim_types.IRoleClaim.md#namespace)
 - [onChainProof](modules_claim_claim_types.IRoleClaim.md#onchainproof)
+- [redirectUri](modules_claim_claim_types.IRoleClaim.md#redirecturi)
 - [registrationTypes](modules_claim_claim_types.IRoleClaim.md#registrationtypes)
 - [rejectionReason](modules_claim_claim_types.IRoleClaim.md#rejectionreason)
 - [requester](modules_claim_claim_types.IRoleClaim.md#requester)
@@ -78,6 +79,12 @@ ___
 ### onChainProof
 
 • `Optional` **onChainProof**: `string`
+
+___
+
+### redirectUri
+
+• `Optional` **redirectUri**: `string`
 
 ___
 
