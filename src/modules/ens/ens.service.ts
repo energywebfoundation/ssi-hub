@@ -27,6 +27,7 @@ import { Logger } from '../logger/logger.service';
 import { Provider } from '../../common/provider';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
+const { solidityKeccak256 } = utils;
 export const emptyAddress = '0x'.padEnd(42, '0');
 
 @Injectable()
@@ -164,8 +165,12 @@ export class EnsService implements OnModuleDestroy {
     });
 
     // Register event handler for owner change or namespace deletion
-    this.ensRegistry.on('NewOwner', async (node, _, owner) => {
-      await this.eventHandler({ hash: node, owner });
+    this.ensRegistry.on('NewOwner', async (node, label, owner) => {
+      await this.eventHandler({
+        // https://docs.ens.domains/contract-api-reference/name-processing#algorithm
+        hash: solidityKeccak256(['bytes32', 'bytes32'], [node, label]),
+        owner,
+      });
     });
 
     // Register event handler for new Role/App/Org
@@ -197,9 +202,8 @@ export class EnsService implements OnModuleDestroy {
     owner?: string;
   }) {
     let name: string;
+    const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
     try {
-      const namespaceOwner = owner ? owner : await this.ensRegistry.owner(hash);
-
       if (namespaceOwner === emptyAddress) {
         //prevent resync and remove namespace from database
         return this.deleteNamespace(hash);
@@ -229,7 +233,7 @@ export class EnsService implements OnModuleDestroy {
       });
     } catch (err) {
       this.logger.error(
-        `Error syncing namespace ${name}, owner ${owner}, ${err}`
+        `Error syncing namespace ${name}, owner ${namespaceOwner}, ${err}`
       );
       return;
     }

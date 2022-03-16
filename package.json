@@ -1,6 +1,6 @@
 {
   "name": "iam-cache-server",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "",
   "author": "",
   "private": true,
@@ -177,7 +177,10 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ]
   },
   "husky": {
     "hooks": {

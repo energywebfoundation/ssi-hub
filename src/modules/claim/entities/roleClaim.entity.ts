@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
-import { IsArray } from 'class-validator';
+import { IsArray, isURL } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
@@ -12,6 +12,11 @@ export class RoleClaim implements IRoleClaim {
   static create(data: Partial<RoleClaim>): RoleClaim {
     const entity = new RoleClaim();
     const jwt = new JWT(new Keys());
+
+    if (data?.redirectUri && !isURL(data.redirectUri, { require_tld: false })) {
+      throw new Error('Invalid URL');
+    }
+
     if (!data.subject && data.token) {
       data.subject = (jwt.decode(data.token) as { sub: string }).sub;
     }
@@ -83,6 +88,10 @@ export class RoleClaim implements IRoleClaim {
   @Field()
   @Column()
   namespace: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  redirectUri?: string;
 }
 
 export class DIDsQuery {

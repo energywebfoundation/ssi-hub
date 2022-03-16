@@ -126,5 +126,5 @@ describe('TokenService', () => {
       return null;
     });
     request(app.getHttpServer()).get(`test`).expect(200);
-  }, 30000);
+  });
 });

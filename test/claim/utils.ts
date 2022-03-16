@@ -45,7 +45,7 @@ export const createRole = async (
   );
 };
 
-export const randomUser = async () => {
+export const randomUser = async (Origin?: string) => {
   let wallet = Wallet.createRandom();
   wallet = wallet.connect(provider);
 
@@ -55,6 +55,7 @@ export const randomUser = async () => {
     .send({
       identityToken,
     })
+    .set(Origin ? { Origin } : {})
     .expect(201);
 
   return {

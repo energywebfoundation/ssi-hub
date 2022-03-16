@@ -6,6 +6,7 @@ import { Role } from './role.entity';
 
 export const roleFixture = async (
   repo: Repository<Role>,
+  owner: string,
   organization?: Organization,
   application?: Application,
   count = 1
@@ -22,7 +23,7 @@ export const roleFixture = async (
       fields: [],
       issuer: {
         issuerType: 'Role',
-        did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
+        did: [owner],
         roleName: 'testRole',
       },
       roleName: name,
@@ -32,7 +33,7 @@ export const roleFixture = async (
     const role = Role.create({
       name,
       namespace: `${name}.roles.testapp.apps.testApp.iam.ewc`,
-      owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+      owner,
       definition,
       parentOrg: organization || null,
       parentApp: application || null,

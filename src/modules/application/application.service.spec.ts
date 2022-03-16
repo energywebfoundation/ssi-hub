@@ -17,6 +17,7 @@ import { applicationFixture } from './application.fixture';
 import { namehash } from '../../ethers/utils';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { MockJWTAuthGuard } from '../../common/test.utils';
+import { Wallet } from 'ethers';
 
 const chance = new Chance();
 
@@ -40,6 +41,7 @@ describe('ApplicationService', () => {
   let organizations: Organization[];
   let applications: Application[];
   let queryRunner: QueryRunner;
+  let owner: string;
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -74,8 +76,9 @@ describe('ApplicationService', () => {
       getRepositoryToken(Organization)
     );
 
-    organizations = await organizationFixture(orgRepo);
-    applications = await applicationFixture(repo, organizations[0], 2);
+    owner = Wallet.createRandom().address;
+    organizations = await organizationFixture(orgRepo, owner);
+    applications = await applicationFixture(repo, organizations[0], owner, 2);
 
     service = module.get<ApplicationService>(ApplicationService);
   });
@@ -121,7 +124,7 @@ describe('ApplicationService', () => {
       const app = await service.create({
         name,
         namespace,
-        owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+        owner,
         definition: {
           appName: name,
           description: chance.paragraph(),

@@ -4,6 +4,7 @@ import {
   TypeOrmModule,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
+import { utils, Wallet } from 'ethers';
 import { Application } from '../application/application.entity';
 import * as TestDbCOnfig from '../../../test/config';
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
@@ -18,8 +19,8 @@ import { applicationFixture } from '../application/application.fixture';
 import { roleFixture } from './role.fixture';
 import { RoleService } from './role.service';
 import { DIDService } from '../did/did.service';
-import { namehash } from '../../ethers/utils';
 
+const { namehash } = utils;
 const chance = new Chance();
 
 const MockLogger = {
@@ -52,6 +53,7 @@ describe('RoleService', () => {
   let applications: Application[];
   let roles: Role[];
   let queryRunner: QueryRunner;
+  let owner: string;
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -89,9 +91,21 @@ describe('RoleService', () => {
       getRepositoryToken(Organization)
     );
 
-    organizations = await organizationFixture(orgRepo);
-    applications = await applicationFixture(appRepo, organizations[0], 2);
-    roles = await roleFixture(repo, organizations[0], applications[0], 2);
+    owner = Wallet.createRandom().address;
+    organizations = await organizationFixture(orgRepo, owner);
+    applications = await applicationFixture(
+      appRepo,
+      organizations[0],
+      owner,
+      2
+    );
+    roles = await roleFixture(
+      repo,
+      owner,
+      organizations[0],
+      applications[0],
+      2
+    );
     service = module.get<RoleService>(RoleService);
   });
 
@@ -120,7 +134,7 @@ describe('RoleService', () => {
           fields: [],
           issuer: {
             issuerType: 'Role',
-            did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
+            did: [owner],
             roleName: 'testRole',
           },
           roleName: name,
@@ -148,7 +162,7 @@ describe('RoleService', () => {
       const role = await service.create({
         name,
         namespace,
-        owner: '0x7dD4cF86e6f143300C4550220c4eD66690a655fc',
+        owner,
         definition: {
           version: 1.0,
           enrolmentPreconditions: [],
@@ -156,7 +170,7 @@ describe('RoleService', () => {
           fields: [],
           issuer: {
             issuerType: 'Role',
-            did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
+            did: [owner],
             roleName: 'testRole',
           },
           roleName: name,
@@ -192,7 +206,7 @@ describe('RoleService', () => {
           fields: [],
           issuer: {
             issuerType: 'Role',
-            did: ['0x7dD4cF86e6f143300C4550220c4eD66690a655fc'],
+            did: [owner],
             roleName: 'testRole',
           },
           roleName: name,

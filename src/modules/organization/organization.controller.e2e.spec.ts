@@ -34,6 +34,7 @@ describe('OrganizationController', () => {
   let testHttpServer: request.SuperTest<request.Test>;
   let app: INestApplication;
   let organizations: Organization[];
+  let owner: string;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -70,7 +71,8 @@ describe('OrganizationController', () => {
       getRepositoryToken(Application)
     );
     roleRepo = module.get<Repository<Role>>(getRepositoryToken(Role));
-    organizations = await organizationFixture(orgRepo, 2);
+    owner = Wallet.createRandom().address;
+    organizations = await organizationFixture(orgRepo, owner, 2);
     testHttpServer = request(app.getHttpServer());
   });
 

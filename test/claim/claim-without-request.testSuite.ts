@@ -98,18 +98,17 @@ export const claimWithoutRequestTestSuite = () => {
 
   beforeAll(async () => {
     roleService = app.get(RoleService);
-  });
-
-  beforeEach(async () => {
-    const manager = app.get(EntityManager);
-    const dbConnection = app.get(Connection);
-
     claimService = app.get(ClaimService);
 
+    const manager = app.get(EntityManager);
+    const dbConnection = app.get(Connection);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     queryRunner = manager.queryRunner =
       dbConnection.createQueryRunner('master');
+  });
+
+  beforeEach(async () => {
     await queryRunner.startTransaction();
   });
 
