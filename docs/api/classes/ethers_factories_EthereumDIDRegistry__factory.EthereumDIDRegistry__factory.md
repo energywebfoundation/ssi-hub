@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new EthereumDIDRegistry__factory**(`signer?`)
+• **new EthereumDIDRegistry__factory**(...`args`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `signer?` | `Signer` |
+| `...args` | [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] \| [signer: Signer] |
 
 #### Overrides
 
@@ -60,7 +60,7 @@ ___
 
 ### attach
 
-▸ **attach**(`address`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
+▸ **attach**(`address`): [`EthereumDIDRegistry`](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ ___
 
 #### Returns
 
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
+[`EthereumDIDRegistry`](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
 
 #### Overrides
 
@@ -100,7 +100,7 @@ ___
 
 ### deploy
 
-▸ **deploy**(`overrides?`): `Promise`<[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
+▸ **deploy**(`overrides?`): `Promise`<[`EthereumDIDRegistry`](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
 
 #### Parameters
 
@@ -110,7 +110,7 @@ ___
 
 #### Returns
 
-`Promise`<[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
+`Promise`<[`EthereumDIDRegistry`](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)\>
 
 #### Overrides
 
@@ -140,7 +140,7 @@ ___
 
 ### connect
 
-▸ `Static` **connect**(`address`, `signerOrProvider`): [`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
+▸ `Static` **connect**(`address`, `signerOrProvider`): [`EthereumDIDRegistry`](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
 
 #### Parameters
 
@@ -151,7 +151,7 @@ ___
 
 #### Returns
 
-[`EthereumDIDRegistry`](ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
+[`EthereumDIDRegistry`](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
 
 ___
 

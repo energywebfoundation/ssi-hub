@@ -1,4 +1,4 @@
-# Interface: TypedEvent<EventArgs\>
+# Interface: TypedEvent<TArgsArray, TArgsObject\>
 
 [ethers/common](../modules/ethers_common.md).TypedEvent
 
@@ -6,7 +6,8 @@
 
 | Name | Type |
 | :------ | :------ |
-| `EventArgs` | extends `Result` |
+| `TArgsArray` | extends `any`[] = `any` |
+| `TArgsObject` | `any` |
 
 ## Hierarchy
 
@@ -24,7 +25,7 @@
 
 ### args
 
-• **args**: `EventArgs`
+• **args**: `TArgsArray` & `TArgsObject`
 
 #### Overrides
 

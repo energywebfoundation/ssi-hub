@@ -98,7 +98,7 @@
     "nats": "^1.4.12",
     "parse-duration": "^1.0.2",
     "passport": "^0.5.2",
-    "passport-did-auth": "^1.3.0-alpha.4",
+    "passport-did-auth": "^2.0.0-alpha.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.5.1",
     "redact-pii": "^3.2.3",

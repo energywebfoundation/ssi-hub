@@ -1,4 +1,4 @@
-# Class: PublicResolver
+# Interface: PublicResolver
 
 [ethers/PublicResolver](../modules/ethers_PublicResolver.md).PublicResolver
 
@@ -10,18 +10,19 @@
 
 ## Table of contents
 
-### Constructors
-
-- [constructor](ethers_PublicResolver.PublicResolver.md#constructor)
-
 ### Properties
 
 - [callStatic](ethers_PublicResolver.PublicResolver.md#callstatic)
+- [contractName](ethers_PublicResolver.PublicResolver.md#contractname)
 - [estimateGas](ethers_PublicResolver.PublicResolver.md#estimategas)
 - [filters](ethers_PublicResolver.PublicResolver.md#filters)
 - [functions](ethers_PublicResolver.PublicResolver.md#functions)
 - [interface](ethers_PublicResolver.PublicResolver.md#interface)
+- [off](ethers_PublicResolver.PublicResolver.md#off)
+- [on](ethers_PublicResolver.PublicResolver.md#on)
+- [once](ethers_PublicResolver.PublicResolver.md#once)
 - [populateTransaction](ethers_PublicResolver.PublicResolver.md#populatetransaction)
+- [removeListener](ethers_PublicResolver.PublicResolver.md#removelistener)
 
 ### Methods
 
@@ -40,13 +41,9 @@
 - [listeners](ethers_PublicResolver.PublicResolver.md#listeners)
 - [multicall](ethers_PublicResolver.PublicResolver.md#multicall)
 - [name](ethers_PublicResolver.PublicResolver.md#name)
-- [off](ethers_PublicResolver.PublicResolver.md#off)
-- [on](ethers_PublicResolver.PublicResolver.md#on)
-- [once](ethers_PublicResolver.PublicResolver.md#once)
 - [pubkey](ethers_PublicResolver.PublicResolver.md#pubkey)
 - [queryFilter](ethers_PublicResolver.PublicResolver.md#queryfilter)
 - [removeAllListeners](ethers_PublicResolver.PublicResolver.md#removealllisteners)
-- [removeListener](ethers_PublicResolver.PublicResolver.md#removelistener)
 - [setABI](ethers_PublicResolver.PublicResolver.md#setabi)
 - [setAddr(bytes32,address)](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,address))
 - [setAddr(bytes32,uint256,bytes)](ethers_PublicResolver.PublicResolver.md#setaddr(bytes32,uint256,bytes))
@@ -59,24 +56,6 @@
 - [setText](ethers_PublicResolver.PublicResolver.md#settext)
 - [supportsInterface](ethers_PublicResolver.PublicResolver.md#supportsinterface)
 - [text](ethers_PublicResolver.PublicResolver.md#text)
-
-## Constructors
-
-### constructor
-
-• **new PublicResolver**(`addressOrName`, `contractInterface`, `signerOrProvider?`)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `addressOrName` | `string` |
-| `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Signer` \| `Provider` |
-
-#### Inherited from
-
-BaseContract.constructor
 
 ## Properties
 
@@ -116,6 +95,12 @@ BaseContract.constructor
 #### Overrides
 
 BaseContract.callStatic
+
+___
+
+### contractName
+
+• **contractName**: ``"PublicResolver"``
 
 ___
 
@@ -166,30 +151,30 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `ABIChanged` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `contentType`: `BigNumber` ; `node`: `string`  }\> |
-| `ABIChanged(bytes32,uint256)` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `contentType`: `BigNumber` ; `node`: `string`  }\> |
-| `AddrChanged` | (`node?`: `BytesLike`, `a?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `a`: `string` ; `node`: `string`  }\> |
-| `AddrChanged(bytes32,address)` | (`node?`: `BytesLike`, `a?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `a`: `string` ; `node`: `string`  }\> |
-| `AddressChanged` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`, `string`], { `coinType`: `BigNumber` ; `newAddress`: `string` ; `node`: `string`  }\> |
-| `AddressChanged(bytes32,uint256,bytes)` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`, `string`], { `coinType`: `BigNumber` ; `newAddress`: `string` ; `node`: `string`  }\> |
-| `AuthorisationChanged` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `boolean`], { `isAuthorised`: `boolean` ; `node`: `string` ; `owner`: `string` ; `target`: `string`  }\> |
-| `AuthorisationChanged(bytes32,address,address,bool)` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `boolean`], { `isAuthorised`: `boolean` ; `node`: `string` ; `owner`: `string` ; `target`: `string`  }\> |
-| `ContenthashChanged` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `hash`: `string` ; `node`: `string`  }\> |
-| `ContenthashChanged(bytes32,bytes)` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `hash`: `string` ; `node`: `string`  }\> |
-| `DNSRecordChanged` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`, `string`], { `name`: `string` ; `node`: `string` ; `record`: `string` ; `resource`: `number`  }\> |
-| `DNSRecordChanged(bytes32,bytes,uint16,bytes)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`, `string`], { `name`: `string` ; `node`: `string` ; `record`: `string` ; `resource`: `number`  }\> |
-| `DNSRecordDeleted` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`], { `name`: `string` ; `node`: `string` ; `resource`: `number`  }\> |
-| `DNSRecordDeleted(bytes32,bytes,uint16)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `number`], { `name`: `string` ; `node`: `string` ; `resource`: `number`  }\> |
-| `DNSZoneCleared` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `node`: `string`  }\> |
-| `DNSZoneCleared(bytes32)` | (`node?`: `BytesLike`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `node`: `string`  }\> |
-| `InterfaceChanged` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `implementer`: `string` ; `interfaceID`: `string` ; `node`: `string`  }\> |
-| `InterfaceChanged(bytes32,bytes4,address)` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `implementer`: `string` ; `interfaceID`: `string` ; `node`: `string`  }\> |
-| `NameChanged` | (`node?`: `BytesLike`, `name?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `name`: `string` ; `node`: `string`  }\> |
-| `NameChanged(bytes32,string)` | (`node?`: `BytesLike`, `name?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `name`: `string` ; `node`: `string`  }\> |
-| `PubkeyChanged` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `node`: `string` ; `x`: `string` ; `y`: `string`  }\> |
-| `PubkeyChanged(bytes32,bytes32,bytes32)` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `node`: `string` ; `x`: `string` ; `y`: `string`  }\> |
-| `TextChanged` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `indexedKey`: `string` ; `key`: `string` ; `node`: `string`  }\> |
-| `TextChanged(bytes32,string,string)` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `indexedKey`: `string` ; `key`: `string` ; `node`: `string`  }\> |
+| `ABIChanged` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`ABIChangedEventFilter`](../modules/ethers_PublicResolver.md#abichangedeventfilter) |
+| `ABIChanged(bytes32,uint256)` | (`node?`: `BytesLike`, `contentType?`: `BigNumberish`) => [`ABIChangedEventFilter`](../modules/ethers_PublicResolver.md#abichangedeventfilter) |
+| `AddrChanged` | (`node?`: `BytesLike`, `a?`: ``null``) => [`AddrChangedEventFilter`](../modules/ethers_PublicResolver.md#addrchangedeventfilter) |
+| `AddrChanged(bytes32,address)` | (`node?`: `BytesLike`, `a?`: ``null``) => [`AddrChangedEventFilter`](../modules/ethers_PublicResolver.md#addrchangedeventfilter) |
+| `AddressChanged` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`AddressChangedEventFilter`](../modules/ethers_PublicResolver.md#addresschangedeventfilter) |
+| `AddressChanged(bytes32,uint256,bytes)` | (`node?`: `BytesLike`, `coinType?`: ``null``, `newAddress?`: ``null``) => [`AddressChangedEventFilter`](../modules/ethers_PublicResolver.md#addresschangedeventfilter) |
+| `AuthorisationChanged` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`AuthorisationChangedEventFilter`](../modules/ethers_PublicResolver.md#authorisationchangedeventfilter) |
+| `AuthorisationChanged(bytes32,address,address,bool)` | (`node?`: `BytesLike`, `owner?`: `string`, `target?`: `string`, `isAuthorised?`: ``null``) => [`AuthorisationChangedEventFilter`](../modules/ethers_PublicResolver.md#authorisationchangedeventfilter) |
+| `ContenthashChanged` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`ContenthashChangedEventFilter`](../modules/ethers_PublicResolver.md#contenthashchangedeventfilter) |
+| `ContenthashChanged(bytes32,bytes)` | (`node?`: `BytesLike`, `hash?`: ``null``) => [`ContenthashChangedEventFilter`](../modules/ethers_PublicResolver.md#contenthashchangedeventfilter) |
+| `DNSRecordChanged` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`DNSRecordChangedEventFilter`](../modules/ethers_PublicResolver.md#dnsrecordchangedeventfilter) |
+| `DNSRecordChanged(bytes32,bytes,uint16,bytes)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``, `record?`: ``null``) => [`DNSRecordChangedEventFilter`](../modules/ethers_PublicResolver.md#dnsrecordchangedeventfilter) |
+| `DNSRecordDeleted` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`DNSRecordDeletedEventFilter`](../modules/ethers_PublicResolver.md#dnsrecorddeletedeventfilter) |
+| `DNSRecordDeleted(bytes32,bytes,uint16)` | (`node?`: `BytesLike`, `name?`: ``null``, `resource?`: ``null``) => [`DNSRecordDeletedEventFilter`](../modules/ethers_PublicResolver.md#dnsrecorddeletedeventfilter) |
+| `DNSZoneCleared` | (`node?`: `BytesLike`) => [`DNSZoneClearedEventFilter`](../modules/ethers_PublicResolver.md#dnszoneclearedeventfilter) |
+| `DNSZoneCleared(bytes32)` | (`node?`: `BytesLike`) => [`DNSZoneClearedEventFilter`](../modules/ethers_PublicResolver.md#dnszoneclearedeventfilter) |
+| `InterfaceChanged` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`InterfaceChangedEventFilter`](../modules/ethers_PublicResolver.md#interfacechangedeventfilter) |
+| `InterfaceChanged(bytes32,bytes4,address)` | (`node?`: `BytesLike`, `interfaceID?`: `BytesLike`, `implementer?`: ``null``) => [`InterfaceChangedEventFilter`](../modules/ethers_PublicResolver.md#interfacechangedeventfilter) |
+| `NameChanged` | (`node?`: `BytesLike`, `name?`: ``null``) => [`NameChangedEventFilter`](../modules/ethers_PublicResolver.md#namechangedeventfilter) |
+| `NameChanged(bytes32,string)` | (`node?`: `BytesLike`, `name?`: ``null``) => [`NameChangedEventFilter`](../modules/ethers_PublicResolver.md#namechangedeventfilter) |
+| `PubkeyChanged` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`PubkeyChangedEventFilter`](../modules/ethers_PublicResolver.md#pubkeychangedeventfilter) |
+| `PubkeyChanged(bytes32,bytes32,bytes32)` | (`node?`: `BytesLike`, `x?`: ``null``, `y?`: ``null``) => [`PubkeyChangedEventFilter`](../modules/ethers_PublicResolver.md#pubkeychangedeventfilter) |
+| `TextChanged` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TextChangedEventFilter`](../modules/ethers_PublicResolver.md#textchangedeventfilter) |
+| `TextChanged(bytes32,string,string)` | (`node?`: `BytesLike`, `indexedKey?`: `string`, `key?`: ``null``) => [`TextChangedEventFilter`](../modules/ethers_PublicResolver.md#textchangedeventfilter) |
 
 #### Overrides
 
@@ -238,11 +223,41 @@ ___
 
 ### interface
 
-• **interface**: [`PublicResolverInterface`](../interfaces/ethers_PublicResolver.PublicResolverInterface.md)
+• **interface**: [`PublicResolverInterface`](ethers_PublicResolver.PublicResolverInterface.md)
 
 #### Overrides
 
 BaseContract.interface
+
+___
+
+### off
+
+• **off**: [`OnEvent`](ethers_common.OnEvent.md)<[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)\>
+
+#### Overrides
+
+BaseContract.off
+
+___
+
+### on
+
+• **on**: [`OnEvent`](ethers_common.OnEvent.md)<[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)\>
+
+#### Overrides
+
+BaseContract.on
+
+___
+
+### once
+
+• **once**: [`OnEvent`](ethers_common.OnEvent.md)<[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)\>
+
+#### Overrides
+
+BaseContract.once
 
 ___
 
@@ -282,6 +297,16 @@ ___
 #### Overrides
 
 BaseContract.populateTransaction
+
+___
+
+### removeListener
+
+• **removeListener**: [`OnEvent`](ethers_common.OnEvent.md)<[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)\>
+
+#### Overrides
+
+BaseContract.removeListener
 
 ## Methods
 
@@ -526,24 +551,23 @@ ___
 
 ### listeners
 
-▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
+▸ **listeners**<`TEvent`\>(`eventFilter?`): [`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
+| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter?` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `eventFilter?` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
 
 #### Returns
 
-[`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
+[`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
 
 #### Overrides
 
@@ -605,141 +629,6 @@ The associated name.
 
 ___
 
-### off
-
-▸ **off**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.off
-
-▸ **off**(`eventName`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.off
-
-___
-
-### on
-
-▸ **on**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.on
-
-▸ **on**(`eventName`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.on
-
-___
-
-### once
-
-▸ **once**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.once
-
-▸ **once**(`eventName`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.once
-
-___
-
 ### pubkey
 
 ▸ **pubkey**(`node`, `overrides?`): `Promise`<[`string`, `string`] & { `x`: `string` ; `y`: `string`  }\>
@@ -763,26 +652,25 @@ ___
 
 ### queryFilter
 
-▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
+▸ **queryFilter**<`TEvent`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<`TEvent`[]\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
+| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `event` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `event` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
 | `fromBlockOrBlockhash?` | `string` \| `number` |
 | `toBlock?` | `string` \| `number` |
 
 #### Returns
 
-`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
+`Promise`<`TEvent`[]\>
 
 #### Overrides
 
@@ -792,20 +680,19 @@ ___
 
 ### removeAllListeners
 
-▸ **removeAllListeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
+▸ **removeAllListeners**<`TEvent`\>(`eventFilter`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
+| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `eventFilter` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
 
 #### Returns
 
@@ -830,51 +717,6 @@ BaseContract.removeAllListeners
 #### Overrides
 
 BaseContract.removeAllListeners
-
-___
-
-### removeListener
-
-▸ **removeListener**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `EventArgsArray` | extends `any`[] |
-| `EventArgsObject` | `EventArgsObject` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
-| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.removeListener
-
-▸ **removeListener**(`eventName`, `listener`): [`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `eventName` | `string` |
-| `listener` | `Listener` |
-
-#### Returns
-
-[`PublicResolver`](ethers_PublicResolver.PublicResolver.md)
-
-#### Overrides
-
-BaseContract.removeListener
 
 ___
 

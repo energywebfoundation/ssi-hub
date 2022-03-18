@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new DomainNotifier__factory**(`signer?`)
+• **new DomainNotifier__factory**(...`args`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `signer?` | `Signer` |
+| `...args` | [signer: Signer] \| [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] |
 
 #### Overrides
 
@@ -60,7 +60,7 @@ ___
 
 ### attach
 
-▸ **attach**(`address`): [`DomainNotifier`](ethers_DomainNotifier.DomainNotifier.md)
+▸ **attach**(`address`): [`DomainNotifier`](../interfaces/ethers_DomainNotifier.DomainNotifier.md)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ ___
 
 #### Returns
 
-[`DomainNotifier`](ethers_DomainNotifier.DomainNotifier.md)
+[`DomainNotifier`](../interfaces/ethers_DomainNotifier.DomainNotifier.md)
 
 #### Overrides
 
@@ -100,7 +100,7 @@ ___
 
 ### deploy
 
-▸ **deploy**(`ens`, `overrides?`): `Promise`<[`DomainNotifier`](ethers_DomainNotifier.DomainNotifier.md)\>
+▸ **deploy**(`ens`, `overrides?`): `Promise`<[`DomainNotifier`](../interfaces/ethers_DomainNotifier.DomainNotifier.md)\>
 
 #### Parameters
 
@@ -111,7 +111,7 @@ ___
 
 #### Returns
 
-`Promise`<[`DomainNotifier`](ethers_DomainNotifier.DomainNotifier.md)\>
+`Promise`<[`DomainNotifier`](../interfaces/ethers_DomainNotifier.DomainNotifier.md)\>
 
 #### Overrides
 
@@ -142,7 +142,7 @@ ___
 
 ### connect
 
-▸ `Static` **connect**(`address`, `signerOrProvider`): [`DomainNotifier`](ethers_DomainNotifier.DomainNotifier.md)
+▸ `Static` **connect**(`address`, `signerOrProvider`): [`DomainNotifier`](../interfaces/ethers_DomainNotifier.DomainNotifier.md)
 
 #### Parameters
 
@@ -153,7 +153,7 @@ ___
 
 #### Returns
 
-[`DomainNotifier`](ethers_DomainNotifier.DomainNotifier.md)
+[`DomainNotifier`](../interfaces/ethers_DomainNotifier.DomainNotifier.md)
 
 ___
 

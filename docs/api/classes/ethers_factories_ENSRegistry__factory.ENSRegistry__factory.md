@@ -32,13 +32,13 @@
 
 ### constructor
 
-• **new ENSRegistry__factory**(`signer?`)
+• **new ENSRegistry__factory**(...`args`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `signer?` | `Signer` |
+| `...args` | [contractInterface: ContractInterface, bytecode: BytesLike \| Object, signer?: Signer] \| [signer: Signer] |
 
 #### Overrides
 
@@ -60,7 +60,7 @@ ___
 
 ### attach
 
-▸ **attach**(`address`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+▸ **attach**(`address`): [`ENSRegistry`](../interfaces/ethers_ENSRegistry.ENSRegistry.md)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ ___
 
 #### Returns
 
-[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+[`ENSRegistry`](../interfaces/ethers_ENSRegistry.ENSRegistry.md)
 
 #### Overrides
 
@@ -100,7 +100,7 @@ ___
 
 ### deploy
 
-▸ **deploy**(`overrides?`): `Promise`<[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)\>
+▸ **deploy**(`overrides?`): `Promise`<[`ENSRegistry`](../interfaces/ethers_ENSRegistry.ENSRegistry.md)\>
 
 #### Parameters
 
@@ -110,7 +110,7 @@ ___
 
 #### Returns
 
-`Promise`<[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)\>
+`Promise`<[`ENSRegistry`](../interfaces/ethers_ENSRegistry.ENSRegistry.md)\>
 
 #### Overrides
 
@@ -140,7 +140,7 @@ ___
 
 ### connect
 
-▸ `Static` **connect**(`address`, `signerOrProvider`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+▸ `Static` **connect**(`address`, `signerOrProvider`): [`ENSRegistry`](../interfaces/ethers_ENSRegistry.ENSRegistry.md)
 
 #### Parameters
 
@@ -151,7 +151,7 @@ ___
 
 #### Returns
 
-[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+[`ENSRegistry`](../interfaces/ethers_ENSRegistry.ENSRegistry.md)
 
 ___
 
