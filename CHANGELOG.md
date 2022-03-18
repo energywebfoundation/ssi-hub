@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.2.0...v2.3.0) (2022-03-16)
+
+
+### Features
+
+* feat ([82ef43e](https://github.com/energywebfoundation/ssi-hub/commit/82ef43eea44eb5a2bc2565053dcf609442a358f3))
+* store request claim origin ([074af9f](https://github.com/energywebfoundation/ssi-hub/commit/074af9fdff2851bf357fc115ce442f45b7e68325))
+
+
+### Bug Fixes
+
+* **ens:** fix name of transferred domain ([8375c9d](https://github.com/energywebfoundation/ssi-hub/commit/8375c9dbc33a4b3f4e9862f4273293dc1b3f2ebc))
+* **ens:** solidity hash of subdomain ([4099bce](https://github.com/energywebfoundation/ssi-hub/commit/4099bce0a7542b43b25862e0e75a43bd8079f690))
+
 ## [2.2.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.1.0...v2.2.0) (2022-03-09)
 
 
