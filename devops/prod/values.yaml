@@ -118,7 +118,7 @@ iam-cache-server-helm:
     DB_NAME: ics
     NODE_ENV: production
     IPFS_URL: https://ipfs.infura.io:5001/api/v0/
-    ENS_URL: https://consortia-rpc.energyweb.org
+    ENS_URL: https://archive-rpc-aakyfxhbdu.energyweb.org/
     UNIVERSAL_RESOLVER_URL: https://dev.uniresolver.io/10/identifiers/
     NATS_VERSION: 2.1.8
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
