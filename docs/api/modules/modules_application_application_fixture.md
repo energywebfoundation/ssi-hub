@@ -10,7 +10,7 @@
 
 ### applicationFixture
 
-▸ `Const` **applicationFixture**(`repo`, `organization`, `owner`, `count?`): `Promise`<`any`[]\>
+▸ **applicationFixture**(`repo`, `organization`, `owner`, `count?`): `Promise`<`any`[]\>
 
 #### Parameters
 

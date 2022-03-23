@@ -8,7 +8,8 @@ import { Keys } from '@ew-did-registry/keys';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
 import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
-import { createRole, randomUser } from './utils';
+import { createRole } from './utils';
+import { randomUser } from '../utils';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -122,6 +123,7 @@ export const claimWithRequestTestSuite = () => {
 
   afterEach(async () => {
     await queryRunner.rollbackTransaction();
+    await queryRunner.release();
   });
 
   it(`should issue a claim request with role issuer type DID`, async () => {

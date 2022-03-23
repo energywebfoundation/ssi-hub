@@ -53,7 +53,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `issuer` | `string` |
+| `issuer` | [`DID`](modules_did_did_types.DID.md) |
 
 #### Returns
 

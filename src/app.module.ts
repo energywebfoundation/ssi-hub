@@ -25,6 +25,7 @@ import { StakingModule } from './modules/staking/staking.module';
 import { BullModule } from '@nestjs/bull';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { DIDContactModule } from './modules/did-contact/did.contact.module';
+import { DecentralizedWebNodeModule } from './modules/decentralized-web-node/decentralized-web-node.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { DIDContactModule } from './modules/did-contact/did.contact.module';
     ENSModule,
     StakingModule,
     HealthCheckModule,
+    DecentralizedWebNodeModule,
   ],
   providers: [JSONObjectScalar],
 })

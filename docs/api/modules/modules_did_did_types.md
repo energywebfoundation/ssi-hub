@@ -20,19 +20,19 @@
 
 ### ADD\_DID\_DOC\_QUEUE\_NAME
 
-• **ADD\_DID\_DOC\_QUEUE\_NAME**: ``"addDIDDocument"``
+• `Const` **ADD\_DID\_DOC\_QUEUE\_NAME**: ``"addDIDDocument"``
 
 ___
 
 ### UPDATE\_DID\_DOC\_QUEUE\_NAME
 
-• **UPDATE\_DID\_DOC\_QUEUE\_NAME**: ``"refreshDIDDocument"``
+• `Const` **UPDATE\_DID\_DOC\_QUEUE\_NAME**: ``"refreshDIDDocument"``
 
 ___
 
 ### didPattern
 
-• **didPattern**: ``"^(?:did:(?<method>[a-z0-9]+?):)((?<chain>[a-z0-9]+?):)?(?<id>0x[A-Fa-f0-9]{40})$"``
+• `Const` **didPattern**: ``"^(?:did:(?<method>[a-z0-9]+?):)((?<chain>[a-z0-9]+?):)?(?<id>0x[A-Fa-f0-9]{40})$"``
 
 **`todo`** >> ew-did-registry/did
 matches did:ethr:volta:address, did:ethr:vOLTa:address and did:ethr:address
@@ -41,7 +41,7 @@ matches did:ethr:volta:address, did:ethr:vOLTa:address and did:ethr:address
 
 ### getDIDFromAddress
 
-▸ `Const` **getDIDFromAddress**(`address`): `string`
+▸ **getDIDFromAddress**(`address`): `string`
 
 #### Parameters
 

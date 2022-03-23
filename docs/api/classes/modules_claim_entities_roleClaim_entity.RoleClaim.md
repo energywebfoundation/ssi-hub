@@ -31,6 +31,7 @@
 - [subject](modules_claim_entities_roleClaim_entity.RoleClaim.md#subject)
 - [subjectAgreement](modules_claim_entities_roleClaim_entity.RoleClaim.md#subjectagreement)
 - [token](modules_claim_entities_roleClaim_entity.RoleClaim.md#token)
+- [vp](modules_claim_entities_roleClaim_entity.RoleClaim.md#vp)
 
 ### Methods
 
@@ -203,6 +204,12 @@ ___
 #### Implementation of
 
 [IRoleClaim](../interfaces/modules_claim_claim_types.IRoleClaim.md).[token](../interfaces/modules_claim_claim_types.IRoleClaim.md#token)
+
+___
+
+### vp
+
+• `Optional` **vp**: `VerifiablePresentation`
 
 ## Methods
 

@@ -133,6 +133,7 @@ export class ClaimIssuanceService {
       subject,
       namespace: parent,
       isAccepted: true,
+      vp: data?.vp ? JSON.parse(data.vp) : undefined,
     });
     return this.roleClaimRepository.save(claim);
   }
@@ -147,6 +148,7 @@ export class ClaimIssuanceService {
       ...claim,
       ...data,
       isAccepted: true,
+      vp: data?.vp ? JSON.parse(data.vp) : undefined,
     });
     return this.roleClaimRepository.save(updatedClaim);
   }

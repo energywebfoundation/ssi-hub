@@ -14,4 +14,4 @@
 
 ### emptyAddress
 
-• **emptyAddress**: `string`
+• `Const` **emptyAddress**: `string`
