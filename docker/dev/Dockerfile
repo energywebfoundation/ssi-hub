@@ -1,8 +1,9 @@
-FROM node:12.22-alpine As development
+FROM node:16.10.0 As development
 
 WORKDIR /app
 
-RUN apk add --no-cache bash curl openssl python make g++ && \
+RUN apt-get update && \
+  apt-get install -y bash curl openssl python-pip make g++ && \
   curl -sfL https://install.goreleaser.com/github.com/tuananh/node-prune.sh | sh && \
   npm install node-dev -g && npm cache clean --force
 
@@ -11,7 +12,7 @@ COPY docker ./docker
 
 RUN chmod +x ./docker/node-modules-clean.sh
 
-RUN npm i && npm cache clean --force && \
+RUN npm ci && npm cache clean --force && \
   ./docker/node-modules-clean.sh && \
   npm dedupe && \
   rm -f .npmrc
