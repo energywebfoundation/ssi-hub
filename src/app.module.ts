@@ -26,6 +26,7 @@ import { BullModule } from '@nestjs/bull';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { DIDContactModule } from './modules/did-contact/did.contact.module';
 import { DecentralizedWebNodeModule } from './modules/decentralized-web-node/decentralized-web-node.module';
+import { PresentationExchangeModule } from './modules/presentation-exchange/presentation-exchange.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { DecentralizedWebNodeModule } from './modules/decentralized-web-node/dec
     StakingModule,
     HealthCheckModule,
     DecentralizedWebNodeModule,
+    PresentationExchangeModule,
   ],
   providers: [JSONObjectScalar],
 })

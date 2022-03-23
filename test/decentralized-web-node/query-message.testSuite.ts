@@ -134,7 +134,7 @@ export const decentralizedWebNodeQueryMessageSuite = () => {
     ]);
 
     const queryMessage = await createQueryMessage({
-      schema: 'https://www.w3.org/TR/vc-data-model/',
+      schema: 'https://www.w3.org/2018/credentials#VerifiableCredential',
     });
     const requestQueryObj = await createRequest([queryMessage], holder.did);
 
