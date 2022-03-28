@@ -1,4 +1,4 @@
-# Interface: OfferableIdentity
+# Class: OfferableIdentity
 
 [ethers/OfferableIdentity](../modules/ethers_OfferableIdentity.md).OfferableIdentity
 
@@ -10,19 +10,18 @@
 
 ## Table of contents
 
+### Constructors
+
+- [constructor](ethers_OfferableIdentity.OfferableIdentity.md#constructor)
+
 ### Properties
 
 - [callStatic](ethers_OfferableIdentity.OfferableIdentity.md#callstatic)
-- [contractName](ethers_OfferableIdentity.OfferableIdentity.md#contractname)
 - [estimateGas](ethers_OfferableIdentity.OfferableIdentity.md#estimategas)
 - [filters](ethers_OfferableIdentity.OfferableIdentity.md#filters)
 - [functions](ethers_OfferableIdentity.OfferableIdentity.md#functions)
 - [interface](ethers_OfferableIdentity.OfferableIdentity.md#interface)
-- [off](ethers_OfferableIdentity.OfferableIdentity.md#off)
-- [on](ethers_OfferableIdentity.OfferableIdentity.md#on)
-- [once](ethers_OfferableIdentity.OfferableIdentity.md#once)
 - [populateTransaction](ethers_OfferableIdentity.OfferableIdentity.md#populatetransaction)
-- [removeListener](ethers_OfferableIdentity.OfferableIdentity.md#removelistener)
 
 ### Methods
 
@@ -33,14 +32,36 @@
 - [deployed](ethers_OfferableIdentity.OfferableIdentity.md#deployed)
 - [init](ethers_OfferableIdentity.OfferableIdentity.md#init)
 - [listeners](ethers_OfferableIdentity.OfferableIdentity.md#listeners)
+- [off](ethers_OfferableIdentity.OfferableIdentity.md#off)
 - [offer](ethers_OfferableIdentity.OfferableIdentity.md#offer)
 - [offeredTo](ethers_OfferableIdentity.OfferableIdentity.md#offeredto)
+- [on](ethers_OfferableIdentity.OfferableIdentity.md#on)
+- [once](ethers_OfferableIdentity.OfferableIdentity.md#once)
 - [owner](ethers_OfferableIdentity.OfferableIdentity.md#owner)
 - [queryFilter](ethers_OfferableIdentity.OfferableIdentity.md#queryfilter)
 - [rejectOffer](ethers_OfferableIdentity.OfferableIdentity.md#rejectoffer)
 - [removeAllListeners](ethers_OfferableIdentity.OfferableIdentity.md#removealllisteners)
+- [removeListener](ethers_OfferableIdentity.OfferableIdentity.md#removelistener)
 - [sendTransaction](ethers_OfferableIdentity.OfferableIdentity.md#sendtransaction)
 - [supportsInterface](ethers_OfferableIdentity.OfferableIdentity.md#supportsinterface)
+
+## Constructors
+
+### constructor
+
+• **new OfferableIdentity**(`addressOrName`, `contractInterface`, `signerOrProvider?`)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `addressOrName` | `string` |
+| `contractInterface` | `ContractInterface` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
+
+#### Inherited from
+
+BaseContract.constructor
 
 ## Properties
 
@@ -65,12 +86,6 @@
 #### Overrides
 
 BaseContract.callStatic
-
-___
-
-### contractName
-
-• **contractName**: ``"OfferableIdentity"``
 
 ___
 
@@ -106,8 +121,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `TransactionSent` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TransactionSentEventFilter`](../modules/ethers_OfferableIdentity.md#transactionsenteventfilter) |
-| `TransactionSent(bytes,uint256)` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TransactionSentEventFilter`](../modules/ethers_OfferableIdentity.md#transactionsenteventfilter) |
+| `TransactionSent` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `data`: `string` ; `value`: `BigNumber`  }\> |
+| `TransactionSent(bytes,uint256)` | (`data?`: `BytesLike`, `value?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `data`: `string` ; `value`: `BigNumber`  }\> |
 
 #### Overrides
 
@@ -141,41 +156,11 @@ ___
 
 ### interface
 
-• **interface**: [`OfferableIdentityInterface`](ethers_OfferableIdentity.OfferableIdentityInterface.md)
+• **interface**: [`OfferableIdentityInterface`](../interfaces/ethers_OfferableIdentity.OfferableIdentityInterface.md)
 
 #### Overrides
 
 BaseContract.interface
-
-___
-
-### off
-
-• **off**: [`OnEvent`](ethers_common.OnEvent.md)<[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)\>
-
-#### Overrides
-
-BaseContract.off
-
-___
-
-### on
-
-• **on**: [`OnEvent`](ethers_common.OnEvent.md)<[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)\>
-
-#### Overrides
-
-BaseContract.on
-
-___
-
-### once
-
-• **once**: [`OnEvent`](ethers_common.OnEvent.md)<[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)\>
-
-#### Overrides
-
-BaseContract.once
 
 ___
 
@@ -200,16 +185,6 @@ ___
 #### Overrides
 
 BaseContract.populateTransaction
-
-___
-
-### removeListener
-
-• **removeListener**: [`OnEvent`](ethers_common.OnEvent.md)<[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)\>
-
-#### Overrides
-
-BaseContract.removeListener
 
 ## Methods
 
@@ -318,23 +293,24 @@ ___
 
 ### listeners
 
-▸ **listeners**<`TEvent`\>(`eventFilter?`): [`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter?` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter?` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
-[`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+[`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Overrides
 
@@ -355,6 +331,51 @@ BaseContract.listeners
 #### Overrides
 
 BaseContract.listeners
+
+___
+
+### off
+
+▸ **off**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.off
+
+▸ **off**(`eventName`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.off
 
 ___
 
@@ -391,6 +412,96 @@ ___
 
 ___
 
+### on
+
+▸ **on**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.on
+
+▸ **on**(`eventName`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.on
+
+___
+
+### once
+
+▸ **once**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.once
+
+▸ **once**(`eventName`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.once
+
+___
+
 ### owner
 
 ▸ **owner**(`overrides?`): `Promise`<`string`\>
@@ -409,25 +520,26 @@ ___
 
 ### queryFilter
 
-▸ **queryFilter**<`TEvent`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<`TEvent`[]\>
+▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `event` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `event` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 | `fromBlockOrBlockhash?` | `string` \| `number` |
 | `toBlock?` | `string` \| `number` |
 
 #### Returns
 
-`Promise`<`TEvent`[]\>
+`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Overrides
 
@@ -453,19 +565,20 @@ ___
 
 ### removeAllListeners
 
-▸ **removeAllListeners**<`TEvent`\>(`eventFilter`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+▸ **removeAllListeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
@@ -490,6 +603,51 @@ BaseContract.removeAllListeners
 #### Overrides
 
 BaseContract.removeAllListeners
+
+___
+
+### removeListener
+
+▸ **removeListener**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.removeListener
+
+▸ **removeListener**(`eventName`, `listener`): [`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`OfferableIdentity`](ethers_OfferableIdentity.OfferableIdentity.md)
+
+#### Overrides
+
+BaseContract.removeListener
 
 ___
 

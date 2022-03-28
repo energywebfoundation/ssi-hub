@@ -12,7 +12,6 @@
 
 ### Properties
 
-- [contractName](ethers_ENSRegistry.ENSRegistryInterface.md#contractname)
 - [events](ethers_ENSRegistry.ENSRegistryInterface.md#events)
 - [functions](ethers_ENSRegistry.ENSRegistryInterface.md#functions)
 
@@ -23,12 +22,6 @@
 - [getEvent](ethers_ENSRegistry.ENSRegistryInterface.md#getevent)
 
 ## Properties
-
-### contractName
-
-• **contractName**: ``"ENSRegistry"``
-
-___
 
 ### events
 
@@ -46,7 +39,7 @@ ___
 
 #### Overrides
 
-utils.Interface.events
+ethers.utils.Interface.events
 
 ___
 
@@ -73,7 +66,7 @@ ___
 
 #### Overrides
 
-utils.Interface.functions
+ethers.utils.Interface.functions
 
 ## Methods
 
@@ -94,7 +87,7 @@ utils.Interface.functions
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -111,7 +104,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -128,7 +121,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -145,7 +138,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -162,7 +155,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -179,7 +172,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -196,7 +189,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -213,7 +206,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -230,7 +223,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -247,7 +240,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -264,7 +257,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ▸ **decodeFunctionResult**(`functionFragment`, `data`): `Result`
 
@@ -281,7 +274,7 @@ utils.Interface.decodeFunctionResult
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ___
 
@@ -302,7 +295,7 @@ ___
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -319,7 +312,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -336,7 +329,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -353,7 +346,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -370,7 +363,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -387,7 +380,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -404,7 +397,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -421,7 +414,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -438,7 +431,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -455,7 +448,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -472,7 +465,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ▸ **encodeFunctionData**(`functionFragment`, `values`): `string`
 
@@ -489,7 +482,7 @@ utils.Interface.encodeFunctionData
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ___
 
@@ -509,7 +502,7 @@ ___
 
 #### Overrides
 
-utils.Interface.getEvent
+ethers.utils.Interface.getEvent
 
 ▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
@@ -525,7 +518,7 @@ utils.Interface.getEvent
 
 #### Overrides
 
-utils.Interface.getEvent
+ethers.utils.Interface.getEvent
 
 ▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
@@ -541,7 +534,7 @@ utils.Interface.getEvent
 
 #### Overrides
 
-utils.Interface.getEvent
+ethers.utils.Interface.getEvent
 
 ▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
@@ -557,7 +550,7 @@ utils.Interface.getEvent
 
 #### Overrides
 
-utils.Interface.getEvent
+ethers.utils.Interface.getEvent
 
 ▸ **getEvent**(`nameOrSignatureOrTopic`): `EventFragment`
 
@@ -573,4 +566,4 @@ utils.Interface.getEvent
 
 #### Overrides
 
-utils.Interface.getEvent
+ethers.utils.Interface.getEvent

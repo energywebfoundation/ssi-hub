@@ -1,4 +1,4 @@
-# Interface: IdentityManager
+# Class: IdentityManager
 
 [ethers/IdentityManager](../modules/ethers_IdentityManager.md).IdentityManager
 
@@ -10,19 +10,18 @@
 
 ## Table of contents
 
+### Constructors
+
+- [constructor](ethers_IdentityManager.IdentityManager.md#constructor)
+
 ### Properties
 
 - [callStatic](ethers_IdentityManager.IdentityManager.md#callstatic)
-- [contractName](ethers_IdentityManager.IdentityManager.md#contractname)
 - [estimateGas](ethers_IdentityManager.IdentityManager.md#estimategas)
 - [filters](ethers_IdentityManager.IdentityManager.md#filters)
 - [functions](ethers_IdentityManager.IdentityManager.md#functions)
 - [interface](ethers_IdentityManager.IdentityManager.md#interface)
-- [off](ethers_IdentityManager.IdentityManager.md#off)
-- [on](ethers_IdentityManager.IdentityManager.md#on)
-- [once](ethers_IdentityManager.IdentityManager.md#once)
 - [populateTransaction](ethers_IdentityManager.IdentityManager.md#populatetransaction)
-- [removeListener](ethers_IdentityManager.IdentityManager.md#removelistener)
 
 ### Methods
 
@@ -39,15 +38,37 @@
 - [identityRejected](ethers_IdentityManager.IdentityManager.md#identityrejected)
 - [initialize](ethers_IdentityManager.IdentityManager.md#initialize)
 - [listeners](ethers_IdentityManager.IdentityManager.md#listeners)
+- [off](ethers_IdentityManager.IdentityManager.md#off)
+- [on](ethers_IdentityManager.IdentityManager.md#on)
+- [once](ethers_IdentityManager.IdentityManager.md#once)
 - [owner](ethers_IdentityManager.IdentityManager.md#owner)
 - [queryFilter](ethers_IdentityManager.IdentityManager.md#queryfilter)
 - [removeAllListeners](ethers_IdentityManager.IdentityManager.md#removealllisteners)
+- [removeListener](ethers_IdentityManager.IdentityManager.md#removelistener)
 - [renounceOwnership](ethers_IdentityManager.IdentityManager.md#renounceownership)
 - [transferOwnership](ethers_IdentityManager.IdentityManager.md#transferownership)
 - [upgradeTo](ethers_IdentityManager.IdentityManager.md#upgradeto)
 - [upgradeToAndCall](ethers_IdentityManager.IdentityManager.md#upgradetoandcall)
 - [verified](ethers_IdentityManager.IdentityManager.md#verified)
 - [version](ethers_IdentityManager.IdentityManager.md#version)
+
+## Constructors
+
+### constructor
+
+• **new IdentityManager**(`addressOrName`, `contractInterface`, `signerOrProvider?`)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `addressOrName` | `string` |
+| `contractInterface` | `ContractInterface` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
+
+#### Inherited from
+
+BaseContract.constructor
 
 ## Properties
 
@@ -79,12 +100,6 @@
 #### Overrides
 
 BaseContract.callStatic
-
-___
-
-### contractName
-
-• **contractName**: ``"IdentityManager"``
 
 ___
 
@@ -127,24 +142,24 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `AdminChanged` | (`previousAdmin?`: ``null``, `newAdmin?`: ``null``) => [`AdminChangedEventFilter`](../modules/ethers_IdentityManager.md#adminchangedeventfilter) |
-| `AdminChanged(address,address)` | (`previousAdmin?`: ``null``, `newAdmin?`: ``null``) => [`AdminChangedEventFilter`](../modules/ethers_IdentityManager.md#adminchangedeventfilter) |
-| `BeaconUpgraded` | (`beacon?`: `string`) => [`BeaconUpgradedEventFilter`](../modules/ethers_IdentityManager.md#beaconupgradedeventfilter) |
-| `BeaconUpgraded(address)` | (`beacon?`: `string`) => [`BeaconUpgradedEventFilter`](../modules/ethers_IdentityManager.md#beaconupgradedeventfilter) |
-| `IdentityCreated` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`IdentityCreatedEventFilter`](../modules/ethers_IdentityManager.md#identitycreatedeventfilter) |
-| `IdentityCreated(address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`IdentityCreatedEventFilter`](../modules/ethers_IdentityManager.md#identitycreatedeventfilter) |
-| `IdentityOfferCanceled` | (`identity?`: `string`, `owner?`: `string`, `oferedto?`: ``null``, `at?`: `BigNumberish`) => [`IdentityOfferCanceledEventFilter`](../modules/ethers_IdentityManager.md#identityoffercanceledeventfilter) |
-| `IdentityOfferCanceled(address,address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `oferedto?`: ``null``, `at?`: `BigNumberish`) => [`IdentityOfferCanceledEventFilter`](../modules/ethers_IdentityManager.md#identityoffercanceledeventfilter) |
-| `IdentityOfferRejected` | (`identity?`: `string`, `owner?`: ``null``, `offeredTo?`: `string`, `at?`: `BigNumberish`) => [`IdentityOfferRejectedEventFilter`](../modules/ethers_IdentityManager.md#identityofferrejectedeventfilter) |
-| `IdentityOfferRejected(address,address,address,uint256)` | (`identity?`: `string`, `owner?`: ``null``, `offeredTo?`: `string`, `at?`: `BigNumberish`) => [`IdentityOfferRejectedEventFilter`](../modules/ethers_IdentityManager.md#identityofferrejectedeventfilter) |
-| `IdentityOffered` | (`identity?`: `string`, `owner?`: `string`, `offeredTo?`: ``null``, `at?`: `BigNumberish`) => [`IdentityOfferedEventFilter`](../modules/ethers_IdentityManager.md#identityofferedeventfilter) |
-| `IdentityOffered(address,address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `offeredTo?`: ``null``, `at?`: `BigNumberish`) => [`IdentityOfferedEventFilter`](../modules/ethers_IdentityManager.md#identityofferedeventfilter) |
-| `IdentityTransferred` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`IdentityTransferredEventFilter`](../modules/ethers_IdentityManager.md#identitytransferredeventfilter) |
-| `IdentityTransferred(address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`IdentityTransferredEventFilter`](../modules/ethers_IdentityManager.md#identitytransferredeventfilter) |
-| `OwnershipTransferred` | (`previousOwner?`: `string`, `newOwner?`: `string`) => [`OwnershipTransferredEventFilter`](../modules/ethers_IdentityManager.md#ownershiptransferredeventfilter) |
-| `OwnershipTransferred(address,address)` | (`previousOwner?`: `string`, `newOwner?`: `string`) => [`OwnershipTransferredEventFilter`](../modules/ethers_IdentityManager.md#ownershiptransferredeventfilter) |
-| `Upgraded` | (`implementation?`: `string`) => [`UpgradedEventFilter`](../modules/ethers_IdentityManager.md#upgradedeventfilter) |
-| `Upgraded(address)` | (`implementation?`: `string`) => [`UpgradedEventFilter`](../modules/ethers_IdentityManager.md#upgradedeventfilter) |
+| `AdminChanged` | (`previousAdmin?`: ``null``, `newAdmin?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `newAdmin`: `string` ; `previousAdmin`: `string`  }\> |
+| `AdminChanged(address,address)` | (`previousAdmin?`: ``null``, `newAdmin?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `newAdmin`: `string` ; `previousAdmin`: `string`  }\> |
+| `BeaconUpgraded` | (`beacon?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `beacon`: `string`  }\> |
+| `BeaconUpgraded(address)` | (`beacon?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `beacon`: `string`  }\> |
+| `IdentityCreated` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `owner`: `string`  }\> |
+| `IdentityCreated(address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `owner`: `string`  }\> |
+| `IdentityOfferCanceled` | (`identity?`: `string`, `owner?`: `string`, `oferedto?`: ``null``, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `oferedto`: `string` ; `owner`: `string`  }\> |
+| `IdentityOfferCanceled(address,address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `oferedto?`: ``null``, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `oferedto`: `string` ; `owner`: `string`  }\> |
+| `IdentityOfferRejected` | (`identity?`: `string`, `owner?`: ``null``, `offeredTo?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `offeredTo`: `string` ; `owner`: `string`  }\> |
+| `IdentityOfferRejected(address,address,address,uint256)` | (`identity?`: `string`, `owner?`: ``null``, `offeredTo?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `offeredTo`: `string` ; `owner`: `string`  }\> |
+| `IdentityOffered` | (`identity?`: `string`, `owner?`: `string`, `offeredTo?`: ``null``, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `offeredTo`: `string` ; `owner`: `string`  }\> |
+| `IdentityOffered(address,address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `offeredTo?`: ``null``, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `offeredTo`: `string` ; `owner`: `string`  }\> |
+| `IdentityTransferred` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `owner`: `string`  }\> |
+| `IdentityTransferred(address,address,uint256)` | (`identity?`: `string`, `owner?`: `string`, `at?`: `BigNumberish`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `BigNumber`], { `at`: `BigNumber` ; `identity`: `string` ; `owner`: `string`  }\> |
+| `OwnershipTransferred` | (`previousOwner?`: `string`, `newOwner?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `newOwner`: `string` ; `previousOwner`: `string`  }\> |
+| `OwnershipTransferred(address,address)` | (`previousOwner?`: `string`, `newOwner?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `newOwner`: `string` ; `previousOwner`: `string`  }\> |
+| `Upgraded` | (`implementation?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `implementation`: `string`  }\> |
+| `Upgraded(address)` | (`implementation?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`], { `implementation`: `string`  }\> |
 
 #### Overrides
 
@@ -185,41 +200,11 @@ ___
 
 ### interface
 
-• **interface**: [`IdentityManagerInterface`](ethers_IdentityManager.IdentityManagerInterface.md)
+• **interface**: [`IdentityManagerInterface`](../interfaces/ethers_IdentityManager.IdentityManagerInterface.md)
 
 #### Overrides
 
 BaseContract.interface
-
-___
-
-### off
-
-• **off**: [`OnEvent`](ethers_common.OnEvent.md)<[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)\>
-
-#### Overrides
-
-BaseContract.off
-
-___
-
-### on
-
-• **on**: [`OnEvent`](ethers_common.OnEvent.md)<[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)\>
-
-#### Overrides
-
-BaseContract.on
-
-___
-
-### once
-
-• **once**: [`OnEvent`](ethers_common.OnEvent.md)<[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)\>
-
-#### Overrides
-
-BaseContract.once
 
 ___
 
@@ -251,16 +236,6 @@ ___
 #### Overrides
 
 BaseContract.populateTransaction
-
-___
-
-### removeListener
-
-• **removeListener**: [`OnEvent`](ethers_common.OnEvent.md)<[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)\>
-
-#### Overrides
-
-BaseContract.removeListener
 
 ## Methods
 
@@ -473,23 +448,24 @@ ___
 
 ### listeners
 
-▸ **listeners**<`TEvent`\>(`eventFilter?`): [`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter?` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter?` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
-[`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+[`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Overrides
 
@@ -513,6 +489,141 @@ BaseContract.listeners
 
 ___
 
+### off
+
+▸ **off**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.off
+
+▸ **off**(`eventName`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.off
+
+___
+
+### on
+
+▸ **on**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.on
+
+▸ **on**(`eventName`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.on
+
+___
+
+### once
+
+▸ **once**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.once
+
+▸ **once**(`eventName`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.once
+
+___
+
 ### owner
 
 ▸ **owner**(`overrides?`): `Promise`<`string`\>
@@ -533,25 +644,26 @@ ___
 
 ### queryFilter
 
-▸ **queryFilter**<`TEvent`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<`TEvent`[]\>
+▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `event` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `event` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 | `fromBlockOrBlockhash?` | `string` \| `number` |
 | `toBlock?` | `string` \| `number` |
 
 #### Returns
 
-`Promise`<`TEvent`[]\>
+`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Overrides
 
@@ -561,19 +673,20 @@ ___
 
 ### removeAllListeners
 
-▸ **removeAllListeners**<`TEvent`\>(`eventFilter`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+▸ **removeAllListeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
@@ -598,6 +711,51 @@ BaseContract.removeAllListeners
 #### Overrides
 
 BaseContract.removeAllListeners
+
+___
+
+### removeListener
+
+▸ **removeListener**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.removeListener
+
+▸ **removeListener**(`eventName`, `listener`): [`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`IdentityManager`](ethers_IdentityManager.IdentityManager.md)
+
+#### Overrides
+
+BaseContract.removeListener
 
 ___
 

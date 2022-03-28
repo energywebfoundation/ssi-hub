@@ -1,4 +1,4 @@
-# Interface: ENSRegistry
+# Class: ENSRegistry
 
 [ethers/ENSRegistry](../modules/ethers_ENSRegistry.md).ENSRegistry
 
@@ -10,19 +10,18 @@
 
 ## Table of contents
 
+### Constructors
+
+- [constructor](ethers_ENSRegistry.ENSRegistry.md#constructor)
+
 ### Properties
 
 - [callStatic](ethers_ENSRegistry.ENSRegistry.md#callstatic)
-- [contractName](ethers_ENSRegistry.ENSRegistry.md#contractname)
 - [estimateGas](ethers_ENSRegistry.ENSRegistry.md#estimategas)
 - [filters](ethers_ENSRegistry.ENSRegistry.md#filters)
 - [functions](ethers_ENSRegistry.ENSRegistry.md#functions)
 - [interface](ethers_ENSRegistry.ENSRegistry.md#interface)
-- [off](ethers_ENSRegistry.ENSRegistry.md#off)
-- [on](ethers_ENSRegistry.ENSRegistry.md#on)
-- [once](ethers_ENSRegistry.ENSRegistry.md#once)
 - [populateTransaction](ethers_ENSRegistry.ENSRegistry.md#populatetransaction)
-- [removeListener](ethers_ENSRegistry.ENSRegistry.md#removelistener)
 
 ### Methods
 
@@ -31,10 +30,14 @@
 - [deployed](ethers_ENSRegistry.ENSRegistry.md#deployed)
 - [isApprovedForAll](ethers_ENSRegistry.ENSRegistry.md#isapprovedforall)
 - [listeners](ethers_ENSRegistry.ENSRegistry.md#listeners)
+- [off](ethers_ENSRegistry.ENSRegistry.md#off)
+- [on](ethers_ENSRegistry.ENSRegistry.md#on)
+- [once](ethers_ENSRegistry.ENSRegistry.md#once)
 - [owner](ethers_ENSRegistry.ENSRegistry.md#owner)
 - [queryFilter](ethers_ENSRegistry.ENSRegistry.md#queryfilter)
 - [recordExists](ethers_ENSRegistry.ENSRegistry.md#recordexists)
 - [removeAllListeners](ethers_ENSRegistry.ENSRegistry.md#removealllisteners)
+- [removeListener](ethers_ENSRegistry.ENSRegistry.md#removelistener)
 - [resolver](ethers_ENSRegistry.ENSRegistry.md#resolver)
 - [setApprovalForAll](ethers_ENSRegistry.ENSRegistry.md#setapprovalforall)
 - [setOwner](ethers_ENSRegistry.ENSRegistry.md#setowner)
@@ -44,6 +47,24 @@
 - [setSubnodeRecord](ethers_ENSRegistry.ENSRegistry.md#setsubnoderecord)
 - [setTTL](ethers_ENSRegistry.ENSRegistry.md#setttl)
 - [ttl](ethers_ENSRegistry.ENSRegistry.md#ttl)
+
+## Constructors
+
+### constructor
+
+• **new ENSRegistry**(`addressOrName`, `contractInterface`, `signerOrProvider?`)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `addressOrName` | `string` |
+| `contractInterface` | `ContractInterface` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
+
+#### Inherited from
+
+BaseContract.constructor
 
 ## Properties
 
@@ -71,12 +92,6 @@
 #### Overrides
 
 BaseContract.callStatic
-
-___
-
-### contractName
-
-• **contractName**: ``"ENSRegistry"``
 
 ___
 
@@ -115,16 +130,16 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `ApprovalForAll` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`ApprovalForAllEventFilter`](../modules/ethers_ENSRegistry.md#approvalforalleventfilter) |
-| `ApprovalForAll(address,address,bool)` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`ApprovalForAllEventFilter`](../modules/ethers_ENSRegistry.md#approvalforalleventfilter) |
-| `NewOwner` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`NewOwnerEventFilter`](../modules/ethers_ENSRegistry.md#newownereventfilter) |
-| `NewOwner(bytes32,bytes32,address)` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`NewOwnerEventFilter`](../modules/ethers_ENSRegistry.md#newownereventfilter) |
-| `NewResolver` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`NewResolverEventFilter`](../modules/ethers_ENSRegistry.md#newresolvereventfilter) |
-| `NewResolver(bytes32,address)` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`NewResolverEventFilter`](../modules/ethers_ENSRegistry.md#newresolvereventfilter) |
-| `NewTTL` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`NewTTLEventFilter`](../modules/ethers_ENSRegistry.md#newttleventfilter) |
-| `NewTTL(bytes32,uint64)` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`NewTTLEventFilter`](../modules/ethers_ENSRegistry.md#newttleventfilter) |
-| `Transfer` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TransferEventFilter`](../modules/ethers_ENSRegistry.md#transfereventfilter) |
-| `Transfer(bytes32,address)` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TransferEventFilter`](../modules/ethers_ENSRegistry.md#transfereventfilter) |
+| `ApprovalForAll` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `boolean`], { `approved`: `boolean` ; `operator`: `string` ; `owner`: `string`  }\> |
+| `ApprovalForAll(address,address,bool)` | (`owner?`: `string`, `operator?`: `string`, `approved?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `boolean`], { `approved`: `boolean` ; `operator`: `string` ; `owner`: `string`  }\> |
+| `NewOwner` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `label`: `string` ; `node`: `string` ; `owner`: `string`  }\> |
+| `NewOwner(bytes32,bytes32,address)` | (`node?`: `BytesLike`, `label?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`, `string`], { `label`: `string` ; `node`: `string` ; `owner`: `string`  }\> |
+| `NewResolver` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `resolver`: `string`  }\> |
+| `NewResolver(bytes32,address)` | (`node?`: `BytesLike`, `resolver?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `resolver`: `string`  }\> |
+| `NewTTL` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `node`: `string` ; `ttl`: `BigNumber`  }\> |
+| `NewTTL(bytes32,uint64)` | (`node?`: `BytesLike`, `ttl?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `BigNumber`], { `node`: `string` ; `ttl`: `BigNumber`  }\> |
+| `Transfer` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `owner`: `string`  }\> |
+| `Transfer(bytes32,address)` | (`node?`: `BytesLike`, `owner?`: ``null``) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `node`: `string` ; `owner`: `string`  }\> |
 
 #### Overrides
 
@@ -161,41 +176,11 @@ ___
 
 ### interface
 
-• **interface**: [`ENSRegistryInterface`](ethers_ENSRegistry.ENSRegistryInterface.md)
+• **interface**: [`ENSRegistryInterface`](../interfaces/ethers_ENSRegistry.ENSRegistryInterface.md)
 
 #### Overrides
 
 BaseContract.interface
-
-___
-
-### off
-
-• **off**: [`OnEvent`](ethers_common.OnEvent.md)<[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)\>
-
-#### Overrides
-
-BaseContract.off
-
-___
-
-### on
-
-• **on**: [`OnEvent`](ethers_common.OnEvent.md)<[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)\>
-
-#### Overrides
-
-BaseContract.on
-
-___
-
-### once
-
-• **once**: [`OnEvent`](ethers_common.OnEvent.md)<[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)\>
-
-#### Overrides
-
-BaseContract.once
 
 ___
 
@@ -223,16 +208,6 @@ ___
 #### Overrides
 
 BaseContract.populateTransaction
-
-___
-
-### removeListener
-
-• **removeListener**: [`OnEvent`](ethers_common.OnEvent.md)<[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)\>
-
-#### Overrides
-
-BaseContract.removeListener
 
 ## Methods
 
@@ -314,23 +289,24 @@ ___
 
 ### listeners
 
-▸ **listeners**<`TEvent`\>(`eventFilter?`): [`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter?` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter?` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
-[`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+[`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Overrides
 
@@ -351,6 +327,141 @@ BaseContract.listeners
 #### Overrides
 
 BaseContract.listeners
+
+___
+
+### off
+
+▸ **off**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.off
+
+▸ **off**(`eventName`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.off
+
+___
+
+### on
+
+▸ **on**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.on
+
+▸ **on**(`eventName`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.on
+
+___
+
+### once
+
+▸ **once**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.once
+
+▸ **once**(`eventName`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.once
 
 ___
 
@@ -377,25 +488,26 @@ ___
 
 ### queryFilter
 
-▸ **queryFilter**<`TEvent`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<`TEvent`[]\>
+▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `event` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `event` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 | `fromBlockOrBlockhash?` | `string` \| `number` |
 | `toBlock?` | `string` \| `number` |
 
 #### Returns
 
-`Promise`<`TEvent`[]\>
+`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Overrides
 
@@ -426,19 +538,20 @@ ___
 
 ### removeAllListeners
 
-▸ **removeAllListeners**<`TEvent`\>(`eventFilter`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+▸ **removeAllListeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
@@ -463,6 +576,51 @@ BaseContract.removeAllListeners
 #### Overrides
 
 BaseContract.removeAllListeners
+
+___
+
+### removeListener
+
+▸ **removeListener**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.removeListener
+
+▸ **removeListener**(`eventName`, `listener`): [`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`ENSRegistry`](ethers_ENSRegistry.ENSRegistry.md)
+
+#### Overrides
+
+BaseContract.removeListener
 
 ___
 

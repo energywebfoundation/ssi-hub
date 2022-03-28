@@ -11,7 +11,7 @@
 
 ### DomainNotifier
 
-Re-exports [DomainNotifier](../interfaces/ethers_DomainNotifier.DomainNotifier.md)
+Re-exports [DomainNotifier](../classes/ethers_DomainNotifier.DomainNotifier.md)
 
 ___
 
