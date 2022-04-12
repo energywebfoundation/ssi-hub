@@ -4,7 +4,6 @@ WORKDIR /app
 
 RUN apt-get update && \
   apt-get install -y bash curl openssl python-pip make g++ && \
-  curl -sfL https://install.goreleaser.com/github.com/tuananh/node-prune.sh | sh && \
   npm install node-dev -g && npm cache clean --force
 
 COPY package*.json ./
