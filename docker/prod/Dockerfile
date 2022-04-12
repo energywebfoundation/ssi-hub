@@ -15,14 +15,12 @@ RUN chmod +x ./sentry-upload.sh
 RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
   curl -sL https://sentry.io/get-cli/ | bash && \
   npm config set unsafe-perm true && \
-  curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | sh && \
   npm ci && \
   npm run build && \
   SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_COMMIT=$SENTRY_COMMIT ./sentry-upload.sh && \
   rm -rf node_modules && \
   npm ci --production && \
-  ./docker/node-modules-clean.sh && \
-  ./bin/node-prune
+  ./docker/node-modules-clean.sh
 
 RUN npm run generate:jwtkeys
 
