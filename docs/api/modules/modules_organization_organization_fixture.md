@@ -10,7 +10,7 @@
 
 ### organizationFixture
 
-▸ `Const` **organizationFixture**(`repo`, `owner`, `count?`): `Promise`<`any`[]\>
+▸ **organizationFixture**(`repo`, `owner`, `count?`): `Promise`<`any`[]\>
 
 #### Parameters
 

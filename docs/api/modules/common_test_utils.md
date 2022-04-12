@@ -14,7 +14,7 @@
 
 ### MockJWTAuthGuard
 
-• **MockJWTAuthGuard**: `Object`
+• `Const` **MockJWTAuthGuard**: `Object`
 
 #### Type declaration
 

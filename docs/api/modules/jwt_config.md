@@ -10,7 +10,7 @@
 
 ### getJWTConfig
 
-▸ `Const` **getJWTConfig**(`configService`): `Promise`<`JwtModuleOptions`\>
+▸ **getJWTConfig**(`configService`): `Promise`<`JwtModuleOptions`\>
 
 #### Parameters
 

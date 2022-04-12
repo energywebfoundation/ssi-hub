@@ -10,4 +10,4 @@
 
 ### ORG\_MOCK\_DATA
 
-• **ORG\_MOCK\_DATA**: `IOrganizationDefinition`
+• `Const` **ORG\_MOCK\_DATA**: `IOrganizationDefinition`

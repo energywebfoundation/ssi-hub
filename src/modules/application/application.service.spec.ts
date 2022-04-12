@@ -85,6 +85,7 @@ describe('ApplicationService', () => {
 
   afterEach(async () => {
     await queryRunner.rollbackTransaction();
+    await queryRunner.release();
     module.close();
   });
 

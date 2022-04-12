@@ -1,22 +1,14 @@
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Connection, EntityManager, Repository } from 'typeorm';
 import { BigNumber, Wallet } from 'ethers';
-import {
-  initWithPrivateKeySigner,
-  RegistrationTypes,
-  setCacheConfig,
-  VOLTA_CHAIN_ID,
-} from 'iam-client-lib';
+import { initWithPrivateKeySigner, RegistrationTypes } from 'iam-client-lib';
 import { v4 } from 'uuid';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
-import { createRole, randomUser } from './utils';
+import { createRole } from './utils';
+import { randomUser } from '../utils';
 import { ClaimService } from '../../src/modules/claim/services';
 import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
-
-setCacheConfig(VOLTA_CHAIN_ID, {
-  url: process.env.STRATEGY_CACHE_SERVER,
-});
 
 export const claimWithoutRequestTestSuite = () => {
   let roleService: RoleService;
@@ -99,21 +91,22 @@ export const claimWithoutRequestTestSuite = () => {
   beforeAll(async () => {
     roleService = app.get(RoleService);
     claimService = app.get(ClaimService);
+  });
 
+  beforeEach(async () => {
     const manager = app.get(EntityManager);
     const dbConnection = app.get(Connection);
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     queryRunner = manager.queryRunner =
       dbConnection.createQueryRunner('master');
-  });
-
-  beforeEach(async () => {
     await queryRunner.startTransaction();
   });
 
   afterEach(async () => {
     await queryRunner.rollbackTransaction();
+    await queryRunner.release();
   });
 
   it(`should issue a off-chain claim with role issuer type DID`, async () => {

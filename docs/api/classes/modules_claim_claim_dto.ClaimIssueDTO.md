@@ -27,6 +27,7 @@
 - [issuedToken](modules_claim_claim_dto.ClaimIssueDTO.md#issuedtoken)
 - [onChainProof](modules_claim_claim_dto.ClaimIssueDTO.md#onchainproof)
 - [requester](modules_claim_claim_dto.ClaimIssueDTO.md#requester)
+- [vp](modules_claim_claim_dto.ClaimIssueDTO.md#vp)
 
 ### Methods
 
@@ -107,6 +108,16 @@ ___
 #### Implementation of
 
 [IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[requester](../interfaces/modules_claim_claim_types.IClaimIssuance.md#requester)
+
+___
+
+### vp
+
+• `Optional` **vp**: `string`
+
+#### Implementation of
+
+[IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[vp](../interfaces/modules_claim_claim_types.IClaimIssuance.md#vp)
 
 ## Methods
 

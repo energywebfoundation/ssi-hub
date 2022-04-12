@@ -24,6 +24,7 @@
 - [issuedToken](modules_claim_claim_types.IClaimIssuance.md#issuedtoken)
 - [onChainProof](modules_claim_claim_types.IClaimIssuance.md#onchainproof)
 - [requester](modules_claim_claim_types.IClaimIssuance.md#requester)
+- [vp](modules_claim_claim_types.IClaimIssuance.md#vp)
 
 ## Properties
 
@@ -84,3 +85,9 @@ ___
 #### Inherited from
 
 [IMessage](modules_claim_claim_types.IMessage.md).[requester](modules_claim_claim_types.IMessage.md#requester)
+
+___
+
+### vp
+
+• `Optional` **vp**: `string`

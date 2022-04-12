@@ -8,6 +8,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsJSON,
   IsJWT,
   IsNumberString,
   IsOptional,
@@ -109,6 +110,12 @@ export class ClaimIssueDTO implements IClaimIssuance {
   @IsOptional()
   @ApiProperty()
   claimTypeVersion?: string;
+
+  @IsString()
+  @IsJSON()
+  @IsOptional()
+  @ApiProperty()
+  vp?: string;
 }
 
 export class NewClaimIssueDTO extends ClaimIssueDTO {
