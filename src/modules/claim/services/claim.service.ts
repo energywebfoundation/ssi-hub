@@ -159,7 +159,7 @@ export class ClaimService {
     currentUser?: string;
   }): Promise<RoleClaim[]> {
     const qb = this.roleClaimRepository.createQueryBuilder('claim');
-    qb.where('claim.subject IN (:...subjects)', { subjects });
+    qb.where('claim.subject IN(:...subjects)', { subjects });
 
     if (currentUser) {
       await this.filterUserRelatedClaims(currentUser, qb);
@@ -172,7 +172,7 @@ export class ClaimService {
     }
 
     if (namespace) {
-      qb.andWhere('claim.namespace = :namespace', {
+      qb.andWhere('claim.claimType = :namespace', {
         namespace,
       });
     }
