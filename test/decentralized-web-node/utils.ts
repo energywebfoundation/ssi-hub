@@ -42,7 +42,9 @@ export const createWriteMessage = async (
     descriptor: {
       method: 'CollectionsWrite',
       objectId: v4(),
-      schema: options?.schema || 'https://www.w3.org/TR/vc-data-model/',
+      schema:
+        options?.schema ||
+        'https://www.w3.org/2018/credentials#VerifiableCredential',
       dateCreated: options?.dateCreated || Date.now(),
       datePublished: options?.datePublished || Date.now(),
       dataFormat: options?.dataFormat || 'application/ld+json',

@@ -8,6 +8,7 @@ import { AppModule } from '../src/app.module';
 import { authTestSuite } from './auth';
 import { claimTestSuite } from './claim';
 import { decentralizedWebNodeTestSuite } from './decentralized-web-node';
+import { verifiablePresentationTestSuite } from './presentation-exchange';
 
 export let app: INestApplication;
 
@@ -40,5 +41,6 @@ describe('iam-cache-server E2E tests', () => {
     describe('Auth module', authTestSuite);
     describe('Claim module', claimTestSuite);
     describe('Decentralized web node module', decentralizedWebNodeTestSuite);
+    describe('Verifiable presentation module', verifiablePresentationTestSuite);
   });
 });

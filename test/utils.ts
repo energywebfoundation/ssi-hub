@@ -37,7 +37,12 @@ export const getIdentityToken = async (
   return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
 };
 
-export const randomUser = async (Origin?: string) => {
+export interface TestUser {
+  wallet: Wallet;
+  did: string;
+  cookies: string[];
+}
+export const randomUser = async (Origin?: string): Promise<TestUser> => {
   let wallet = Wallet.createRandom();
   wallet = wallet.connect(provider);
 
