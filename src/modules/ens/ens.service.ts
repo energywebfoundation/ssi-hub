@@ -12,7 +12,7 @@ import {
   DomainHierarchy,
   ResolverContractType,
   VOLTA_CHAIN_ID,
-} from '@energyweb/iam-contracts';
+} from '@energyweb/credential-governance';
 import { PublicResolver__factory } from '../../ethers/factories/PublicResolver__factory';
 import { RoleService } from '../role/role.service';
 import { ApplicationService } from '../application/application.service';

@@ -26,7 +26,7 @@
     "build:typechain:resolver": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ensdomains/resolver/build/contracts/PublicResolver.json'",
     "build:typechain:offerableIdentity": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ew-did-registry/proxyidentity/build/contracts/OfferableIdentity.json'",
     "build:typechain:identityManager": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ew-did-registry/proxyidentity/build/contracts/IdentityManager.json'",
-    "build:typechain:domainNotifier": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@energyweb/iam-contracts/dist/contracts/DomainNotifier.json'",
+    "build:typechain:domainNotifier": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@energyweb/credential-governance/dist/contracts/DomainNotifier.json'",
     "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
     "docker:build": "docker-compose build app",
     "docker:start:app": "docker-compose up -d",
@@ -44,7 +44,7 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@energyweb/iam-contracts": "^3.6.0",
+    "@energyweb/credential-governance": "^1.0.1-alpha.4.0",
     "@ensdomains/ens": "^0.4.5",
     "@ensdomains/resolver": "^0.2.4",
     "@ethersproject/abstract-provider": "5.4.1",

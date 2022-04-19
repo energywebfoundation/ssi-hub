@@ -12,7 +12,7 @@ import { In, Repository } from 'typeorm';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
-import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { IRoleDefinition } from '@energyweb/credential-governance';
 import { Application } from '../application/application.entity';
 import { Organization } from '../organization/organization.entity';
 
