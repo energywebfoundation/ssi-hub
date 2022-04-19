@@ -12,7 +12,10 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { EnrolmentPrecondition, Fields, Issuer } from './role.types';
 import { BaseEnsEntity } from '../../common/ENSBaseEntity';
-import { IRoleDefinition, PreconditionType } from '@energyweb/iam-contracts';
+import {
+  IRoleDefinition,
+  PreconditionType,
+} from '@energyweb/credential-governance';
 
 export class FieldsDTO implements Fields {
   static async create(data: Partial<FieldsDTO>) {

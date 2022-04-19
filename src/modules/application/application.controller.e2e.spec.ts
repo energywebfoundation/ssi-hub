@@ -19,7 +19,7 @@ import * as TestDbCOnfig from '../../../test/config';
 import { appConfig, MockJWTAuthGuard } from '../../common/test.utils';
 import { OrganizationService } from '../organization/organization.service';
 import { Organization } from '../organization/organization.entity';
-import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { IRoleDefinition } from '@energyweb/credential-governance';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 
 const chance = new Chance();

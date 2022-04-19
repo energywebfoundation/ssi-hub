@@ -1,4 +1,7 @@
-import { IRoleDefinition, PreconditionType } from '@energyweb/iam-contracts';
+import {
+  IRoleDefinition,
+  PreconditionType,
+} from '@energyweb/credential-governance';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { JSONObject } from '../../common/json.scalar';
 import { EnrolmentPrecondition, Fields, Issuer } from './role.types';
