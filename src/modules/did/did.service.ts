@@ -31,6 +31,7 @@ import {
   ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
+import { Transaction } from '@sentry/types';
 
 @Injectable()
 export class DIDService implements OnModuleInit {
@@ -92,7 +93,10 @@ export class DIDService implements OnModuleInit {
    * @param {string} did DID whose document should be retrieved
    * @returns {IDIDDocument} Resolved DID Document.
    */
-  public async getById(did: string): Promise<IDIDDocument> {
+  public async getById(
+    did: string,
+    transaction?: Transaction
+  ): Promise<IDIDDocument> {
     const convertToIDIDDocument = (entity: DIDDocumentEntity): IDIDDocument => {
       return {
         '@context': entity['@context'],
@@ -106,17 +110,42 @@ export class DIDService implements OnModuleInit {
         updated: entity.updated,
       };
     };
+
+    let span = transaction?.startChild({
+      op: 'get_cached_did_document',
+      description: 'Get cached DID document',
+    });
     const cachedDIDDocument = await this.didRepository.findOne(did);
+    span?.finish();
+
     if (cachedDIDDocument) {
-      return convertToIDIDDocument(cachedDIDDocument);
+      span = transaction?.startChild({
+        op: 'convert_cached_did_document',
+        description: 'Convert cached DID document to IDIDDocument',
+      });
+      const document = convertToIDIDDocument(cachedDIDDocument);
+      span?.finish();
+      return document;
     }
 
     this.logger.info(
       `Requested document for did: ${did} not cached. Add to cache.`
     );
 
+    span = transaction?.startChild({
+      op: 'get_did_document_from_blockchain',
+      description: 'Get DID document from blockchain',
+    });
     const entity = await this.addCachedDocument(did);
-    return convertToIDIDDocument(entity);
+    span?.finish();
+
+    span = transaction?.startChild({
+      op: 'convert_cached_did_document',
+      description: 'Convert cached DID document to IDIDDocument',
+    });
+    const document = convertToIDIDDocument(entity);
+    span?.finish();
+    return document;
   }
 
   /**
