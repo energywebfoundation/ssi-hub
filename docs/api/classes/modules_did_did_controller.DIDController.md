@@ -16,7 +16,7 @@
 
 ### constructor
 
-• **new DIDController**(`didService`, `logger`)
+• **new DIDController**(`didService`, `logger`, `sentryTracingService`)
 
 #### Parameters
 
@@ -24,6 +24,7 @@
 | :------ | :------ |
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
+| `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 
 ## Methods
 
