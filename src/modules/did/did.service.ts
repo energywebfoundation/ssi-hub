@@ -394,6 +394,10 @@ export class DIDService implements OnModuleInit {
         );
         if (cachedService) return cachedService;
 
+        if (typeof serviceEndpoint !== 'string') {
+          return { ...rest, serviceEndpoint };
+        }
+
         const token = await this.ipfsStore.get(serviceEndpoint);
 
         const { claimData, ...claimRest } = jwt.decode(token) as {
