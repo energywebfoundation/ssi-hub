@@ -15,6 +15,8 @@ import {
   Headers,
 } from '@nestjs/common';
 import { DIDService } from '../did/did.service';
+import { DIDPipe } from '../did/did.pipe';
+import { DID } from '../did/did.types';
 import {
   ApiBody,
   ApiExcludeEndpoint,
@@ -311,8 +313,8 @@ export class ClaimController {
     type: [RoleDTO],
     description: 'Roles that the issuer can issue',
   })
-  public async getByAllowedRolesByIssuer(@Param('did') issuer: string) {
-    return await this.claimService.rolesByIssuer(issuer);
+  public async getByAllowedRolesByIssuer(@Param('did', DIDPipe) issuer: DID) {
+    return await this.claimService.rolesByIssuer(issuer.did);
   }
 
   @Get('/requester/:did')

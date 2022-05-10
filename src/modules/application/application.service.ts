@@ -5,7 +5,7 @@ import { Application } from './application.entity';
 import { Repository } from 'typeorm';
 import { Logger } from '../logger/logger.service';
 import { OrganizationService } from '../organization/organization.service';
-import { IAppDefinition } from '@energyweb/iam-contracts';
+import { IAppDefinition } from '@energyweb/credential-governance';
 
 @Injectable()
 export class ApplicationService {

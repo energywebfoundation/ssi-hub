@@ -10,7 +10,7 @@
 
 ### roleFixture
 
-▸ `Const` **roleFixture**(`repo`, `owner`, `organization?`, `application?`, `count?`): `Promise`<`any`[]\>
+▸ **roleFixture**(`repo`, `owner`, `organization?`, `application?`, `count?`): `Promise`<`any`[]\>
 
 #### Parameters
 

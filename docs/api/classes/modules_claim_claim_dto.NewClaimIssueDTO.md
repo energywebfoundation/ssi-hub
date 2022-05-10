@@ -25,6 +25,7 @@
 - [onChainProof](modules_claim_claim_dto.NewClaimIssueDTO.md#onchainproof)
 - [registrationTypes](modules_claim_claim_dto.NewClaimIssueDTO.md#registrationtypes)
 - [requester](modules_claim_claim_dto.NewClaimIssueDTO.md#requester)
+- [vp](modules_claim_claim_dto.NewClaimIssueDTO.md#vp)
 
 ### Methods
 
@@ -121,6 +122,16 @@ ___
 #### Inherited from
 
 [ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[requester](modules_claim_claim_dto.ClaimIssueDTO.md#requester)
+
+___
+
+### vp
+
+• `Optional` **vp**: `string`
+
+#### Inherited from
+
+[ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[vp](modules_claim_claim_dto.ClaimIssueDTO.md#vp)
 
 ## Methods
 

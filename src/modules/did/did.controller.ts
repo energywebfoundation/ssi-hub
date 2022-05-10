@@ -1,5 +1,5 @@
 import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
 import { Logger } from '../logger/logger.service';
 import { Auth } from '../auth/auth.decorator';
@@ -7,6 +7,7 @@ import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
 import { DIDService } from './did.service';
 import { DID } from './did.types';
 import { DIDPipe } from './did.pipe';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -14,7 +15,8 @@ import { DIDPipe } from './did.pipe';
 export class DIDController {
   constructor(
     private readonly didService: DIDService,
-    private readonly logger: Logger
+    private readonly logger: Logger,
+    private readonly sentryTracingService: SentryTracingService
   ) {
     this.logger.setContext(DIDController.name);
   }
@@ -33,14 +35,23 @@ export class DIDController {
       'Returns a resolved DID Document, optionally with full claim data. \n' +
       'If DID Document is not yet cached, it is retrieved from the blockchain',
   })
+  @ApiParam({ name: 'did', type: 'string', required: true })
   @UseInterceptors(NotFoundInterceptor)
   public async getById(@Param('did', DIDPipe) did: DID) {
+    const transaction = this.sentryTracingService.startTransaction({
+      op: 'get_did_document_by_id',
+      name: 'Retrieve DID Document by id',
+      data: { did },
+      tags: { service: DIDController.name, operation: 'getById' },
+    });
     this.logger.info(`Received request for document for did: ${did.did}`);
 
     this.logger.info(`Retrieving document for did: ${did.did}`);
     if (did.method !== 'ethr') {
       return this.didService.getDIDDocumentFromUniversalResolver(did.did);
     }
-    return this.didService.getById(did.did);
+    const document = await this.didService.getById(did.did, transaction);
+    transaction?.finish();
+    return document;
   }
 }

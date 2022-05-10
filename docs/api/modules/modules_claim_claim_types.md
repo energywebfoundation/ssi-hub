@@ -34,7 +34,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `claimData` | `Object` |
+| `claimData` | { `claimType`: `string` ; `claimTypeVersion`: `string`  } |
 | `claimData.claimType` | `string` |
 | `claimData.claimTypeVersion` | `string` |
 | `sub` | `string` |
@@ -43,4 +43,4 @@
 
 ### NATS\_EXCHANGE\_TOPIC
 
-• **NATS\_EXCHANGE\_TOPIC**: ``"claim-exchange"``
+• `Const` **NATS\_EXCHANGE\_TOPIC**: ``"claim-exchange"``

@@ -64,7 +64,7 @@ ___
 
 ### getById
 
-▸ **getById**(`did`): `Promise`<`IDIDDocument`\>
+▸ **getById**(`did`, `transaction?`): `Promise`<`IDIDDocument`\>
 
 Retrieves a DID Document for a given DID. Retrieves from blockchain if not cached.
 
@@ -73,6 +73,7 @@ Retrieves a DID Document for a given DID. Retrieves from blockchain if not cache
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `did` | `string` | DID whose document should be retrieved |
+| `transaction?` | `Transaction` | - |
 
 #### Returns
 

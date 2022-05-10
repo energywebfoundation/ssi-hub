@@ -11,7 +11,7 @@
 
 ### User
 
-▸ `Const` **User**(...`dataOrPipes`): `ParameterDecorator`
+▸ **User**(...`dataOrPipes`): `ParameterDecorator`
 
 #### Parameters
 
@@ -27,7 +27,7 @@ ___
 
 ### UserGQL
 
-▸ `Const` **UserGQL**(...`dataOrPipes`): `ParameterDecorator`
+▸ **UserGQL**(...`dataOrPipes`): `ParameterDecorator`
 
 #### Parameters
 

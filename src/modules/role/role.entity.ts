@@ -10,7 +10,7 @@ import { BaseEnsEntity } from '../../common/ENSBaseEntity';
 import { Organization } from '../organization/organization.entity';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { RoleDefinitionSchema } from './role.schema';
-import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { IRoleDefinition } from '@energyweb/credential-governance';
 
 @ObjectType()
 @Entity()

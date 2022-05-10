@@ -10,7 +10,7 @@
 
 ### getGraphQlConfig
 
-▸ `Const` **getGraphQlConfig**(`configService`): `GqlModuleOptions`
+▸ **getGraphQlConfig**(`configService`): `GqlModuleOptions`
 
 #### Parameters
 

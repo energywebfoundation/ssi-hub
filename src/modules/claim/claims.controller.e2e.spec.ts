@@ -28,7 +28,7 @@ import { Asset, AssetsHistory } from '../assets/assets.entity';
 import { DIDService } from '../did/did.service';
 import { Wallet } from '@ethersproject/wallet';
 import { BullModule } from '@nestjs/bull';
-import { IRoleDefinition } from '@energyweb/iam-contracts';
+import { IRoleDefinition } from '@energyweb/credential-governance';
 import { Organization } from '../organization/organization.entity';
 import { Application } from '../application/application.entity';
 

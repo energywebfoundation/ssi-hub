@@ -1,11 +1,6 @@
-import { providers, utils, Wallet } from 'ethers';
-import request from 'supertest';
+import { utils } from 'ethers';
 import { RoleDTO } from '../../src/modules/role/role.dto';
 import { RoleService } from '../../src/modules/role/role.service';
-import { app } from '../app.e2e.spec';
-import { getIdentityToken } from '../utils';
-
-export const provider = new providers.JsonRpcProvider(process.env.ENS_URL);
 
 export const createRole = async (
   {
@@ -43,27 +38,4 @@ export const createRole = async (
       },
     })
   );
-};
-
-export const randomUser = async (Origin?: string) => {
-  let wallet = Wallet.createRandom();
-  wallet = wallet.connect(provider);
-
-  const identityToken = await getIdentityToken(provider, wallet);
-  const loginResponse = await request(app.getHttpServer())
-    .post('/v1/login')
-    .send({
-      identityToken,
-    })
-    .set(Origin ? { Origin } : {})
-    .expect(201);
-
-  return {
-    wallet: wallet,
-    did: `did:ethr:volta:${wallet.address}`,
-    cookies: [
-      loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
-      loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
-    ],
-  };
 };
