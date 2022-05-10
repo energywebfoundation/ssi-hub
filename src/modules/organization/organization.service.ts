@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
 import { Logger } from '../logger/logger.service';
-import { IOrganizationDefinition } from '@energyweb/iam-contracts';
+import { IOrganizationDefinition } from '@energyweb/credential-governance';
 
 @Injectable()
 export class OrganizationService {

@@ -14,7 +14,7 @@ This repository was formerly refered to as the `iam-cache-server`.
 ```bash
 # development
 $ git checkout develop
-$ cp .env.dist .env
+$ cp .env.dev .env
 $ cp docker-compose.dev.yml docker-compose.yml
 ```
 
@@ -24,34 +24,7 @@ $ git checkout master
 $ cp .env.dist .env
 $ cp docker-compose.prod.yml docker-compose.yml
 ```
-
-### Populate env file for development
-
-The following values can be used in the `.env` file
-
-#### NESTJS CONFIG
-
-NESTJS_PORT=
-
-#### DB Config
-
-DB_HOST=postgres\
-DB_PORT=5432\
-DB_USERNAME=postgres\
-DB_PASSWORD=password\
-DB_NAME=dev
-
-#### Redis
-
-REDIS_VERSION=6.0.8\
-REDIS_PASSWORD="password"\
-REDIS_PORT=6379\
-REDIS_HOST=redis
-
-#### NATS.IO CONFIG
-
-NATS_VERSION=2.1.8\
-NATS_CLIENTS_URL=nats:4222
+In `production` empty values need to be populated in `.env` file, while `development` is prepopulated with sample values  
 
 ## Installation
 
@@ -63,9 +36,6 @@ $ npm run generate:jwtkeys
 
 ## Running the app
 
-### Populate env file for development
-
-The values from .env.dev can be used to run locally
 
 ```bash
 # development

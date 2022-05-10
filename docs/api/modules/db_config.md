@@ -10,7 +10,7 @@
 
 ### getDBConfig
 
-▸ `Const` **getDBConfig**(`configService`): {} & `Partial`<`PostgresConnectionOptions`\>
+▸ **getDBConfig**(`configService`): {} & `Partial`<`PostgresConnectionOptions`\>
 
 #### Parameters
 

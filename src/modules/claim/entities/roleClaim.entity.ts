@@ -4,6 +4,7 @@ import { IsArray, isURL } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
+import { VerifiablePresentation } from '@ew-did-registry/credentials-interface';
 import { IRoleClaim, RegistrationTypes } from '../claim.types';
 
 @ObjectType()
@@ -92,6 +93,9 @@ export class RoleClaim implements IRoleClaim {
   @Field({ nullable: true })
   @Column({ nullable: true })
   redirectUri?: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  vp?: VerifiablePresentation;
 }
 
 export class DIDsQuery {

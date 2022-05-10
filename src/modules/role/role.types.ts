@@ -1,4 +1,4 @@
-import { PreconditionType } from '@energyweb/iam-contracts';
+import { PreconditionType } from '@energyweb/credential-governance';
 
 export interface Fields {
   fieldType: string;

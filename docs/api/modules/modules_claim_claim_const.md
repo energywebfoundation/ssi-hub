@@ -10,4 +10,4 @@
 
 ### UUID\_NAMESPACE
 
-• **UUID\_NAMESPACE**: ``"5193850c-2367-4ec4-8c22-95dfbd4a2880"``
+• `Const` **UUID\_NAMESPACE**: ``"5193850c-2367-4ec4-8c22-95dfbd4a2880"``

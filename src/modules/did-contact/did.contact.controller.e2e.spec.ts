@@ -98,6 +98,7 @@ describe('DIDContactController', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await queryRunner.rollbackTransaction();
+    await queryRunner.release();
     await app.close();
   });
 

@@ -7,7 +7,7 @@ import {
   IAppDefinition,
   IOrganizationDefinition,
   IRoleDefinition,
-} from '@energyweb/iam-contracts';
+} from '@energyweb/credential-governance';
 import { EnsService } from './ens.service';
 import { OrganizationService } from '../organization/organization.service';
 import { RoleService } from '../role/role.service';
