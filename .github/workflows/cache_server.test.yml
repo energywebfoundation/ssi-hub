@@ -56,9 +56,6 @@ jobs:
       - name: Generate keys
         run: npm run generate:jwtkeys
 
-      - name: Audit package dependencies
-        run: npm audit --audit-level=critical
-
       - name: Build the app
         run: npm run build
 
@@ -130,3 +127,15 @@ jobs:
           STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
           DID_SYNC_MODE_FULL: false
           ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
+  audit:
+    name: Audit package dependencies
+    runs-on: ubuntu-latest
+    needs: [deployment]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup app dependencies
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ needs.build-install.outputs.matrix.node-version }}
+      - name: Audit package dependencies
+        run: npm audit --audit-level=critical
