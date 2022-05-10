@@ -109,8 +109,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `StakingPoolLaunched` | (`org?`: `BytesLike`, `pool?`: `string`) => `any` |
-| `StakingPoolLaunched(bytes32,address)` | (`org?`: `BytesLike`, `pool?`: `string`) => `any` |
+| `StakingPoolLaunched` | (`org?`: `BytesLike`, `pool?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `org`: `string` ; `pool`: `string`  }\> |
+| `StakingPoolLaunched(bytes32,address)` | (`org?`: `BytesLike`, `pool?`: `string`) => [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<[`string`, `string`], { `org`: `string` ; `pool`: `string`  }\> |
 
 #### Overrides
 
@@ -261,7 +261,7 @@ ___
 
 ### listeners
 
-▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): `any`[]
+▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Type parameters
 
@@ -274,11 +274,11 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter?` | `any` |
+| `eventFilter?` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
-`any`[]
+[`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\>[]
 
 #### Overrides
 
@@ -317,8 +317,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | `any` |
-| `listener` | `any` |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
@@ -362,8 +362,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | `any` |
-| `listener` | `any` |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
@@ -407,8 +407,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | `any` |
-| `listener` | `any` |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
@@ -455,7 +455,7 @@ ___
 
 ### queryFilter
 
-▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`, `any`\>[]\>
+▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Type parameters
 
@@ -468,13 +468,13 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `event` | `any` |
+| `event` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 | `fromBlockOrBlockhash?` | `string` \| `number` |
 | `toBlock?` | `string` \| `number` |
 
 #### Returns
 
-`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`, `any`\>[]\>
+`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`\>[]\>
 
 #### Overrides
 
@@ -497,7 +497,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | `any` |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
@@ -540,8 +540,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | `any` |
-| `listener` | `any` |
+| `eventFilter` | [`TypedEventFilter`](../interfaces/ethers_common.TypedEventFilter.md)<`EventArgsArray`, `EventArgsObject`\> |
+| `listener` | [`TypedListener`](../modules/ethers_common.md#typedlistener)<`EventArgsArray`, `EventArgsObject`\> |
 
 #### Returns
 
