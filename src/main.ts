@@ -25,12 +25,6 @@ global.__rootdir__ = process.cwd();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use((req, _, next) => {
-    console.log(`HTTP Request: ${req.method} ${req.originalUrl}`);
-    console.log(`HTTP headers: ${JSON.stringify(req.headers)}`);
-    next();
-  });
-
   const configService = app.get<ConfigService>(ConfigService);
 
   const sentryService = new SentryService(configService);
