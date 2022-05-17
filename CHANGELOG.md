@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/energywebfoundation/iam-cache-server/compare/v2.4.0...v2.5.0) (2022-05-17)
+
+
+### Features
+
+* add logs for debugging ([eb2c99c](https://github.com/energywebfoundation/iam-cache-server/commit/eb2c99cfc6b77fab9e1ed9f1a2fa27f1ef239379))
+
+
+### Bug Fixes
+
+* **domains:** root domain depend on chain ([032e725](https://github.com/energywebfoundation/iam-cache-server/commit/032e725abc7df0af97a58eaaafebd31b1d75e148))
+* remove debug logs ([c659929](https://github.com/energywebfoundation/iam-cache-server/commit/c659929e39e8f224f540b8729e02759c9fd7cbe5))
+
 ## [2.4.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.3.0...v2.4.0) (2022-05-10)
 
 
