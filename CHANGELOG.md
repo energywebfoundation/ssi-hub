@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.3.0...v2.5.0) (2022-05-17)
+
+
+### Features
+
+* add `decentralized-web-node` module ([0e89d3a](https://github.com/energywebfoundation/ssi-hub/commit/0e89d3aa0bf2f99b7bd35fcee3cbf0daf40bdfaa))
+* add logs for debugging ([eb2c99c](https://github.com/energywebfoundation/ssi-hub/commit/eb2c99cfc6b77fab9e1ed9f1a2fa27f1ef239379))
+* add performance tracking of did doc resolution ([167e73f](https://github.com/energywebfoundation/ssi-hub/commit/167e73f2580c032e78371e25b2129af16ad40f31))
+* delete DWN module ([adf8080](https://github.com/energywebfoundation/ssi-hub/commit/adf808003221b029a387b24d1a9f7289816ed07d))
+* obtain credential matching presentation definition ([eac8b1d](https://github.com/energywebfoundation/ssi-hub/commit/eac8b1d6a37e07300eb26d8459f0ceb75a4fa3a9))
+
+
+### Bug Fixes
+
+* **domains:** root domain depend on chain ([032e725](https://github.com/energywebfoundation/ssi-hub/commit/032e725abc7df0af97a58eaaafebd31b1d75e148))
+* **helm:** update chart version and rpc url ([f7071a9](https://github.com/energywebfoundation/ssi-hub/commit/f7071a9f9f16a63e52c5b71f3064b0ee4433eeca))
+* remove debug logs ([c659929](https://github.com/energywebfoundation/ssi-hub/commit/c659929e39e8f224f540b8729e02759c9fd7cbe5))
+
 ## [2.4.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.3.0...v2.4.0) (2022-05-10)
 
 

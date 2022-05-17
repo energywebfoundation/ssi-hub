@@ -12,7 +12,6 @@
 
 ### Properties
 
-- [contractName](ethers_DomainNotifier.DomainNotifierInterface.md#contractname)
 - [events](ethers_DomainNotifier.DomainNotifierInterface.md#events)
 - [functions](ethers_DomainNotifier.DomainNotifierInterface.md#functions)
 
@@ -23,12 +22,6 @@
 - [getEvent](ethers_DomainNotifier.DomainNotifierInterface.md#getevent)
 
 ## Properties
-
-### contractName
-
-• **contractName**: ``"DomainNotifier"``
-
-___
 
 ### events
 
@@ -42,7 +35,7 @@ ___
 
 #### Overrides
 
-utils.Interface.events
+ethers.utils.Interface.events
 
 ___
 
@@ -58,7 +51,7 @@ ___
 
 #### Overrides
 
-utils.Interface.functions
+ethers.utils.Interface.functions
 
 ## Methods
 
@@ -79,7 +72,7 @@ utils.Interface.functions
 
 #### Overrides
 
-utils.Interface.decodeFunctionResult
+ethers.utils.Interface.decodeFunctionResult
 
 ___
 
@@ -100,7 +93,7 @@ ___
 
 #### Overrides
 
-utils.Interface.encodeFunctionData
+ethers.utils.Interface.encodeFunctionData
 
 ___
 
@@ -120,4 +113,4 @@ ___
 
 #### Overrides
 
-utils.Interface.getEvent
+ethers.utils.Interface.getEvent
