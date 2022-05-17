@@ -60,7 +60,7 @@ ___
 
 ### attach
 
-▸ **attach**(`address`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+▸ **attach**(`address`): [`StakingPoolFactory`](../interfaces/ethers_StakingPoolFactory.StakingPoolFactory.md)
 
 #### Parameters
 
@@ -70,7 +70,7 @@ ___
 
 #### Returns
 
-[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+[`StakingPoolFactory`](../interfaces/ethers_StakingPoolFactory.StakingPoolFactory.md)
 
 #### Overrides
 
@@ -100,7 +100,7 @@ ___
 
 ### deploy
 
-▸ **deploy**(`_principalThreshold`, `_withdrawDelay`, `_claimManager`, `_ensRegistry`, `overrides?`): `Promise`<[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)\>
+▸ **deploy**(`_principalThreshold`, `_withdrawDelay`, `_claimManager`, `_ensRegistry`, `overrides?`): `Promise`<[`StakingPoolFactory`](../interfaces/ethers_StakingPoolFactory.StakingPoolFactory.md)\>
 
 #### Parameters
 
@@ -114,7 +114,7 @@ ___
 
 #### Returns
 
-`Promise`<[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)\>
+`Promise`<[`StakingPoolFactory`](../interfaces/ethers_StakingPoolFactory.StakingPoolFactory.md)\>
 
 #### Overrides
 
@@ -148,7 +148,7 @@ ___
 
 ### connect
 
-▸ `Static` **connect**(`address`, `signerOrProvider`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+▸ `Static` **connect**(`address`, `signerOrProvider`): [`StakingPoolFactory`](../interfaces/ethers_StakingPoolFactory.StakingPoolFactory.md)
 
 #### Parameters
 
@@ -159,7 +159,7 @@ ___
 
 #### Returns
 
-[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+[`StakingPoolFactory`](../interfaces/ethers_StakingPoolFactory.StakingPoolFactory.md)
 
 ___
 
