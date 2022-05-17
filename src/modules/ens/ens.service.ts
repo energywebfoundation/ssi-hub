@@ -37,6 +37,7 @@ export class EnsService implements OnModuleDestroy {
   private ensRegistry: ENSRegistry;
   private domainReader: DomainReader;
   private domainHierarchy: DomainHierarchy;
+  private readonly _ROOT_DOMAIN: string;
 
   constructor(
     private readonly roleService: RoleService,
@@ -54,6 +55,7 @@ export class EnsService implements OnModuleDestroy {
     const CHAIN_ID = parseInt(this.config.get<string>('CHAIN_ID'));
     const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
     const RESOLVER_V2_ADDRESS = this.config.get<string>('RESOLVER_V2_ADDRESS');
+    this._ROOT_DOMAIN = this.config.get<string>('ROOT_DOMAIN');
     const PUBLIC_RESOLVER_ADDRESS = this.config.get<string>(
       'PUBLIC_RESOLVER_ADDRESS'
     );
@@ -188,7 +190,7 @@ export class EnsService implements OnModuleDestroy {
 
   private async getAllNamespaces() {
     const domains = await this.domainHierarchy.getSubdomainsUsingResolver({
-      domain: 'iam.ewc',
+      domain: this._ROOT_DOMAIN,
       mode: 'ALL',
     });
     return domains;

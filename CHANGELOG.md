@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.3.0...v2.5.0) (2022-05-17)
+
+
+### Bug Fixes
+
+* **domains:** root domain depend on chain ([032e725](https://github.com/energywebfoundation/ssi-hub/commit/032e725abc7df0af97a58eaaafebd31b1d75e148))
+
 ## [2.4.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.3.0...v2.4.0) (2022-05-10)
 
 
