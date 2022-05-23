@@ -401,9 +401,16 @@ export class DIDService implements OnModuleInit {
 
         const token = await this.ipfsStore.get(serviceEndpoint);
 
-        const { claimData, ...claimRest } = jwt.decode(token) as {
+        const decodedData = jwt.decode(token) as {
           claimData: Record<string, string>;
         };
+
+        if (!decodedData) {
+          return { serviceEndpoint, ...rest };
+        }
+
+        const { claimData, ...claimRest } = decodedData;
+
         return {
           serviceEndpoint,
           ...rest,
