@@ -1,0 +1,23 @@
+name: Audit package dependencies
+
+# Controls when the action will run.
+on:
+  push:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.10.0'
+
+      - name: Audit package dependencies
+        run: npm audit --audit-level=critical
