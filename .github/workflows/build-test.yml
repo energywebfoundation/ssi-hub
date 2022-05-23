@@ -1,4 +1,4 @@
-name: Cache-Server Test
+name: Build and test
 
 # Controls when the action will run.
 on:
