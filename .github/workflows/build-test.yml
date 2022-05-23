@@ -56,9 +56,6 @@ jobs:
       - name: Generate keys
         run: npm run generate:jwtkeys
 
-      - name: Audit package dependencies
-        run: npm audit --audit-level=critical
-
       - name: Build the app
         run: npm run build
 
