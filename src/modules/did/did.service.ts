@@ -12,6 +12,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { firstValueFrom } from 'rxjs';
+import { CID } from 'multiformats/cid';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import { InjectQueue } from '@nestjs/bull';
@@ -394,6 +395,10 @@ export class DIDService implements OnModuleInit {
         );
         if (cachedService) return cachedService;
 
+        if (!this.isCID(serviceEndpoint)) {
+          return { serviceEndpoint, ...rest };
+        }
+
         const token = await this.ipfsStore.get(serviceEndpoint);
 
         const { claimData, ...claimRest } = jwt.decode(token) as {
@@ -407,5 +412,31 @@ export class DIDService implements OnModuleInit {
         };
       })
     );
+  }
+
+  /**
+   * Check if given value is a valid IPFS CID.
+   *
+   * ```typescript
+   * didService.isCID('Qm...');
+   * ```
+   *
+   * @param {Any} hash value to check
+   *
+   */
+  private isCID(hash: unknown): boolean {
+    try {
+      if (typeof hash === 'string') {
+        return Boolean(CID.parse(hash));
+      }
+
+      if (hash instanceof Uint8Array) {
+        return Boolean(CID.decode(hash));
+      }
+
+      return Boolean(CID.asCID(hash));
+    } catch (e) {
+      return false;
+    }
   }
 }
