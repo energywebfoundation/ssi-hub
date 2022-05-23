@@ -8,6 +8,7 @@ import {
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { QueryFailedError } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Application } from 'express';
 import * as Sentry from '@sentry/node';
@@ -29,7 +30,33 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
   constructor(protected readonly configService: ConfigService) {}
 
   private isExcludedExceptions(exception: unknown): boolean {
-    return this.EXCLUDED_EXCEPTIONS.some((item) => exception instanceof item);
+    if (this.EXCLUDED_EXCEPTIONS.some((item) => exception instanceof item)) {
+      return true;
+    }
+
+    // We are excluding this exception from Sentry logs because this exception is expected behavior from DB transaction validations.
+    // This exception is thrown when a query fails due to a constraint violation.
+    // This is not a app bug but a user input error.
+    if (
+      exception instanceof QueryFailedError &&
+      exception.message.search(
+        'duplicate key value violates unique constraint'
+      ) !== -1
+    ) {
+      return true;
+    }
+
+    // This exception is thrown when a user tries to use something else then a valid DID.
+    // This is not a app bug but a user input error.
+    if (
+      exception instanceof Error &&
+      (exception.message === 'Invalid DID' ||
+        exception.message === 'Invalid did provided')
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   async onApplicationShutdown(): Promise<void> {

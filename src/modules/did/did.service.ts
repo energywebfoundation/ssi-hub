@@ -7,7 +7,12 @@ import {
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
-import { Injectable, HttpException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  OnModuleInit,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -144,6 +149,11 @@ export class DIDService implements OnModuleInit {
       op: 'convert_cached_did_document',
       description: 'Convert cached DID document to IDIDDocument',
     });
+
+    if (!entity) {
+      throw new InternalServerErrorException('Could not add DID Document');
+    }
+
     const document = convertToIDIDDocument(entity);
     span?.finish();
     return document;
