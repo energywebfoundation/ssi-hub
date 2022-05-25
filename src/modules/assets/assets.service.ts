@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets } from 'typeorm';
+import { LogDescription } from 'ethers/lib/utils';
 import { Provider } from '../../common/provider';
 import { IdentityManager } from '../../ethers/IdentityManager';
 import { IdentityManager__factory } from '../../ethers/factories/IdentityManager__factory';
@@ -351,7 +352,7 @@ export class AssetsService {
       return {
         identity: parsedLog.args.identity,
         owner: parsedLog.args.owner,
-        at: parsedLog.args.at,
+        at: this.getAtParamFromParsedLogs(parsedLog),
       } as AssetCreatedEventValues;
     });
   }
@@ -384,7 +385,7 @@ export class AssetsService {
           identity: parsedLog.args.identity,
           owner: parsedLog.args.owner,
           offeredTo: parsedLog.args.offeredTo,
-          at: parsedLog.args.at as BigNumber,
+          at: this.getAtParamFromParsedLogs(parsedLog),
         } as unknown as T;
       })
       .sort((a, b) => a.at.toNumber() - b.at.toNumber());
@@ -436,7 +437,7 @@ export class AssetsService {
           identity: parsedLog.args.identity,
           owner: parsedLog.args.owner,
           offeredTo: parsedLog.args.offeredTo,
-          at: parsedLog.args.at as BigNumber,
+          at: this.getAtParamFromParsedLogs(parsedLog),
         } as AssetCreatedEventValues;
       });
 
@@ -573,5 +574,13 @@ export class AssetsService {
       continue;
     }
     this.logger.debug('### ASSETS SYNC FINISHED ###');
+  }
+
+  /*
+   * Get `at` parameter from parsed logs
+   */
+  private getAtParamFromParsedLogs(parsedLog: LogDescription): BigNumber {
+    const at = parsedLog.args.find((arg) => arg instanceof BigNumber);
+    return at || BigNumber.from(0);
   }
 }
