@@ -112,7 +112,7 @@ describe('ApplicationService', () => {
           `Not able to create application: ${namespace} already exists`
         )
       );
-      const createdApps = await repo.find({ namespace });
+      const createdApps = await repo.find({ where: { namespace } });
       expect(createdApps.length).toBe(1);
     });
 
@@ -159,7 +159,7 @@ describe('ApplicationService', () => {
       const namespaceHash = namehash(name);
       const app = await service.getByNamehash(namespaceHash);
 
-      expect(app).toBe(undefined);
+      expect(app).toBeNull();
     });
   });
 
@@ -179,7 +179,7 @@ describe('ApplicationService', () => {
         `notexists.apps.testOrg.iam.ewc`
       );
 
-      expect(app).toBe(undefined);
+      expect(app).toBeNull();
     });
   });
 
@@ -202,7 +202,7 @@ describe('ApplicationService', () => {
 
       const app = await service.getByNamehash(testApp.namehash);
 
-      expect(app).toBe(undefined);
+      expect(app).toBeNull();
     });
   });
 
@@ -213,7 +213,7 @@ describe('ApplicationService', () => {
 
       const app = await service.getByNamespace(testApp.namespace);
 
-      expect(app).toBe(undefined);
+      expect(app).toBeNull();
     });
   });
 });

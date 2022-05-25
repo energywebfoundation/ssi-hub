@@ -112,6 +112,7 @@ iam-cache-server-helm:
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
+    STATUS_LIST_DOMAIN: https://identitycache-dev.energyweb.org/v1
 
   opsValues:
     DB_NAME: ics

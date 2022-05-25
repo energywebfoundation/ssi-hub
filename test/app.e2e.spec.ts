@@ -7,6 +7,7 @@ import { appConfig } from '../src/common/test.utils';
 import { AppModule } from '../src/app.module';
 import { authTestSuite } from './auth';
 import { claimTestSuite } from './claim';
+import { statusList2021TestSuite } from './status-list';
 
 export let app: INestApplication;
 
@@ -38,5 +39,6 @@ describe('iam-cache-server E2E tests', () => {
   describe('Modules v1', () => {
     describe('Auth module', authTestSuite);
     describe('Claim module', claimTestSuite);
+    describe('StatusList2021 module', statusList2021TestSuite);
   });
 });

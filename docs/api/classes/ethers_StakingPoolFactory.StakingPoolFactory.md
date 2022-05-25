@@ -1,4 +1,4 @@
-# Interface: StakingPoolFactory
+# Class: StakingPoolFactory
 
 [ethers/StakingPoolFactory](../modules/ethers_StakingPoolFactory.md).StakingPoolFactory
 
@@ -10,19 +10,18 @@
 
 ## Table of contents
 
+### Constructors
+
+- [constructor](ethers_StakingPoolFactory.StakingPoolFactory.md#constructor)
+
 ### Properties
 
 - [callStatic](ethers_StakingPoolFactory.StakingPoolFactory.md#callstatic)
-- [contractName](ethers_StakingPoolFactory.StakingPoolFactory.md#contractname)
 - [estimateGas](ethers_StakingPoolFactory.StakingPoolFactory.md#estimategas)
 - [filters](ethers_StakingPoolFactory.StakingPoolFactory.md#filters)
 - [functions](ethers_StakingPoolFactory.StakingPoolFactory.md#functions)
 - [interface](ethers_StakingPoolFactory.StakingPoolFactory.md#interface)
-- [off](ethers_StakingPoolFactory.StakingPoolFactory.md#off)
-- [on](ethers_StakingPoolFactory.StakingPoolFactory.md#on)
-- [once](ethers_StakingPoolFactory.StakingPoolFactory.md#once)
 - [populateTransaction](ethers_StakingPoolFactory.StakingPoolFactory.md#populatetransaction)
-- [removeListener](ethers_StakingPoolFactory.StakingPoolFactory.md#removelistener)
 
 ### Methods
 
@@ -32,11 +31,33 @@
 - [isPool](ethers_StakingPoolFactory.StakingPoolFactory.md#ispool)
 - [launchStakingPool](ethers_StakingPoolFactory.StakingPoolFactory.md#launchstakingpool)
 - [listeners](ethers_StakingPoolFactory.StakingPoolFactory.md#listeners)
+- [off](ethers_StakingPoolFactory.StakingPoolFactory.md#off)
+- [on](ethers_StakingPoolFactory.StakingPoolFactory.md#on)
+- [once](ethers_StakingPoolFactory.StakingPoolFactory.md#once)
 - [orgsList](ethers_StakingPoolFactory.StakingPoolFactory.md#orgslist)
 - [queryFilter](ethers_StakingPoolFactory.StakingPoolFactory.md#queryfilter)
 - [removeAllListeners](ethers_StakingPoolFactory.StakingPoolFactory.md#removealllisteners)
+- [removeListener](ethers_StakingPoolFactory.StakingPoolFactory.md#removelistener)
 - [rewardPool](ethers_StakingPoolFactory.StakingPoolFactory.md#rewardpool)
 - [services](ethers_StakingPoolFactory.StakingPoolFactory.md#services)
+
+## Constructors
+
+### constructor
+
+• **new StakingPoolFactory**(`addressOrName`, `contractInterface`, `signerOrProvider?`)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `addressOrName` | `string` |
+| `contractInterface` | `ContractInterface` |
+| `signerOrProvider?` | `Provider` \| `Signer` |
+
+#### Inherited from
+
+BaseContract.constructor
 
 ## Properties
 
@@ -57,12 +78,6 @@
 #### Overrides
 
 BaseContract.callStatic
-
-___
-
-### contractName
-
-• **contractName**: ``"StakingPoolFactory"``
 
 ___
 
@@ -94,8 +109,8 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `StakingPoolLaunched` | (`org?`: `BytesLike`, `pool?`: `string`) => [`StakingPoolLaunchedEventFilter`](../modules/ethers_StakingPoolFactory.md#stakingpoollaunchedeventfilter) |
-| `StakingPoolLaunched(bytes32,address)` | (`org?`: `BytesLike`, `pool?`: `string`) => [`StakingPoolLaunchedEventFilter`](../modules/ethers_StakingPoolFactory.md#stakingpoollaunchedeventfilter) |
+| `StakingPoolLaunched` | (`org?`: `BytesLike`, `pool?`: `string`) => `any` |
+| `StakingPoolLaunched(bytes32,address)` | (`org?`: `BytesLike`, `pool?`: `string`) => `any` |
 
 #### Overrides
 
@@ -125,41 +140,11 @@ ___
 
 ### interface
 
-• **interface**: [`StakingPoolFactoryInterface`](ethers_StakingPoolFactory.StakingPoolFactoryInterface.md)
+• **interface**: [`StakingPoolFactoryInterface`](../interfaces/ethers_StakingPoolFactory.StakingPoolFactoryInterface.md)
 
 #### Overrides
 
 BaseContract.interface
-
-___
-
-### off
-
-• **off**: [`OnEvent`](ethers_common.OnEvent.md)<[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)\>
-
-#### Overrides
-
-BaseContract.off
-
-___
-
-### on
-
-• **on**: [`OnEvent`](ethers_common.OnEvent.md)<[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)\>
-
-#### Overrides
-
-BaseContract.on
-
-___
-
-### once
-
-• **once**: [`OnEvent`](ethers_common.OnEvent.md)<[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)\>
-
-#### Overrides
-
-BaseContract.once
 
 ___
 
@@ -180,16 +165,6 @@ ___
 #### Overrides
 
 BaseContract.populateTransaction
-
-___
-
-### removeListener
-
-• **removeListener**: [`OnEvent`](ethers_common.OnEvent.md)<[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)\>
-
-#### Overrides
-
-BaseContract.removeListener
 
 ## Methods
 
@@ -286,23 +261,24 @@ ___
 
 ### listeners
 
-▸ **listeners**<`TEvent`\>(`eventFilter?`): [`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+▸ **listeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter?`): `any`[]
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter?` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter?` | `any` |
 
 #### Returns
 
-[`TypedListener`](ethers_common.TypedListener.md)<`TEvent`\>[]
+`any`[]
 
 #### Overrides
 
@@ -326,6 +302,141 @@ BaseContract.listeners
 
 ___
 
+### off
+
+▸ **off**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | `any` |
+| `listener` | `any` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.off
+
+▸ **off**(`eventName`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.off
+
+___
+
+### on
+
+▸ **on**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | `any` |
+| `listener` | `any` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.on
+
+▸ **on**(`eventName`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.on
+
+___
+
+### once
+
+▸ **once**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | `any` |
+| `listener` | `any` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.once
+
+▸ **once**(`eventName`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.once
+
+___
+
 ### orgsList
 
 ▸ **orgsList**(`overrides?`): `Promise`<`string`[]\>
@@ -344,25 +455,26 @@ ___
 
 ### queryFilter
 
-▸ **queryFilter**<`TEvent`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<`TEvent`[]\>
+▸ **queryFilter**<`EventArgsArray`, `EventArgsObject`\>(`event`, `fromBlockOrBlockhash?`, `toBlock?`): `Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`, `any`\>[]\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `event` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `event` | `any` |
 | `fromBlockOrBlockhash?` | `string` \| `number` |
 | `toBlock?` | `string` \| `number` |
 
 #### Returns
 
-`Promise`<`TEvent`[]\>
+`Promise`<[`TypedEvent`](../interfaces/ethers_common.TypedEvent.md)<`EventArgsArray` & `EventArgsObject`, `any`\>[]\>
 
 #### Overrides
 
@@ -372,19 +484,20 @@ ___
 
 ### removeAllListeners
 
-▸ **removeAllListeners**<`TEvent`\>(`eventFilter`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+▸ **removeAllListeners**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `TEvent` | extends [`TypedEvent`](ethers_common.TypedEvent.md)<`any`, `any`, `TEvent`\> |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `eventFilter` | [`TypedEventFilter`](ethers_common.TypedEventFilter.md)<`TEvent`\> |
+| `eventFilter` | `any` |
 
 #### Returns
 
@@ -409,6 +522,51 @@ BaseContract.removeAllListeners
 #### Overrides
 
 BaseContract.removeAllListeners
+
+___
+
+### removeListener
+
+▸ **removeListener**<`EventArgsArray`, `EventArgsObject`\>(`eventFilter`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `EventArgsArray` | extends `any`[] |
+| `EventArgsObject` | `EventArgsObject` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventFilter` | `any` |
+| `listener` | `any` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.removeListener
+
+▸ **removeListener**(`eventName`, `listener`): [`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `eventName` | `string` |
+| `listener` | `Listener` |
+
+#### Returns
+
+[`StakingPoolFactory`](ethers_StakingPoolFactory.StakingPoolFactory.md)
+
+#### Overrides
+
+BaseContract.removeListener
 
 ___
 

@@ -23,6 +23,7 @@
 - [update](modules_role_role_service.RoleService.md#update)
 - [verifyEnrolmentIssuer](modules_role_role_service.RoleService.md#verifyenrolmentissuer)
 - [verifyEnrolmentPrecondition](modules_role_role_service.RoleService.md#verifyenrolmentprecondition)
+- [verifyRevoker](modules_role_role_service.RoleService.md#verifyrevoker)
 - [verifyUserRoles](modules_role_role_service.RoleService.md#verifyuserroles)
 
 ## Constructors
@@ -173,7 +174,7 @@ ___
 | :------ | :------ |
 | `__namedParameters` | `Object` |
 | `__namedParameters.appNamespace?` | `string` |
-| `__namedParameters.metadata` | `IRoleDefinition` |
+| `__namedParameters.metadata` | `IRoleDefinitionV2` \| `IRoleDefinition` |
 | `__namedParameters.name` | `string` |
 | `__namedParameters.namehash` | `string` |
 | `__namedParameters.namespace` | `string` |
@@ -269,6 +270,24 @@ ___
 | `__namedParameters` | `Object` |
 | `__namedParameters.claimType` | `string` |
 | `__namedParameters.userDID` | `string` |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
+
+### verifyRevoker
+
+▸ **verifyRevoker**(`__namedParameters`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.revokerDID` | `string` |
 
 #### Returns
 

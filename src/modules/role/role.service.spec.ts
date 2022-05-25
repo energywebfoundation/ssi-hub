@@ -132,9 +132,15 @@ describe('RoleService', () => {
           version: 1.0,
           enrolmentPreconditions: [],
           roleType: 'app',
-          fields: [],
+          requestorFields: [],
+          issuerFields: [],
           issuer: {
             issuerType: 'Role',
+            did: [owner],
+            roleName: 'testRole',
+          },
+          revoker: {
+            revokerType: 'Role',
             did: [owner],
             roleName: 'testRole',
           },
@@ -149,7 +155,7 @@ describe('RoleService', () => {
         expect.stringContaining(`Role namespace ${namespace} already exists`)
       );
 
-      const createdRoles = await repo.find({ namespace });
+      const createdRoles = await repo.find({ where: { namespace } });
       expect(createdRoles.length).toBe(1);
     });
 
@@ -168,9 +174,15 @@ describe('RoleService', () => {
           version: 1.0,
           enrolmentPreconditions: [],
           roleType: 'app',
-          fields: [],
+          requestorFields: [],
+          issuerFields: [],
           issuer: {
             issuerType: 'Role',
+            did: [owner],
+            roleName: 'testRole',
+          },
+          revoker: {
+            revokerType: 'Role',
             did: [owner],
             roleName: 'testRole',
           },
@@ -204,9 +216,15 @@ describe('RoleService', () => {
           version: 1.0,
           enrolmentPreconditions: [],
           roleType: 'app',
-          fields: [],
+          requestorFields: [],
+          issuerFields: [],
           issuer: {
             issuerType: 'Role',
+            did: [owner],
+            roleName: 'testRole',
+          },
+          revoker: {
+            revokerType: 'Role',
             did: [owner],
             roleName: 'testRole',
           },
@@ -242,7 +260,7 @@ describe('RoleService', () => {
       const namespaceHash = namehash(name);
       const role = await service.getByNamehash(namespaceHash);
 
-      expect(role).toBe(undefined);
+      expect(role).toBeNull();
     });
   });
 
@@ -262,7 +280,7 @@ describe('RoleService', () => {
         `nonexisting.roles.testApp.apps.iam.ewc`
       );
 
-      expect(role).toBe(undefined);
+      expect(role).toBeNull();
     });
   });
 
@@ -308,7 +326,7 @@ describe('RoleService', () => {
       const testRole = roles[0];
       await service.removeByNameHash(testRole.namehash);
       const role = await service.getByNamehash(testRole.namehash);
-      expect(role).toBe(undefined);
+      expect(role).toBeNull();
     });
   });
 
@@ -317,7 +335,7 @@ describe('RoleService', () => {
       const testRole = roles[0];
       await service.remove(testRole.namespace);
       const role = await service.getByNamespace(testRole.namespace);
-      expect(role).toBe(undefined);
+      expect(role).toBeNull();
     });
   });
 });

@@ -5,8 +5,7 @@ import { initWithPrivateKeySigner, RegistrationTypes } from 'iam-client-lib';
 import { v4 } from 'uuid';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
-import { createRole } from './utils';
-import { randomUser } from '../utils';
+import { randomUser, createRole } from '../utils';
 import { ClaimService } from '../../src/modules/claim/services';
 import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
 
@@ -114,7 +113,8 @@ export const claimWithoutRequestTestSuite = () => {
     await createRole(
       {
         name: 'test1',
-        did: issuer.wallet.address,
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
         ownerAddr: issuer.wallet.address,
       },
       roleService
@@ -152,7 +152,8 @@ export const claimWithoutRequestTestSuite = () => {
     await createRole(
       {
         name: 'test2',
-        did: issuer.wallet.address,
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
         ownerAddr: issuer.wallet.address,
       },
       roleService
@@ -190,7 +191,8 @@ export const claimWithoutRequestTestSuite = () => {
     await createRole(
       {
         name: 'test2',
-        did: issuer.wallet.address,
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
         ownerAddr: issuer.wallet.address,
       },
       roleService

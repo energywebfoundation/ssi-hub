@@ -8,8 +8,7 @@ import { Keys } from '@ew-did-registry/keys';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
 import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
-import { createRole } from './utils';
-import { randomUser } from '../utils';
+import { randomUser, createRole } from '../utils';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -131,7 +130,8 @@ export const claimWithRequestTestSuite = () => {
     await createRole(
       {
         name: 'test1',
-        did: issuer.wallet.address,
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
         ownerAddr: issuer.wallet.address,
       },
       roleService
@@ -199,7 +199,8 @@ export const claimWithRequestTestSuite = () => {
     await createRole(
       {
         name: 'test3',
-        did: issuer.wallet.address,
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
         ownerAddr: issuer.wallet.address,
       },
       roleService

@@ -128,7 +128,7 @@ export class ClaimService {
   }
 
   public async reject({ id, rejectionReason }: ClaimRejectionDTO) {
-    const claim = await this.roleClaimRepository.findOne(id);
+    const claim = await this.roleClaimRepository.findOneBy({ id });
     const updatedClaim = RoleClaim.create({
       ...claim,
       isRejected: true,
@@ -142,7 +142,7 @@ export class ClaimService {
    * @param id claim ID
    */
   public async getById(id: string): Promise<RoleClaim> {
-    return this.roleClaimRepository.findOne(id);
+    return this.roleClaimRepository.findOneBy({ id });
   }
 
   /**

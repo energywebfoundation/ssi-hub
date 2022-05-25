@@ -5,13 +5,14 @@ import { utils } from 'ethers';
 import chunk from 'lodash.chunk';
 import { LogLevel } from '@ethersproject/logger';
 import {
-  IRoleDefinition,
   IAppDefinition,
   IOrganizationDefinition,
   DomainReader,
   DomainHierarchy,
   ResolverContractType,
   VOLTA_CHAIN_ID,
+  IRoleDefinitionV2,
+  IRoleDefinition,
 } from '@energyweb/credential-governance';
 import { PublicResolver__factory } from '../../ethers/factories/PublicResolver__factory';
 import { RoleService } from '../role/role.service';
@@ -247,7 +248,11 @@ export class EnsService implements OnModuleDestroy {
     owner,
     hash,
   }: {
-    data: IRoleDefinition | IOrganizationDefinition | IAppDefinition;
+    data:
+      | IRoleDefinitionV2
+      | IRoleDefinition
+      | IOrganizationDefinition
+      | IAppDefinition;
     namespace: string;
     owner: string;
     hash: string;

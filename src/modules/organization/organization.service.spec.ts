@@ -90,7 +90,7 @@ describe('OrganizationService', () => {
       expect(MockLogger.debug).toHaveBeenCalledWith(
         expect.stringContaining(`namespace ${namespace} already exists`)
       );
-      const createdOrgs = await repo.find({ namespace });
+      const createdOrgs = await repo.find({ where: { namespace } });
       expect(createdOrgs.length).toBe(1);
     });
 
@@ -139,7 +139,7 @@ describe('OrganizationService', () => {
       const namespaceHash = namehash(name);
       const org = await service.getByNamehash(namespaceHash);
 
-      expect(org).toBe(undefined);
+      expect(org).toBeNull();
     });
   });
 
@@ -157,7 +157,7 @@ describe('OrganizationService', () => {
     it('getByNamespace() it should return undefined when using namespace that does not exist', async () => {
       const org = await service.getByNamespace(`notexists.iam.ewc`);
 
-      expect(org).toBe(undefined);
+      expect(org).toBeNull();
     });
   });
 
@@ -180,7 +180,7 @@ describe('OrganizationService', () => {
 
       const org = await service.getByNamehash(testOrg.namehash);
 
-      expect(org).toBe(undefined);
+      expect(org).toBeNull();
     });
   });
 
@@ -191,7 +191,7 @@ describe('OrganizationService', () => {
 
       const org = await service.getByNamespace(testOrg.namespace);
 
-      expect(org).toBe(undefined);
+      expect(org).toBeNull();
     });
   });
 
