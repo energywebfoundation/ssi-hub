@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.6.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.5.0...v2.6.0) (2022-05-30)
+
+
+### Features
+
+* avoid report common error to Sentry ([11bfebc](https://github.com/energywebfoundation/ssi-hub/commit/11bfebcb0e30b188d07c5e8d550eccc668f2f0d9))
+
+
+### Bug Fixes
+
+* add IPFS CID checking ([b5951d3](https://github.com/energywebfoundation/ssi-hub/commit/b5951d30433b64638d3d4a2b4916fb4d21276f51))
+* add JWT token checking ([42ac60c](https://github.com/energywebfoundation/ssi-hub/commit/42ac60c865d70ac940b0d8e436eeea6c7b3e72d5))
+* **assets:** fix parsing assets logs ([603af0b](https://github.com/energywebfoundation/ssi-hub/commit/603af0b92f9f6798f2e1a487b8551f67e938ba59))
+
 ## [2.5.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.3.0...v2.5.0) (2022-05-17)
 
 
