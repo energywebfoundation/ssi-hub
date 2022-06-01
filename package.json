@@ -44,7 +44,7 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@energyweb/credential-governance": "^1.0.1-alpha.4.0",
+    "@energyweb/credential-governance": "^1.0.1-alpha.68.0",
     "@ensdomains/ens": "^0.4.5",
     "@ensdomains/resolver": "^0.2.4",
     "@ethersproject/abstract-provider": "5.4.1",
