@@ -42,6 +42,3 @@ services:
       - main
 networks:
   main:
-
-volumes:
-  dgraph:
