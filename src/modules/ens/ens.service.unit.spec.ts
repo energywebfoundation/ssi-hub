@@ -85,7 +85,7 @@ const ROLE_MOCK_DATA: IRoleDefinition = {
   version: 1,
   roleType: 'app',
   roleName: 'admin',
-  fields: [
+  requestorFields: [
     {
       fieldType: 'a',
       label: 'bb',

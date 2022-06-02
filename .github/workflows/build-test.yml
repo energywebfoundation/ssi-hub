@@ -1,4 +1,4 @@
-name: Cache-Server Test
+name: Build and test
 
 # Controls when the action will run.
 on:
@@ -55,9 +55,6 @@ jobs:
 
       - name: Generate keys
         run: npm run generate:jwtkeys
-
-      - name: Audit package dependencies
-        run: npm audit --audit-level=critical
 
       - name: Build the app
         run: npm run build

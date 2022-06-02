@@ -22,6 +22,8 @@ RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
   npm ci --production && \
   ./docker/node-modules-clean.sh
 
+RUN curl -sf https://gobinaries.com/tj/node-prune | sh && node-prune
+
 RUN npm run generate:jwtkeys
 
 FROM $IMAGE
