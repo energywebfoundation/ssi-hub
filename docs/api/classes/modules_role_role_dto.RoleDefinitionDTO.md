@@ -46,10 +46,6 @@ ___
 
 • **fields**: [`FieldsDTO`](modules_role_role_dto.FieldsDTO.md)[]
 
-#### Implementation of
-
-IRoleDefinition.fields
-
 ___
 
 ### issuer
