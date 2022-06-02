@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/energywebfoundation/iam-cache-server/compare/v2.4.0...v2.7.0) (2022-06-02)
+
+
+### Features
+
+* add logs for debugging ([eb2c99c](https://github.com/energywebfoundation/iam-cache-server/commit/eb2c99cfc6b77fab9e1ed9f1a2fa27f1ef239379))
+* avoid report common error to Sentry ([11bfebc](https://github.com/energywebfoundation/iam-cache-server/commit/11bfebcb0e30b188d07c5e8d550eccc668f2f0d9))
+
+
+### Bug Fixes
+
+* add IPFS CID checking ([b5951d3](https://github.com/energywebfoundation/iam-cache-server/commit/b5951d30433b64638d3d4a2b4916fb4d21276f51))
+* add JWT token checking ([42ac60c](https://github.com/energywebfoundation/iam-cache-server/commit/42ac60c865d70ac940b0d8e436eeea6c7b3e72d5))
+* **assets:** fix parsing assets logs ([603af0b](https://github.com/energywebfoundation/iam-cache-server/commit/603af0b92f9f6798f2e1a487b8551f67e938ba59))
+* **domains:** root domain depend on chain ([032e725](https://github.com/energywebfoundation/iam-cache-server/commit/032e725abc7df0af97a58eaaafebd31b1d75e148))
+* remove debug logs ([c659929](https://github.com/energywebfoundation/iam-cache-server/commit/c659929e39e8f224f540b8729e02759c9fd7cbe5))
+
+## [2.6.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.5.0...v2.6.0) (2022-05-30)
+
+
+### Features
+
+* avoid report common error to Sentry ([11bfebc](https://github.com/energywebfoundation/ssi-hub/commit/11bfebcb0e30b188d07c5e8d550eccc668f2f0d9))
+
+
+### Bug Fixes
+
+* add IPFS CID checking ([b5951d3](https://github.com/energywebfoundation/ssi-hub/commit/b5951d30433b64638d3d4a2b4916fb4d21276f51))
+* add JWT token checking ([42ac60c](https://github.com/energywebfoundation/ssi-hub/commit/42ac60c865d70ac940b0d8e436eeea6c7b3e72d5))
+* **assets:** fix parsing assets logs ([603af0b](https://github.com/energywebfoundation/ssi-hub/commit/603af0b92f9f6798f2e1a487b8551f67e938ba59))
+
 ## [2.5.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.3.0...v2.5.0) (2022-05-17)
 
 

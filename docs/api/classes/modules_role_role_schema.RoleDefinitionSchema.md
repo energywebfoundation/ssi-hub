@@ -44,10 +44,6 @@ ___
 
 • **fields**: [`Fields`](../interfaces/modules_role_role_types.Fields.md)[]
 
-#### Implementation of
-
-IRoleDefinition.fields
-
 ___
 
 ### issuer
