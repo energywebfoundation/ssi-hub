@@ -25,6 +25,7 @@
 - [reject](modules_claim_services_claim_service.ClaimService.md#reject)
 - [removeById](modules_claim_services_claim_service.ClaimService.md#removebyid)
 - [rolesByIssuer](modules_claim_services_claim_service.ClaimService.md#rolesbyissuer)
+- [rolesByRevoker](modules_claim_services_claim_service.ClaimService.md#rolesbyrevoker)
 - [saveIssuedClaim](modules_claim_services_claim_service.ClaimService.md#saveissuedclaim)
 - [idOfClaim](modules_claim_services_claim_service.ClaimService.md#idofclaim)
 
@@ -331,6 +332,26 @@ ___
 #### Returns
 
 `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+___
+
+### rolesByRevoker
+
+▸ **rolesByRevoker**(`revokerDid`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+Get allowed roles to revoke by given DID
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `revokerDid` | `string` | revoker DID |
+
+#### Returns
+
+`Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+allowed roles to revoke
 
 ___
 
