@@ -1,18 +1,18 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { utils } from 'ethers';
-import { StatusListCredential } from './status-list-credential.entity';
 import { URL } from 'url';
 import { STATUS_LIST_MODULE_PATH } from '../status-list.const';
 import { StatusList2021EntryDto } from '../dtos/credential-status.dto';
+import { NamespaceStatusList } from './namespace-status-list.entity';
 
 @Entity()
-export class NamespaceRevocations {
+export class NamespaceStatusLists {
   static create(
-    data: Pick<NamespaceRevocations, 'namespace'> & {
+    data: Pick<NamespaceStatusLists, 'namespace'> & {
       id?: string;
     }
-  ): NamespaceRevocations {
-    const entity = new NamespaceRevocations();
+  ): NamespaceStatusLists {
+    const entity = new NamespaceStatusLists();
     Object.assign(entity, data);
 
     if (!data.id) {
@@ -30,11 +30,11 @@ export class NamespaceRevocations {
   namespace: string;
 
   @OneToMany(
-    () => StatusListCredential,
-    (statusListCredential) => statusListCredential.namespace,
+    () => NamespaceStatusList,
+    (namespaceStatusList) => namespaceStatusList.namespace,
     { cascade: true }
   )
-  statusListCredentials: StatusListCredential[];
+  lists: NamespaceStatusList[];
 
   public createEntry(
     statusListDomain: string,
@@ -45,15 +45,20 @@ export class NamespaceRevocations {
       statusListDomain
     ).href;
 
-    this.statusListCredentials.push(
-      StatusListCredential.create({ id: statusListCredential, namespace: this })
+    this.lists.push(
+      NamespaceStatusList.create({ statusListId: statusListCredential })
     );
 
     return {
+      id: statusListCredential,
       type: 'StatusList2021Entry',
       statusPurpose: 'revocation',
-      statusListIndex: '0',
+      statusListIndex: '0', // because we are using one-to-one mapping
       statusListCredential,
     };
+  }
+
+  public hasList(statusListId: string): boolean {
+    return !!this.lists.find((item) => item.statusListId === statusListId);
   }
 }

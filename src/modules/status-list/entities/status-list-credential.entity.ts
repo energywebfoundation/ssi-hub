@@ -1,21 +1,47 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { StatusListVerifiableCredentialDto } from '../dtos/status-list-verifiable-credential.dto';
-import { NamespaceRevocations } from './namespace-revocations.entity';
+import { gzip } from 'pako';
+import { StatusListCredentialDto } from '../dtos';
+import { DID } from '../../did/did.types';
 
 @Entity()
 export class StatusListCredential {
-  static create(data: StatusListCredential): StatusListCredential {
+  static create(
+    data: Pick<StatusListCredential, 'statusListId' | 'vc'>
+  ): StatusListCredential {
     const entity = new StatusListCredential();
     Object.assign(entity, data);
     return entity;
   }
 
   @PrimaryColumn()
-  id: string;
+  statusListId: string;
 
   @Column({ type: 'jsonb', nullable: true })
   vc?: StatusListVerifiableCredentialDto;
 
-  @ManyToOne(() => NamespaceRevocations)
-  namespace: NamespaceRevocations;
+  public getStatusListCredential(issuerDid: string): StatusListCredentialDto {
+    const array = Uint8Array.from([1]);
+    const encodedList = Buffer.from(gzip(array)).toString('base64');
+
+    // https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential
+    const statusListCredential = {
+      '@context': [
+        'https://www.w3.org/2018/credentials/v1',
+        'https://w3id.org/vc/status-list/2021/v1',
+      ],
+      id: this.statusListId,
+      type: ['VerifiableCredential', 'StatusList2021Credential'],
+      issuer: new DID(issuerDid).withHexChain(),
+      issuanceDate: new Date().toISOString(),
+      credentialSubject: {
+        id: this.statusListId,
+        type: 'StatusList2021',
+        statusPurpose: 'revocation',
+        encodedList,
+      },
+    };
+
+    return statusListCredential;
+  }
 }

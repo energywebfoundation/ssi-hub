@@ -4,5 +4,5 @@
 
 ### Classes
 
-- [SignRevokeInputDto](../classes/modules_status_list_dtos_sign_revoke_input_dto.SignRevokeInputDto.md)
-- [SignRevokeOptionsDto](../classes/modules_status_list_dtos_sign_revoke_input_dto.SignRevokeOptionsDto.md)
+- [FinalizeUpdateInputDto](../classes/modules_status_list_dtos_sign_revoke_input_dto.FinalizeUpdateInputDto.md)
+- [FinalizeUpdateOptionsDto](../classes/modules_status_list_dtos_sign_revoke_input_dto.FinalizeUpdateOptionsDto.md)

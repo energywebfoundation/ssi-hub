@@ -13,6 +13,8 @@
 - [id](modules_status_list_entities_status_list_entry_entity.StatusListEntry.md#id)
 - [statusListCredential](modules_status_list_entities_status_list_entry_entity.StatusListEntry.md#statuslistcredential)
 - [statusListIndex](modules_status_list_entities_status_list_entry_entity.StatusListEntry.md#statuslistindex)
+- [statusPurpose](modules_status_list_entities_status_list_entry_entity.StatusListEntry.md#statuspurpose)
+- [type](modules_status_list_entities_status_list_entry_entity.StatusListEntry.md#type)
 
 ### Methods
 
@@ -41,6 +43,18 @@ ___
 ### statusListIndex
 
 • **statusListIndex**: `string`
+
+___
+
+### statusPurpose
+
+• **statusPurpose**: `string`
+
+___
+
+### type
+
+• **type**: `string`
 
 ## Methods
 

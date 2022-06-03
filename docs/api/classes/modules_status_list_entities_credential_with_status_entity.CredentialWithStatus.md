@@ -16,6 +16,8 @@
 
 ### Methods
 
+- [associateEntry](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md#associateentry)
+- [getCredentialStatus](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md#getcredentialstatus)
 - [create](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md#create)
 
 ## Constructors
@@ -44,6 +46,40 @@ ___
 
 ## Methods
 
+### associateEntry
+
+▸ **associateEntry**(`entry`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `entry` | [`StatusListEntry`](modules_status_list_entities_status_list_entry_entity.StatusListEntry.md) |
+
+#### Returns
+
+`void`
+
+___
+
+### getCredentialStatus
+
+▸ **getCredentialStatus**(): `Object`
+
+#### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+| `statusListCredential` | `string` |
+| `statusListIndex` | `string` |
+| `statusPurpose` | `string` |
+| `type` | `string` |
+
+___
+
 ### create
 
 ▸ `Static` **create**(`data`): [`CredentialWithStatus`](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md)
@@ -52,7 +88,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `data` | [`CredentialWithStatus`](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md) |
+| `data` | `Pick`<[`CredentialWithStatus`](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md), ``"namespace"`` \| ``"id"``\> |
 
 #### Returns
 

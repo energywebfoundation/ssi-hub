@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClaimModule } from '../claim/claim.module';
 import { DIDModule } from '../did/did.module';
 import { RoleModule } from '../role/role.module';
 import { RoleService } from '../role/role.service';
 import {
   CredentialWithStatus,
   StatusListCredential,
-  NamespaceRevocations,
+  NamespaceStatusLists,
   StatusListEntry,
+  NamespaceStatusList,
 } from './entities';
 import { StatusListController } from './status-list.controller';
 import { StatusListService } from './status-list.service';
@@ -16,10 +18,12 @@ import { StatusListService } from './status-list.service';
   imports: [
     RoleModule,
     DIDModule,
+    ClaimModule,
     TypeOrmModule.forFeature([
       StatusListCredential,
       CredentialWithStatus,
-      NamespaceRevocations,
+      NamespaceStatusLists,
+      NamespaceStatusList,
       StatusListEntry,
     ]),
   ],

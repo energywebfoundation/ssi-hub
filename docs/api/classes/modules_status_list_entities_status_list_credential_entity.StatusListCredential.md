@@ -10,12 +10,12 @@
 
 ### Properties
 
-- [id](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#id)
-- [namespace](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#namespace)
+- [statusListId](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#statuslistid)
 - [vc](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#vc)
 
 ### Methods
 
+- [getStatusListCredential](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#getstatuslistcredential)
 - [create](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#create)
 
 ## Constructors
@@ -26,15 +26,9 @@
 
 ## Properties
 
-### id
+### statusListId
 
-• **id**: `string`
-
-___
-
-### namespace
-
-• **namespace**: [`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)
+• **statusListId**: `string`
 
 ___
 
@@ -44,6 +38,22 @@ ___
 
 ## Methods
 
+### getStatusListCredential
+
+▸ **getStatusListCredential**(`issuerDid`): [`StatusListCredentialDto`](modules_status_list_dtos_status_list_credential_dto.StatusListCredentialDto.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `issuerDid` | `string` |
+
+#### Returns
+
+[`StatusListCredentialDto`](modules_status_list_dtos_status_list_credential_dto.StatusListCredentialDto.md)
+
+___
+
 ### create
 
 ▸ `Static` **create**(`data`): [`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md)
@@ -52,7 +62,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `data` | [`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md) |
+| `data` | `Pick`<[`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md), ``"statusListId"`` \| ``"vc"``\> |
 
 #### Returns
 

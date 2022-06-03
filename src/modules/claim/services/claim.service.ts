@@ -1,4 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
+import jwt from 'jsonwebtoken';
+import { v5 } from 'uuid';
 import {
   IClaimRejection,
   IClaimRequest,
@@ -13,14 +17,11 @@ import {
 } from '../claim.dto';
 import { Claim } from '../entities/claim.entity';
 import { RoleClaim } from '../entities/roleClaim.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
-import jwt from 'jsonwebtoken';
-import { v5 } from 'uuid';
 import { AssetsService } from '../../assets/assets.service';
 import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { UUID_NAMESPACE } from '../claim.const';
+
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -326,6 +327,27 @@ export class ClaimService {
   }
 
   /**
+   * Get approved claim for given did and claim type
+   * @param options.subject subject DID
+   * @param options.claimType claim type
+   */
+  async getByClaimType({
+    subject,
+    claimType,
+  }: {
+    subject: string;
+    claimType: string;
+  }) {
+    return await this.roleClaimRepository.findOne({
+      where: {
+        subject,
+        claimType,
+        isAccepted: true,
+      },
+    });
+  }
+
+  /**
    * delete claim with matching ID
    * @param id claim ID
    */
@@ -417,6 +439,39 @@ export class ClaimService {
     return namespace
       ? roles.filter((r: Role) => r.namespace === namespace)
       : roles;
+  }
+
+  /**
+   * Get allowed roles to revoke by given DID
+   * @param {String} revokerDid - revoker DID
+   * @returns allowed roles to revoke
+   */
+  public async rolesByRevoker(revokerDid: string): Promise<Role[]> {
+    const [revokerClaims, allRoles] = await Promise.all([
+      this.getBySubject({
+        subject: revokerDid,
+        filters: { isAccepted: true },
+      }),
+      this.roleService.getAll(),
+    ]);
+
+    const revokerRoles = revokerClaims.map((r) => r.claimType);
+
+    const isRevokerAllowedToRevoke = (role: Role) => {
+      const revokerDefinition = role.definition?.revoker;
+      if (!revokerDefinition) return false;
+
+      switch (revokerDefinition.revokerType) {
+        case 'DID':
+          return revokerDefinition.did?.includes(revokerDid);
+        case 'ROLE':
+          return revokerRoles.includes(revokerDefinition.roleName);
+        default:
+          return false;
+      }
+    };
+
+    return allRoles.filter(isRevokerAllowedToRevoke);
   }
 
   private async filterUserRelatedClaims(

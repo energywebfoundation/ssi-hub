@@ -14,8 +14,8 @@
 - [addStatusListEntry](modules_status_list_status_list_service.StatusListService.md#addstatuslistentry)
 - [getCredential](modules_status_list_status_list_service.StatusListService.md#getcredential)
 - [getNamespace](modules_status_list_status_list_service.StatusListService.md#getnamespace)
+- [getNamespaceByStatusListId](modules_status_list_status_list_service.StatusListService.md#getnamespacebystatuslistid)
 - [getStatusList](modules_status_list_status_list_service.StatusListService.md#getstatuslist)
-- [isCredentialRevoked](modules_status_list_status_list_service.StatusListService.md#iscredentialrevoked)
 - [markStatusListCredential](modules_status_list_status_list_service.StatusListService.md#markstatuslistcredential)
 - [verifyCredential](modules_status_list_status_list_service.StatusListService.md#verifycredential)
 
@@ -23,7 +23,7 @@
 
 ### constructor
 
-• **new StatusListService**(`configService`, `credentialWithStatusRepository`, `namespaceRevocationsRepository`, `statusListCredentialRepository`)
+• **new StatusListService**(`configService`, `credentialWithStatusRepository`, `namespaceStatusListsRepository`, `namespaceStatusListRepository`, `statusListCredentialRepository`)
 
 #### Parameters
 
@@ -31,7 +31,8 @@
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `credentialWithStatusRepository` | `Repository`<[`CredentialWithStatus`](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md)\> |
-| `namespaceRevocationsRepository` | `Repository`<[`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)\> |
+| `namespaceStatusListsRepository` | `Repository`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\> |
+| `namespaceStatusListRepository` | `Repository`<[`NamespaceStatusList`](modules_status_list_entities_namespace_status_list_entity.NamespaceStatusList.md)\> |
 | `statusListCredentialRepository` | `Repository`<[`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md)\> |
 
 ## Methods
@@ -100,9 +101,9 @@ ___
 
 ### getNamespace
 
-▸ **getNamespace**(`namespace`): `Promise`<[`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)\>
+▸ **getNamespace**(`namespace`): `Promise`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\>
 
-Get or create and get namespace revocations.
+Get or create and get namespace status list.
 
 #### Parameters
 
@@ -112,9 +113,29 @@ Get or create and get namespace revocations.
 
 #### Returns
 
-`Promise`<[`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)\>
+`Promise`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\>
 
-namespace revocations
+namespace status list
+
+___
+
+### getNamespaceByStatusListId
+
+▸ **getNamespaceByStatusListId**(`statusListId`): `Promise`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\>
+
+Get namespace status list by given status list id.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `statusListId` | `string` | namespace |
+
+#### Returns
+
+`Promise`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\>
+
+namespace status list
 
 ___
 
@@ -135,26 +156,6 @@ Get status list credential.
 `Promise`<[`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md)\>
 
 status list credential
-
-___
-
-### isCredentialRevoked
-
-▸ **isCredentialRevoked**(`credentialId`): `Promise`<`boolean`\>
-
-Check if credential is revoked. Revoked credential has StatusList2021Credential.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `credentialId` | `string` | verifiable credential id |
-
-#### Returns
-
-`Promise`<`boolean`\>
-
-true if credential is revoked
 
 ___
 

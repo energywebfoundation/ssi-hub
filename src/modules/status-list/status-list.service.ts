@@ -3,18 +3,18 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { verifyCredential } from 'didkit-wasm-node';
-import { gzip } from 'pako';
-import { CredentialWithStatusDto } from './dtos/credential-status.dto';
-import { CredentialDto } from './dtos/credential.dto';
-import { VerifiableCredentialDto } from './dtos/verifiable-credential.dto';
-import { StatusListCredentialDto } from './dtos/status-list-credential.dto';
-import { StatusListVerifiableCredentialDto } from './dtos/status-list-verifiable-credential.dto';
-import { DID } from '../did/did.types';
+import {
+  CredentialWithStatusDto,
+  CredentialDto,
+  VerifiableCredentialDto,
+  StatusListCredentialDto,
+  StatusListVerifiableCredentialDto,
+} from './dtos';
 import {
   CredentialWithStatus,
   StatusListCredential,
-  NamespaceRevocations,
-  StatusListEntry,
+  NamespaceStatusLists,
+  NamespaceStatusList,
 } from './entities';
 
 @Injectable()
@@ -23,8 +23,10 @@ export class StatusListService {
     private readonly configService: ConfigService,
     @InjectRepository(CredentialWithStatus)
     private readonly credentialWithStatusRepository: Repository<CredentialWithStatus>,
-    @InjectRepository(NamespaceRevocations)
-    private readonly namespaceRevocationsRepository: Repository<NamespaceRevocations>,
+    @InjectRepository(NamespaceStatusLists)
+    private readonly namespaceStatusListsRepository: Repository<NamespaceStatusLists>,
+    @InjectRepository(NamespaceStatusList)
+    private readonly namespaceStatusListRepository: Repository<NamespaceStatusList>,
     @InjectRepository(StatusListCredential)
     private readonly statusListCredentialRepository: Repository<StatusListCredential>
   ) {}
@@ -39,39 +41,42 @@ export class StatusListService {
   async addStatusListEntry(
     credential: CredentialDto
   ): Promise<CredentialWithStatusDto> {
+    const credentialId = credential.id;
     const namespace = credential.credentialSubject.role.namespace;
-    let statusListEntity = await this.getCredential(credential.id);
-    const namespaceRevocations = await this.getNamespace(namespace);
 
-    const entry = namespaceRevocations.createEntry(
-      this.configService.get('STATUS_LIST_DOMAIN'),
-      credential.id
-    );
+    const persistedCredential = await this.getCredential(credentialId);
 
-    if (!statusListEntity) {
-      await this.credentialWithStatusRepository.manager.transaction(
-        async (transactionalEntityManager) => {
-          const statusListEntry = await transactionalEntityManager.save(
-            StatusListEntry.create({
-              statusListIndex: entry.statusListIndex, // because we are using one-to-one mapping
-              statusListCredential: entry.statusListCredential,
-            })
-          );
-
-          statusListEntity = await transactionalEntityManager.save(
-            CredentialWithStatus.create({
-              id: credential.id,
-              namespace: credential.credentialSubject.role.namespace,
-              entry: statusListEntry,
-            })
-          );
-
-          await transactionalEntityManager.save(namespaceRevocations);
-        }
-      );
+    if (persistedCredential) {
+      return {
+        ...credential,
+        credentialStatus: persistedCredential.getCredentialStatus(),
+      };
     }
 
-    return { ...credential, credentialStatus: entry };
+    const namespaceStatusLists = await this.getNamespace(namespace);
+    const entry = namespaceStatusLists.createEntry(
+      this.configService.get('STATUS_LIST_DOMAIN'),
+      credentialId
+    );
+
+    const credentialWithStatus = CredentialWithStatus.create({
+      id: credentialId,
+      namespace,
+    });
+
+    credentialWithStatus.associateEntry(entry);
+
+    await this.credentialWithStatusRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(credentialWithStatus);
+        await transactionalEntityManager.save(namespaceStatusLists);
+      }
+    );
+
+    return {
+      ...credential,
+      credentialStatus: credentialWithStatus.getCredentialStatus(),
+    };
   }
 
   /**
@@ -102,26 +107,9 @@ export class StatusListService {
       );
     }
 
-    const array = Uint8Array.from([1]);
-    const encodedList = Buffer.from(gzip(array)).toString('base64');
-
-    // https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential
-    const statusListCredential = {
-      '@context': [
-        'https://www.w3.org/2018/credentials/v1',
-        'https://w3id.org/vc/status-list/2021/v1',
-      ],
-      id: credentialWithStatus.entry.statusListCredential,
-      type: ['VerifiableCredential', 'StatusList2021Credential'],
-      issuer: new DID(currentUser).withHexChain(),
-      issuanceDate: new Date().toISOString(),
-      credentialSubject: {
-        id: credentialWithStatus.id,
-        type: 'StatusList2021',
-        statusPurpose: 'revocation',
-        encodedList,
-      },
-    };
+    const statusListCredential = StatusListCredential.create({
+      statusListId: credentialWithStatus.entry.statusListCredential,
+    }).getStatusListCredential(currentUser);
 
     return statusListCredential;
   }
@@ -130,7 +118,7 @@ export class StatusListService {
    * Add signed (with proof object) StatusList2021Credential object to a database. Perform a revocation.
    * https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential
    *
-   * @param {StatusListVerifiableCredentialDto} credential
+   * @param {StatusListVerifiableCredentialDto} vc
    * @return saved StatusList2021Credential
    */
   async addSignedStatusListCredential(
@@ -145,11 +133,9 @@ export class StatusListService {
     );
 
     if (!statusList) {
-      const namespace = await this.getNamespace(credential.namespace);
       statusList = StatusListCredential.create({
-        id: credential.entry.statusListCredential,
+        statusListId: credential.entry.statusListCredential,
         vc,
-        namespace,
       });
     }
 
@@ -190,23 +176,6 @@ export class StatusListService {
   }
 
   /**
-   * Check if credential is revoked. Revoked credential has StatusList2021Credential.
-   *
-   * @param {String} credentialId verifiable credential id
-   * @return true if credential is revoked
-   */
-  async isCredentialRevoked(credentialId: string): Promise<boolean> {
-    const credential = await this.getCredential(credentialId);
-    if (!credential) return false;
-
-    const statusList = await this.getStatusList(
-      credential.entry.statusListCredential
-    );
-
-    return !!statusList?.vc;
-  }
-
-  /**
    * Get registered credential with status.
    *
    * @param {String} credentialId verifiable credential id
@@ -237,35 +206,32 @@ export class StatusListService {
     statusListId: string
   ): Promise<StatusListCredential | null> {
     const statusList = await this.statusListCredentialRepository.findOne({
-      where: { id: statusListId },
-      relations: {
-        namespace: true,
-      },
+      where: { statusListId: statusListId },
     });
 
     return statusList;
   }
 
   /**
-   * Get or create and get namespace revocations.
+   * Get or create and get namespace status list.
    *
    * @param {String} namespace namespace
-   * @return namespace revocations
+   * @return namespace status list
    */
-  async getNamespace(namespace: string): Promise<NamespaceRevocations> {
+  async getNamespace(namespace: string): Promise<NamespaceStatusLists> {
     const find = async () => {
-      return this.namespaceRevocationsRepository.findOne({
+      return this.namespaceStatusListsRepository.findOne({
         where: { namespace: namespace },
         relations: {
-          statusListCredentials: true,
+          lists: true,
         },
       });
     };
     let namespaceRevocations = await find();
 
     if (!namespaceRevocations) {
-      await this.namespaceRevocationsRepository.save(
-        NamespaceRevocations.create({
+      await this.namespaceStatusListsRepository.save(
+        NamespaceStatusLists.create({
           namespace: namespace,
         })
       );
@@ -273,5 +239,25 @@ export class StatusListService {
     }
 
     return namespaceRevocations;
+  }
+
+  /**
+   * Get namespace status list by given status list id.
+   *
+   * @param {String} statusListId namespace
+   * @return namespace status list
+   */
+  async getNamespaceByStatusListId(
+    statusListId: string
+  ): Promise<NamespaceStatusLists | null> {
+    const namespaceRevocations =
+      await this.namespaceStatusListRepository.findOne({
+        where: { statusListId },
+        relations: {
+          namespace: true,
+        },
+      });
+
+    return namespaceRevocations?.namespace;
   }
 }

@@ -3,7 +3,9 @@ import { StatusListEntry } from './status-list-entry.entity';
 
 @Entity()
 export class CredentialWithStatus {
-  static create(data: CredentialWithStatus): CredentialWithStatus {
+  static create(
+    data: Pick<CredentialWithStatus, 'id' | 'namespace'>
+  ): CredentialWithStatus {
     const entity = new CredentialWithStatus();
     Object.assign(entity, data);
     return entity;
@@ -15,7 +17,21 @@ export class CredentialWithStatus {
   @Column()
   namespace: string;
 
-  @OneToOne(() => StatusListEntry)
+  @OneToOne(() => StatusListEntry, { cascade: true })
   @JoinColumn()
   entry: StatusListEntry;
+
+  public associateEntry(entry: StatusListEntry) {
+    this.entry = { ...entry, id: undefined };
+  }
+
+  public getCredentialStatus() {
+    return {
+      id: this.entry.statusListCredential,
+      type: this.entry.type,
+      statusPurpose: this.entry.statusPurpose,
+      statusListIndex: this.entry.statusListIndex,
+      statusListCredential: this.entry.statusListCredential,
+    };
+  }
 }

@@ -14,7 +14,7 @@ import {
 } from './fixtures';
 import {
   CredentialWithStatus,
-  NamespaceRevocations,
+  NamespaceStatusLists,
   StatusListEntry,
   StatusListCredential,
 } from '../../src/modules/status-list/entities';
@@ -24,7 +24,7 @@ export const statusList2021TestSuite = () => {
   let roleService: RoleService;
   let statusListService: StatusListService;
   let credentialWithStatusRepository: Repository<CredentialWithStatus>;
-  let namespaceRevocationsRepository: Repository<NamespaceRevocations>;
+  let namespaceStatusListsRepository: Repository<NamespaceStatusLists>;
   let statusListCredentialRepository: Repository<StatusListCredential>;
   let statusListEntryRepository: Repository<StatusListEntry>;
   let queryRunner;
@@ -36,8 +36,8 @@ export const statusList2021TestSuite = () => {
     credentialWithStatusRepository = app.get<Repository<CredentialWithStatus>>(
       getRepositoryToken(CredentialWithStatus)
     );
-    namespaceRevocationsRepository = app.get<Repository<NamespaceRevocations>>(
-      getRepositoryToken(NamespaceRevocations)
+    namespaceStatusListsRepository = app.get<Repository<NamespaceStatusLists>>(
+      getRepositoryToken(NamespaceStatusLists)
     );
     statusListCredentialRepository = app.get<Repository<StatusListCredential>>(
       getRepositoryToken(StatusListCredential)
@@ -100,33 +100,35 @@ export const statusList2021TestSuite = () => {
         })
         .expect(201);
 
+      const expectedStatusListCredential = new URL(
+        `${STATUS_LIST_MODULE_PATH}/uuid`,
+        process.env.STATUS_LIST_DOMAIN
+      ).href;
+
       expect(body.credentialStatus).toMatchObject({
         type: 'StatusList2021Entry',
         statusPurpose: 'revocation',
         statusListIndex: '0',
-        statusListCredential: new URL(
-          `${STATUS_LIST_MODULE_PATH}/uuid`,
-          process.env.STATUS_LIST_DOMAIN
-        ).href,
+        statusListCredential: expectedStatusListCredential,
       });
 
       expect(await credentialWithStatusRepository.count()).toBe(1);
-      expect(await namespaceRevocationsRepository.count()).toBe(1);
+      expect(await namespaceStatusListsRepository.count()).toBe(1);
       expect(await statusListEntryRepository.count()).toBe(1);
       expect(
-        await namespaceRevocationsRepository.findOne({
+        await namespaceStatusListsRepository.findOne({
           where: { id: utils.namehash(`test1.roles.e2e.iam.ewc`) },
           relations: {
-            statusListCredentials: true,
+            lists: true,
           },
         })
       ).toEqual({
         id: utils.namehash(`test1.roles.e2e.iam.ewc`),
         namespace: `test1.roles.e2e.iam.ewc`,
-        statusListCredentials: [
+        lists: [
           {
             id: expect.any(String),
-            vc: null,
+            statusListId: expectedStatusListCredential,
           },
         ],
       });
@@ -147,6 +149,8 @@ export const statusList2021TestSuite = () => {
             `${STATUS_LIST_MODULE_PATH}/uuid`,
             process.env.STATUS_LIST_DOMAIN
           ).href,
+          statusPurpose: 'revocation',
+          type: 'StatusList2021Entry',
         },
       });
     });
@@ -315,7 +319,7 @@ export const statusList2021TestSuite = () => {
   });
 
   describe('/credentials/status/initiate', () => {
-    it(`should return a status list credential to  be signed`, async () => {
+    it(`should return a status list credential to be signed`, async () => {
       const [issuer] = await Promise.all([randomUser()]);
 
       await createRole(
@@ -364,7 +368,7 @@ export const statusList2021TestSuite = () => {
         issuer: issuer.didHex,
         issuanceDate: expect.any(String),
         credentialSubject: {
-          id: vc.id,
+          id: vc.credentialStatus.statusListCredential,
           type: 'StatusList2021',
           statusPurpose: 'revocation',
           encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
@@ -744,10 +748,40 @@ export const statusList2021TestSuite = () => {
 
       expect(body).toMatchObject(statusListCredential);
       await expect(credentialWithStatusRepository.count()).resolves.toBe(1);
-
-      await request(app.getHttpServer())
-        .get(`/v1/${STATUS_LIST_MODULE_PATH}/${vc.id}`)
-        .expect(200);
+      await expect(statusListCredentialRepository.find()).resolves.toEqual([
+        {
+          statusListId: `http://localhost:3000/v1/status-list/${vc.id}`,
+          vc: {
+            '@context': [
+              'https://www.w3.org/2018/credentials/v1',
+              'https://w3id.org/vc/status-list/2021/v1',
+            ],
+            credentialSubject: {
+              encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
+              id: vc.id,
+              statusPurpose: 'revocation',
+              type: 'StatusList2021',
+            },
+            id: `http://localhost:3000/v1/status-list/${vc.id}`,
+            issuanceDate: expect.any(String),
+            issuer: issuer.didHex,
+            proof: {
+              '@context': 'https://w3id.org/security/suites/eip712sig-2021/v1',
+              created: expect.any(String),
+              eip712Domain: {
+                domain: {},
+                messageSchema: {},
+                primaryType: 'VerifiableCredential',
+              },
+              proofPurpose: 'assertionMethod',
+              proofValue: expect.any(String),
+              type: 'EthereumEip712Signature2021',
+              verificationMethod: `${issuer.didHex}#controller`,
+            },
+            type: ['VerifiableCredential', 'StatusList2021Credential'],
+          },
+        },
+      ]);
     });
   });
 
@@ -755,47 +789,54 @@ export const statusList2021TestSuite = () => {
     it(`should fetch credential status for anonymous user`, async () => {
       const statusListCredential = getStatusListCredential('did:ethr:0x123');
 
-      const mockFunc = jest.spyOn(credentialWithStatusRepository, 'findOne');
+      const mockFunc = jest.spyOn(statusListCredentialRepository, 'findOne');
       jest
         .spyOn(statusListCredentialRepository, 'findOne')
         .mockResolvedValueOnce({
-          id: '',
+          statusListId: '',
           vc: statusListCredential,
-          namespace: { id: '', namespace: '' } as NamespaceRevocations,
+          getStatusListCredential: (issuerDid) => {
+            return StatusListCredential.create({
+              statusListId: '',
+              vc: statusListCredential,
+            }).getStatusListCredential(issuerDid);
+          },
         });
 
       const { body } = await request(app.getHttpServer())
         .get(`/v1/${STATUS_LIST_MODULE_PATH}/urn:uuid:b40311fa-cf70-4fec-b268`)
         .expect(200);
 
-      expect(mockFunc).toBeCalledWith({
-        where: {
-          id: 'urn:uuid:b40311fa-cf70-4fec-b268',
-        },
-        relations: {
-          entry: true,
-        },
-      });
+      expect(mockFunc).toBeCalledWith(
+        expect.objectContaining({
+          where: {
+            statusListId: expect.stringContaining(
+              `/v1/${STATUS_LIST_MODULE_PATH}/urn:uuid:b40311fa-cf70-4fec-b268`
+            ),
+          },
+        })
+      );
       expect(body).toEqual(statusListCredential);
     });
 
     it(`should result with NO_CONTENT status code when credential is not revoked`, async () => {
       const mockFunc = jest
-        .spyOn(credentialWithStatusRepository, 'findOne')
+        .spyOn(statusListCredentialRepository, 'findOne')
         .mockResolvedValueOnce(null);
 
       const { body } = await request(app.getHttpServer())
         .get(`/v1/${STATUS_LIST_MODULE_PATH}/urn:uuid:b40311fa-cf70-4fec-b268`)
         .expect(204);
 
-      expect(mockFunc).toBeCalledWith({
-        where: {
-          id: 'urn:uuid:b40311fa-cf70-4fec-b268',
-        },
-        relations: {
-          entry: true,
-        },
-      });
+      expect(mockFunc).toBeCalledWith(
+        expect.objectContaining({
+          where: {
+            statusListId: expect.stringContaining(
+              `/v1/${STATUS_LIST_MODULE_PATH}/urn:uuid:b40311fa-cf70-4fec-b268`
+            ),
+          },
+        })
+      );
       expect(body).toEqual({});
     });
   });

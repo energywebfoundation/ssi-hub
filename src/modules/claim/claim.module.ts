@@ -6,7 +6,11 @@ import { ClaimController } from './claim.controller';
 import { RoleClaim } from './entities/roleClaim.entity';
 import { Claim } from './entities/claim.entity';
 import { ClaimResolver } from './claim.resolver';
-import { ClaimService, ClaimIssuanceService } from './services';
+import {
+  ClaimService,
+  ClaimIssuanceService,
+  RevocationVerificationService,
+} from './services';
 import { AssetsModule } from '../assets/assets.module';
 import { DIDModule } from '../did/did.module';
 
@@ -19,6 +23,12 @@ import { DIDModule } from '../did/did.module';
     DIDModule,
   ],
   controllers: [ClaimController],
-  providers: [ClaimService, ClaimIssuanceService, ClaimResolver],
+  providers: [
+    ClaimService,
+    ClaimIssuanceService,
+    ClaimResolver,
+    RevocationVerificationService,
+  ],
+  exports: [RevocationVerificationService],
 })
 export class ClaimModule {}

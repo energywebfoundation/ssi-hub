@@ -11,6 +11,7 @@
 ### Methods
 
 - [create](modules_claim_services_claim_service.ClaimService.md#create)
+- [getByClaimType](modules_claim_services_claim_service.ClaimService.md#getbyclaimtype)
 - [getById](modules_claim_services_claim_service.ClaimService.md#getbyid)
 - [getByIssuer](modules_claim_services_claim_service.ClaimService.md#getbyissuer)
 - [getByParentNamespace](modules_claim_services_claim_service.ClaimService.md#getbyparentnamespace)
@@ -25,6 +26,7 @@
 - [reject](modules_claim_services_claim_service.ClaimService.md#reject)
 - [removeById](modules_claim_services_claim_service.ClaimService.md#removebyid)
 - [rolesByIssuer](modules_claim_services_claim_service.ClaimService.md#rolesbyissuer)
+- [rolesByRevoker](modules_claim_services_claim_service.ClaimService.md#rolesbyrevoker)
 - [saveIssuedClaim](modules_claim_services_claim_service.ClaimService.md#saveissuedclaim)
 - [idOfClaim](modules_claim_services_claim_service.ClaimService.md#idofclaim)
 
@@ -59,6 +61,26 @@ Saves claim to database
 | `data` | [`ClaimRequestDTO`](modules_claim_claim_dto.ClaimRequestDTO.md) | Raw claim data |
 | `subject` | `string` | - |
 | `redirectUri` | `string` | - |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+___
+
+### getByClaimType
+
+▸ **getByClaimType**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+Get approved claim for given did and claim type
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.subject` | `string` |
 
 #### Returns
 
@@ -331,6 +353,26 @@ ___
 #### Returns
 
 `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+___
+
+### rolesByRevoker
+
+▸ **rolesByRevoker**(`revokerDid`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+Get allowed roles to revoke by given DID
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `revokerDid` | `string` | revoker DID |
+
+#### Returns
+
+`Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+allowed roles to revoke
 
 ___
 

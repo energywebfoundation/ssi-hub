@@ -317,6 +317,21 @@ export class ClaimController {
     return await this.claimService.rolesByIssuer(issuer.did);
   }
 
+  @Get('/revoker/roles/allowed/:did')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary:
+      'Returns the Roles that an revoker DID can revoke, given the permissions in the role definitions',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: [RoleDTO],
+    description: 'Roles that the revoker can revoke',
+  })
+  public async getByAllowedRolesByRevoker(@Param('did', DIDPipe) revoker: DID) {
+    return await this.claimService.rolesByRevoker(revoker.did);
+  }
+
   @Get('/requester/:did')
   @ApiTags('Claims')
   @ApiOperation({

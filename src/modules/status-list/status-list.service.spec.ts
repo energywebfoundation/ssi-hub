@@ -6,11 +6,12 @@ import { STATUS_LIST_MODULE_PATH } from './status-list.const';
 import { StatusListService } from './status-list.service';
 import {
   CredentialWithStatus,
-  NamespaceRevocations,
+  NamespaceStatusList,
+  NamespaceStatusLists,
   StatusListCredential,
 } from './entities';
 
-describe.skip('StatusList2021 service', () => {
+describe('StatusList2021 service', () => {
   let service: StatusListService;
 
   const configService = {
@@ -25,7 +26,12 @@ describe.skip('StatusList2021 service', () => {
     },
   };
 
-  const namespaceRevocationsRepository = {
+  const namespaceStatusListsRepository = {
+    findOne: jest.fn(),
+    save: jest.fn(),
+  };
+
+  const namespaceStatusListRepository = {
     findOne: jest.fn(),
     save: jest.fn(),
   };
@@ -41,7 +47,8 @@ describe.skip('StatusList2021 service', () => {
     service = new StatusListService(
       configService as unknown as ConfigService,
       credentialWithStatusRepository as unknown as Repository<CredentialWithStatus>,
-      namespaceRevocationsRepository as unknown as Repository<NamespaceRevocations>,
+      namespaceStatusListsRepository as unknown as Repository<NamespaceStatusLists>,
+      namespaceStatusListRepository as unknown as Repository<NamespaceStatusList>,
       statusListCredentialRepository as unknown as Repository<StatusListCredential>
     );
   });
@@ -72,9 +79,8 @@ describe.skip('StatusList2021 service', () => {
           statusListIndex: '0',
           statusListCredential: 'https://example.com/status-list/uuid2',
         },
-      });
-      namespaceRevocationsRepository.findOne.mockResolvedValueOnce({
-        createEntry: () => ({
+        getCredentialStatus: () => ({
+          id: `https://example.com/status-list/uuid2`,
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
           statusListIndex: '0',
@@ -87,6 +93,7 @@ describe.skip('StatusList2021 service', () => {
       ).resolves.toStrictEqual({
         ...credential,
         credentialStatus: {
+          id: `https://example.com/status-list/uuid2`,
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
           statusListIndex: '0',
@@ -101,7 +108,7 @@ describe.skip('StatusList2021 service', () => {
         (fn) => fn({ save: (data) => ({ id: 'entry', ...data }) })
       );
       configService.get.mockReturnValueOnce('https://example.com/status-list');
-      namespaceRevocationsRepository.findOne.mockResolvedValueOnce({
+      namespaceStatusListsRepository.findOne.mockResolvedValueOnce({
         createEntry: () => ({
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
@@ -115,6 +122,7 @@ describe.skip('StatusList2021 service', () => {
       ).resolves.toStrictEqual({
         ...credential,
         credentialStatus: {
+          id: `https://example.com/status-list/uuid`,
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
           statusListIndex: '0',
@@ -140,6 +148,7 @@ describe.skip('StatusList2021 service', () => {
         issuerFields: [],
       },
       credentialStatus: {
+        id: `https://example.com/${STATUS_LIST_MODULE_PATH}/uuid`,
         type: 'StatusList2021Entry' as const,
         statusPurpose: 'revocation',
         statusListIndex: '0', // because we are using one-to-one mapping
@@ -206,7 +215,7 @@ describe.skip('StatusList2021 service', () => {
         issuer: 'did:ethr:0x12047:0xe852f6784EeD893cC81dDa21D31f212332CC120a',
         issuanceDate: expect.any(String),
         credentialSubject: {
-          id: credential.id,
+          id: credential.credentialStatus.statusListCredential,
           type: 'StatusList2021',
           statusPurpose: 'revocation',
           encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
@@ -293,14 +302,6 @@ describe.skip('StatusList2021 service', () => {
       expect(statusListCredentialRepository.save).toBeCalledTimes(1);
     });
 
-    it('should throw an error when revoked credential is not registered', async () => {
-      credentialWithStatusRepository.findOne.mockResolvedValueOnce(null);
-
-      await expect(
-        service.addSignedStatusListCredential(credential)
-      ).rejects.toThrowError(BadRequestException);
-    });
-
     it('should add a valid StatusList2021Credential when namespace revocations exists', async () => {
       credentialWithStatusRepository.findOne.mockResolvedValueOnce({
         entry: {
@@ -308,7 +309,7 @@ describe.skip('StatusList2021 service', () => {
         },
         namespace: 'root',
       });
-      namespaceRevocationsRepository.findOne.mockResolvedValueOnce({
+      namespaceStatusListsRepository.findOne.mockResolvedValueOnce({
         id: 'uuid',
         namespace: 'root',
       });
@@ -322,12 +323,8 @@ describe.skip('StatusList2021 service', () => {
       ).resolves.toBe(credential);
 
       expect(statusListCredentialRepository.save).toHaveBeenCalledWith({
-        id: credential.id,
+        statusListId: credential.id,
         vc: credential,
-        namespace: {
-          id: expect.any(String),
-          namespace: 'root',
-        },
       });
     });
 
@@ -338,12 +335,12 @@ describe.skip('StatusList2021 service', () => {
         },
         namespace: 'root',
       });
-      namespaceRevocationsRepository.findOne.mockResolvedValueOnce(null);
+      namespaceStatusListsRepository.findOne.mockResolvedValueOnce(null);
       statusListCredentialRepository.findOne.mockResolvedValueOnce(null);
       statusListCredentialRepository.save.mockImplementationOnce(
         (entity) => entity
       );
-      namespaceRevocationsRepository.save.mockImplementationOnce((entity) => ({
+      namespaceStatusListsRepository.save.mockImplementationOnce((entity) => ({
         id: 'uuid',
         ...entity,
       }));
@@ -353,12 +350,8 @@ describe.skip('StatusList2021 service', () => {
       ).resolves.toBe(credential);
 
       expect(statusListCredentialRepository.save).toHaveBeenCalledWith({
-        id: credential.id,
+        statusListId: credential.id,
         vc: credential,
-        namespace: {
-          id: expect.any(String),
-          namespace: 'root',
-        },
       });
     });
   });
@@ -392,42 +385,6 @@ describe.skip('StatusList2021 service', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         service.verifyCredential({ id: 'uuid' } as any)
       ).resolves.toBe(void 0);
-    });
-  });
-
-  describe('isCredentialRevoked()', () => {
-    it('should result with true if entity has associated StatusListCredential', async () => {
-      credentialWithStatusRepository.findOne.mockResolvedValueOnce({
-        entry: {
-          statusListCredential:
-            'https://example.com/status-list/a98c8eb6-7bdc-48b8-8c26-0418dd044180',
-        },
-      });
-
-      statusListCredentialRepository.findOne.mockResolvedValueOnce({
-        vc: {},
-      });
-
-      await expect(service.isCredentialRevoked('uuid')).resolves.toBe(true);
-    });
-
-    it("should result with false if entity don't has StatusListCredential", async () => {
-      credentialWithStatusRepository.findOne.mockResolvedValueOnce({
-        entry: {
-          statusListCredential:
-            'https://example.com/status-list/a98c8eb6-7bdc-48b8-8c26-0418dd044180',
-        },
-      });
-
-      statusListCredentialRepository.findOne.mockResolvedValueOnce(null);
-
-      await expect(service.isCredentialRevoked('uuid')).resolves.toBe(false);
-    });
-
-    it('should result with false if credential is not registered', async () => {
-      credentialWithStatusRepository.findOne.mockResolvedValueOnce(null);
-
-      await expect(service.isCredentialRevoked('uuid')).resolves.toBe(false);
     });
   });
 });

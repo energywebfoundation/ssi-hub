@@ -3,17 +3,17 @@ import { IsOptional, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { StatusListVerifiableCredentialDto } from './status-list-verifiable-credential.dto';
 
-export class SignRevokeOptionsDto {}
+export class FinalizeUpdateOptionsDto {}
 
-export class SignRevokeInputDto {
+export class FinalizeUpdateInputDto {
   @Type(() => StatusListVerifiableCredentialDto)
   @ValidateNested()
   @ApiProperty({ type: StatusListVerifiableCredentialDto })
   statusListCredential: StatusListVerifiableCredentialDto;
 
   @IsOptional()
-  @Type(() => SignRevokeOptionsDto)
+  @Type(() => FinalizeUpdateOptionsDto)
   @ValidateNested()
-  @ApiProperty({ type: SignRevokeOptionsDto, required: false })
-  options?: SignRevokeOptionsDto;
+  @ApiProperty({ type: FinalizeUpdateOptionsDto, required: false })
+  options?: FinalizeUpdateOptionsDto;
 }
