@@ -87,3 +87,49 @@ Other possible solutions:
 **Problem**: Verifying that revoker is valid could require a credential
 
 Solution: As currently done with issuance, we require that revoker's publish their credential publicly (e.g. to IPFS) in order to revoke and in order for their revocations to be verifiable
+
+## Class Diagrams
+
+### NamespaceRevocations
+`NamespaceRevocations` is the aggregate root that manages the `StatusListCredentials` for a given namespace.
+All operations on a `StatusListCredential` should be through the `NamespaceRevocation`.
+All methods on `NamespaceRevocation` should be able to be performed concurrently.
+
+### StatusListCredential
+
+`StatusListCredential.id` maps to `CredentialWithStatus.statusListCredential`.
+This is in line with the `id` property guidance for [StatusList2021Credential](https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential).
+
+```mermaid
+classDiagram
+StatusListCredential *-- NamespaceRevocations
+
+class CredentialWithStatus
+CredentialWithStatus : String id
+CredentialWithStatus : String statusListCredential
+CredentialWithStatus : String namespace
+
+class NamespaceRevocations
+NamespaceRevocations : String namespace (primaryKey)
+NamespaceRevocations : +claimEntry() StatusListEntry
+NamespaceRevocations : +updateEntry(StatusListEntry)
+NamespaceRevocations : +getList() StatusListCredential
+
+class StatusListCredential
+StatusListCredential : String id
+StatusListCredential : String namespace (foreignKey)
+```
+
+## Pseudocode
+
+### Getting entry for issuance
+
+```
+const namespaceRevocation = service.getNamespaceRevocation(namespace)
+const entry = namespaceRevocation.claimEntry()
+const credential = new CredentialWithStatus(id, entry.statusListCredential, namespace) 
+```
+
+Note that `claimEntry` and the creation of `CredentialWithStatus` are in sequence.
+So, a claimed `entry` may failed to be associated with a `CredentialWithStatus`.
+However, as entries are inexpensive and their creation can be authorized, this is acceptable.
