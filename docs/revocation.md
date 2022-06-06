@@ -128,10 +128,27 @@ StatusListEntry : String statusListCredential
 StatusListCredential *-- NamespaceRevocations
 
 class NamespaceRevocations
+
 NamespaceRevocations : String namespace (primaryKey)
 NamespaceRevocations : +createEntry() StatusListEntry
 NamespaceRevocations : +updateEntry(StatusListEntry)
 NamespaceRevocations : +getList() StatusListCredential
+
+class StatusListCredential
+StatusListCredential : String id
+StatusListCredential : VerifiableCredential vc
+StatusListCredential : String namespace (foreignKey)
+```
+
+### Approach #2
+
+```mermaid
+classDiagram
+
+class StatusListEntry
+StatusListEntry : String id
+StatusListEntry : String statusListIndex
+StatusListEntry : String statusListCredential
 
 class StatusListCredential
 StatusListCredential : String id
@@ -152,3 +169,5 @@ const credential = new CredentialWithStatus(id, entry.statusListCredential, name
 Note that `createEntry` and the creation of `CredentialWithStatus` are in sequence.
 So, a claimed `entry` may failed to be associated with a `CredentialWithStatus`.
 However, as entries are inexpensive and their creation can be authorized, this is acceptable.
+
+### Update entry in NamespaceRevocation
