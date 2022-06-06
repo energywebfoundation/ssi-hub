@@ -90,6 +90,7 @@ Solution: As currently done with issuance, we require that revoker's publish the
 
 ## Class Diagrams
 
+
 ### NamespaceRevocations
 `NamespaceRevocations` is the aggregate root that manages the `StatusListCredentials` for a given namespace.
 All operations on a `StatusListCredential` should be through the `NamespaceRevocation`.
@@ -99,6 +100,16 @@ All methods on `NamespaceRevocation` should be able to be performed concurrently
 
 `StatusListCredential.id` maps to `CredentialWithStatus.statusListCredential`.
 This is in line with the `id` property guidance for [StatusList2021Credential](https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential).
+
+### CredentialWithStatus
+
+`CredentialWithStatus` represents a credential with a StatusList2021
+[credentialStatus](https://www.w3.org/TR/vc-data-model/#status) property.
+`CredentialWithStatus` is a separate aggregate root in order to more easily enforce the unique constraint of the `credential.id`.
+If the association of a credential to an entry is located within
+the `NamespaceRevocations` aggregate root, then is is not possible to 
+have a consitency boundary around the revocations of a single namespace.
+
 
 ```mermaid
 classDiagram
@@ -118,7 +129,7 @@ StatusListCredential *-- NamespaceRevocations
 
 class NamespaceRevocations
 NamespaceRevocations : String namespace (primaryKey)
-NamespaceRevocations : +claimEntry() StatusListEntry
+NamespaceRevocations : +createEntry() StatusListEntry
 NamespaceRevocations : +updateEntry(StatusListEntry)
 NamespaceRevocations : +getList() StatusListCredential
 
@@ -133,10 +144,10 @@ StatusListCredential : String namespace (foreignKey)
 
 ```
 const namespaceRevocation = service.getNamespaceRevocation(namespace)
-const entry = namespaceRevocation.claimEntry()
+const entry = namespaceRevocation.createEntry()
 const credential = new CredentialWithStatus(id, entry.statusListCredential, namespace) 
 ```
 
-Note that `claimEntry` and the creation of `CredentialWithStatus` are in sequence.
+Note that `createEntry` and the creation of `CredentialWithStatus` are in sequence.
 So, a claimed `entry` may failed to be associated with a `CredentialWithStatus`.
 However, as entries are inexpensive and their creation can be authorized, this is acceptable.
