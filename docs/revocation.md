@@ -135,6 +135,7 @@ NamespaceRevocations : +getList() StatusListCredential
 
 class StatusListCredential
 StatusListCredential : String id
+StatusListCredential : VerifiableCredential vc
 StatusListCredential : String namespace (foreignKey)
 ```
 
