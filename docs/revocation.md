@@ -105,10 +105,9 @@ This is in line with the `id` property guidance for [StatusList2021Credential](h
 
 `CredentialWithStatus` represents a credential with a StatusList2021
 [credentialStatus](https://www.w3.org/TR/vc-data-model/#status) property.
-`CredentialWithStatus` is a separate aggregate root in order to more easily enforce the unique constraint of the `credential.id`.
+`CredentialWithStatus` is a separate aggregate root in order to more easily enforce the unique constraint of the `CredentialWithStatus.id`.
 If the association of a credential to an entry is located within
-the `NamespaceRevocations` aggregate root, then is is not possible to 
-have a consitency boundary around the revocations of a single namespace.
+the `NamespaceRevocations` aggregate root, then is is not possible to have a consistency boundary around the revocations of a single namespace as one would need to check that a given `CredentialWithStatus.id` has not been saved to a different `NamespaceRevocations`.
 
 
 ```mermaid
