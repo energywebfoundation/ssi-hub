@@ -102,12 +102,19 @@ This is in line with the `id` property guidance for [StatusList2021Credential](h
 
 ```mermaid
 classDiagram
-StatusListCredential *-- NamespaceRevocations
+
+CredentialWithStatus -- StatusListEntry
 
 class CredentialWithStatus
 CredentialWithStatus : String id
-CredentialWithStatus : String statusListCredential
 CredentialWithStatus : String namespace
+CredentialWithStatus : StatusListEntry entry
+
+class StatusListEntry
+StatusListEntry : String statusListIndex
+StatusListEntry : String statusListCredential
+
+StatusListCredential *-- NamespaceRevocations
 
 class NamespaceRevocations
 NamespaceRevocations : String namespace (primaryKey)
