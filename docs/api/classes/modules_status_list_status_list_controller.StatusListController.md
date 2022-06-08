@@ -19,13 +19,14 @@
 
 ### constructor
 
-• **new StatusListController**(`statusListService`, `roleService`)
+• **new StatusListController**(`statusListService`, `revocationVerificationService`, `roleService`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `statusListService` | [`StatusListService`](modules_status_list_status_list_service.StatusListService.md) |
+| `revocationVerificationService` | [`RevocationVerificationService`](modules_claim_revocation_verification_service.RevocationVerificationService.md) |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 
 ## Methods
@@ -89,7 +90,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`SignRevokeInputDto`](modules_status_list_dtos_sign_revoke_input_dto.SignRevokeInputDto.md) |
+| `__namedParameters` | [`FinalizeUpdateInputDto`](modules_status_list_dtos_sign_revoke_input_dto.FinalizeUpdateInputDto.md) |
 
 #### Returns
 

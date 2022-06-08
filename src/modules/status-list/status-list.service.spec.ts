@@ -10,7 +10,7 @@ import {
   StatusListCredential,
 } from './entities';
 
-describe.skip('StatusList2021 service', () => {
+describe('StatusList2021 service', () => {
   let service: StatusListService;
 
   const configService = {

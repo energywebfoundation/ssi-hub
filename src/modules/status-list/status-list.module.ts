@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClaimModule } from '../claim/claim.module';
 import { DIDModule } from '../did/did.module';
 import { RoleModule } from '../role/role.module';
 import { RoleService } from '../role/role.service';
@@ -16,6 +17,7 @@ import { StatusListService } from './status-list.service';
   imports: [
     RoleModule,
     DIDModule,
+    ClaimModule,
     TypeOrmModule.forFeature([
       StatusListCredential,
       CredentialWithStatus,

@@ -52,7 +52,7 @@ export class NamespaceRevocations {
     return {
       type: 'StatusList2021Entry',
       statusPurpose: 'revocation',
-      statusListIndex: '0',
+      statusListIndex: '0', // because we are using one-to-one mapping
       statusListCredential,
     };
   }

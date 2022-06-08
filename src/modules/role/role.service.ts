@@ -285,58 +285,6 @@ export class RoleService {
     }
   }
 
-  /*
-   * TODO: Replace by more complete code from ew-credential/vc-verification once available
-   * https://github.com/energywebfoundation/ew-credentials/tree/develop/packages/vc-verification
-   */
-  public async verifyRevoker({
-    revokerDID,
-    claimType,
-  }: {
-    revokerDID: string;
-    claimType: string;
-  }) {
-    const [didDocument, role] = await Promise.all([
-      this.didService.getById(revokerDID),
-      this.getByNamespace(claimType),
-    ]);
-
-    if (!role) {
-      throw new Error(`There is no created role for ${claimType} namespace`);
-    }
-
-    let revoker: IRoleDefinitionV2['revoker'];
-    let revokerType: string;
-    if ('revoker' in role.definition) {
-      revoker = role.definition.revoker;
-      revokerType = revoker.revokerType;
-    } else {
-      revoker = role.definition.issuer;
-      revokerType = role.definition.issuer.issuerType;
-    }
-
-    const forbiddenError = new ForbiddenException(
-      `${revokerDID} is not allowed to revoke ${claimType}`
-    );
-    switch (revokerType) {
-      case 'DID': {
-        if (!revoker.did.includes(revokerDID)) throw forbiddenError;
-        break;
-      }
-      case 'ROLE': {
-        if (
-          !didDocument.service.some(
-            ({ claimType }) => claimType === revoker.roleName
-          )
-        )
-          throw forbiddenError;
-        break;
-      }
-      default:
-        throw new InternalServerErrorException('unknown revoker type');
-    }
-  }
-
   private async verifyRole({
     namespace,
     issuer,

@@ -9,6 +9,7 @@ import { ClaimResolver } from './claim.resolver';
 import { ClaimService, ClaimIssuanceService } from './services';
 import { AssetsModule } from '../assets/assets.module';
 import { DIDModule } from '../did/did.module';
+import { RevocationVerificationService } from './revocation-verification.service';
 
 @Module({
   imports: [
@@ -19,6 +20,12 @@ import { DIDModule } from '../did/did.module';
     DIDModule,
   ],
   controllers: [ClaimController],
-  providers: [ClaimService, ClaimIssuanceService, ClaimResolver],
+  providers: [
+    ClaimService,
+    ClaimIssuanceService,
+    ClaimResolver,
+    RevocationVerificationService,
+  ],
+  exports: [RevocationVerificationService],
 })
 export class ClaimModule {}

@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { verifyCredential } from 'didkit-wasm-node';
 import { gzip } from 'pako';
-import { CredentialWithStatusDto } from './dtos/credential-status.dto';
-import { CredentialDto } from './dtos/credential.dto';
-import { VerifiableCredentialDto } from './dtos/verifiable-credential.dto';
-import { StatusListCredentialDto } from './dtos/status-list-credential.dto';
-import { StatusListVerifiableCredentialDto } from './dtos/status-list-verifiable-credential.dto';
 import { DID } from '../did/did.types';
+import {
+  CredentialWithStatusDto,
+  CredentialDto,
+  VerifiableCredentialDto,
+  StatusListCredentialDto,
+  StatusListVerifiableCredentialDto,
+} from './dtos';
 import {
   CredentialWithStatus,
   StatusListCredential,
@@ -53,7 +55,7 @@ export class StatusListService {
         async (transactionalEntityManager) => {
           const statusListEntry = await transactionalEntityManager.save(
             StatusListEntry.create({
-              statusListIndex: entry.statusListIndex, // because we are using one-to-one mapping
+              statusListIndex: entry.statusListIndex,
               statusListCredential: entry.statusListCredential,
             })
           );

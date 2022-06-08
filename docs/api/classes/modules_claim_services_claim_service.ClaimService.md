@@ -11,6 +11,7 @@
 ### Methods
 
 - [create](modules_claim_services_claim_service.ClaimService.md#create)
+- [getByClaimType](modules_claim_services_claim_service.ClaimService.md#getbyclaimtype)
 - [getById](modules_claim_services_claim_service.ClaimService.md#getbyid)
 - [getByIssuer](modules_claim_services_claim_service.ClaimService.md#getbyissuer)
 - [getByParentNamespace](modules_claim_services_claim_service.ClaimService.md#getbyparentnamespace)
@@ -60,6 +61,26 @@ Saves claim to database
 | `data` | [`ClaimRequestDTO`](modules_claim_claim_dto.ClaimRequestDTO.md) | Raw claim data |
 | `subject` | `string` | - |
 | `redirectUri` | `string` | - |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+___
+
+### getByClaimType
+
+▸ **getByClaimType**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+Get approved claim for given did and claim type
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.subject` | `string` |
 
 #### Returns
 

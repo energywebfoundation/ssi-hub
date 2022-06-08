@@ -21,14 +21,17 @@ import {
 import { Response } from 'express';
 import { User } from '../../common/user.decorator';
 import { Auth } from '../auth/auth.decorator';
+import { RevocationVerificationService } from '../claim/revocation-verification.service';
 import { DID } from '../did/did.types';
 import { RoleService } from '../role/role.service';
-import { CreateEntryInputDto } from './dtos/create-entry-input.dto';
-import { CredentialWithStatusDto } from './dtos/credential-status.dto';
-import { RegisterRevokeInputDto } from './dtos/register-revoke-input.dto';
-import { SignRevokeInputDto } from './dtos/sign-revoke-input.dto';
-import { StatusListCredentialDto } from './dtos/status-list-credential.dto';
-import { StatusListVerifiableCredentialDto } from './dtos/status-list-verifiable-credential.dto';
+import {
+  CreateEntryInputDto,
+  CredentialWithStatusDto,
+  RegisterRevokeInputDto,
+  FinalizeUpdateInputDto,
+  StatusListCredentialDto,
+  StatusListVerifiableCredentialDto,
+} from './dtos';
 import { STATUS_LIST_MODULE_PATH } from './status-list.const';
 import { StatusListService } from './status-list.service';
 
@@ -37,6 +40,7 @@ import { StatusListService } from './status-list.service';
 export class StatusListController {
   constructor(
     private readonly statusListService: StatusListService,
+    private readonly revocationVerificationService: RevocationVerificationService,
     private readonly roleService: RoleService
   ) {}
 
@@ -87,17 +91,24 @@ export class StatusListController {
     @User() currentUser: string,
     @Body() { verifiableCredential }: RegisterRevokeInputDto
   ): Promise<StatusListCredentialDto> {
-    await Promise.all([
+    const namespace = verifiableCredential.credentialSubject.role.namespace;
+    const { 2: isAuthorizedRevoker } = await Promise.all([
       this.roleService.verifyEnrolmentIssuer({
         issuerDID: DID.from(verifiableCredential.issuer).did,
-        claimType: verifiableCredential.credentialSubject.role.namespace,
+        claimType: namespace,
       }),
       this.statusListService.verifyCredential(verifiableCredential),
-      this.roleService.verifyRevoker({
-        revokerDID: currentUser,
-        claimType: verifiableCredential.credentialSubject.role.namespace,
-      }),
+      this.revocationVerificationService.verifyRevokerAuthority(
+        currentUser,
+        namespace
+      ),
     ]);
+
+    if (!isAuthorizedRevoker) {
+      throw new ForbiddenException(
+        `${currentUser} is not allowed to revoke ${namespace}`
+      );
+    }
 
     return await this.statusListService.markStatusListCredential(
       verifiableCredential,
@@ -111,7 +122,7 @@ export class StatusListController {
   @ApiForbiddenResponse({ description: 'User is not authorized to revoke.' })
   @ApiBadRequestResponse()
   async persistUpdate(
-    @Body() { statusListCredential }: SignRevokeInputDto
+    @Body() { statusListCredential }: FinalizeUpdateInputDto
   ): Promise<StatusListVerifiableCredentialDto> {
     const issuer = DID.from(statusListCredential.issuer).did;
     const revokedCredentialId = statusListCredential.credentialSubject.id;
@@ -124,13 +135,19 @@ export class StatusListController {
       throw new BadRequestException('Credential was not registered');
     }
 
-    await Promise.all([
+    const { 1: isAuthorizedRevoker } = await Promise.all([
       this.statusListService.verifyCredential(statusListCredential),
-      this.roleService.verifyRevoker({
-        revokerDID: issuer,
-        claimType: statusList.namespace,
-      }),
+      this.revocationVerificationService.verifyRevokerAuthority(
+        issuer,
+        statusList.namespace
+      ),
     ]);
+
+    if (!isAuthorizedRevoker) {
+      throw new ForbiddenException(
+        `${issuer} is not allowed to revoke ${statusList.namespace}`
+      );
+    }
 
     return await this.statusListService.addSignedStatusListCredential(
       statusListCredential

@@ -327,6 +327,27 @@ export class ClaimService {
   }
 
   /**
+   * Get approved claim for given did and claim type
+   * @param options.subject subject DID
+   * @param options.claimType claim type
+   */
+  async getByClaimType({
+    subject,
+    claimType,
+  }: {
+    subject: string;
+    claimType: string;
+  }) {
+    return await this.roleClaimRepository.findOne({
+      where: {
+        subject,
+        claimType,
+        isAccepted: true,
+      },
+    });
+  }
+
+  /**
    * delete claim with matching ID
    * @param id claim ID
    */
