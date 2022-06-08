@@ -91,8 +91,8 @@ Solution: As currently done with issuance, we require that revoker's publish the
 ## Class Diagrams
 
 
-### NamespaceRevocations
-`NamespaceRevocations` is the aggregate root that manages the `StatusListCredentials` for a given namespace.
+### NamespaceStatusLists
+`NamespaceStatusLists` is the aggregate root that manages the `StatusListCredentials` for a given namespace.
 All operations on a `StatusListCredential` should be through the `NamespaceRevocation`.
 All methods on `NamespaceRevocation` should be able to be performed concurrently.
 
@@ -107,7 +107,7 @@ This is in line with the `id` property guidance for [StatusList2021Credential](h
 [credentialStatus](https://www.w3.org/TR/vc-data-model/#status) property.
 `CredentialWithStatus` is a separate aggregate root in order to more easily enforce the unique constraint of the `CredentialWithStatus.id`.
 If the association of a credential to an entry is located within
-the `NamespaceRevocations` aggregate root, then is is not possible to have a consistency boundary around the revocations of a single namespace as one would need to check that a given `CredentialWithStatus.id` has not been saved to a different `NamespaceRevocations`.
+the `NamespaceStatusLists` aggregate root, then is is not possible to have a consistency boundary around the revocations of a single namespace as one would need to check that a given `CredentialWithStatus.id` has not been saved to a different `NamespaceStatusLists`.
 
 
 ```mermaid
@@ -116,43 +116,28 @@ classDiagram
 CredentialWithStatus -- StatusListEntry
 
 class CredentialWithStatus
-CredentialWithStatus : String id
-CredentialWithStatus : String namespace
+CredentialWithStatus : string id
+CredentialWithStatus : string namespace
 CredentialWithStatus : StatusListEntry entry
 
 class StatusListEntry
-StatusListEntry : String statusListIndex
-StatusListEntry : String statusListCredential
+StatusListEntry : string statusListIndex
+StatusListEntry : string statusListCredential
 
-StatusListCredential *-- NamespaceRevocations
+NamespaceStatusList *-- NamespaceStatusLists
 
-class NamespaceRevocations
+class NamespaceStatusLists
+NamespaceStatusLists : string namespace
+NamespaceStatusLists : +createEntry() StatusListEntry
+NamespaceStatusLists : +hasList(statusListId) boolean
 
-NamespaceRevocations : String namespace (primaryKey)
-NamespaceRevocations : +createEntry() StatusListEntry
-NamespaceRevocations : +updateEntry(StatusListEntry)
-NamespaceRevocations : +getList() StatusListCredential
-
-class StatusListCredential
-StatusListCredential : String id
-StatusListCredential : VerifiableCredential vc
-StatusListCredential : String namespace (foreignKey)
-```
-
-### Approach #2
-
-```mermaid
-classDiagram
-
-class StatusListEntry
-StatusListEntry : String id
-StatusListEntry : String statusListIndex
-StatusListEntry : String statusListCredential
+class NamespaceStatusList
+NamespaceStatusList : string statusListId
 
 class StatusListCredential
-StatusListCredential : String id
+StatusListCredential : string statusListId
 StatusListCredential : VerifiableCredential vc
-StatusListCredential : String namespace (foreignKey)
+StatusListCredential : +markEntry(index)
 ```
 
 ## Pseudocode
@@ -160,13 +145,29 @@ StatusListCredential : String namespace (foreignKey)
 ### Getting entry for issuance
 
 ```
-const namespaceRevocation = service.getNamespaceRevocation(namespace)
-const entry = namespaceRevocation.createEntry()
-const credential = new CredentialWithStatus(id, entry.statusListCredential, namespace) 
+const namespaceStatusLists = service.getNamespaceStatusLists(namespace)
+const entry = namespaceStatusLists.createEntry()
+const credential = new CredentialWithStatus(id, entry, namespace) 
 ```
 
 Note that `createEntry` and the creation of `CredentialWithStatus` are in sequence.
 So, a claimed `entry` may failed to be associated with a `CredentialWithStatus`.
 However, as entries are inexpensive and their creation can be authorized, this is acceptable.
 
-### Update entry in NamespaceRevocation
+**TODO: update the above with a note about transactions...**
+
+### Update entry in a status list
+
+```
+updateEntry(namespace, vc, requester) {
+  const statusListId = vc.id;
+  const namespaceStatusLists = namespaceStatusListRepo.findOneBy(namespace)
+  if (namespaceStatusLists.hasList(statusListId) == false) {
+    Error("provided namespace is incorrect for this statusList")
+  }
+  verifyRevocationAuth(namespace, requester);
+  statusListCredentialRepository.save({
+    statusListId,
+    vc
+  })
+}
