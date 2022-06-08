@@ -58,7 +58,7 @@ This means that we must get a signature from revoker.
 **Problem**:
 It only makes sense for a revoker to sign a list that they are authorized to sign.
 We couldn't have just one list in SSI Hub, for example.
-We need to check the authority of the revoker and it may not be clear who the revoker is
+We need to check the authority of the revoker and it may not be clear who the revoker is.
 
 Solution:
 - We could have one list per role definition/namespace.
@@ -88,27 +88,37 @@ Other possible solutions:
 
 Solution: As currently done with issuance, we require that revoker's publish their credential publicly (e.g. to IPFS) in order to revoke and in order for their revocations to be verifiable
 
-## Class Diagrams
+## Entities
 
+### Aggregate Roots
+#### NamespaceStatusLists
 
-### NamespaceStatusLists
-`NamespaceStatusLists` is the aggregate root that manages the `StatusListCredentials` for a given namespace.
-All operations on a `StatusListCredential` should be through the `NamespaceRevocation`.
-All methods on `NamespaceRevocation` should be able to be performed concurrently.
+`NamespaceStatusLists` is the aggregate root that manages the allocations of status list entries for a given namespace and associates a status list with a given namespace.
 
-### StatusListCredential
+#### StatusListCredential
 
-`StatusListCredential.id` maps to `CredentialWithStatus.statusListCredential`.
-This is in line with the `id` property guidance for [StatusList2021Credential](https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential).
+`StatusListCredential` maps a status list id to the actual [StatusList2021Credential](https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential).
 
-### CredentialWithStatus
+The actual VC is in a separate aggregate root from the status list id to namespace association in order to have tighter consistency boundaries:
+- During entry allocation, one needs knowledge of the entries across a namespace.
+One needs to answer the question: "Is there an open entry in the status lists of the namespace?" 
+- During entry update, one only needs knowledge of updates across a given status list.
+One needs to answer the question: "Can I apply an update to this status list?"
+
+#### CredentialWithStatus
 
 `CredentialWithStatus` represents a credential with a StatusList2021
 [credentialStatus](https://www.w3.org/TR/vc-data-model/#status) property.
 `CredentialWithStatus` is a separate aggregate root in order to more easily enforce the unique constraint of the `CredentialWithStatus.id`.
-If the association of a credential to an entry is located within
-the `NamespaceStatusLists` aggregate root, then is is not possible to have a consistency boundary around the revocations of a single namespace as one would need to check that a given `CredentialWithStatus.id` has not been saved to a different `NamespaceStatusLists`.
 
+`CredentialWithStatus.statusListCredential` corresponds to `StatusListCredential.statusListId` and `NamespaceStatusList.statusListId`.
+This is in line with the `id` property guidance for [StatusList2021Credential](https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential).
+
+If the association of a credential to an entry is located within
+the `NamespaceStatusLists` aggregate root, then is is not possible to efficiently search for a credential.
+In other words, if needed to look across all of the `NamespaceStatusLists` for a credential, then one would need to lock updates across all namespaces to be sure that a data wasn't inserted during the search.
+
+### Class Diagram
 
 ```mermaid
 classDiagram
@@ -128,6 +138,7 @@ NamespaceStatusList *-- NamespaceStatusLists
 
 class NamespaceStatusLists
 NamespaceStatusLists : string namespace
+NamespaceStatusLists : NamespaceStatusList[] lists
 NamespaceStatusLists : +createEntry() StatusListEntry
 NamespaceStatusLists : +hasList(statusListId) boolean
 
@@ -159,8 +170,8 @@ However, as entries are inexpensive and their creation can be authorized, this i
 ### Update entry in a status list
 
 ```
-updateEntry(namespace, vc, requester) {
-  const statusListId = vc.id;
+updateEntry(namespace, statusListCredential, requester) {
+  const statusListId = statusListCredential.id;
   const namespaceStatusLists = namespaceStatusListRepo.findOneBy(namespace)
   if (namespaceStatusLists.hasList(statusListId) == false) {
     Error("provided namespace is incorrect for this statusList")
@@ -168,6 +179,7 @@ updateEntry(namespace, vc, requester) {
   verifyRevocationAuth(namespace, requester);
   statusListCredentialRepository.save({
     statusListId,
-    vc
+    statusListCredential
   })
 }
+```
