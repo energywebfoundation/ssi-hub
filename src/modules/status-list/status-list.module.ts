@@ -7,8 +7,9 @@ import { RoleService } from '../role/role.service';
 import {
   CredentialWithStatus,
   StatusListCredential,
-  NamespaceRevocations,
+  NamespaceStatusLists,
   StatusListEntry,
+  NamespaceStatusList,
 } from './entities';
 import { StatusListController } from './status-list.controller';
 import { StatusListService } from './status-list.service';
@@ -21,7 +22,8 @@ import { StatusListService } from './status-list.service';
     TypeOrmModule.forFeature([
       StatusListCredential,
       CredentialWithStatus,
-      NamespaceRevocations,
+      NamespaceStatusLists,
+      NamespaceStatusList,
       StatusListEntry,
     ]),
   ],

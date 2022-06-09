@@ -10,6 +10,7 @@
 
 ### Properties
 
+- [id](modules_status_list_dtos_credential_status_dto.StatusList2021EntryDto.md#id)
 - [statusListCredential](modules_status_list_dtos_credential_status_dto.StatusList2021EntryDto.md#statuslistcredential)
 - [statusListIndex](modules_status_list_dtos_credential_status_dto.StatusList2021EntryDto.md#statuslistindex)
 - [statusPurpose](modules_status_list_dtos_credential_status_dto.StatusList2021EntryDto.md#statuspurpose)
@@ -22,6 +23,12 @@
 • **new StatusList2021EntryDto**()
 
 ## Properties
+
+### id
+
+• **id**: `string`
+
+___
 
 ### statusListCredential
 
@@ -43,4 +50,4 @@ ___
 
 ### type
 
-• **type**: ``"StatusList2021Entry"``
+• **type**: `string`

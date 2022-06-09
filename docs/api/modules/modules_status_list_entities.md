@@ -5,7 +5,8 @@
 ### References
 
 - [CredentialWithStatus](modules_status_list_entities.md#credentialwithstatus)
-- [NamespaceRevocations](modules_status_list_entities.md#namespacerevocations)
+- [NamespaceStatusList](modules_status_list_entities.md#namespacestatuslist)
+- [NamespaceStatusLists](modules_status_list_entities.md#namespacestatuslists)
 - [StatusListCredential](modules_status_list_entities.md#statuslistcredential)
 - [StatusListEntry](modules_status_list_entities.md#statuslistentry)
 
@@ -17,9 +18,15 @@ Re-exports [CredentialWithStatus](../classes/modules_status_list_entities_creden
 
 ___
 
-### NamespaceRevocations
+### NamespaceStatusList
 
-Re-exports [NamespaceRevocations](../classes/modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)
+Re-exports [NamespaceStatusList](../classes/modules_status_list_entities_namespace_status_list_entity.NamespaceStatusList.md)
+
+___
+
+### NamespaceStatusLists
+
+Re-exports [NamespaceStatusLists](../classes/modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)
 
 ___
 

@@ -1,6 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { StatusListVerifiableCredentialDto } from '../dtos/status-list-verifiable-credential.dto';
-import { NamespaceRevocations } from './namespace-revocations.entity';
 
 @Entity()
 export class StatusListCredential {
@@ -11,11 +10,8 @@ export class StatusListCredential {
   }
 
   @PrimaryColumn()
-  id: string;
+  statusListId: string;
 
   @Column({ type: 'jsonb', nullable: true })
   vc?: StatusListVerifiableCredentialDto;
-
-  @ManyToOne(() => NamespaceRevocations)
-  namespace: NamespaceRevocations;
 }

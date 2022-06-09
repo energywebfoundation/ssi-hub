@@ -31,7 +31,7 @@
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `credentialWithStatusRepository` | `Repository`<[`CredentialWithStatus`](modules_status_list_entities_credential_with_status_entity.CredentialWithStatus.md)\> |
-| `namespaceRevocationsRepository` | `Repository`<[`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)\> |
+| `namespaceRevocationsRepository` | `Repository`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\> |
 | `statusListCredentialRepository` | `Repository`<[`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md)\> |
 
 ## Methods
@@ -100,7 +100,7 @@ ___
 
 ### getNamespace
 
-▸ **getNamespace**(`namespace`): `Promise`<[`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)\>
+▸ **getNamespace**(`namespace`): `Promise`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\>
 
 Get or create and get namespace revocations.
 
@@ -112,7 +112,7 @@ Get or create and get namespace revocations.
 
 #### Returns
 
-`Promise`<[`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)\>
+`Promise`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\>
 
 namespace revocations
 

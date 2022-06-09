@@ -36,11 +36,12 @@
     "build:docs": "rimraf docs/api && typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs true ./src",
     "generate:jwtkeys": "openssl genrsa -out private.pem 2048 && openssl rsa -in private.pem -pubout > public.pem",
     "migrate:claim-subject": "node src/scripts/migrate_claim_subject.js",
-    "migration:generate": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:generate -n",
+    "migration:generate": "npm run typeorm:cli migration:generate -d src/db/config.ts src/migrations/",
     "migration:run": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:run && npm run migrate:claim-subject",
     "migration:revert": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:revert",
     "migration:create": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:create -n",
-    "migration:test": "NODE_ENV=test ts-node ./node_modules/typeorm/cli.js migration:run --config test/config.ts",
+    "migration:test": "NODE_ENV=test ts-node ./node_modules/typeorm/cli.js migration:run -d src/db/config.ts",
+    "typeorm:cli": "ts-node ./node_modules/typeorm/cli.js",
     "release": "standard-version"
   },
   "dependencies": {

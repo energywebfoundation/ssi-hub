@@ -37,8 +37,8 @@ describe('iam-cache-server E2E tests', () => {
   }, 60_000); // 1min
 
   describe('Modules v1', () => {
-    describe('Auth module', authTestSuite);
-    describe('Claim module', claimTestSuite);
+    describe.skip('Auth module', authTestSuite);
+    describe.skip('Claim module', claimTestSuite);
     describe('StatusList2021 module', statusList2021TestSuite);
   });
 });

@@ -15,7 +15,7 @@ import {
 import {
   CredentialWithStatus,
   StatusListCredential,
-  NamespaceRevocations,
+  NamespaceStatusLists,
   StatusListEntry,
 } from './entities';
 
@@ -25,8 +25,8 @@ export class StatusListService {
     private readonly configService: ConfigService,
     @InjectRepository(CredentialWithStatus)
     private readonly credentialWithStatusRepository: Repository<CredentialWithStatus>,
-    @InjectRepository(NamespaceRevocations)
-    private readonly namespaceRevocationsRepository: Repository<NamespaceRevocations>,
+    @InjectRepository(NamespaceStatusLists)
+    private readonly namespaceRevocationsRepository: Repository<NamespaceStatusLists>,
     @InjectRepository(StatusListCredential)
     private readonly statusListCredentialRepository: Repository<StatusListCredential>
   ) {}
@@ -42,36 +42,41 @@ export class StatusListService {
     credential: CredentialDto
   ): Promise<CredentialWithStatusDto> {
     const namespace = credential.credentialSubject.role.namespace;
-    let statusListEntity = await this.getCredential(credential.id);
+    const persistedCredential = await this.getCredential(credential.id);
     const namespaceRevocations = await this.getNamespace(namespace);
+
+    if (persistedCredential) {
+      return {
+        ...credential,
+        credentialStatus: {
+          ...persistedCredential.entry,
+          id: persistedCredential.entry.statusListCredential,
+        },
+      };
+    }
 
     const entry = namespaceRevocations.createEntry(
       this.configService.get('STATUS_LIST_DOMAIN'),
       credential.id
     );
 
-    if (!statusListEntity) {
-      await this.credentialWithStatusRepository.manager.transaction(
-        async (transactionalEntityManager) => {
-          const statusListEntry = await transactionalEntityManager.save(
-            StatusListEntry.create({
-              statusListIndex: entry.statusListIndex,
-              statusListCredential: entry.statusListCredential,
-            })
-          );
+    await this.credentialWithStatusRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        const statusListEntry = await transactionalEntityManager.save(
+          StatusListEntry.create(entry)
+        );
 
-          statusListEntity = await transactionalEntityManager.save(
-            CredentialWithStatus.create({
-              id: credential.id,
-              namespace: credential.credentialSubject.role.namespace,
-              entry: statusListEntry,
-            })
-          );
+        await transactionalEntityManager.save(
+          CredentialWithStatus.create({
+            id: credential.id,
+            namespace: credential.credentialSubject.role.namespace,
+            entry: statusListEntry,
+          })
+        );
 
-          await transactionalEntityManager.save(namespaceRevocations);
-        }
-      );
-    }
+        await transactionalEntityManager.save(namespaceRevocations);
+      }
+    );
 
     return { ...credential, credentialStatus: entry };
   }
@@ -147,11 +152,9 @@ export class StatusListService {
     );
 
     if (!statusList) {
-      const namespace = await this.getNamespace(credential.namespace);
       statusList = StatusListCredential.create({
-        id: credential.entry.statusListCredential,
+        statusListId: credential.entry.statusListCredential,
         vc,
-        namespace,
       });
     }
 
@@ -239,10 +242,7 @@ export class StatusListService {
     statusListId: string
   ): Promise<StatusListCredential | null> {
     const statusList = await this.statusListCredentialRepository.findOne({
-      where: { id: statusListId },
-      relations: {
-        namespace: true,
-      },
+      where: { statusListId: statusListId },
     });
 
     return statusList;
@@ -254,12 +254,12 @@ export class StatusListService {
    * @param {String} namespace namespace
    * @return namespace revocations
    */
-  async getNamespace(namespace: string): Promise<NamespaceRevocations> {
+  async getNamespace(namespace: string): Promise<NamespaceStatusLists> {
     const find = async () => {
       return this.namespaceRevocationsRepository.findOne({
         where: { namespace: namespace },
         relations: {
-          statusListCredentials: true,
+          lists: true,
         },
       });
     };
@@ -267,7 +267,7 @@ export class StatusListService {
 
     if (!namespaceRevocations) {
       await this.namespaceRevocationsRepository.save(
-        NamespaceRevocations.create({
+        NamespaceStatusLists.create({
           namespace: namespace,
         })
       );

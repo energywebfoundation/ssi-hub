@@ -14,7 +14,7 @@ import {
 } from './fixtures';
 import {
   CredentialWithStatus,
-  NamespaceRevocations,
+  NamespaceStatusLists,
   StatusListEntry,
   StatusListCredential,
 } from '../../src/modules/status-list/entities';
@@ -24,7 +24,7 @@ export const statusList2021TestSuite = () => {
   let roleService: RoleService;
   let statusListService: StatusListService;
   let credentialWithStatusRepository: Repository<CredentialWithStatus>;
-  let namespaceRevocationsRepository: Repository<NamespaceRevocations>;
+  let namespaceRevocationsRepository: Repository<NamespaceStatusLists>;
   let statusListCredentialRepository: Repository<StatusListCredential>;
   let statusListEntryRepository: Repository<StatusListEntry>;
   let queryRunner;
@@ -36,8 +36,8 @@ export const statusList2021TestSuite = () => {
     credentialWithStatusRepository = app.get<Repository<CredentialWithStatus>>(
       getRepositoryToken(CredentialWithStatus)
     );
-    namespaceRevocationsRepository = app.get<Repository<NamespaceRevocations>>(
-      getRepositoryToken(NamespaceRevocations)
+    namespaceRevocationsRepository = app.get<Repository<NamespaceStatusLists>>(
+      getRepositoryToken(NamespaceStatusLists)
     );
     statusListCredentialRepository = app.get<Repository<StatusListCredential>>(
       getRepositoryToken(StatusListCredential)
@@ -117,7 +117,7 @@ export const statusList2021TestSuite = () => {
         await namespaceRevocationsRepository.findOne({
           where: { id: utils.namehash(`test1.roles.e2e.iam.ewc`) },
           relations: {
-            statusListCredentials: true,
+            lists: true,
           },
         })
       ).toEqual({
@@ -759,9 +759,8 @@ export const statusList2021TestSuite = () => {
       jest
         .spyOn(statusListCredentialRepository, 'findOne')
         .mockResolvedValueOnce({
-          id: '',
+          statusListId: '',
           vc: statusListCredential,
-          namespace: { id: '', namespace: '' } as NamespaceRevocations,
         });
 
       const { body } = await request(app.getHttpServer())

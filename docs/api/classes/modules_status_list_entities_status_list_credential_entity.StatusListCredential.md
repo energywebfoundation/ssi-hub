@@ -10,8 +10,7 @@
 
 ### Properties
 
-- [id](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#id)
-- [namespace](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#namespace)
+- [statusListId](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#statuslistid)
 - [vc](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md#vc)
 
 ### Methods
@@ -26,15 +25,9 @@
 
 ## Properties
 
-### id
+### statusListId
 
-• **id**: `string`
-
-___
-
-### namespace
-
-• **namespace**: [`NamespaceRevocations`](modules_status_list_entities_namespace_revocations_entity.NamespaceRevocations.md)
+• **statusListId**: `string`
 
 ___
 

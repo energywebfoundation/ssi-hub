@@ -2,7 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { LoggerOptions } from 'typeorm';
+import { LoggerOptions, DataSource } from 'typeorm';
+import config from '../../ormconfig.json';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 export const getDBConfig = (configService: ConfigService) => {
   const isProduction = configService.get<string>('NODE_ENV') === 'production';
@@ -42,3 +44,8 @@ export const getDBConfig = (configService: ConfigService) => {
 
   return config;
 };
+
+export const dataSource = new DataSource({
+  ...config,
+  type: 'postgres',
+} as PostgresConnectionOptions);

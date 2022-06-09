@@ -5,7 +5,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
  */
 @Entity()
 export class StatusListEntry {
-  static create(data: Omit<StatusListEntry, 'id'>): StatusListEntry {
+  static create(data: Omit<StatusListEntry, 'id' | 'entry'>): StatusListEntry {
     const entity = new StatusListEntry();
     Object.assign(entity, data);
     return entity;
@@ -19,4 +19,10 @@ export class StatusListEntry {
 
   @Column()
   statusListCredential: string;
+
+  @Column()
+  type: string;
+
+  @Column()
+  statusPurpose: string;
 }

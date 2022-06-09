@@ -10,8 +10,12 @@ import { CredentialDto } from './credential.dto';
 
 export class StatusList2021EntryDto {
   @IsString()
+  @IsUrl({ require_tld: false })
+  id: string;
+
+  @IsString()
   @ApiProperty({ enum: ['StatusList2021Entry'] })
-  type: 'StatusList2021Entry';
+  type: string;
 
   @IsString()
   @ApiProperty({ enum: ['revocation', 'suspension'] })

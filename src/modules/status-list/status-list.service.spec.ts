@@ -6,7 +6,7 @@ import { STATUS_LIST_MODULE_PATH } from './status-list.const';
 import { StatusListService } from './status-list.service';
 import {
   CredentialWithStatus,
-  NamespaceRevocations,
+  NamespaceStatusLists,
   StatusListCredential,
 } from './entities';
 
@@ -41,7 +41,7 @@ describe('StatusList2021 service', () => {
     service = new StatusListService(
       configService as unknown as ConfigService,
       credentialWithStatusRepository as unknown as Repository<CredentialWithStatus>,
-      namespaceRevocationsRepository as unknown as Repository<NamespaceRevocations>,
+      namespaceRevocationsRepository as unknown as Repository<NamespaceStatusLists>,
       statusListCredentialRepository as unknown as Repository<StatusListCredential>
     );
   });
@@ -140,6 +140,7 @@ describe('StatusList2021 service', () => {
         issuerFields: [],
       },
       credentialStatus: {
+        id: `https://example.com/${STATUS_LIST_MODULE_PATH}/uuid`,
         type: 'StatusList2021Entry' as const,
         statusPurpose: 'revocation',
         statusListIndex: '0', // because we are using one-to-one mapping

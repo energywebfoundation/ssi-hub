@@ -2,9 +2,19 @@
 
 ## Table of contents
 
+### Variables
+
+- [dataSource](db_config.md#datasource)
+
 ### Functions
 
 - [getDBConfig](db_config.md#getdbconfig)
+
+## Variables
+
+### dataSource
+
+• `Const` **dataSource**: `DataSource`
 
 ## Functions
 
