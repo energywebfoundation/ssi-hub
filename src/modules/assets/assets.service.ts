@@ -53,7 +53,7 @@ export class AssetsService {
   }
 
   getById(id: string) {
-    return this.assetsRepository.findOne(id);
+    return this.assetsRepository.findOneBy({ id });
   }
 
   getByOfferedTo(offeredTo: string) {
@@ -134,7 +134,7 @@ export class AssetsService {
   }
 
   async update({ at, ...data }: AssetDto) {
-    const asset = await this.assetsRepository.findOne(data.id);
+    const asset = await this.assetsRepository.findOneBy({ id: data.id });
     if (!asset) {
       return this.create({ at, ...data });
     }

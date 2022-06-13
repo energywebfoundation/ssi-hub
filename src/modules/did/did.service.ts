@@ -121,7 +121,7 @@ export class DIDService implements OnModuleInit {
       op: 'get_cached_did_document',
       description: 'Get cached DID document',
     });
-    const cachedDIDDocument = await this.didRepository.findOne(did);
+    const cachedDIDDocument = await this.didRepository.findOneBy({ id: did });
     span?.finish();
 
     if (cachedDIDDocument) {
@@ -239,7 +239,7 @@ export class DIDService implements OnModuleInit {
         op: 'find_did_document',
         description: 'Find DID Document',
       });
-      const cachedDIDDocument = await this.didRepository.findOne(did);
+      const cachedDIDDocument = await this.didRepository.findOneBy({ id: did });
       span?.finish();
 
       span = transaction?.startChild({
@@ -321,7 +321,9 @@ export class DIDService implements OnModuleInit {
       );
 
       const didObject = new DID(did);
-      const didDocEntity = await this.didRepository.findOne(didObject.did);
+      const didDocEntity = await this.didRepository.findOneBy({
+        id: didObject.did,
+      });
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {

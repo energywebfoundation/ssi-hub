@@ -173,7 +173,7 @@ ___
 | :------ | :------ |
 | `__namedParameters` | `Object` |
 | `__namedParameters.appNamespace?` | `string` |
-| `__namedParameters.metadata` | `IRoleDefinition` |
+| `__namedParameters.metadata` | `IRoleDefinitionV2` \| `IRoleDefinition` |
 | `__namedParameters.name` | `string` |
 | `__namedParameters.namehash` | `string` |
 | `__namedParameters.namespace` | `string` |

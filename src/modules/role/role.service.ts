@@ -12,7 +12,10 @@ import { In, Repository } from 'typeorm';
 import { ApplicationService } from '../application/application.service';
 import { OrganizationService } from '../organization/organization.service';
 import { Logger } from '../logger/logger.service';
-import { IRoleDefinition } from '@energyweb/credential-governance';
+import {
+  IRoleDefinition,
+  IRoleDefinitionV2,
+} from '@energyweb/credential-governance';
 import { Application } from '../application/application.entity';
 import { Organization } from '../organization/organization.entity';
 
@@ -114,7 +117,11 @@ export class RoleService {
       return;
     }
 
-    const role = Role.create({ ...data, parentApp, parentOrg });
+    const role = Role.create({
+      ...data,
+      parentApp,
+      parentOrg,
+    });
     return this.roleRepository.save(role);
   }
 
@@ -136,7 +143,12 @@ export class RoleService {
       if (!app) {
         return;
       }
-      const updatedRole = Role.create({ ...role, ...data, parentApp: app });
+      const updatedRole = Role.create({
+        ...role,
+        ...data,
+        parentApp: app,
+        definition: { ...role.definition },
+      });
       return this.roleRepository.save(updatedRole);
     }
     if (data.orgNamespace) {
@@ -144,7 +156,12 @@ export class RoleService {
       if (!org) {
         return;
       }
-      const updatedRole = Role.create({ ...role, ...data, parentOrg: org });
+      const updatedRole = Role.create({
+        ...role,
+        ...data,
+        parentOrg: org,
+        definition: { ...role.definition },
+      });
       return this.roleRepository.save(updatedRole);
     }
   }
@@ -327,7 +344,7 @@ export class RoleService {
     namespace: string;
     orgNamespace?: string;
     appNamespace?: string;
-    metadata: IRoleDefinition;
+    metadata: IRoleDefinitionV2 | IRoleDefinition;
     name: string;
     namehash: string;
   }) {

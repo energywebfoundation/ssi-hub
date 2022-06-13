@@ -25,6 +25,7 @@ import { StakingModule } from './modules/staking/staking.module';
 import { BullModule } from '@nestjs/bull';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { DIDContactModule } from './modules/did-contact/did.contact.module';
+import { StatusListModule } from './modules/status-list/status-list.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { DIDContactModule } from './modules/did-contact/did.contact.module';
     ENSModule,
     StakingModule,
     HealthCheckModule,
+    StatusListModule,
   ],
   providers: [JSONObjectScalar],
 })

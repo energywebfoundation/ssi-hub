@@ -19,7 +19,6 @@ export const getDBConfig = (configService: ConfigService) => {
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
     migrations: [path.join(__dirname + '/..') + '/migrations/**/*{.ts,.js}'],
-    cli: { migrationsDir: 'src/migrations' },
     migrationsRun: true,
     migrationsTableName: 'migrations_iam_cache_server',
     logging: typeormLoggerOptions[0] === 'all' ? 'all' : typeormLoggerOptions,

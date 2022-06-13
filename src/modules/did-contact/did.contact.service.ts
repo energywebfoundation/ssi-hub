@@ -25,15 +25,24 @@ export class DIDContactService {
   ): Promise<DIDContact> {
     const { did } = didContact;
 
-    const contactCreatorDID = await this.didDocumentRepository.findOne({
-      where: { id: userDID },
+    const contactCreatorDID = await this.didDocumentRepository.findOneBy({
+      id: userDID,
     });
 
     if (!contactCreatorDID) {
       throw new NotFoundException(`cannot find DID document for ${userDID}`);
     }
+
     const didContactExists = await this.didContactRepository.findOne({
-      where: { did, createdBy: userDID },
+      where: {
+        did,
+        createdBy: {
+          id: userDID,
+        },
+      },
+      relations: {
+        createdBy: true,
+      },
     });
 
     if (didContactExists) {
@@ -49,12 +58,29 @@ export class DIDContactService {
   }
 
   public async getDIDContacts(userDID: string): Promise<DIDContact[]> {
-    return this.didContactRepository.find({ where: { createdBy: userDID } });
+    return this.didContactRepository.find({
+      where: {
+        createdBy: {
+          id: userDID,
+        },
+      },
+      relations: {
+        createdBy: true,
+      },
+    });
   }
 
   public async deleteDIDContact(id: string, userDID: string) {
     const didContact = await this.didContactRepository.findOne({
-      where: { id, createdBy: userDID },
+      where: {
+        id,
+        createdBy: {
+          id: userDID,
+        },
+      },
+      relations: {
+        createdBy: true,
+      },
     });
 
     if (!didContact) {

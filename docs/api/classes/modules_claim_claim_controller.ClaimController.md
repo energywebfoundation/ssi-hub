@@ -11,6 +11,7 @@
 ### Methods
 
 - [getByAllowedRolesByIssuer](modules_claim_claim_controller.ClaimController.md#getbyallowedrolesbyissuer)
+- [getByAllowedRolesByRevoker](modules_claim_claim_controller.ClaimController.md#getbyallowedrolesbyrevoker)
 - [getById](modules_claim_claim_controller.ClaimController.md#getbyid)
 - [getByIssuerDid](modules_claim_claim_controller.ClaimController.md#getbyissuerdid)
 - [getByParentNamespace](modules_claim_claim_controller.ClaimController.md#getbyparentnamespace)
@@ -54,6 +55,22 @@
 | Name | Type |
 | :------ | :------ |
 | `issuer` | [`DID`](modules_did_did_types.DID.md) |
+
+#### Returns
+
+`Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+___
+
+### getByAllowedRolesByRevoker
+
+▸ **getByAllowedRolesByRevoker**(`revoker`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `revoker` | [`DID`](modules_did_did_types.DID.md) |
 
 #### Returns
 

@@ -37,7 +37,7 @@
 
 ### definition
 
-• **definition**: `IRoleDefinition`
+• **definition**: `IRoleDefinitionV2`
 
 #### Implementation of
 

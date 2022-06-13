@@ -143,7 +143,7 @@ export class ClaimIssuanceService {
    * @param data Raw claim data
    */
   private async issue(data: ClaimIssueDTO) {
-    const claim = await this.roleClaimRepository.findOne(data.id);
+    const claim = await this.roleClaimRepository.findOneBy({ id: data.id });
     const updatedClaim = RoleClaim.create({
       ...claim,
       ...data,
