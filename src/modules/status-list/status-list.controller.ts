@@ -58,7 +58,7 @@ export class StatusListController {
     const namespace = credential.credentialSubject.role.namespace;
     const issuer = DID.from(credential.issuer).did;
 
-    if (issuer !== currentUser) {
+    if (issuer.toLowerCase() !== currentUser.toLowerCase()) {
       throw new ForbiddenException(
         'Requester is not the issuer of given credential'
       );
