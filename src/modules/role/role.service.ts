@@ -268,7 +268,12 @@ export class RoleService {
     );
     switch (issuer.issuerType) {
       case 'DID': {
-        if (!issuer.did.includes(issuerDID)) throw forbiddenError;
+        if (
+          !issuer.did
+            .map((d) => d.toLowerCase())
+            .includes(issuerDID.toLowerCase())
+        )
+          throw forbiddenError;
         break;
       }
       case 'ROLE': {
