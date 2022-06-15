@@ -358,7 +358,7 @@ export const statusList2021TestSuite = () => {
         issuer: issuer.didHex,
         issuanceDate: expect.any(String),
         credentialSubject: {
-          id: vc.credentialStatus.statusListCredential,
+          id: vc.id,
           type: 'StatusList2021',
           statusPurpose: 'revocation',
           encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
@@ -748,7 +748,7 @@ export const statusList2021TestSuite = () => {
             ],
             credentialSubject: {
               encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
-              id: `${process.env.STATUS_LIST_DOMAIN}${STATUS_LIST_MODULE_PATH}/${vc.id}`,
+              id: vc.id,
               statusPurpose: 'revocation',
               type: 'StatusList2021',
             },
