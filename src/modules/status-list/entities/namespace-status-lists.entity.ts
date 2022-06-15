@@ -42,7 +42,7 @@ export class NamespaceStatusLists {
   ): StatusList2021EntryDto {
     const statusListCredential = new URL(
       `${STATUS_LIST_MODULE_PATH}/${credentialId}`,
-      statusListDomain
+      statusListDomain.endsWith('/') ? statusListDomain : `${statusListDomain}/`
     ).href;
 
     this.lists.push(

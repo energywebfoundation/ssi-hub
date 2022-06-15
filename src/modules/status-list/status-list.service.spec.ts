@@ -77,14 +77,14 @@ describe('StatusList2021 service', () => {
         entry: {
           id: 'uuid',
           statusListIndex: '0',
-          statusListCredential: 'https://example.com/status-list/uuid2',
+          statusListCredential: 'https://example.com/v1/status-list/uuid2',
         },
         getCredentialStatus: () => ({
-          id: `https://example.com/status-list/uuid2`,
+          id: `https://example.com/v1/status-list/uuid2`,
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
           statusListIndex: '0',
-          statusListCredential: `https://example.com/status-list/uuid2`,
+          statusListCredential: `https://example.com/v1/status-list/uuid2`,
         }),
       });
 
@@ -93,11 +93,11 @@ describe('StatusList2021 service', () => {
       ).resolves.toStrictEqual({
         ...credential,
         credentialStatus: {
-          id: `https://example.com/status-list/uuid2`,
+          id: `https://example.com/v1/status-list/uuid2`,
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
           statusListIndex: '0',
-          statusListCredential: `https://example.com/status-list/uuid2`,
+          statusListCredential: `https://example.com/v1/status-list/uuid2`,
         },
       });
     });
@@ -107,13 +107,13 @@ describe('StatusList2021 service', () => {
       credentialWithStatusRepository.manager.transaction.mockImplementation(
         (fn) => fn({ save: (data) => ({ id: 'entry', ...data }) })
       );
-      configService.get.mockReturnValueOnce('https://example.com/status-list');
+      configService.get.mockReturnValueOnce('https://example.com/v1');
       namespaceStatusListsRepository.findOne.mockResolvedValueOnce({
         createEntry: () => ({
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
           statusListIndex: '0',
-          statusListCredential: `https://example.com/status-list/uuid`,
+          statusListCredential: `https://example.com/v1/status-list/uuid`,
         }),
       });
 
@@ -122,11 +122,11 @@ describe('StatusList2021 service', () => {
       ).resolves.toStrictEqual({
         ...credential,
         credentialStatus: {
-          id: `https://example.com/status-list/uuid`,
+          id: `https://example.com/v1/status-list/uuid`,
           type: 'StatusList2021Entry',
           statusPurpose: 'revocation',
           statusListIndex: '0',
-          statusListCredential: `https://example.com/status-list/uuid`,
+          statusListCredential: `https://example.com/v1/status-list/uuid`,
         },
       });
     });
@@ -148,11 +148,11 @@ describe('StatusList2021 service', () => {
         issuerFields: [],
       },
       credentialStatus: {
-        id: `https://example.com/${STATUS_LIST_MODULE_PATH}/uuid`,
+        id: `https://example.com/v1/${STATUS_LIST_MODULE_PATH}/uuid`,
         type: 'StatusList2021Entry' as const,
         statusPurpose: 'revocation',
         statusListIndex: '0', // because we are using one-to-one mapping
-        statusListCredential: `https://example.com/${STATUS_LIST_MODULE_PATH}/uuid`,
+        statusListCredential: `https://example.com/v1/${STATUS_LIST_MODULE_PATH}/uuid`,
       },
       proof: {
         '@context': 'https://www.w3.org/2018/credentials/proof/v1',
@@ -194,7 +194,7 @@ describe('StatusList2021 service', () => {
         namespace: credential.credentialSubject.role.namespace,
         id: credential.id,
         entry: {
-          statusListCredential: `https://example.com/status-list/${credential.id}`,
+          statusListCredential: `https://example.com/v1/status-list/${credential.id}`,
         },
       });
       process.env.CHAIN_NAME = 'volta';
@@ -230,10 +230,10 @@ describe('StatusList2021 service', () => {
         'https://www.w3.org/2018/credentials/v1',
         'https://w3id.org/vc/status-list/2021/v1',
       ],
-      id: 'https://example.com/status-list/a98c8eb6-7bdc-48b8-8c26-0418dd044180',
+      id: 'https://example.com/v1/status-list/urn:uuid:a98c8eb6-7bdc-48b8-8c26-0418dd044180',
       type: ['VerifiableCredential', 'StatusList2021Credential'],
       credentialSubject: {
-        id: 'urn:uuid:a98c8eb6-7bdc-48b8-8c26-0418dd044180',
+        id: 'https://example.com/v1/status-list/urn:uuid:a98c8eb6-7bdc-48b8-8c26-0418dd044180',
         encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
         statusPurpose: 'revocation',
         type: 'StatusList2021',
@@ -285,7 +285,7 @@ describe('StatusList2021 service', () => {
       credentialWithStatusRepository.findOne.mockResolvedValueOnce({
         entry: {
           statusListCredential:
-            'https://example.com/status-list/a98c8eb6-7bdc-48b8-8c26-0418dd044180',
+            'https://example.com/v1/status-list/a98c8eb6-7bdc-48b8-8c26-0418dd044180',
         },
       });
       statusListCredentialRepository.findOne.mockResolvedValueOnce({
@@ -293,6 +293,9 @@ describe('StatusList2021 service', () => {
       });
       statusListCredentialRepository.save.mockResolvedValueOnce({
         vc: credential,
+      });
+      namespaceStatusListRepository.findOne.mockResolvedValueOnce({
+        namespace: 'namespace',
       });
 
       await expect(
@@ -303,20 +306,13 @@ describe('StatusList2021 service', () => {
     });
 
     it('should add a valid StatusList2021Credential when namespace revocations exists', async () => {
-      credentialWithStatusRepository.findOne.mockResolvedValueOnce({
-        entry: {
-          statusListCredential: credential.id,
-        },
-        namespace: 'root',
-      });
-      namespaceStatusListsRepository.findOne.mockResolvedValueOnce({
-        id: 'uuid',
-        namespace: 'root',
-      });
       statusListCredentialRepository.findOne.mockResolvedValueOnce(null);
       statusListCredentialRepository.save.mockImplementationOnce(
         (entity) => entity
       );
+      namespaceStatusListRepository.findOne.mockResolvedValueOnce({
+        namespace: 'namespace',
+      });
 
       await expect(
         service.addSignedStatusListCredential(credential)
@@ -329,21 +325,13 @@ describe('StatusList2021 service', () => {
     });
 
     it('should add a valid StatusList2021Credential when namespace revocations not exists', async () => {
-      credentialWithStatusRepository.findOne.mockResolvedValueOnce({
-        entry: {
-          statusListCredential: credential.id,
-        },
-        namespace: 'root',
-      });
-      namespaceStatusListsRepository.findOne.mockResolvedValueOnce(null);
       statusListCredentialRepository.findOne.mockResolvedValueOnce(null);
       statusListCredentialRepository.save.mockImplementationOnce(
         (entity) => entity
       );
-      namespaceStatusListsRepository.save.mockImplementationOnce((entity) => ({
-        id: 'uuid',
-        ...entity,
-      }));
+      namespaceStatusListRepository.findOne.mockResolvedValueOnce({
+        namespace: 'namespace',
+      });
 
       await expect(
         service.addSignedStatusListCredential(credential)
@@ -353,6 +341,14 @@ describe('StatusList2021 service', () => {
         statusListId: credential.id,
         vc: credential,
       });
+    });
+
+    it('should throw an error when missing namespace status list', async () => {
+      namespaceStatusListRepository.findOne.mockResolvedValueOnce(null);
+
+      await expect(
+        service.addSignedStatusListCredential(credential)
+      ).rejects.toThrowError(BadRequestException);
     });
   });
 
