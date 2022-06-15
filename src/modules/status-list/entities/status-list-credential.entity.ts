@@ -35,7 +35,7 @@ export class StatusListCredential {
       issuer: new DID(issuerDid).withHexChain(),
       issuanceDate: new Date().toISOString(),
       credentialSubject: {
-        id: this.statusListId,
+        id: this.statusListId.split('status-list/')[1],
         type: 'StatusList2021',
         statusPurpose: 'revocation',
         encodedList,

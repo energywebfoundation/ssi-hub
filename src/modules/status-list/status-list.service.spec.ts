@@ -215,7 +215,7 @@ describe('StatusList2021 service', () => {
         issuer: 'did:ethr:0x12047:0xe852f6784EeD893cC81dDa21D31f212332CC120a',
         issuanceDate: expect.any(String),
         credentialSubject: {
-          id: credential.credentialStatus.statusListCredential,
+          id: 'uuid',
           type: 'StatusList2021',
           statusPurpose: 'revocation',
           encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
