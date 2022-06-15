@@ -124,17 +124,17 @@ export class StatusListService {
   async addSignedStatusListCredential(
     vc: StatusListVerifiableCredentialDto
   ): Promise<StatusListVerifiableCredentialDto> {
-    const credentialId = vc.credentialSubject.id;
+    const namespace = await this.getNamespaceByStatusListId(vc.id);
 
-    const credential = await this.getCredential(credentialId);
+    if (!namespace) {
+      throw new BadRequestException('Credential was not registered');
+    }
 
-    let statusList = await this.getStatusList(
-      credential.entry.statusListCredential
-    );
+    let statusList = await this.getStatusList(vc.id);
 
     if (!statusList) {
       statusList = StatusListCredential.create({
-        statusListId: credential.entry.statusListCredential,
+        statusListId: vc.id,
         vc,
       });
     }

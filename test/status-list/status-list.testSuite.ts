@@ -1,7 +1,6 @@
 import { Connection, EntityManager, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import request from 'supertest';
-import { URL } from 'url';
 import didKit from 'didkit-wasm-node';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
@@ -100,10 +99,7 @@ export const statusList2021TestSuite = () => {
         })
         .expect(201);
 
-      const expectedStatusListCredential = new URL(
-        `${STATUS_LIST_MODULE_PATH}/uuid`,
-        process.env.STATUS_LIST_DOMAIN
-      ).href;
+      const expectedStatusListCredential = `${process.env.STATUS_LIST_DOMAIN}${STATUS_LIST_MODULE_PATH}/uuid`;
 
       expect(body.credentialStatus).toMatchObject({
         type: 'StatusList2021Entry',
@@ -145,10 +141,7 @@ export const statusList2021TestSuite = () => {
         entry: {
           id: expect.any(String),
           statusListIndex: '0',
-          statusListCredential: new URL(
-            `${STATUS_LIST_MODULE_PATH}/uuid`,
-            process.env.STATUS_LIST_DOMAIN
-          ).href,
+          statusListCredential: `${process.env.STATUS_LIST_DOMAIN}${STATUS_LIST_MODULE_PATH}/uuid`,
           statusPurpose: 'revocation',
           type: 'StatusList2021Entry',
         },
@@ -216,10 +209,7 @@ export const statusList2021TestSuite = () => {
         type: 'StatusList2021Entry',
         statusPurpose: 'revocation',
         statusListIndex: '0',
-        statusListCredential: new URL(
-          `${STATUS_LIST_MODULE_PATH}/uuid`,
-          process.env.STATUS_LIST_DOMAIN
-        ).href,
+        statusListCredential: `${process.env.STATUS_LIST_DOMAIN}${STATUS_LIST_MODULE_PATH}/uuid`,
       });
     });
 
@@ -750,7 +740,7 @@ export const statusList2021TestSuite = () => {
       await expect(credentialWithStatusRepository.count()).resolves.toBe(1);
       await expect(statusListCredentialRepository.find()).resolves.toEqual([
         {
-          statusListId: `http://localhost:3000/v1/status-list/${vc.id}`,
+          statusListId: `${process.env.STATUS_LIST_DOMAIN}${STATUS_LIST_MODULE_PATH}/${vc.id}`,
           vc: {
             '@context': [
               'https://www.w3.org/2018/credentials/v1',
@@ -758,11 +748,11 @@ export const statusList2021TestSuite = () => {
             ],
             credentialSubject: {
               encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
-              id: vc.id,
+              id: `${process.env.STATUS_LIST_DOMAIN}${STATUS_LIST_MODULE_PATH}/${vc.id}`,
               statusPurpose: 'revocation',
               type: 'StatusList2021',
             },
-            id: `http://localhost:3000/v1/status-list/${vc.id}`,
+            id: `${process.env.STATUS_LIST_DOMAIN}${STATUS_LIST_MODULE_PATH}/${vc.id}`,
             issuanceDate: expect.any(String),
             issuer: issuer.didHex,
             proof: {

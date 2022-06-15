@@ -82,7 +82,7 @@ export const getStatusListCredential = (issuer: string) => ({
   issuer: issuer,
   issuanceDate: '2022-05-30T14:32:24.069Z',
   credentialSubject: {
-    id: 'urn:uuid:b40311fa-cf70-4fec-b268-52c3055b2a68',
+    id: 'http://localhost:3000/v1/status-list/urn:uuid:b40311fa-cf70-4fec-b268-52c3055b2a68',
     type: 'StatusList2021',
     statusPurpose: 'revocation',
     encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
