@@ -10,6 +10,7 @@ import {
   Res,
   Req,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -40,6 +41,7 @@ import { StatusListService } from './status-list.service';
 @ApiTags('Status list 2021')
 export class StatusListController {
   constructor(
+    private readonly configService: ConfigService,
     private readonly statusListService: StatusListService,
     private readonly revocationVerificationService: RevocationVerificationService,
     private readonly roleService: RoleService
@@ -163,7 +165,7 @@ export class StatusListController {
     @Req() request: Request
   ): Promise<Response> {
     const statusListCredentialUrl = new URL(
-      `${request.protocol}://${request.hostname}${request.originalUrl}`
+      `${this.configService.get('STATUS_LIST_DOMAIN')}${request.originalUrl}`
     );
     const statusList = await this.statusListService.getStatusList(
       statusListCredentialUrl.href
