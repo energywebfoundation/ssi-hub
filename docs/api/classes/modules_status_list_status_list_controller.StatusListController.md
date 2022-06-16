@@ -19,12 +19,13 @@
 
 ### constructor
 
-• **new StatusListController**(`statusListService`, `revocationVerificationService`, `roleService`)
+• **new StatusListController**(`configService`, `statusListService`, `revocationVerificationService`, `roleService`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `statusListService` | [`StatusListService`](modules_status_list_status_list_service.StatusListService.md) |
 | `revocationVerificationService` | [`RevocationVerificationService`](modules_claim_services_revocation_verification_service.RevocationVerificationService.md) |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
