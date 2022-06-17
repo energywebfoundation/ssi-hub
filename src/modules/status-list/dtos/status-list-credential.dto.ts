@@ -4,10 +4,13 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { Credential } from '@ew-did-registry/credentials-interface';
 
 export class StatusListCredentialSubjectDto {
+  [key: string]: string;
+
   @IsString()
   @ApiProperty()
   id: string;
@@ -25,10 +28,14 @@ export class StatusListCredentialSubjectDto {
   encodedList: string;
 }
 
-export class StatusListCredentialDto {
+export class StatusListCredentialDto
+  implements Credential<StatusListCredentialSubjectDto>
+{
+  [x: string]: unknown;
+
   @IsArray()
   @ApiProperty()
-  '@context': Array<string | Record<string, unknown>>;
+  '@context': string[];
 
   @IsString()
   @ApiProperty()

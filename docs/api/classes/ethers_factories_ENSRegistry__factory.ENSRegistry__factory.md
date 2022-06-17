@@ -19,7 +19,7 @@
 - [contractName](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#contractname)
 - [abi](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#abi)
 - [bytecode](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#bytecode)
-- [contractName](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#contractname)
+- [contractName](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#contractname-1)
 
 ### Methods
 
@@ -27,7 +27,7 @@
 - [connect](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#connect)
 - [deploy](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#deploy)
 - [getDeployTransaction](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#getdeploytransaction)
-- [connect](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#connect)
+- [connect](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#connect-1)
 - [createInterface](ethers_factories_ENSRegistry__factory.ENSRegistry__factory.md#createinterface)
 
 ## Constructors
@@ -56,7 +56,7 @@ ___
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `undefined` = false; `inputs`: `any`[] = []; `name`: `undefined` = "domainUpdated"; `outputs`: `undefined` = []; `payable`: `boolean` = false; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "address"; `name`: `string` = "owner"; `type`: `string` = "address" }[] ; `name`: `string` = "ApprovalForAll"; `outputs`: `undefined` = []; `payable`: `undefined` = false; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `constant`: `boolean` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "setSubnodeOwner"; `outputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = ""; `type`: `string` = "bytes32" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "function" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `undefined` = true; `inputs`: `any`[] = []; `outputs`: `undefined` ; `payable`: `boolean` = false; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = true; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "address"; `name`: `string` = "owner"; `type`: `string` = "address" }[] ; `name`: `string` = "ApprovalForAll"; `outputs`: `undefined` ; `payable`: `undefined` = false; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `constant`: `boolean` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "setSubnodeOwner"; `outputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = ""; `type`: `string` = "bytes32" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "function" })[] = `_abi`
 
 ___
 
@@ -161,7 +161,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` |
-| `signerOrProvider` | `Provider` \| `Signer` |
+| `signerOrProvider` | `Signer` \| `Provider` |
 
 #### Returns
 

@@ -40,6 +40,7 @@
 - [health-check/health-check.module](modules/health_check_health_check_module.md)
 - [health-check/health-check.service](modules/health_check_health_check_service.md)
 - [jwt/config](modules/jwt_config.md)
+- [main](modules/main.md)
 - [modules/application/application.controller](modules/modules_application_application_controller.md)
 - [modules/application/application.dto](modules/modules_application_application_dto.md)
 - [modules/application/application.entity](modules/modules_application_application_entity.md)

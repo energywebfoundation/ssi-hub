@@ -7,12 +7,12 @@
 - [OfferableIdentity](../interfaces/ethers_OfferableIdentity.OfferableIdentity.md)
 - [OfferableIdentityInterface](../interfaces/ethers_OfferableIdentity.OfferableIdentityInterface.md)
 
-### Type aliases
+### Type Aliases
 
 - [TransactionSentEvent](ethers_OfferableIdentity.md#transactionsentevent)
 - [TransactionSentEventFilter](ethers_OfferableIdentity.md#transactionsenteventfilter)
 
-## Type aliases
+## Type Aliases
 
 ### TransactionSentEvent
 

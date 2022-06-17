@@ -8,6 +8,14 @@
 
   ↳ [`StatusListVerifiableCredentialDto`](modules_status_list_dtos_status_list_verifiable_credential_dto.StatusListVerifiableCredentialDto.md)
 
+## Implements
+
+- `Credential`<[`StatusListCredentialSubjectDto`](modules_status_list_dtos_status_list_credential_dto.StatusListCredentialSubjectDto.md)\>
+
+## Indexable
+
+▪ [x: `string`]: `unknown`
+
 ## Table of contents
 
 ### Constructors
@@ -33,7 +41,11 @@
 
 ### @context
 
-• **@context**: (`string` \| `Record`<`string`, `unknown`\>)[]
+• **@context**: `string`[]
+
+#### Implementation of
+
+Credential.@context
 
 ___
 
@@ -41,11 +53,19 @@ ___
 
 • **credentialSubject**: [`StatusListCredentialSubjectDto`](modules_status_list_dtos_status_list_credential_dto.StatusListCredentialSubjectDto.md)
 
+#### Implementation of
+
+Credential.credentialSubject
+
 ___
 
 ### id
 
 • **id**: `string`
+
+#### Implementation of
+
+Credential.id
 
 ___
 
@@ -53,14 +73,26 @@ ___
 
 • **issuanceDate**: `string`
 
+#### Implementation of
+
+Credential.issuanceDate
+
 ___
 
 ### issuer
 
 • **issuer**: `string`
 
+#### Implementation of
+
+Credential.issuer
+
 ___
 
 ### type
 
 • **type**: `string`[]
+
+#### Implementation of
+
+Credential.type

@@ -4,7 +4,7 @@
 
 ## Indexable
 
-▪ [x: `string`]: `string` \| `string`[] \| `unknown`
+▪ [x: `string`]: `string` \| `string`[] \| `any`
 
 ## Table of contents
 

@@ -6,11 +6,11 @@
 
 - [NatsService](../classes/modules_nats_nats_service.NatsService.md)
 
-### Type aliases
+### Type Aliases
 
 - [IMessageJob](modules_nats_nats_service.md#imessagejob)
 
-## Type aliases
+## Type Aliases
 
 ### IMessageJob
 

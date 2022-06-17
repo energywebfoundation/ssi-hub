@@ -1,7 +1,7 @@
 import { Connection, EntityManager, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import request from 'supertest';
-import didKit from 'didkit-wasm-node';
+import didKit from '@spruceid/didkit-wasm-node';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
 import { createRole, randomUser } from '../utils';
@@ -358,7 +358,7 @@ export const statusList2021TestSuite = () => {
         issuer: issuer.didHex,
         issuanceDate: expect.any(String),
         credentialSubject: {
-          id: vc.id,
+          id: vc.credentialStatus.statusListCredential,
           type: 'StatusList2021',
           statusPurpose: 'revocation',
           encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',

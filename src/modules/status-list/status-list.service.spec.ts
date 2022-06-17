@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
-import didKit from 'didkit-wasm-node';
+import didKit from '@spruceid/didkit-wasm-node';
 import { STATUS_LIST_MODULE_PATH } from './status-list.const';
 import { StatusListService } from './status-list.service';
 import {
@@ -215,7 +215,7 @@ describe('StatusList2021 service', () => {
         issuer: 'did:ethr:0x12047:0xe852f6784EeD893cC81dDa21D31f212332CC120a',
         issuanceDate: expect.any(String),
         credentialSubject: {
-          id: 'uuid',
+          id: credential.credentialStatus.statusListCredential,
           type: 'StatusList2021',
           statusPurpose: 'revocation',
           encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',

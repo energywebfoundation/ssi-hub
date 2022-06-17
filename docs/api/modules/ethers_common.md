@@ -9,13 +9,13 @@
 - [TypedEventFilter](../interfaces/ethers_common.TypedEventFilter.md)
 - [TypedListener](../interfaces/ethers_common.TypedListener.md)
 
-### Type aliases
+### Type Aliases
 
 - [GetARGsTypeFromFactory](ethers_common.md#getargstypefromfactory)
 - [GetContractTypeFromFactory](ethers_common.md#getcontracttypefromfactory)
 - [MinEthersFactory](ethers_common.md#minethersfactory)
 
-## Type aliases
+## Type Aliases
 
 ### GetARGsTypeFromFactory
 

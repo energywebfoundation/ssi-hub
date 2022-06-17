@@ -19,7 +19,7 @@
 - [contractName](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#contractname)
 - [abi](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#abi)
 - [bytecode](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#bytecode)
-- [contractName](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#contractname)
+- [contractName](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#contractname-1)
 
 ### Methods
 
@@ -27,7 +27,7 @@
 - [connect](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#connect)
 - [deploy](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#deploy)
 - [getDeployTransaction](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#getdeploytransaction)
-- [connect](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#connect)
+- [connect](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#connect-1)
 - [createInterface](ethers_factories_DomainNotifier__factory.DomainNotifier__factory.md#createinterface)
 
 ## Constructors
@@ -56,7 +56,7 @@ ___
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "contract ENS"; `name`: `string` = "ens"; `type`: `string` = "address" }[] ; `name`: `undefined` = "domainUpdated"; `outputs`: `undefined` = []; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes32"; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "DomainUpdated"; `outputs`: `undefined` = []; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "domainUpdated"; `outputs`: `any`[] = []; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "function" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "contract ENS"; `name`: `string` = "ens"; `type`: `string` = "address" }[] ; `outputs`: `undefined` ; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes32"; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "DomainUpdated"; `outputs`: `undefined` ; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "domainUpdated"; `outputs`: `any`[] = []; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "function" })[] = `_abi`
 
 ___
 
@@ -163,7 +163,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` |
-| `signerOrProvider` | `Provider` \| `Signer` |
+| `signerOrProvider` | `Signer` \| `Provider` |
 
 #### Returns
 

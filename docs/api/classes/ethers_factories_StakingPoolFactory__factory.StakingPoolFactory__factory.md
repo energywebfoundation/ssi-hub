@@ -25,7 +25,7 @@
 - [connect](ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md#connect)
 - [deploy](ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md#deploy)
 - [getDeployTransaction](ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md#getdeploytransaction)
-- [connect](ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md#connect)
+- [connect](ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md#connect-1)
 - [createInterface](ethers_factories_StakingPoolFactory__factory.StakingPoolFactory__factory.md#createinterface)
 
 ## Constructors
@@ -48,7 +48,7 @@ ContractFactory.constructor
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "uint256"; `name`: `string` = "\_principalThreshold"; `type`: `string` = "uint256" }[] ; `name`: `undefined` = "domainUpdated"; `outputs`: `undefined` = []; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes32"; `name`: `string` = "org"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "StakingPoolLaunched"; `outputs`: `undefined` = []; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = ""; `type`: `string` = "bytes32" }[] ; `name`: `string` = "services"; `outputs`: { `internalType`: `string` = "address"; `name`: `string` = "provider"; `type`: `string` = "address" }[] ; `stateMutability`: `string` = "view"; `type`: `string` = "function" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "uint256"; `name`: `string` = "\_principalThreshold"; `type`: `string` = "uint256" }[] ; `outputs`: `undefined` ; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes32"; `name`: `string` = "org"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "StakingPoolLaunched"; `outputs`: `undefined` ; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "bytes32"; `name`: `string` = ""; `type`: `string` = "bytes32" }[] ; `name`: `string` = "services"; `outputs`: { `internalType`: `string` = "address"; `name`: `string` = "provider"; `type`: `string` = "address" }[] ; `stateMutability`: `string` = "view"; `type`: `string` = "function" })[] = `_abi`
 
 ___
 
@@ -155,7 +155,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` |
-| `signerOrProvider` | `Provider` \| `Signer` |
+| `signerOrProvider` | `Signer` \| `Provider` |
 
 #### Returns
 
