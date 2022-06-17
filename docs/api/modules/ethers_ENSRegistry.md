@@ -7,7 +7,7 @@
 - [ENSRegistry](../interfaces/ethers_ENSRegistry.ENSRegistry.md)
 - [ENSRegistryInterface](../interfaces/ethers_ENSRegistry.ENSRegistryInterface.md)
 
-### Type aliases
+### Type Aliases
 
 - [ApprovalForAllEvent](ethers_ENSRegistry.md#approvalforallevent)
 - [ApprovalForAllEventFilter](ethers_ENSRegistry.md#approvalforalleventfilter)
@@ -20,7 +20,7 @@
 - [TransferEvent](ethers_ENSRegistry.md#transferevent)
 - [TransferEventFilter](ethers_ENSRegistry.md#transfereventfilter)
 
-## Type aliases
+## Type Aliases
 
 ### ApprovalForAllEvent
 

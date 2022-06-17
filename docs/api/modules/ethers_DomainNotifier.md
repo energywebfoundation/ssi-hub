@@ -7,12 +7,12 @@
 - [DomainNotifier](../interfaces/ethers_DomainNotifier.DomainNotifier.md)
 - [DomainNotifierInterface](../interfaces/ethers_DomainNotifier.DomainNotifierInterface.md)
 
-### Type aliases
+### Type Aliases
 
 - [DomainUpdatedEvent](ethers_DomainNotifier.md#domainupdatedevent)
 - [DomainUpdatedEventFilter](ethers_DomainNotifier.md#domainupdatedeventfilter)
 
-## Type aliases
+## Type Aliases
 
 ### DomainUpdatedEvent
 

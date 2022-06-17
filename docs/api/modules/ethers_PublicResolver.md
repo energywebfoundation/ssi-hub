@@ -7,7 +7,7 @@
 - [PublicResolver](../interfaces/ethers_PublicResolver.PublicResolver.md)
 - [PublicResolverInterface](../interfaces/ethers_PublicResolver.PublicResolverInterface.md)
 
-### Type aliases
+### Type Aliases
 
 - [ABIChangedEvent](ethers_PublicResolver.md#abichangedevent)
 - [ABIChangedEventFilter](ethers_PublicResolver.md#abichangedeventfilter)
@@ -34,7 +34,7 @@
 - [TextChangedEvent](ethers_PublicResolver.md#textchangedevent)
 - [TextChangedEventFilter](ethers_PublicResolver.md#textchangedeventfilter)
 
-## Type aliases
+## Type Aliases
 
 ### ABIChangedEvent
 

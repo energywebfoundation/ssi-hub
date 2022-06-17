@@ -7,7 +7,7 @@
 - [IdentityManager](../interfaces/ethers_IdentityManager.IdentityManager.md)
 - [IdentityManagerInterface](../interfaces/ethers_IdentityManager.IdentityManagerInterface.md)
 
-### Type aliases
+### Type Aliases
 
 - [AdminChangedEvent](ethers_IdentityManager.md#adminchangedevent)
 - [AdminChangedEventFilter](ethers_IdentityManager.md#adminchangedeventfilter)
@@ -28,7 +28,7 @@
 - [UpgradedEvent](ethers_IdentityManager.md#upgradedevent)
 - [UpgradedEventFilter](ethers_IdentityManager.md#upgradedeventfilter)
 
-## Type aliases
+## Type Aliases
 
 ### AdminChangedEvent
 

@@ -19,7 +19,7 @@
 - [contractName](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#contractname)
 - [abi](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#abi)
 - [bytecode](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#bytecode)
-- [contractName](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#contractname)
+- [contractName](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#contractname-1)
 
 ### Methods
 
@@ -27,7 +27,7 @@
 - [connect](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#connect)
 - [deploy](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#deploy)
 - [getDeployTransaction](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#getdeploytransaction)
-- [connect](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#connect)
+- [connect](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#connect-1)
 - [createInterface](ethers_factories_OfferableIdentity__factory.OfferableIdentity__factory.md#createinterface)
 
 ## Constructors
@@ -56,7 +56,7 @@ ___
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes"; `name`: `string` = "data"; `type`: `string` = "bytes" }[] ; `name`: `string` = "TransactionSent"; `outputs`: `undefined` = []; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "address"; `name`: `string` = "to"; `type`: `string` = "address" }[] ; `name`: `string` = "sendTransaction"; `outputs`: { `internalType`: `string` = "bool"; `name`: `string` = "success"; `type`: `string` = "bool" }[] ; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "function" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes"; `name`: `string` = "data"; `type`: `string` = "bytes" }[] ; `name`: `string` = "TransactionSent"; `outputs`: `undefined` ; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "address"; `name`: `string` = "to"; `type`: `string` = "address" }[] ; `name`: `string` = "sendTransaction"; `outputs`: { `internalType`: `string` = "bool"; `name`: `string` = "success"; `type`: `string` = "bool" }[] ; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "function" })[] = `_abi`
 
 ___
 
@@ -161,7 +161,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` |
-| `signerOrProvider` | `Provider` \| `Signer` |
+| `signerOrProvider` | `Signer` \| `Provider` |
 
 #### Returns
 

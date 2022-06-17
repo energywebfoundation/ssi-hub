@@ -10,11 +10,11 @@
 
 - [StakingPoolFactoryInterface](../interfaces/ethers_StakingPoolFactory.StakingPoolFactoryInterface.md)
 
-### Type aliases
+### Type Aliases
 
 - [StakingPoolLaunchedEvent](ethers_StakingPoolFactory.md#stakingpoollaunchedevent)
 
-## Type aliases
+## Type Aliases
 
 ### StakingPoolLaunchedEvent
 

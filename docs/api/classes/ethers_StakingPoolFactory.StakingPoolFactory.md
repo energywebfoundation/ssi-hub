@@ -53,7 +53,7 @@
 | :------ | :------ |
 | `addressOrName` | `string` |
 | `contractInterface` | `ContractInterface` |
-| `signerOrProvider?` | `Provider` \| `Signer` |
+| `signerOrProvider?` | `Signer` \| `Provider` |
 
 #### Inherited from
 
@@ -196,7 +196,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `signerOrProvider` | `string` \| `Provider` \| `Signer` |
+| `signerOrProvider` | `string` \| `Signer` \| `Provider` |
 
 #### Returns
 

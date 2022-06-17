@@ -7,7 +7,7 @@
 - [EthereumDIDRegistry](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistry.md)
 - [EthereumDIDRegistryInterface](../interfaces/ethers_EthereumDIDRegistry.EthereumDIDRegistryInterface.md)
 
-### Type aliases
+### Type Aliases
 
 - [DIDAttributeChangedEvent](ethers_EthereumDIDRegistry.md#didattributechangedevent)
 - [DIDAttributeChangedEventFilter](ethers_EthereumDIDRegistry.md#didattributechangedeventfilter)
@@ -16,7 +16,7 @@
 - [DIDOwnerChangedEvent](ethers_EthereumDIDRegistry.md#didownerchangedevent)
 - [DIDOwnerChangedEventFilter](ethers_EthereumDIDRegistry.md#didownerchangedeventfilter)
 
-## Type aliases
+## Type Aliases
 
 ### DIDAttributeChangedEvent
 

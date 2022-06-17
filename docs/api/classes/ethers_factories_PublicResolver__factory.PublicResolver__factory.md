@@ -19,7 +19,7 @@
 - [contractName](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#contractname)
 - [abi](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#abi)
 - [bytecode](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#bytecode)
-- [contractName](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#contractname)
+- [contractName](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#contractname-1)
 
 ### Methods
 
@@ -27,7 +27,7 @@
 - [connect](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#connect)
 - [deploy](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#deploy)
 - [getDeployTransaction](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#getdeploytransaction)
-- [connect](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#connect)
+- [connect](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#connect-1)
 - [createInterface](ethers_factories_PublicResolver__factory.PublicResolver__factory.md#createinterface)
 
 ## Constructors
@@ -56,7 +56,7 @@ ___
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `boolean` = true; `inputs`: { `name`: `string` = "interfaceID"; `type`: `string` = "bytes4" }[] ; `name`: `string` = "supportsInterface"; `outputs`: { `name`: `string` = ""; `type`: `string` = "bool" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "pure"; `type`: `string` = "function" } \| { `anonymous`: `undefined` = false; `constant`: `undefined` = false; `inputs`: { `name`: `string` = "\_ens"; `type`: `string` = "address" }[] ; `name`: `undefined` = "domainUpdated"; `outputs`: `undefined` = []; `payable`: `boolean` = false; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = false; `inputs`: { `indexed`: `boolean` = true; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "AuthorisationChanged"; `outputs`: `undefined` = []; `payable`: `undefined` = false; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `boolean` = true; `inputs`: { `name`: `string` = "interfaceID"; `type`: `string` = "bytes4" }[] ; `name`: `string` = "supportsInterface"; `outputs`: { `name`: `string` = ""; `type`: `string` = "bool" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "pure"; `type`: `string` = "function" } \| { `anonymous`: `undefined` = false; `constant`: `undefined` = true; `inputs`: { `name`: `string` = "\_ens"; `type`: `string` = "address" }[] ; `outputs`: `undefined` ; `payable`: `boolean` = false; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "constructor" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = true; `inputs`: { `indexed`: `boolean` = true; `name`: `string` = "node"; `type`: `string` = "bytes32" }[] ; `name`: `string` = "AuthorisationChanged"; `outputs`: `undefined` ; `payable`: `undefined` = false; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" })[] = `_abi`
 
 ___
 
@@ -163,7 +163,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` |
-| `signerOrProvider` | `Provider` \| `Signer` |
+| `signerOrProvider` | `Signer` \| `Provider` |
 
 #### Returns
 

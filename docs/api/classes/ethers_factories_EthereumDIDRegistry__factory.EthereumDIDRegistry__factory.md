@@ -19,7 +19,7 @@
 - [contractName](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#contractname)
 - [abi](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#abi)
 - [bytecode](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#bytecode)
-- [contractName](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#contractname)
+- [contractName](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#contractname-1)
 
 ### Methods
 
@@ -27,7 +27,7 @@
 - [connect](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#connect)
 - [deploy](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#deploy)
 - [getDeployTransaction](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#getdeploytransaction)
-- [connect](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#connect)
+- [connect](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#connect-1)
 - [createInterface](ethers_factories_EthereumDIDRegistry__factory.EthereumDIDRegistry__factory.md#createinterface)
 
 ## Constructors
@@ -56,7 +56,7 @@ ___
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `boolean` = true; `inputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `name`: `string` = "owners"; `outputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "view"; `type`: `string` = "function" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = false; `inputs`: { `indexed`: `boolean` = true; `name`: `string` = "identity"; `type`: `string` = "address" }[] ; `name`: `string` = "DIDOwnerChanged"; `outputs`: `undefined` = []; `payable`: `undefined` = false; `stateMutability`: `undefined` = "nonpayable"; `type`: `string` = "event" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `undefined` = false; `constant`: `boolean` = true; `inputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `name`: `string` = "owners"; `outputs`: { `name`: `string` = ""; `type`: `string` = "address" }[] ; `payable`: `boolean` = false; `stateMutability`: `string` = "view"; `type`: `string` = "function" } \| { `anonymous`: `boolean` = false; `constant`: `undefined` = true; `inputs`: { `indexed`: `boolean` = true; `name`: `string` = "identity"; `type`: `string` = "address" }[] ; `name`: `string` = "DIDOwnerChanged"; `outputs`: `undefined` ; `payable`: `undefined` = false; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" })[] = `_abi`
 
 ___
 
@@ -161,7 +161,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `address` | `string` |
-| `signerOrProvider` | `Provider` \| `Signer` |
+| `signerOrProvider` | `Signer` \| `Provider` |
 
 #### Returns
 

@@ -32,14 +32,14 @@ export class StatusListCredential {
       ],
       id: this.statusListId,
       type: ['VerifiableCredential', 'StatusList2021Credential'],
-      issuer: new DID(issuerDid).withHexChain(),
-      issuanceDate: new Date().toISOString(),
       credentialSubject: {
-        id: this.statusListId.split('status-list/')[1],
+        id: this.statusListId,
         type: 'StatusList2021',
         statusPurpose: 'revocation',
         encodedList,
       },
+      issuer: new DID(issuerDid).withHexChain(),
+      issuanceDate: new Date().toISOString(),
     };
 
     return statusListCredential;

@@ -164,8 +164,10 @@ export class StatusListController {
     @Res() response: Response,
     @Req() request: Request
   ): Promise<Response> {
+    const statusListDomain = this.configService.get('STATUS_LIST_DOMAIN');
     const statusListCredentialUrl = new URL(
-      `${this.configService.get('STATUS_LIST_DOMAIN')}${request.originalUrl}`
+      `${request.originalUrl}`,
+      statusListDomain.endsWith('/') ? statusListDomain : `${statusListDomain}/`
     );
     const statusList = await this.statusListService.getStatusList(
       statusListCredentialUrl.href

@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { verifyCredential } from 'didkit-wasm-node';
+import { verifyCredential } from '@spruceid/didkit-wasm-node';
 import {
   CredentialWithStatusDto,
   CredentialDto,
@@ -206,7 +206,7 @@ export class StatusListService {
     statusListId: string
   ): Promise<StatusListCredential | null> {
     const statusList = await this.statusListCredentialRepository.findOne({
-      where: { statusListId: statusListId },
+      where: { statusListId },
     });
 
     return statusList;

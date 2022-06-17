@@ -2,6 +2,10 @@
 
 [modules/status-list/dtos/status-list-credential.dto](../modules/modules_status_list_dtos_status_list_credential_dto.md).StatusListCredentialSubjectDto
 
+## Indexable
+
+▪ [key: `string`]: `string`
+
 ## Table of contents
 
 ### Constructors

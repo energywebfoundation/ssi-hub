@@ -11,7 +11,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CredentialWithStatusDto } from './credential-status.dto';
 
 export class VerifiableCredentialProofDto {
-  [x: string]: string | string[] | unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [x: string]: string | string[] | any;
 
   @IsDefined()
   '@context': string | string[];

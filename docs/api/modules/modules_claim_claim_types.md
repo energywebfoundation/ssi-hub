@@ -16,7 +16,7 @@
 - [IMessage](../interfaces/modules_claim_claim_types.IMessage.md)
 - [IRoleClaim](../interfaces/modules_claim_claim_types.IRoleClaim.md)
 
-### Type aliases
+### Type Aliases
 
 - [DecodedClaimToken](modules_claim_claim_types.md#decodedclaimtoken)
 
@@ -24,7 +24,7 @@
 
 - [NATS\_EXCHANGE\_TOPIC](modules_claim_claim_types.md#nats_exchange_topic)
 
-## Type aliases
+## Type Aliases
 
 ### DecodedClaimToken
 
