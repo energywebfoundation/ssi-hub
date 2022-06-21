@@ -52,13 +52,13 @@ vr->>vr: check that status list proof is valid
 vr->>vr: check if presented VC is revoked
 ```
 
-### Design Challenges
+### Design Challenges Faced
 
-#### StatusList Credential should have an issuer or proof
-https://w3c-ccg.github.io/vc-status-list-2021/#example-example-statuslist2021credential-0
+#### Client-side proving of CredentialStatus VC
+[StatusList2021Credentials](https://w3c-ccg.github.io/vc-status-list-2021/#example-example-statuslist2021credential-0) should have a proof so that verifiers can con
 
-This has the benefit that ssi-hub can not unilaterally forge revocation lists.
-This means that we must get a signature from revoker.
+Due to the IAM stack's signature being client-side (performed, for example by Metamask) means that the server cannot forge status list credentials.
+However this introduces challenges because the revocations cannot be performed synchronously by the server.
 
 **Problem**:
 It only makes sense for a revoker to sign a list that they are authorized to sign.
@@ -79,19 +79,19 @@ Other possible solutions:
   - If decentralized storage was used, privacy could be restored?
   - In this case the issuer of the StatusListCredential is the revoker
 
-**Problem**:
-The issuer can't necessarily sign the StatusList2021 Credential
+### Authorized Revokers may 
+Given EnergyWeb's Role Definition implementation, a role credential issuer may not be necessarily be authorized to prove (sign) the `StatusList2021Credential`.
 
-Solution:
+Chosen solution:
 - The status list isn't created until revocation. 
   - SSI-Hub could define the URL but the URL could return an `empty` (e.g. 204 No Content) status code if no revocations
 
 Other possible solutions:
-- Verifier can expect that issuer's can sign the list **if the revocation's are empty**
+- Verifier can expect that issuers can sign the list **if the revocations are empty**
 
 **Problem**: Verifying that revoker is valid could require a credential
 
-Solution: As currently done with issuance, we require that revoker's publish their credential publicly (e.g. to IPFS) in order to revoke and in order for their revocations to be verifiable
+Solution: As currently done with issuance, we require that revoker's publish their credential publicly (e.g. to IPFS) in order to revoke and in order for their revocations to be verifiable.
 
 ## Entities
 
