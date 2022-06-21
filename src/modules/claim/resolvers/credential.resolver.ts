@@ -1,7 +1,8 @@
 import {
   CredentialResolver,
-  IVerifiableCredential,
+  VerifiableCredential,
 } from '@energyweb/vc-verification';
+import { RoleCredentialSubject } from '@energyweb/credential-governance';
 import { ClaimService } from '../services';
 
 export class RoleCredentialResolver implements CredentialResolver {
@@ -10,16 +11,14 @@ export class RoleCredentialResolver implements CredentialResolver {
   async getCredential(
     subject: string,
     claimType: string
-  ): Promise<IVerifiableCredential> {
+  ): Promise<VerifiableCredential<RoleCredentialSubject>> {
     const claim = await this.claimService.getByClaimType({
       subject,
       claimType,
     });
 
-    // TODO: update when merged https://github.com/energywebfoundation/ew-credentials/pull/28
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return claim?.vp?.verifiableCredential?.[0];
+    return claim?.vp
+      ?.verifiableCredential?.[0] as VerifiableCredential<RoleCredentialSubject>;
   }
 
   async getClaimIssuedToken(

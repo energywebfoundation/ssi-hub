@@ -54,7 +54,7 @@ ___
 
 ### getCredential
 
-▸ **getCredential**(`subject`, `claimType`): `Promise`<`IVerifiableCredential`\>
+▸ **getCredential**(`subject`, `claimType`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>\>
 
 #### Parameters
 
@@ -65,7 +65,7 @@ ___
 
 #### Returns
 
-`Promise`<`IVerifiableCredential`\>
+`Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>\>
 
 #### Implementation of
 
