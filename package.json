@@ -45,15 +45,15 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@energyweb/credential-governance": "^1.0.1-alpha.68.0",
-    "@energyweb/vc-verification": "^1.0.1-alpha.85.0",
+    "@energyweb/credential-governance": "^1.0.1-alpha.127.0",
+    "@energyweb/vc-verification": "^1.0.1-alpha.127.0",
     "@ensdomains/ens": "^0.4.5",
     "@ensdomains/resolver": "^0.2.4",
     "@ethersproject/abstract-provider": "5.4.1",
     "@ethersproject/abstract-signer": "5.4.1",
     "@ethersproject/providers": "^5.4.5",
     "@ew-did-registry/claims": "^0.6.3-alpha.531.0",
-    "@ew-did-registry/credentials-interface": "^0.6.3-alpha.611.0",
+    "@ew-did-registry/credentials-interface": "^0.6.3-alpha.626.0",
     "@ew-did-registry/did-document": "^0.6.3-alpha.531.0",
     "@ew-did-registry/did-ethr-resolver": "^0.6.3-alpha.531.0",
     "@ew-did-registry/did-ipfs-store": "^0.6.3-alpha.531.0",
