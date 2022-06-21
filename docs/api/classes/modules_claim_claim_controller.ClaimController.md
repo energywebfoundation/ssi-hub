@@ -16,6 +16,7 @@
 - [getByIssuerDid](modules_claim_claim_controller.ClaimController.md#getbyissuerdid)
 - [getByParentNamespace](modules_claim_claim_controller.ClaimController.md#getbyparentnamespace)
 - [getByRequesterDid](modules_claim_claim_controller.ClaimController.md#getbyrequesterdid)
+- [getByRevokerDid](modules_claim_claim_controller.ClaimController.md#getbyrevokerdid)
 - [getBySubject](modules_claim_claim_controller.ClaimController.md#getbysubject)
 - [getBySubjects](modules_claim_claim_controller.ClaimController.md#getbysubjects)
 - [getByUserDid](modules_claim_claim_controller.ClaimController.md#getbyuserdid)
@@ -141,6 +142,23 @@ ___
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+___
+
+### getByRevokerDid
+
+▸ **getByRevokerDid**(`user`, `namespace?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `user` | `string` |
+| `namespace?` | `string` |
 
 #### Returns
 

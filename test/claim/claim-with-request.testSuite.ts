@@ -7,6 +7,7 @@ import { JWT } from '@ew-did-registry/jwt';
 import { Keys } from '@ew-did-registry/keys';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
+import { ClaimService } from '../../src/modules/claim/services/claim.service';
 import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
 import { randomUser, createRole } from '../utils';
 
@@ -14,6 +15,7 @@ const emptyAddress = '0x0000000000000000000000000000000000000000';
 
 export const claimWithRequestTestSuite = () => {
   let roleService: RoleService;
+  let claimService: ClaimService;
   let queryRunner;
 
   const createClaimRequest = async (
@@ -107,6 +109,7 @@ export const claimWithRequestTestSuite = () => {
 
   beforeAll(async () => {
     roleService = app.get(RoleService);
+    claimService = app.get(ClaimService);
   });
 
   beforeEach(async () => {
@@ -285,5 +288,179 @@ export const claimWithRequestTestSuite = () => {
       500,
       requestOrigin
     );
+  });
+  it(`should fetch all issued claims that revoker is allowed to revoke`, async () => {
+    const [requester, revoker, issuer] = await Promise.all([
+      randomUser(),
+      randomUser(),
+      randomUser(),
+    ]);
+    await createRole(
+      {
+        name: 'testrevoke',
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [revoker.wallet.address],
+        ownerAddr: issuer.wallet.address,
+      },
+      roleService
+    );
+    const claimData = await createClaimRequest(
+      'testrevoke.roles.e2e.iam.ewc',
+      requester,
+      issuer,
+      201
+    );
+    await issueClaimRequest(claimData, issuer, 201);
+
+    const result = await claimService.getByRevoker({
+      currentUser: revoker.did,
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0].claimType).toEqual('testrevoke.roles.e2e.iam.ewc');
+  });
+  it(`should fetch all issued claims by revoker did with namespace filtered`, async () => {
+    const [requester, revoker, issuer] = await Promise.all([
+      randomUser(),
+      randomUser(),
+      randomUser(),
+    ]);
+    const roleOne = {
+      name: 'tstrevokens',
+      namespace: `roles.spaceOne.e2e.iam.ewc`,
+      issuerDid: [issuer.wallet.address],
+      revokerDid: [revoker.wallet.address],
+      ownerAddr: issuer.wallet.address,
+    };
+    const roleTwo = {
+      name: 'tstrevokens',
+      namespace: `roles.spaceTwo.e2e.iam.ewc`,
+      issuerDid: [issuer.wallet.address],
+      revokerDid: [revoker.wallet.address],
+      ownerAddr: issuer.wallet.address,
+    };
+    await Promise.all([
+      createRole(roleOne, roleService),
+      createRole(roleTwo, roleService),
+    ]);
+
+    const [claimDataOne, claimDataTwo] = await Promise.all([
+      createClaimRequest(
+        'tstrevokens.roles.spaceOne.e2e.iam.ewc',
+        requester,
+        issuer,
+        201
+      ),
+      createClaimRequest(
+        'tstrevokens.roles.spaceTwo.e2e.iam.ewc',
+        requester,
+        issuer,
+        201
+      ),
+    ]);
+
+    await Promise.all([
+      issueClaimRequest(claimDataOne, issuer, 201),
+      issueClaimRequest(claimDataTwo, issuer, 201),
+    ]);
+    const namespace = 'tstrevokens.roles.spaceTwo.e2e.iam.ewc';
+    const result = await claimService.getByRevoker({
+      currentUser: revoker.did,
+      filters: {
+        namespace,
+      },
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0].claimType).toEqual(namespace);
+  });
+
+  it(`/v1/claim/revoker should respond with a 200 and return credential`, async () => {
+    const requestOrigin = 'http://localhost:3000';
+    const [requester, revoker, issuer] = await Promise.all([
+      randomUser(),
+      randomUser(requestOrigin),
+      randomUser(),
+    ]);
+    await createRole(
+      {
+        name: 'supertest',
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [revoker.wallet.address],
+        ownerAddr: issuer.wallet.address,
+      },
+      roleService
+    );
+    const claimData = await createClaimRequest(
+      'supertest.roles.e2e.iam.ewc',
+      requester,
+      issuer,
+      201
+    );
+    await issueClaimRequest(claimData, issuer, 201);
+    const { body } = await request(app.getHttpServer())
+      .get(`/v1/claim/revoker`)
+      .set('Cookie', revoker.cookies)
+      .set({ Origin: requestOrigin })
+      .expect(200);
+
+    expect(body).toHaveLength(1);
+    expect(body[0].claimType).toEqual('supertest.roles.e2e.iam.ewc');
+    expect(body[0].isAccepted).toBeTruthy;
+  });
+  it(`/v1/claim/revoker should respond with a 200 and return credential given a namespace`, async () => {
+    const requestOrigin = 'http://localhost:3000';
+    const [requester, revoker, issuer] = await Promise.all([
+      randomUser(),
+      randomUser(requestOrigin),
+      randomUser(),
+    ]);
+    const roleOne = {
+      name: 'supertestone',
+      namespace: `roles.spaceOne.e2e.iam.ewc`,
+      issuerDid: [issuer.wallet.address],
+      revokerDid: [revoker.wallet.address],
+      ownerAddr: issuer.wallet.address,
+    };
+    const roleTwo = {
+      name: 'supertesttwo',
+      namespace: `roles.spaceTwo.e2e.iam.ewc`,
+      issuerDid: [issuer.wallet.address],
+      revokerDid: [revoker.wallet.address],
+      ownerAddr: issuer.wallet.address,
+    };
+    await Promise.all([
+      createRole(roleOne, roleService),
+      createRole(roleTwo, roleService),
+    ]);
+    const [claimDataOne, claimDataTwo] = await Promise.all([
+      createClaimRequest(
+        'supertestone.roles.spaceOne.e2e.iam.ewc',
+        requester,
+        issuer,
+        201
+      ),
+      createClaimRequest(
+        'supertesttwo.roles.spaceTwo.e2e.iam.ewc',
+        requester,
+        issuer,
+        201
+      ),
+    ]);
+
+    await Promise.all([
+      issueClaimRequest(claimDataOne, issuer, 201),
+      issueClaimRequest(claimDataTwo, issuer, 201),
+    ]);
+    const namespace = 'supertesttwo.roles.spaceTwo.e2e.iam.ewc';
+    const { body } = await request(app.getHttpServer())
+      .get(`/v1/claim/revoker/?namespace=${namespace}`)
+      .set('Cookie', revoker.cookies)
+      .set({ Origin: requestOrigin })
+      .expect(200);
+
+    expect(body).toHaveLength(1);
+    expect(body[0].claimType).toEqual(
+      'supertesttwo.roles.spaceTwo.e2e.iam.ewc'
+    );
+    expect(body[0].isAccepted).toBeTruthy;
   });
 };

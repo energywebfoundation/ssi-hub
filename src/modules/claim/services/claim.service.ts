@@ -270,6 +270,34 @@ export class ClaimService {
   }
 
   /**
+   * Get claims able to be revoked by user with matching DID
+   * @param filters additional filters
+   * @param currentUser revoker's DID
+   * @returns allowed claims to revoke
+   */
+  async getByRevoker({
+    currentUser,
+    filters: { namespace } = {},
+  }: {
+    filters?: QueryFilters;
+    currentUser: string;
+  }) {
+    let allRolesByRevoker = await this.rolesByRevoker(currentUser);
+    if (namespace) {
+      allRolesByRevoker = allRolesByRevoker.filter(
+        (role) => role.namespace === namespace
+      );
+    }
+    const rolesByRevoker = allRolesByRevoker.map((r) => r.namespace);
+
+    const qb = this.roleClaimRepository
+      .createQueryBuilder('claim')
+      .where('claim.claimType IN (:...rolesByRevoker)', { rolesByRevoker })
+      .andWhere('claim.isAccepted = true');
+    return qb.getMany();
+  }
+
+  /**
    * Get claims requested by user with matching DID
    * @param did requester's DID
    * @param filters additional filters
