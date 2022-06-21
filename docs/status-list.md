@@ -1,22 +1,27 @@
-# Revocation
+# Credential Status
 
-## StatusList2021
+Verifiable Credentials (VCs) can have a `credentialStatus` property.
+The [status-list module](../src/modules/status-list/) provides an API to enable the credential status using the [StatusList2021 specification](https://w3c-ccg.github.io/vc-status-list-2021/).
 
-https://w3c-ccg.github.io/vc-status-list-2021/ 
+A key feature of the implementation is the use of the EnergyWeb ENS (Ethereum Name Service) Role Definitions to authorize updates to the status lists. 
 
-### StatusList2021 Sequences
+## Sequences
 
-#### Issue credential
+### Issue credential
+When using a credential, an issuer 
+
 ```mermaid
 sequenceDiagram
 participant ri as Role Issuer
-participant shsl as SSI-Hub StatusList Module
+participant shsl as StatusList Module
 
-ri->>shsl: request a status list entry
-shsl->>shsl: create entry index
-shsl-->>ri: return entry index + list URL
+ri->>shsl: POST /status-list/entries with credential
+shsl->>shsl: verify issuer authorization
+shsl->>shsl: NamespaceStatusLists.createEntry
+shsl->>shsl: CredentialWithStatus.associateEntry
+shsl-->>ri: return credential with credentialStatus  
 
-ri->>ri: issue a VC with the credentialStatus
+ri->>ri: issue a VC
 ```
 
 #### Revoke a credential
@@ -91,6 +96,7 @@ Solution: As currently done with issuance, we require that revoker's publish the
 ## Entities
 
 ### Aggregate Roots
+
 #### NamespaceStatusLists
 
 `NamespaceStatusLists` is the aggregate root that manages the allocations of status list entries for a given namespace and associates a status list with a given namespace.
@@ -114,9 +120,14 @@ One needs to answer the question: "Can I apply an update to this status list?"
 `CredentialWithStatus.statusListCredential` corresponds to `StatusListCredential.statusListId` and `NamespaceStatusList.statusListId`.
 This is in line with the `id` property guidance for [StatusList2021Credential](https://w3c-ccg.github.io/vc-status-list-2021/#statuslist2021credential).
 
-If the association of a credential to an entry is located within
-the `NamespaceStatusLists` aggregate root, then is is not possible to efficiently search for a credential.
-In other words, if needed to look across all of the `NamespaceStatusLists` for a credential, then one would need to lock updates across all namespaces to be sure that a data wasn't inserted during the search.
+
+Due to `NamespaceStatusLists` and `CredentialWithStatus` being separate aggregate roots, the design allows for a created entry which is not associated with a credential (due to a failure).
+This is a possible drawback.
+However the rationale for this is that if the association of a credential to an entry is located within the `NamespaceStatusLists` , then is is not possible to efficiently search for a credential based on credential `id`.
+In other words, if needing to search across all of the `NamespaceStatusLists` for a credential based on its `id`, then one would need to lock updates across all namespaces to be sure that a data wasn't inserted during the search.
+(All namespaces must be locked because, based on the `id` alone, the credential could be in any namespace).
+
+**TODO: update the above with a note about transactions...**
 
 ### Class Diagram
 
@@ -165,7 +176,6 @@ Note that `createEntry` and the creation of `CredentialWithStatus` are in sequen
 So, a claimed `entry` may failed to be associated with a `CredentialWithStatus`.
 However, as entries are inexpensive and their creation can be authorized, this is acceptable.
 
-**TODO: update the above with a note about transactions...**
 
 ### Update entry in a status list
 
