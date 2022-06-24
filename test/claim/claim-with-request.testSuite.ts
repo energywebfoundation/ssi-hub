@@ -382,7 +382,6 @@ export const claimWithRequestTestSuite = () => {
   });
 
   it(`should fetch claims for a DID param if no user detected`, async () => {
-    // const requestOrigin = 'http://localhost:3000';
     const [requester, revoker, issuer] = await Promise.all([
       randomUser(),
       randomUser(),
