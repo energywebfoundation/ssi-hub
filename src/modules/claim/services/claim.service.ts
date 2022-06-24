@@ -120,12 +120,19 @@ export class ClaimService {
     const parent = data.claimType.split('.').slice(2).join('.');
 
     const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
       namespace: parent,
       redirectUri,
+      id: ClaimService.idOfClaim({ ...data, subject }),
     });
-    return this.roleClaimRepository.save(claim);
+    const savedClaim = await this.roleClaimRepository.findOneBy({
+      id: claim.id,
+    });
+    if (savedClaim) {
+      await this.roleClaimRepository.update(claim.id, claim);
+      return claim;
+    }
+    return await this.roleClaimRepository.save(claim);
   }
 
   public async reject({ id, rejectionReason }: ClaimRejectionDTO) {
