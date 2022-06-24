@@ -179,8 +179,9 @@ Get claims able to be revoked by user with matching DID
 | Name | Type |
 | :------ | :------ |
 | `__namedParameters` | `Object` |
-| `__namedParameters.currentUser` | `string` |
+| `__namedParameters.currentUser?` | `string` |
 | `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.revoker` | `string` |
 
 #### Returns
 

@@ -151,13 +151,14 @@ ___
 
 ### getByRevokerDid
 
-▸ **getByRevokerDid**(`user`, `namespace?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByRevokerDid**(`revoker`, `user?`, `namespace?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `user` | `string` |
+| `revoker` | `string` |
+| `user?` | `string` |
 | `namespace?` | `string` |
 
 #### Returns

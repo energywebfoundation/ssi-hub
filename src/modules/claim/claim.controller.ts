@@ -301,7 +301,7 @@ export class ClaimController {
     });
   }
 
-  @Get('/revoker/:did?')
+  @Get('/revoker/:did')
   @ApiTags('Claims')
   @ApiOperation({
     summary: 'returns claims that can be revoked by a given DID',
@@ -312,10 +312,12 @@ export class ClaimController {
     description: 'filter only claims of given namespace',
   })
   public async getByRevokerDid(
-    @User() user: string,
+    @Param('did') revoker: string,
+    @User() user?: string,
     @Query('namespace') namespace?: string
   ) {
     return await this.claimService.getByRevoker({
+      revoker,
       currentUser: user,
       filters: {
         namespace,

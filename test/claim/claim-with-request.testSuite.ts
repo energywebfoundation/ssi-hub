@@ -289,89 +289,6 @@ export const claimWithRequestTestSuite = () => {
       requestOrigin
     );
   });
-  it(`should fetch all issued claims that revoker is allowed to revoke`, async () => {
-    const [requester, revoker, issuer] = await Promise.all([
-      randomUser(),
-      randomUser(),
-      randomUser(),
-    ]);
-    await createRole(
-      {
-        name: 'testrevoke',
-        issuerDid: [issuer.wallet.address],
-        revokerDid: [revoker.wallet.address],
-        ownerAddr: issuer.wallet.address,
-      },
-      roleService
-    );
-    const claimData = await createClaimRequest(
-      'testrevoke.roles.e2e.iam.ewc',
-      requester,
-      issuer,
-      201
-    );
-    await issueClaimRequest(claimData, issuer, 201);
-
-    const result = await claimService.getByRevoker({
-      currentUser: revoker.did,
-    });
-    expect(result).toHaveLength(1);
-    expect(result[0].claimType).toEqual('testrevoke.roles.e2e.iam.ewc');
-  });
-  it(`should fetch all issued claims by revoker did with namespace filtered`, async () => {
-    const [requester, revoker, issuer] = await Promise.all([
-      randomUser(),
-      randomUser(),
-      randomUser(),
-    ]);
-    const roleOne = {
-      name: 'tstrevokens',
-      namespace: `roles.spaceOne.e2e.iam.ewc`,
-      issuerDid: [issuer.wallet.address],
-      revokerDid: [revoker.wallet.address],
-      ownerAddr: issuer.wallet.address,
-    };
-    const roleTwo = {
-      name: 'tstrevokens',
-      namespace: `roles.spaceTwo.e2e.iam.ewc`,
-      issuerDid: [issuer.wallet.address],
-      revokerDid: [revoker.wallet.address],
-      ownerAddr: issuer.wallet.address,
-    };
-    await Promise.all([
-      createRole(roleOne, roleService),
-      createRole(roleTwo, roleService),
-    ]);
-
-    const [claimDataOne, claimDataTwo] = await Promise.all([
-      createClaimRequest(
-        'tstrevokens.roles.spaceOne.e2e.iam.ewc',
-        requester,
-        issuer,
-        201
-      ),
-      createClaimRequest(
-        'tstrevokens.roles.spaceTwo.e2e.iam.ewc',
-        requester,
-        issuer,
-        201
-      ),
-    ]);
-
-    await Promise.all([
-      issueClaimRequest(claimDataOne, issuer, 201),
-      issueClaimRequest(claimDataTwo, issuer, 201),
-    ]);
-    const namespace = 'tstrevokens.roles.spaceTwo.e2e.iam.ewc';
-    const result = await claimService.getByRevoker({
-      currentUser: revoker.did,
-      filters: {
-        namespace,
-      },
-    });
-    expect(result).toHaveLength(1);
-    expect(result[0].claimType).toEqual(namespace);
-  });
 
   it(`/v1/claim/revoker should respond with a 200 and return credential`, async () => {
     const requestOrigin = 'http://localhost:3000';
@@ -397,7 +314,7 @@ export const claimWithRequestTestSuite = () => {
     );
     await issueClaimRequest(claimData, issuer, 201);
     const { body } = await request(app.getHttpServer())
-      .get(`/v1/claim/revoker`)
+      .get(`/v1/claim/revoker/${revoker.did}`)
       .set('Cookie', revoker.cookies)
       .set({ Origin: requestOrigin })
       .expect(200);
@@ -406,6 +323,7 @@ export const claimWithRequestTestSuite = () => {
     expect(body[0].claimType).toEqual('supertest.roles.e2e.iam.ewc');
     expect(body[0].isAccepted).toBeTruthy;
   });
+
   it(`/v1/claim/revoker should respond with a 200 and return credential given a namespace`, async () => {
     const requestOrigin = 'http://localhost:3000';
     const [requester, revoker, issuer] = await Promise.all([
@@ -445,14 +363,13 @@ export const claimWithRequestTestSuite = () => {
         201
       ),
     ]);
-
     await Promise.all([
       issueClaimRequest(claimDataOne, issuer, 201),
       issueClaimRequest(claimDataTwo, issuer, 201),
     ]);
     const namespace = 'supertesttwo.roles.spaceTwo.e2e.iam.ewc';
     const { body } = await request(app.getHttpServer())
-      .get(`/v1/claim/revoker/?namespace=${namespace}`)
+      .get(`/v1/claim/revoker/${revoker.did}?namespace=${namespace}`)
       .set('Cookie', revoker.cookies)
       .set({ Origin: requestOrigin })
       .expect(200);
@@ -462,5 +379,33 @@ export const claimWithRequestTestSuite = () => {
       'supertesttwo.roles.spaceTwo.e2e.iam.ewc'
     );
     expect(body[0].isAccepted).toBeTruthy;
+  });
+
+  it(`should fetch claims for a DID param if no user detected`, async () => {
+    // const requestOrigin = 'http://localhost:3000';
+    const [requester, revoker, issuer] = await Promise.all([
+      randomUser(),
+      randomUser(),
+      randomUser(),
+    ]);
+    const roleOne = {
+      name: 'supertestparams',
+      namespace: `roles.e2e.iam.ewc`,
+      issuerDid: [issuer.wallet.address],
+      revokerDid: [revoker.wallet.address],
+      ownerAddr: issuer.wallet.address,
+    };
+    await createRole(roleOne, roleService);
+    const claimData = await createClaimRequest(
+      'supertestparams.roles.e2e.iam.ewc',
+      requester,
+      issuer,
+      201
+    );
+    await issueClaimRequest(claimData, issuer, 201);
+    const result = await claimService.getByRevoker({ revoker: revoker.did });
+    expect(result).toHaveLength(1);
+    expect(result[0].claimType).toEqual('supertestparams.roles.e2e.iam.ewc');
+    expect(result[0].isAccepted).toBeTruthy;
   });
 };

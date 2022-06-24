@@ -271,18 +271,22 @@ export class ClaimService {
 
   /**
    * Get claims able to be revoked by user with matching DID
+   * @param revoker revoker DID
    * @param filters additional filters
-   * @param currentUser revoker's DID
+   * @param currentUser current user's DID
    * @returns allowed claims to revoke
    */
   async getByRevoker({
+    revoker,
     currentUser,
     filters: { namespace } = {},
   }: {
+    revoker: string;
     filters?: QueryFilters;
-    currentUser: string;
+    currentUser?: string;
   }) {
-    let allRolesByRevoker = await this.rolesByRevoker(currentUser);
+    const currentRevoker = currentUser || revoker;
+    let allRolesByRevoker = await this.rolesByRevoker(currentRevoker);
     if (namespace) {
       allRolesByRevoker = allRolesByRevoker.filter(
         (role) => role.namespace === namespace
