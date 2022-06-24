@@ -16,7 +16,7 @@ import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
 import { ClaimIssuanceService, ClaimService } from './services';
 import { UUID_NAMESPACE } from './claim.const';
-import { IClaimRequest, IRoleClaim, RegistrationTypes } from './claim.types';
+import { IClaimRequest, RegistrationTypes } from './claim.types';
 import { NatsModule } from '../nats/nats.module';
 import { RoleService } from '../role/role.service';
 import { AssetsService } from '../assets/assets.service';
@@ -166,7 +166,7 @@ describe('ClaimsController', () => {
     const claimTypeVersion = '1';
     const requester = randomDID();
     const registrationTypes = [RegistrationTypes.OffChain];
-    const { id, token } = await addClaim({
+    const { token } = await addClaim({
       claimType,
       claimTypeVersion,
       requester,
@@ -182,7 +182,11 @@ describe('ClaimsController', () => {
           expect.objectContaining({
             claimType,
             claimTypeVersion,
-            id,
+            id: ClaimService.idOfClaim({
+              subject: requester,
+              claimType,
+              claimTypeVersion,
+            }),
             requester,
             subject: requester,
             token,
@@ -233,7 +237,7 @@ describe('ClaimsController', () => {
         requester: foreignRequester,
       }),
       addClaim({
-        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimType: 'myRole2.roles.myOrg.iam.ewc',
         claimTypeVersion: '1',
         requester: foreignRequester,
       }),
@@ -248,7 +252,13 @@ describe('ClaimsController', () => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
         expect(res.body[0].token).toEqual(ownedClaim.token);
-        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].id).toEqual(
+          ClaimService.idOfClaim({
+            subject: requester,
+            claimType: 'myRole.roles.myOrg.iam.ewc',
+            claimTypeVersion: '1',
+          })
+        );
         expect(res.body[0].subject).toEqual(requester);
       });
 
@@ -278,7 +288,7 @@ describe('ClaimsController', () => {
         requester: issuer,
       }),
       addClaim({
-        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimType: 'myRole2.roles.myOrg.iam.ewc',
         claimTypeVersion: '1',
         requester: issuer,
       }),
@@ -314,7 +324,13 @@ describe('ClaimsController', () => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
         expect(res.body[0].token).toEqual(claims[0].token);
-        expect(res.body[0].id).toEqual(claims[0].id);
+        expect(res.body[0].id).toEqual(
+          ClaimService.idOfClaim({
+            subject: requester,
+            claimType: 'myRole.roles.myOrg.iam.ewc',
+            claimTypeVersion: '1',
+          })
+        );
         expect(res.body[0].subject).toEqual(requester);
       });
   });
@@ -334,7 +350,7 @@ describe('ClaimsController', () => {
         requester: foreignRequester,
       }),
       addClaim({
-        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimType: 'myRole2.roles.myOrg.iam.ewc',
         claimTypeVersion: '1',
         requester: foreignRequester,
       }),
@@ -349,7 +365,13 @@ describe('ClaimsController', () => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
         expect(res.body[0].token).toEqual(ownedClaim.token);
-        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].id).toEqual(
+          ClaimService.idOfClaim({
+            subject: requester,
+            claimType: 'myRole.roles.myOrg.iam.ewc',
+            claimTypeVersion: '1',
+          })
+        );
         expect(res.body[0].subject).toEqual(requester);
       });
 
@@ -378,7 +400,7 @@ describe('ClaimsController', () => {
         requester: foreignRequester,
       }),
       addClaim({
-        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimType: 'myRole2.roles.myOrg.iam.ewc',
         claimTypeVersion: '1',
         requester: foreignRequester,
       }),
@@ -393,7 +415,13 @@ describe('ClaimsController', () => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
         expect(res.body[0].token).toEqual(ownedClaim.token);
-        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].id).toEqual(
+          ClaimService.idOfClaim({
+            subject: requester,
+            claimType: 'myRole.roles.myOrg.iam.ewc',
+            claimTypeVersion: '1',
+          })
+        );
         expect(res.body[0].subject).toEqual(requester);
       });
 
@@ -422,7 +450,7 @@ describe('ClaimsController', () => {
         requester: foreignRequester,
       }),
       addClaim({
-        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimType: 'myRole2.roles.myOrg.iam.ewc',
         claimTypeVersion: '1',
         requester: foreignRequester,
       }),
@@ -437,7 +465,13 @@ describe('ClaimsController', () => {
         expect(res.body.length).toEqual(1);
         expect(res.body[0]).toBeInstanceOf(Object);
         expect(res.body[0].token).toEqual(ownedClaim.token);
-        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].id).toEqual(
+          ClaimService.idOfClaim({
+            subject: requester,
+            claimType: 'myRole.roles.myOrg.iam.ewc',
+            claimTypeVersion: '1',
+          })
+        );
         expect(res.body[0].subject).toEqual(requester);
       });
 
@@ -453,25 +487,26 @@ describe('ClaimsController', () => {
 
   describe('claim rejection', () => {
     let requesterDID: string;
-    let claim: Pick<IRoleClaim, 'id' | 'token'>;
     const rejectionReason = 'SMTP error';
 
     beforeEach(async () => {
       const claimType = 'patron.roles.staking.apps.auth.ewc';
       const claimTypeVersion = '1';
       requesterDID = randomDID();
-      [claim] = await Promise.all([
-        addClaim({
-          claimType,
-          claimTypeVersion,
-          requester: requesterDID,
-        }),
-      ]);
+      await addClaim({
+        claimType,
+        claimTypeVersion,
+        requester: requesterDID,
+      });
 
       await testHttpServer
         .post(`/v1/claim/reject/${issuerDID}`)
         .send({
-          id: claim.id,
+          id: ClaimService.idOfClaim({
+            subject: requesterDID,
+            claimType: 'patron.roles.staking.apps.auth.ewc',
+            claimTypeVersion: '1',
+          }),
           claimIssuer: [issuerDID],
           requester: requesterDID,
           isRejected: true,
@@ -489,7 +524,13 @@ describe('ClaimsController', () => {
           expect(res.body).toBeInstanceOf(Array);
           expect(res.body.length).toEqual(1);
           expect(res.body[0]).toBeInstanceOf(Object);
-          expect(res.body[0].id).toEqual(claim.id);
+          expect(res.body[0].id).toEqual(
+            ClaimService.idOfClaim({
+              subject: requesterDID,
+              claimType: 'patron.roles.staking.apps.auth.ewc',
+              claimTypeVersion: '1',
+            })
+          );
           expect(res.body[0].subject).toEqual(requesterDID);
           expect(res.body[0].isRejected).toEqual(true);
           expect(res.body[0].rejectionReason).toEqual(rejectionReason);
