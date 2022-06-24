@@ -89,9 +89,9 @@ export class ClaimIssuanceService {
       userDID: dto.requester,
     });
 
-    await this.createAndIssue(dto, dto.requester);
+    const claim = await this.createAndIssue(dto, dto.requester);
 
-    return ClaimHandleResult.Success();
+    return ClaimHandleResult.Success(claim.id);
   }
 
   private async handleClaimWithPreviousRequest(
@@ -114,7 +114,7 @@ export class ClaimIssuanceService {
     const dto = await ClaimIssueDTO.create(rq);
     await this.issue(dto);
 
-    return ClaimHandleResult.Success();
+    return ClaimHandleResult.Success(dto.id);
   }
 
   /**
@@ -128,12 +128,12 @@ export class ClaimIssuanceService {
     const parent = data.claimType.split('.').slice(2).join('.');
 
     const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
       subject,
       namespace: parent,
       isAccepted: true,
       vp: data?.vp ? JSON.parse(data.vp) : undefined,
+      id: ClaimService.idOfClaim({ ...data, subject }),
     });
     return this.roleClaimRepository.save(claim);
   }

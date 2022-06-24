@@ -1,8 +1,10 @@
 export class ClaimHandleResult {
   isSuccessful: boolean;
   details?: string;
-  static Success(): ClaimHandleResult {
-    return { isSuccessful: true };
+  claimId?: string;
+
+  static Success(claimId: string): ClaimHandleResult {
+    return { isSuccessful: true, claimId: claimId };
   }
 
   static Failure(details: string): ClaimHandleResult {
