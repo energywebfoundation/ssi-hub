@@ -16,6 +16,7 @@
 - [getByIssuer](modules_claim_services_claim_service.ClaimService.md#getbyissuer)
 - [getByParentNamespace](modules_claim_services_claim_service.ClaimService.md#getbyparentnamespace)
 - [getByRequester](modules_claim_services_claim_service.ClaimService.md#getbyrequester)
+- [getByRevoker](modules_claim_services_claim_service.ClaimService.md#getbyrevoker)
 - [getBySubject](modules_claim_services_claim_service.ClaimService.md#getbysubject)
 - [getBySubjects](modules_claim_services_claim_service.ClaimService.md#getbysubjects)
 - [getByUserDid](modules_claim_services_claim_service.ClaimService.md#getbyuserdid)
@@ -164,6 +165,29 @@ Get claims requested by user with matching DID
 #### Returns
 
 `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+___
+
+### getByRevoker
+
+▸ **getByRevoker**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+Get claims able to be revoked by user with matching DID
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.revoker` | `string` |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+allowed claims to revoke
 
 ___
 

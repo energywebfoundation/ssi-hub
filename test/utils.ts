@@ -76,16 +76,20 @@ export const createRole = async (
     revokerDid,
     name,
     ownerAddr,
+    namespace,
   }: {
     ownerAddr: string;
     roleName?: string;
     issuerDid?: string[];
     revokerDid?: string[];
     name: string;
+    namespace?: string;
   },
   roleService: RoleService
 ) => {
-  const roleNamespace = `${name}.roles.e2e.iam.ewc`;
+  const roleNamespace = namespace
+    ? `${name}.${namespace}`
+    : `${name}.roles.e2e.iam.ewc`;
   return roleService.create(
     await RoleDTO.create({
       name: name,
