@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
 import jwt from 'jsonwebtoken';
-import { v5 } from 'uuid';
 import {
   IClaimRejection,
   IClaimRequest,
@@ -20,7 +19,6 @@ import { RoleClaim } from '../entities/roleClaim.entity';
 import { AssetsService } from '../../assets/assets.service';
 import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
-import { UUID_NAMESPACE } from '../claim.const';
 
 interface QueryFilters {
   isAccepted?: boolean;
@@ -117,14 +115,28 @@ export class ClaimService {
     subject: string,
     redirectUri: string
   ): Promise<RoleClaim> {
+    const previousRequest = await this.roleClaimRepository.findOneBy({
+      subject,
+      claimType: data.claimType,
+      claimTypeVersion: data.claimTypeVersion,
+      isAccepted: false,
+      isRejected: false,
+    });
+
+    if (previousRequest) {
+      throw new ForbiddenException('Claim request already exists');
+    }
+
     const parent = data.claimType.split('.').slice(2).join('.');
 
     const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
+      isAccepted: false,
+      isRejected: false,
       namespace: parent,
       redirectUri,
     });
+
     return this.roleClaimRepository.save(claim);
   }
 
@@ -442,15 +454,6 @@ export class ClaimService {
       },
       select: ['issuedAt', 'issuedToken', 'subject'],
     });
-  }
-
-  static idOfClaim(claimReq: {
-    subject: string;
-    claimType: string;
-    claimTypeVersion: string;
-  }) {
-    const { subject, claimType: role, claimTypeVersion: version } = claimReq;
-    return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
   }
 
   public async rolesByIssuer(
