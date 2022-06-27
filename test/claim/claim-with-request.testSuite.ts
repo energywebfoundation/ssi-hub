@@ -60,11 +60,7 @@ export const claimWithRequestTestSuite = () => {
       })
       .expect(expectStatusCode);
     return {
-      id: ClaimService.idOfClaim({
-        subject: requester.did,
-        claimType: role,
-        claimTypeVersion: '1',
-      }),
+      id: claimId,
       requester: requester.did,
       claimType: role,
       claimTypeVersion: 1,
@@ -271,31 +267,6 @@ export const claimWithRequestTestSuite = () => {
       .expect(200);
 
     expect(body.redirectUri).toBe(requestOrigin);
-  });
-
-  it(`should not be able to create two the same requests`, async () => {
-    const [requester, issuer] = await Promise.all([randomUser(), randomUser()]);
-    await createRole(
-      {
-        name: 'test1',
-        issuerDid: [issuer.wallet.address],
-        revokerDid: [issuer.wallet.address],
-        ownerAddr: issuer.wallet.address,
-      },
-      roleService
-    );
-
-    await createClaimRequest('test1.roles.e2e.iam.ewc', requester, issuer, 201);
-
-    await createClaimRequest('test1.roles.e2e.iam.ewc', requester, issuer, 201);
-
-    await request(app.getHttpServer())
-      .get(`/v1/claim/user/${requester.did}`)
-      .set('Cookie', requester.cookies)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.length).toBe(1);
-      });
   });
 
   it(`should throw an error when request origin is invalid`, async () => {

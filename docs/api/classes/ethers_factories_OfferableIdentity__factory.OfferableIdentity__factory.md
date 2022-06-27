@@ -56,7 +56,7 @@ ___
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = "bytes"; `name`: `string` = "data"; `type`: `string` = "bytes" }[] ; `name`: `string` = "TransactionSent"; `outputs`: `undefined` ; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "address"; `name`: `string` = "to"; `type`: `string` = "address" }[] ; `name`: `string` = "sendTransaction"; `outputs`: { `internalType`: `string` = "bool"; `name`: `string` = "success"; `type`: `string` = "bool" }[] ; `stateMutability`: `string` = "nonpayable"; `type`: `string` = "function" })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = true; `internalType`: `string` = 'bytes'; `name`: `string` = 'data'; `type`: `string` = 'bytes' }[] ; `name`: `string` = 'TransactionSent'; `outputs`: `undefined` ; `stateMutability`: `undefined` = 'view'; `type`: `string` = 'event' } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = 'address'; `name`: `string` = 'to'; `type`: `string` = 'address' }[] ; `name`: `string` = 'sendTransaction'; `outputs`: { `internalType`: `string` = 'bool'; `name`: `string` = 'success'; `type`: `string` = 'bool' }[] ; `stateMutability`: `string` = 'nonpayable'; `type`: `string` = 'function' })[] = `_abi`
 
 ___
 
