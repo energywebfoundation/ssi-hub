@@ -87,9 +87,9 @@ export class ClaimService {
       userDID: dto.requester,
     });
 
-    const savedClaim = await this.create(dto, sub, redirectUri);
+    await this.create(dto, sub, redirectUri);
 
-    return ClaimHandleResult.Success(savedClaim.id);
+    return ClaimHandleResult.Success();
   }
 
   /**
@@ -105,7 +105,7 @@ export class ClaimService {
 
     const dto = await ClaimRejectionDTO.create(rq);
     await this.reject(dto);
-    return ClaimHandleResult.Success(rq.id);
+    return ClaimHandleResult.Success();
   }
 
   /**

@@ -124,7 +124,7 @@ export class ClaimController {
       ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       dids,
-      { claimId: result.claimId }
+      { claimId: claimData.id }
     );
 
     this.logger.debug(`credentials issued by ${did}`);
@@ -190,7 +190,7 @@ export class ClaimController {
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
       [claimData.claimIssuer],
-      { claimId: result.claimId }
+      { claimId: claimData.id }
     );
 
     this.logger.debug(`credentials requested from ${requester} for ${sub}`);
@@ -234,7 +234,7 @@ export class ClaimController {
       ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       [claimData.claimIssuer],
-      { claimId: result.claimId }
+      { claimId: claimData.id }
     );
 
     this.logger.debug(`credentials rejected for ${did}`);
