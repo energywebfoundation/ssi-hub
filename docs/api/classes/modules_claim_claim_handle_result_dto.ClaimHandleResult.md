@@ -10,7 +10,6 @@
 
 ### Properties
 
-- [claimId](modules_claim_claim_handle_result_dto.ClaimHandleResult.md#claimid)
 - [details](modules_claim_claim_handle_result_dto.ClaimHandleResult.md#details)
 - [isSuccessful](modules_claim_claim_handle_result_dto.ClaimHandleResult.md#issuccessful)
 
@@ -26,12 +25,6 @@
 • **new ClaimHandleResult**()
 
 ## Properties
-
-### claimId
-
-• `Optional` **claimId**: `string`
-
-___
 
 ### details
 
@@ -63,13 +56,7 @@ ___
 
 ### Success
 
-▸ `Static` **Success**(`claimId`): [`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `claimId` | `string` |
+▸ `Static` **Success**(): [`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)
 
 #### Returns
 
