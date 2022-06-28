@@ -56,7 +56,7 @@ ___
 
 ### abi
 
-▪ `Static` `Readonly` **abi**: ({ `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = false; `internalType`: `string` = 'address'; `name`: `string` = 'previousAdmin'; `type`: `string` = 'address' }[] ; `name`: `string` = 'AdminChanged'; `outputs`: `undefined` ; `stateMutability`: `undefined` = 'view'; `type`: `string` = 'event' } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = 'address'; `name`: `string` = 'identity'; `type`: `string` = 'address' }[] ; `name`: `string` = 'verified'; `outputs`: { `internalType`: `string` = 'bool'; `name`: `string` = ''; `type`: `string` = 'bool' }[] ; `stateMutability`: `string` = 'view'; `type`: `string` = 'function' })[] = `_abi`
+▪ `Static` `Readonly` **abi**: ({ `anonymous`: `boolean` = false; `inputs`: { `indexed`: `boolean` = false; `internalType`: `string` = "address"; `name`: `string` = "previousAdmin"; `type`: `string` = "address" }[] ; `name`: `string` = "AdminChanged"; `outputs`: `undefined` ; `stateMutability`: `undefined` = "view"; `type`: `string` = "event" } \| { `anonymous`: `undefined` = false; `inputs`: { `internalType`: `string` = "address"; `name`: `string` = "identity"; `type`: `string` = "address" }[] ; `name`: `string` = "verified"; `outputs`: { `internalType`: `string` = "bool"; `name`: `string` = ""; `type`: `string` = "bool" }[] ; `stateMutability`: `string` = "view"; `type`: `string` = "function" })[] = `_abi`
 
 ___
 

@@ -67,6 +67,34 @@ export const claimWithRequestTestSuite = () => {
     };
   };
 
+  const rejectClaimRequest = async (
+    claimId: string,
+    requester: {
+      wallet: Wallet;
+      did: string;
+      cookies: string[];
+    },
+    issuer: {
+      wallet: Wallet;
+      did: string;
+      cookies: string[];
+    },
+    expectStatusCode: number,
+    Origin?: string
+  ) => {
+    return await request(app.getHttpServer())
+      .post(`/v1/claim/reject/${requester.did}`)
+      .set('Cookie', issuer.cookies)
+      .set(Origin ? { Origin } : {})
+      .send({
+        isRejected: true,
+        id: claimId,
+        requester: requester.did,
+        claimIssuer: [issuer.did],
+      })
+      .expect(expectStatusCode);
+  };
+
   const issueClaimRequest = async (
     claimData: {
       id: string;
@@ -406,5 +434,74 @@ export const claimWithRequestTestSuite = () => {
     expect(result).toHaveLength(1);
     expect(result[0].claimType).toEqual('supertestparams.roles.e2e.iam.ewc');
     expect(result[0].isAccepted).toBeTruthy;
+  });
+
+  it(`should not be able to create two the same claim requests`, async () => {
+    const [requester, issuer] = await Promise.all([randomUser(), randomUser()]);
+    await createRole(
+      {
+        name: 'test1',
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
+        ownerAddr: issuer.wallet.address,
+      },
+      roleService
+    );
+
+    await createClaimRequest('test1.roles.e2e.iam.ewc', requester, issuer, 201);
+
+    await createClaimRequest('test1.roles.e2e.iam.ewc', requester, issuer, 403);
+
+    await request(app.getHttpServer())
+      .get(`/v1/claim/user/${requester.did}`)
+      .set('Cookie', requester.cookies)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(1);
+      });
+  });
+
+  it(`should be able to create again claim request after rejection`, async () => {
+    const [requester, issuer] = await Promise.all([randomUser(), randomUser()]);
+    await createRole(
+      {
+        name: 'test1',
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
+        ownerAddr: issuer.wallet.address,
+      },
+      roleService
+    );
+
+    const { id: claimId } = await createClaimRequest(
+      'test1.roles.e2e.iam.ewc',
+      requester,
+      issuer,
+      201
+    );
+
+    await rejectClaimRequest(claimId, requester, issuer, 201);
+
+    await createClaimRequest('test1.roles.e2e.iam.ewc', requester, issuer, 201);
+
+    await request(app.getHttpServer())
+      .get(`/v1/claim/user/${requester.did}`)
+      .set('Cookie', requester.cookies)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(2);
+        expect(res.body.find((claim) => claim.id === claimId)).toStrictEqual(
+          expect.objectContaining({
+            isAccepted: false,
+            isRejected: true,
+          })
+        );
+        expect(res.body.find((claim) => claim.id !== claimId)).toStrictEqual(
+          expect.objectContaining({
+            isAccepted: false,
+            isRejected: false,
+          })
+        );
+      });
   });
 };

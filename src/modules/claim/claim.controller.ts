@@ -170,7 +170,6 @@ export class ClaimController {
     }
 
     const claimData: IClaimRequest = {
-      id: ClaimService.idOfClaim({ ...data, subject: sub }),
       ...data,
     };
 
@@ -182,6 +181,7 @@ export class ClaimController {
       claimData,
       originUrl
     );
+
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
@@ -189,7 +189,7 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
-      [claimData.claimIssuer],
+      claimData.claimIssuer,
       { claimId: claimData.id }
     );
 
@@ -233,7 +233,7 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
-      [claimData.claimIssuer],
+      claimData.claimIssuer,
       { claimId: claimData.id }
     );
 

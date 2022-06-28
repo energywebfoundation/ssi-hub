@@ -13,7 +13,7 @@ export enum ClaimEventType {
 export interface IMessage {
   id: string;
   requester: string;
-  claimIssuer?: string;
+  claimIssuer?: string[];
 }
 
 export interface IClaimRequest extends IMessage {

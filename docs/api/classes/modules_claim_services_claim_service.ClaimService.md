@@ -29,7 +29,6 @@
 - [rolesByIssuer](modules_claim_services_claim_service.ClaimService.md#rolesbyissuer)
 - [rolesByRevoker](modules_claim_services_claim_service.ClaimService.md#rolesbyrevoker)
 - [saveIssuedClaim](modules_claim_services_claim_service.ClaimService.md#saveissuedclaim)
-- [idOfClaim](modules_claim_services_claim_service.ClaimService.md#idofclaim)
 
 ## Constructors
 
@@ -415,22 +414,3 @@ Save issued claim
 #### Returns
 
 `Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
-
-___
-
-### idOfClaim
-
-▸ `Static` **idOfClaim**(`claimReq`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `claimReq` | `Object` |
-| `claimReq.claimType` | `string` |
-| `claimReq.claimTypeVersion` | `string` |
-| `claimReq.subject` | `string` |
-
-#### Returns
-
-`string`
