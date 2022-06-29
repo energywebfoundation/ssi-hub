@@ -194,7 +194,8 @@ export class EnsService implements OnModuleDestroy {
       domain: this._ROOT_DOMAIN,
       mode: 'ALL',
     });
-    return domains;
+    // Sorting to reduce "parent namespace does not exists" type errors
+    return domains.sort();
   }
 
   private async eventHandler({
@@ -286,29 +287,26 @@ export class EnsService implements OnModuleDestroy {
       );
     }
     if (DomainReader.isRoleDefinition(data)) {
+      const params = {
+        metadata: data,
+        namespace,
+        owner,
+        name,
+        namehash: hash,
+        appNamespace: undefined,
+        orgNamespace: undefined,
+      };
       if (data.roleType.toLowerCase() === 'app') {
-        return this.roleService.handleRoleSyncWithEns({
-          metadata: data,
-          namespace,
-          owner,
-          name,
-          appNamespace: rest.join('.'),
-          namehash: hash,
-        });
+        params.appNamespace = rest.join('.');
+      } else if (data.roleType.toLowerCase() === 'org') {
+        params.orgNamespace = rest.join('.');
+      } else {
+        this.logger.debug(
+          `Bailed: Roletype ${data.roleType} is not a valid roletype`
+        );
+        return;
       }
-      if (data.roleType.toLowerCase() === 'org') {
-        return this.roleService.handleRoleSyncWithEns({
-          metadata: data,
-          namespace,
-          owner,
-          name,
-          orgNamespace: rest.join('.'),
-          namehash: hash,
-        });
-      }
-      this.logger.debug(
-        `Bailed: Roletype ${data.roleType} is not a valid roletype`
-      );
+      return this.roleService.handleRoleSyncWithEns(params);
     }
     this.logger.debug(
       `Bailed: Data not supported ${namespace}, ${JSON.stringify(data)}`

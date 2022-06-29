@@ -355,7 +355,7 @@ export const statusList2021TestSuite = () => {
         ],
         id: vc.credentialStatus.statusListCredential,
         type: ['VerifiableCredential', 'StatusList2021Credential'],
-        issuer: issuer.didHex,
+        issuer: issuer.didHex.toLowerCase(),
         issuanceDate: expect.any(String),
         credentialSubject: {
           id: vc.credentialStatus.statusListCredential,

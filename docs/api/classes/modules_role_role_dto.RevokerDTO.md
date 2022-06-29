@@ -62,13 +62,13 @@ IRevokerDefinition.roleName
 
 ### create
 
-▸ `Static` **create**(`data`): `Promise`<[`RevokerDTO`](modules_role_role_dto.RevokerDTO.md)\>
+▸ `Static` **create**(`data?`): `Promise`<[`RevokerDTO`](modules_role_role_dto.RevokerDTO.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `data` | `Partial`<[`RevokerDTO`](modules_role_role_dto.RevokerDTO.md)\> |
+| `data?` | `Partial`<[`RevokerDTO`](modules_role_role_dto.RevokerDTO.md)\> |
 
 #### Returns
 

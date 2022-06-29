@@ -111,8 +111,16 @@ export class IssuerDTO implements Issuer {
 }
 
 export class RevokerDTO implements IRevokerDefinition {
-  static async create(data: Partial<RevokerDTO>) {
+  static async create(data?: Partial<RevokerDTO>) {
     const dto = new RevokerDTO();
+    if (!data) {
+      Object.assign(dto, {
+        revokerType: 'DID',
+        did: [],
+      });
+      return dto;
+    }
+
     Object.assign(dto, data);
     await validateOrReject(dto, { whitelist: true });
     return dto;
