@@ -38,7 +38,8 @@ export class StatusListCredential {
         statusPurpose: 'revocation',
         encodedList,
       },
-      issuer: new DID(issuerDid).withHexChain(),
+      // toLowerCase used because DIDKit proof verification requires lowercase
+      issuer: new DID(issuerDid).withHexChain().toLowerCase(),
       issuanceDate: new Date().toISOString(),
     };
 
