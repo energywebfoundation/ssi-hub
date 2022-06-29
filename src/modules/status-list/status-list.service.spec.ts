@@ -212,7 +212,8 @@ describe('StatusList2021 service', () => {
         ],
         id: credential.credentialStatus.statusListCredential,
         type: ['VerifiableCredential', 'StatusList2021Credential'],
-        issuer: 'did:ethr:0x12047:0xe852f6784EeD893cC81dDa21D31f212332CC120a',
+        issuer:
+          'did:ethr:0x12047:0xe852f6784EeD893cC81dDa21D31f212332CC120a'.toLowerCase(),
         issuanceDate: expect.any(String),
         credentialSubject: {
           id: credential.credentialStatus.statusListCredential,
