@@ -147,7 +147,6 @@ export class RoleService {
         ...role,
         ...data,
         parentApp: app,
-        definition: { ...role.definition },
       });
       return this.roleRepository.save(updatedRole);
     }
@@ -160,7 +159,6 @@ export class RoleService {
         ...role,
         ...data,
         parentOrg: org,
-        definition: { ...role.definition },
       });
       return this.roleRepository.save(updatedRole);
     }
