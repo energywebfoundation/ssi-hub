@@ -30,7 +30,9 @@ Function that returns a new decorator that applies all decorators provided by pa
 
 Useful to build new decorators (or a decorator factory) encapsulating multiple decorators related with the same feature
 
-**`publicapi`**
+**`Public Api`**
+
+ 
 
 ##### Type parameters
 
@@ -74,7 +76,9 @@ Function that returns a new decorator that applies all decorators provided by pa
 
 Useful to build new decorators (or a decorator factory) encapsulating multiple decorators related with the same feature
 
-**`publicapi`**
+**`Public Api`**
+
+ 
 
 ##### Type parameters
 

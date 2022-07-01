@@ -13,6 +13,8 @@
 
 ▸ **User**(...`dataOrPipes`): `ParameterDecorator`
 
+Defines HTTP route param decorator
+
 #### Parameters
 
 | Name | Type |
@@ -28,6 +30,8 @@ ___
 ### UserGQL
 
 ▸ **UserGQL**(...`dataOrPipes`): `ParameterDecorator`
+
+Defines HTTP route param decorator
 
 #### Parameters
 
