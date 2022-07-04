@@ -82,7 +82,7 @@ export class ClaimController {
   })
   public async postIssuerClaim(
     @Param('did') did: string,
-    @Body() data: IClaimIssuance
+    @Body() data: ClaimIssueDTO
   ) {
     const didDoc = await this.didService.getById(did);
     const proofVerifier = new ProofVerifier(didDoc);

@@ -22,6 +22,7 @@ export const claimWithoutRequestTestSuite = () => {
       claimTypeVersion: number;
       subject: string;
       registrationTypes: RegistrationTypes[];
+      expirationTimestamp?: number;
     },
     issuer: {
       wallet: Wallet;
@@ -40,6 +41,7 @@ export const claimWithoutRequestTestSuite = () => {
       claim: { ...claimData, issuerFields: [] },
       subject: claimData.subject,
       registrationTypes: claimData.registrationTypes,
+      expirationTimestamp: claimData.expirationTimestamp,
     });
   };
 
@@ -49,12 +51,14 @@ export const claimWithoutRequestTestSuite = () => {
     registrationTypes,
     claimTypeVersion,
     issuer,
+    expirationTimestamp,
   }: {
     subject: string;
     claimType: string;
     registrationTypes: RegistrationTypes[];
     claimTypeVersion: string;
     issuer: string;
+    expirationTimestamp?: number;
   }) => {
     const foundedClaim = await claimService.getBySubject({
       subject: subject,
@@ -84,6 +88,9 @@ export const claimWithoutRequestTestSuite = () => {
       isRejected: false,
       rejectionReason: null,
       namespace: 'e2e.iam.ewc',
+      expirationTimestamp: expirationTimestamp
+        ? expirationTimestamp.toString()
+        : null,
     });
   };
 
@@ -417,6 +424,48 @@ export const claimWithoutRequestTestSuite = () => {
       registrationTypes,
       claimTypeVersion: claimTypeVersion.toString(),
       issuer: issuer.did,
+    });
+  });
+
+  it(`should issue a claim request with expiration timestamp`, async () => {
+    const [subject, issuer] = await Promise.all([randomUser(), randomUser()]);
+    await createRole(
+      {
+        name: 'test1',
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
+        ownerAddr: issuer.wallet.address,
+      },
+      roleService
+    );
+
+    const claimId = v4();
+    const claimType = 'test1.roles.e2e.iam.ewc';
+    const claimTypeVersion = 1;
+    const registrationTypes = [RegistrationTypes.OffChain];
+    const expirationTimestamp = Date.now() + 5000;
+
+    const data = await issueClaim(
+      {
+        id: claimId,
+        requester: issuer.did,
+        claimType,
+        claimTypeVersion,
+        subject: subject.did,
+        registrationTypes,
+        expirationTimestamp,
+      },
+      issuer
+    );
+
+    expect(data).toBeDefined();
+    verifyClaim({
+      subject: subject.did,
+      claimType,
+      registrationTypes,
+      claimTypeVersion: claimTypeVersion.toString(),
+      issuer: issuer.did,
+      expirationTimestamp,
     });
   });
 };

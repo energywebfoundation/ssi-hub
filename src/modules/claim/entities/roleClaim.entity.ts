@@ -96,6 +96,9 @@ export class RoleClaim implements IRoleClaim {
 
   @Column({ type: 'jsonb', nullable: true })
   vp?: VerifiablePresentation;
+
+  @Column({ type: 'bigint', nullable: true, default: null })
+  expirationTimestamp?: number;
 }
 
 export class DIDsQuery {

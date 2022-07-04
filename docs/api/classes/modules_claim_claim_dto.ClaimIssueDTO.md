@@ -23,6 +23,7 @@
 - [acceptedBy](modules_claim_claim_dto.ClaimIssueDTO.md#acceptedby)
 - [claimType](modules_claim_claim_dto.ClaimIssueDTO.md#claimtype)
 - [claimTypeVersion](modules_claim_claim_dto.ClaimIssueDTO.md#claimtypeversion)
+- [expirationTimestamp](modules_claim_claim_dto.ClaimIssueDTO.md#expirationtimestamp)
 - [id](modules_claim_claim_dto.ClaimIssueDTO.md#id)
 - [issuedToken](modules_claim_claim_dto.ClaimIssueDTO.md#issuedtoken)
 - [onChainProof](modules_claim_claim_dto.ClaimIssueDTO.md#onchainproof)
@@ -68,6 +69,16 @@ ___
 #### Implementation of
 
 [IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[claimTypeVersion](../interfaces/modules_claim_claim_types.IClaimIssuance.md#claimtypeversion)
+
+___
+
+### expirationTimestamp
+
+• `Optional` **expirationTimestamp**: `number`
+
+#### Implementation of
+
+[IClaimIssuance](../interfaces/modules_claim_claim_types.IClaimIssuance.md).[expirationTimestamp](../interfaces/modules_claim_claim_types.IClaimIssuance.md#expirationtimestamp)
 
 ___
 

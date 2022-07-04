@@ -281,7 +281,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `did` | `string` |
-| `data` | [`IClaimIssuance`](../interfaces/modules_claim_claim_types.IClaimIssuance.md) |
+| `data` | [`ClaimIssueDTO`](modules_claim_claim_dto.ClaimIssueDTO.md) |
 
 #### Returns
 

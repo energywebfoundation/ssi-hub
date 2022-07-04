@@ -29,6 +29,7 @@ export interface IClaimIssuance extends IMessage {
   claimTypeVersion?: string;
   acceptedBy: string;
   vp?: string;
+  expirationTimestamp?: number;
 }
 
 export interface IClaimRejection extends IMessage {

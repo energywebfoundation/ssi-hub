@@ -42,7 +42,7 @@
 
 ### @context
 
-• **@context**: `string` \| `string`[]
+• **@context**: `ICredentialContextType`[]
 
 #### Implementation of
 
@@ -102,7 +102,7 @@ ___
 
 ### type
 
-• **type**: `string`[]
+• **type**: `CredentialType`[]
 
 #### Implementation of
 

@@ -122,7 +122,7 @@ ___
 
 ### type
 
-• **type**: `string`[]
+• **type**: `CredentialType`[]
 
 #### Implementation of
 
