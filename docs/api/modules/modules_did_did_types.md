@@ -34,7 +34,9 @@ ___
 
 • `Const` **didPattern**: ``"^(?:did:(?<method>[a-z0-9]+?):)((?<chain>[a-z0-9]+?):)?(?<id>0x[A-Fa-f0-9]{40})$"``
 
-**`todo`** >> ew-did-registry/did
+**`Todo`**
+
+ >> ew-did-registry/did
 matches did:ethr:volta:address, did:ethr:vOLTa:address and did:ethr:address
 
 ## Functions

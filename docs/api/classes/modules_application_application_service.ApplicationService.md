@@ -122,7 +122,7 @@ Returns applications owned by `owner`
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
-| `__namedParameters` | `Object` |
+| `__namedParameters?` | `Object` |
 | `__namedParameters.withRelations?` | `boolean` |
 
 #### Returns

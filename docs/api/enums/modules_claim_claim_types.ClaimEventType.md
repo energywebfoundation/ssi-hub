@@ -16,16 +16,16 @@ Types inspired by Aries Issue-Credential protocol [https://github.com/hyperledge
 
 ### ISSUE\_CREDENTIAL
 
-• **ISSUE\_CREDENTIAL**
+• **ISSUE\_CREDENTIAL** = ``"issue-credential"``
 
 ___
 
 ### REJECT\_CREDENTIAL
 
-• **REJECT\_CREDENTIAL**
+• **REJECT\_CREDENTIAL** = ``"reject-credential"``
 
 ___
 
 ### REQUEST\_CREDENTIALS
 
-• **REQUEST\_CREDENTIALS**
+• **REQUEST\_CREDENTIALS** = ``"request-credential"``
