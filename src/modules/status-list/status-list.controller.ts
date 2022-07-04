@@ -100,10 +100,11 @@ export class StatusListController {
         claimType: namespace,
       }),
       this.statusListService.verifyCredential(verifiableCredential),
-      this.revocationVerificationService.verifyRevoker(namespace, currentUser),
+      this.revocationVerificationService.verifyRevoker(currentUser, namespace),
     ]);
 
     if (authorizedRevokerResult.status === 'rejected') {
+      console.log(authorizedRevokerResult.reason);
       throw new ForbiddenException(
         `${currentUser} is not allowed to revoke ${namespace}`
       );
@@ -137,8 +138,8 @@ export class StatusListController {
     const { 1: authorizedRevokerResult } = await Promise.allSettled([
       this.statusListService.verifyCredential(statusListCredential),
       this.revocationVerificationService.verifyRevoker(
-        statusList.namespace,
-        issuer
+        issuer,
+        statusList.namespace
       ),
     ]);
 
