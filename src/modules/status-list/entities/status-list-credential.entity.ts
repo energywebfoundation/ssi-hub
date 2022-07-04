@@ -3,6 +3,7 @@ import { StatusListVerifiableCredentialDto } from '../dtos/status-list-verifiabl
 import { gzip } from 'pako';
 import { StatusListCredentialDto } from '../dtos';
 import { DID } from '../../did/did.types';
+import { CredentialType } from '@ew-did-registry/credentials-interface';
 
 @Entity()
 export class StatusListCredential {
@@ -31,7 +32,10 @@ export class StatusListCredential {
         'https://w3id.org/vc/status-list/2021/v1',
       ],
       id: this.statusListId,
-      type: ['VerifiableCredential', 'StatusList2021Credential'],
+      type: [
+        CredentialType.VerifiableCredential,
+        CredentialType.StatusList2021Credential,
+      ],
       credentialSubject: {
         id: this.statusListId,
         type: 'StatusList2021',

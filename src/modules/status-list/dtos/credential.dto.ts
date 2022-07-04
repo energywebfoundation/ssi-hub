@@ -12,7 +12,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Credential,
   CredentialSubject,
+  CredentialType,
 } from '@ew-did-registry/credentials-interface';
+import { ICredentialContextType } from '@sphereon/pex/dist/main/lib/types/SSI.types';
 
 export class CredentialSubjectIssuerFieldsDto {
   @IsString()
@@ -60,7 +62,7 @@ export class CredentialDto implements Credential<CredentialSubjectDto> {
 
   @ApiProperty()
   @IsDefined()
-  '@context': string[] | string;
+  '@context': ICredentialContextType[];
 
   @IsString()
   @ApiProperty()
@@ -69,7 +71,7 @@ export class CredentialDto implements Credential<CredentialSubjectDto> {
   @IsArray()
   @IsString({ each: true })
   @ApiProperty()
-  type: string[];
+  type: CredentialType[];
 
   @IsString()
   @ApiProperty()

@@ -94,19 +94,16 @@ export class StatusListController {
     @Body() { verifiableCredential }: RegisterRevokeInputDto
   ): Promise<StatusListCredentialDto> {
     const namespace = verifiableCredential.credentialSubject.role.namespace;
-    const { 2: isAuthorizedRevoker } = await Promise.all([
+    const { 2: authorizedRevokerResult } = await Promise.allSettled([
       this.roleService.verifyEnrolmentIssuer({
         issuerDID: DID.from(verifiableCredential.issuer).did,
         claimType: namespace,
       }),
       this.statusListService.verifyCredential(verifiableCredential),
-      this.revocationVerificationService.verifyRevokerAuthority(
-        namespace,
-        currentUser
-      ),
+      this.revocationVerificationService.verifyRevoker(namespace, currentUser),
     ]);
 
-    if (!isAuthorizedRevoker) {
+    if (authorizedRevokerResult.status === 'rejected') {
       throw new ForbiddenException(
         `${currentUser} is not allowed to revoke ${namespace}`
       );
@@ -137,15 +134,15 @@ export class StatusListController {
       throw new BadRequestException('Credential was not registered');
     }
 
-    const { 1: isAuthorizedRevoker } = await Promise.all([
+    const { 1: authorizedRevokerResult } = await Promise.allSettled([
       this.statusListService.verifyCredential(statusListCredential),
-      this.revocationVerificationService.verifyRevokerAuthority(
+      this.revocationVerificationService.verifyRevoker(
         statusList.namespace,
         issuer
       ),
     ]);
 
-    if (!isAuthorizedRevoker) {
+    if (authorizedRevokerResult.status === 'rejected') {
       throw new ForbiddenException(
         `${issuer} is not allowed to revoke ${statusList.namespace}`
       );

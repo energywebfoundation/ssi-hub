@@ -10,6 +10,7 @@ import {
   NamespaceStatusLists,
   StatusListCredential,
 } from './entities';
+import { CredentialType } from '@ew-did-registry/credentials-interface';
 
 describe('StatusList2021 service', () => {
   let service: StatusListService;
@@ -57,7 +58,7 @@ describe('StatusList2021 service', () => {
     const credential = {
       id: 'uuid',
       '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: ['VerifiableCredential'],
+      type: [CredentialType.VerifiableCredential],
       issuer: 'https://example.com/issuer',
       issuanceDate: '2020-01-01T00:00:00Z',
       credentialSubject: {
@@ -136,7 +137,7 @@ describe('StatusList2021 service', () => {
     const credential = {
       id: 'uuid',
       '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: ['VerifiableCredential'],
+      type: [CredentialType.VerifiableCredential],
       issuer: 'https://example.com/issuer',
       issuanceDate: '2020-01-01T00:00:00Z',
       credentialSubject: {
@@ -232,7 +233,10 @@ describe('StatusList2021 service', () => {
         'https://w3id.org/vc/status-list/2021/v1',
       ],
       id: 'https://example.com/v1/status-list/urn:uuid:a98c8eb6-7bdc-48b8-8c26-0418dd044180',
-      type: ['VerifiableCredential', 'StatusList2021Credential'],
+      type: [
+        CredentialType.VerifiableCredential,
+        CredentialType.StatusList2021Credential,
+      ],
       credentialSubject: {
         id: 'https://example.com/v1/status-list/urn:uuid:a98c8eb6-7bdc-48b8-8c26-0418dd044180',
         encodedList: 'H4sIAAAAAAAAA2MEABvfBaUBAAAA',
