@@ -156,7 +156,6 @@
     "ethereum-waffle": "^3.4.0",
     "husky": "^4.3.8",
     "i": "^0.3.7",
-    "iam-client-lib": "^6.0.0-alpha.27",
     "jest": "27.5.1",
     "jest-create-mock-instance": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
