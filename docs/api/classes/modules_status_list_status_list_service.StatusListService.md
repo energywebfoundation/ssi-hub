@@ -18,12 +18,13 @@
 - [getStatusList](modules_status_list_status_list_service.StatusListService.md#getstatuslist)
 - [markStatusListCredential](modules_status_list_status_list_service.StatusListService.md#markstatuslistcredential)
 - [verifyCredential](modules_status_list_status_list_service.StatusListService.md#verifycredential)
+- [verifyRevoker](modules_status_list_status_list_service.StatusListService.md#verifyrevoker)
 
 ## Constructors
 
 ### constructor
 
-• **new StatusListService**(`configService`, `credentialWithStatusRepository`, `namespaceStatusListsRepository`, `namespaceStatusListRepository`, `statusListCredentialRepository`)
+• **new StatusListService**(`configService`, `credentialWithStatusRepository`, `namespaceStatusListsRepository`, `namespaceStatusListRepository`, `statusListCredentialRepository`, `revocationVerificationService`)
 
 #### Parameters
 
@@ -34,6 +35,7 @@
 | `namespaceStatusListsRepository` | `Repository`<[`NamespaceStatusLists`](modules_status_list_entities_namespace_status_lists_entity.NamespaceStatusLists.md)\> |
 | `namespaceStatusListRepository` | `Repository`<[`NamespaceStatusList`](modules_status_list_entities_namespace_status_list_entity.NamespaceStatusList.md)\> |
 | `statusListCredentialRepository` | `Repository`<[`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md)\> |
+| `revocationVerificationService` | [`RevocationVerificationService`](modules_claim_services_revocation_verification_service.RevocationVerificationService.md) |
 
 ## Methods
 
@@ -193,6 +195,26 @@ Verify verifiable credential proof. Throw error if proof is not valid.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `credential` | [`VerifiableCredentialDto`](modules_status_list_dtos_verifiable_credential_dto.VerifiableCredentialDto.md) \| [`StatusListVerifiableCredentialDto`](modules_status_list_dtos_status_list_verifiable_credential_dto.StatusListVerifiableCredentialDto.md) | verifiable credential |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
+
+### verifyRevoker
+
+▸ **verifyRevoker**(`user`, `namespace`): `Promise`<`void`\>
+
+Verifies that `revoker` is authorized to revoke `role` credential.
+Throws error if not.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `user` | `string` | revoker |
+| `namespace` | `string` | namespace |
 
 #### Returns
 

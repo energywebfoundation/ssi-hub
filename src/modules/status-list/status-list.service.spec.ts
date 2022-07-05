@@ -11,6 +11,7 @@ import {
   StatusListCredential,
 } from './entities';
 import { CredentialType } from '@ew-did-registry/credentials-interface';
+import { RevocationVerificationService } from '../claim/services';
 
 describe('StatusList2021 service', () => {
   let service: StatusListService;
@@ -50,7 +51,8 @@ describe('StatusList2021 service', () => {
       credentialWithStatusRepository as unknown as Repository<CredentialWithStatus>,
       namespaceStatusListsRepository as unknown as Repository<NamespaceStatusLists>,
       namespaceStatusListRepository as unknown as Repository<NamespaceStatusList>,
-      statusListCredentialRepository as unknown as Repository<StatusListCredential>
+      statusListCredentialRepository as unknown as Repository<StatusListCredential>,
+      {} as unknown as RevocationVerificationService
     );
   });
 

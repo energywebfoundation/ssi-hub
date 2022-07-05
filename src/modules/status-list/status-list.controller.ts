@@ -23,7 +23,6 @@ import { Response, Request } from 'express';
 import { URL } from 'url';
 import { User } from '../../common/user.decorator';
 import { Auth } from '../auth/auth.decorator';
-import { RevocationVerificationService } from '../claim/services';
 import { DID } from '../did/did.types';
 import { RoleService } from '../role/role.service';
 import {
@@ -43,7 +42,6 @@ export class StatusListController {
   constructor(
     private readonly configService: ConfigService,
     private readonly statusListService: StatusListService,
-    private readonly revocationVerificationService: RevocationVerificationService,
     private readonly roleService: RoleService
   ) {}
 
@@ -94,21 +92,14 @@ export class StatusListController {
     @Body() { verifiableCredential }: RegisterRevokeInputDto
   ): Promise<StatusListCredentialDto> {
     const namespace = verifiableCredential.credentialSubject.role.namespace;
-    const { 2: authorizedRevokerResult } = await Promise.allSettled([
+    await Promise.all([
       this.roleService.verifyEnrolmentIssuer({
         issuerDID: DID.from(verifiableCredential.issuer).did,
         claimType: namespace,
       }),
       this.statusListService.verifyCredential(verifiableCredential),
-      this.revocationVerificationService.verifyRevoker(currentUser, namespace),
+      this.statusListService.verifyRevoker(currentUser, namespace),
     ]);
-
-    if (authorizedRevokerResult.status === 'rejected') {
-      console.log(authorizedRevokerResult.reason);
-      throw new ForbiddenException(
-        `${currentUser} is not allowed to revoke ${namespace}`
-      );
-    }
 
     return await this.statusListService.markStatusListCredential(
       verifiableCredential,
@@ -135,19 +126,10 @@ export class StatusListController {
       throw new BadRequestException('Credential was not registered');
     }
 
-    const { 1: authorizedRevokerResult } = await Promise.allSettled([
+    await Promise.all([
       this.statusListService.verifyCredential(statusListCredential),
-      this.revocationVerificationService.verifyRevoker(
-        issuer,
-        statusList.namespace
-      ),
+      this.statusListService.verifyRevoker(issuer, statusList.namespace),
     ]);
-
-    if (authorizedRevokerResult.status === 'rejected') {
-      throw new ForbiddenException(
-        `${issuer} is not allowed to revoke ${statusList.namespace}`
-      );
-    }
 
     return await this.statusListService.addSignedStatusListCredential(
       statusListCredential
