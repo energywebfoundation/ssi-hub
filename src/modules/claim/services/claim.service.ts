@@ -306,6 +306,10 @@ export class ClaimService {
     }
     const rolesByRevoker = allRolesByRevoker.map((r) => r.namespace);
 
+    if (!rolesByRevoker.length) {
+      return [];
+    }
+
     const qb = this.roleClaimRepository
       .createQueryBuilder('claim')
       .where('claim.claimType IN (:...rolesByRevoker)', { rolesByRevoker })
