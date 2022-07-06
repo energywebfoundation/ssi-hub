@@ -31,14 +31,14 @@
 
 ### createDIDContact
 
-▸ **createDIDContact**(`data`, `req`): `Promise`<[`DIDContact`](modules_did_contact_did_contact_entity.DIDContact.md)\>
+▸ **createDIDContact**(`data`, `did?`): `Promise`<[`DIDContact`](modules_did_contact_did_contact_entity.DIDContact.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `data` | [`DIDContactDTO`](modules_did_contact_did_contact_dto.DIDContactDTO.md) |
-| `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
+| `did?` | `string` |
 
 #### Returns
 
@@ -48,14 +48,14 @@ ___
 
 ### deleteDIDContact
 
-▸ **deleteDIDContact**(`id`, `req`): `Promise`<[`DIDContact`](modules_did_contact_did_contact_entity.DIDContact.md)\>
+▸ **deleteDIDContact**(`id`, `did?`): `Promise`<[`DIDContact`](modules_did_contact_did_contact_entity.DIDContact.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `id` | `string` |
-| `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
+| `did?` | `string` |
 
 #### Returns
 
@@ -65,13 +65,13 @@ ___
 
 ### getDIDContacts
 
-▸ **getDIDContacts**(`req`): `Promise`<[`DIDContact`](modules_did_contact_did_contact_entity.DIDContact.md)[]\>
+▸ **getDIDContacts**(`did?`): `Promise`<[`DIDContact`](modules_did_contact_did_contact_entity.DIDContact.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
+| `did?` | `string` |
 
 #### Returns
 
