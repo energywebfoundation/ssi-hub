@@ -9,7 +9,6 @@ import {
   Delete,
   Param,
   HttpStatus,
-  Req,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
@@ -17,9 +16,8 @@ import { DIDContactDTO } from './did.contact.dto';
 import { DIDContactService } from './did.contact.service';
 import { Auth } from '../auth/auth.decorator';
 import { DIDContact } from './did.contact.entity';
-import { Request } from 'express';
 import { Logger } from '../logger/logger.service';
-import { RequestUserDTO } from '../auth/auth.dto';
+import { User } from '../../common/user.decorator';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -45,9 +43,8 @@ export class DIDContactController {
   })
   public async createDIDContact(
     @Body() data: DIDContactDTO,
-    @Req() req: Request
+    @User() did?: string
   ): Promise<DIDContact> {
-    const { did } = req.user as RequestUserDTO;
     return this.didContactService.createDIDContact(data, did);
   }
 
@@ -61,8 +58,7 @@ export class DIDContactController {
     status: HttpStatus.OK,
     type: DIDContact,
   })
-  public async getDIDContacts(@Req() req: Request): Promise<DIDContact[]> {
-    const { did } = req.user as RequestUserDTO;
+  public async getDIDContacts(@User() did?: string): Promise<DIDContact[]> {
     this.logger.info(`Retrieving list of saved did contacts`);
     return this.didContactService.getDIDContacts(did);
   }
@@ -73,8 +69,7 @@ export class DIDContactController {
     summary: 'Delete a DIDContact using id',
     description: 'Deletes a DIDContact using id',
   })
-  public async deleteDIDContact(@Param('id') id: string, @Req() req: Request) {
-    const { did } = req.user as RequestUserDTO;
+  public async deleteDIDContact(@Param('id') id: string, @User() did?: string) {
     return this.didContactService.deleteDIDContact(id, did);
   }
 }
