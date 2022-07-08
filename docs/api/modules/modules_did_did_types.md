@@ -36,7 +36,7 @@ ___
 
 **`Todo`**
 
- >> ew-did-registry/did
+>> ew-did-registry/did
 matches did:ethr:volta:address, did:ethr:vOLTa:address and did:ethr:address
 
 ## Functions
