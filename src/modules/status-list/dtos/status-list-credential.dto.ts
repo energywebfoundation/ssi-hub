@@ -6,7 +6,10 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Credential } from '@ew-did-registry/credentials-interface';
+import {
+  Credential,
+  CredentialType,
+} from '@ew-did-registry/credentials-interface';
 
 export class StatusListCredentialSubjectDto {
   [key: string]: string;
@@ -44,7 +47,7 @@ export class StatusListCredentialDto
   @IsArray()
   @IsString({ each: true })
   @ApiProperty()
-  type: string[];
+  type: CredentialType[];
 
   @IsString()
   @ApiProperty()

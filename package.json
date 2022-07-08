@@ -36,7 +36,7 @@
     "build:docs": "rimraf docs/api && typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs true ./src",
     "generate:jwtkeys": "openssl genrsa -out private.pem 2048 && openssl rsa -in private.pem -pubout > public.pem",
     "migrate:claim-subject": "node src/scripts/migrate_claim_subject.js",
-    "migration:generate": "npm run typeorm:cli migration:generate -d src/db/cli.ts src/migrations/",
+    "migration:generate": "npm run typeorm:cli -- migration:generate -d src/db/cli.ts ",
     "migration:run": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:run && npm run migrate:claim-subject",
     "migration:revert": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:revert",
     "migration:create": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:create -n",
@@ -45,8 +45,8 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@energyweb/credential-governance": "^1.0.1-alpha.127.0",
-    "@energyweb/vc-verification": "^1.0.1-alpha.127.0",
+    "@energyweb/credential-governance": "^1.0.1-alpha.179.0",
+    "@energyweb/vc-verification": "^1.0.1-alpha.179.0",
     "@ensdomains/ens": "^0.4.5",
     "@ensdomains/resolver": "^0.2.4",
     "@ethersproject/abstract-provider": "5.4.1",
@@ -156,7 +156,6 @@
     "ethereum-waffle": "^3.4.0",
     "husky": "^4.3.8",
     "i": "^0.3.7",
-    "iam-client-lib": "^4.1.0-alpha.1",
     "jest": "27.5.1",
     "jest-create-mock-instance": "^2.0.0",
     "jsonwebtoken": "^8.5.1",

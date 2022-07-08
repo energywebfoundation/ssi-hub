@@ -101,6 +101,7 @@ export const claimWithRequestTestSuite = () => {
       requester: string;
       claimType: string;
       claimTypeVersion: number;
+      expirationTimestamp?: number;
     },
     issuer: {
       wallet: Wallet;
@@ -131,6 +132,7 @@ export const claimWithRequestTestSuite = () => {
           { issuer: issuer.did, subject: claimData.requester }
         ),
         requester: claimData.requester,
+        expirationTimestamp: claimData.expirationTimestamp,
       })
       .expect(expectStatusCode);
   };
@@ -503,5 +505,32 @@ export const claimWithRequestTestSuite = () => {
           })
         );
       });
+  });
+
+  it(`should issue a claim request with expiration timestamp`, async () => {
+    const [requester, issuer] = await Promise.all([randomUser(), randomUser()]);
+    await createRole(
+      {
+        name: 'test1',
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
+        ownerAddr: issuer.wallet.address,
+      },
+      roleService
+    );
+    const claimData = await createClaimRequest(
+      'test1.roles.e2e.iam.ewc',
+      requester,
+      issuer,
+      201
+    );
+    const expirationTimestamp = Date.now() + 1000;
+    await issueClaimRequest({ ...claimData, expirationTimestamp }, issuer, 201);
+
+    const persistedClaim = await claimService.getById(claimData.id);
+    expect(persistedClaim).toHaveProperty('expirationTimestamp');
+    expect(persistedClaim.expirationTimestamp).toBe(
+      expirationTimestamp.toString()
+    );
   });
 };

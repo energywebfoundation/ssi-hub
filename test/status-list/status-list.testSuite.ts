@@ -415,7 +415,7 @@ export const statusList2021TestSuite = () => {
         roleService
       );
 
-      jest.spyOn(didKit, 'verifyCredential').mockResolvedValueOnce(
+      jest.spyOn(didKit, 'verifyCredential').mockResolvedValue(
         JSON.stringify({
           checks: [],
           warnings: [],

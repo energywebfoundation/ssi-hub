@@ -1,3 +1,5 @@
+import { CredentialType } from '@ew-did-registry/credentials-interface';
+
 export const getEWFVerifiableCredential = (issuer: string) => ({
   '@context': ['https://www.w3.org/2018/credentials/v1'],
   id: 'urn:uuid:b40311fa-cf70-4fec-b268-52c3055b2a68',
@@ -78,7 +80,10 @@ export const getStatusListCredential = (issuer: string) => ({
     'https://w3id.org/vc/status-list/2021/v1',
   ],
   id: 'http://localhost:3000/v1/status-list/urn:uuid:b40311fa-cf70-4fec-b268-52c3055b2a68',
-  type: ['VerifiableCredential', 'StatusList2021Credential'],
+  type: [
+    CredentialType.VerifiableCredential,
+    CredentialType.StatusList2021Credential,
+  ],
   issuer: issuer,
   issuanceDate: '2022-05-30T14:32:24.069Z',
   credentialSubject: {

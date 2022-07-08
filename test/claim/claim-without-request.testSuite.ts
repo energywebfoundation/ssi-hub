@@ -1,13 +1,16 @@
+import request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Connection, EntityManager, Repository } from 'typeorm';
 import { BigNumber, Wallet } from 'ethers';
-import { initWithPrivateKeySigner, RegistrationTypes } from 'iam-client-lib';
+import { JWT } from '@ew-did-registry/jwt';
+import { Keys } from '@ew-did-registry/keys';
 import { v4 } from 'uuid';
 import { app } from '../app.e2e.spec';
 import { RoleService } from '../../src/modules/role/role.service';
 import { randomUser, createRole } from '../utils';
 import { ClaimService } from '../../src/modules/claim/services';
 import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
+import { RegistrationTypes } from '../../src/modules/claim/claim.types';
 
 export const claimWithoutRequestTestSuite = () => {
   let roleService: RoleService;
@@ -21,26 +24,50 @@ export const claimWithoutRequestTestSuite = () => {
       claimType: string;
       claimTypeVersion: number;
       subject: string;
+      expirationTimestamp?: number;
       registrationTypes: RegistrationTypes[];
     },
     issuer: {
       wallet: Wallet;
       did: string;
       cookies: string[];
-    }
+    },
+    expectStatusCode: number
   ) => {
-    const { connectToCacheServer } = await initWithPrivateKeySigner(
-      issuer.wallet.privateKey,
-      process.env.ENS_URL
-    );
-    const { connectToDidRegistry } = await connectToCacheServer();
-    const { claimsService } = await connectToDidRegistry();
-
-    return await claimsService.issueClaim({
-      claim: { ...claimData, issuerFields: [] },
-      subject: claimData.subject,
-      registrationTypes: claimData.registrationTypes,
-    });
+    const issKeys = new Keys({ privateKey: issuer.wallet.privateKey });
+    const jwt = new JWT(issKeys);
+    return request(app.getHttpServer())
+      .post(`/v1/claim/issue/${issuer.did}`)
+      .set('Cookie', issuer.cookies)
+      .send({
+        id: v4(),
+        requester: claimData.subject,
+        claimIssuer: [issuer.did],
+        acceptedBy: issuer.did,
+        expirationTimestamp: claimData.expirationTimestamp,
+        issuedToken: claimData.registrationTypes.includes(
+          RegistrationTypes.OffChain
+        )
+          ? await jwt.sign(
+              {
+                claimData: {
+                  claimType: claimData.claimType,
+                  claimTypeVersion: claimData.claimTypeVersion,
+                  issuerFields: [],
+                },
+              },
+              { issuer: issuer.did, subject: claimData.subject }
+            )
+          : undefined,
+        onChainProof: claimData.registrationTypes.includes(
+          RegistrationTypes.OnChain
+        )
+          ? 'on-chain-proof'
+          : undefined,
+        claimType: claimData.claimType,
+        claimTypeVersion: claimData.claimTypeVersion.toString(),
+      })
+      .expect(expectStatusCode);
   };
 
   const verifyClaim = async ({
@@ -49,12 +76,14 @@ export const claimWithoutRequestTestSuite = () => {
     registrationTypes,
     claimTypeVersion,
     issuer,
+    expirationTimestamp,
   }: {
     subject: string;
     claimType: string;
     registrationTypes: RegistrationTypes[];
     claimTypeVersion: string;
     issuer: string;
+    expirationTimestamp?: number;
   }) => {
     const foundedClaim = await claimService.getBySubject({
       subject: subject,
@@ -84,6 +113,9 @@ export const claimWithoutRequestTestSuite = () => {
       isRejected: false,
       rejectionReason: null,
       namespace: 'e2e.iam.ewc',
+      expirationTimestamp: expirationTimestamp
+        ? expirationTimestamp.toString()
+        : null,
     });
   };
 
@@ -125,7 +157,7 @@ export const claimWithoutRequestTestSuite = () => {
     const claimTypeVersion = 1;
     const registrationTypes = [RegistrationTypes.OffChain];
 
-    const data = await issueClaim(
+    await issueClaim(
       {
         id: claimId,
         requester: issuer.did,
@@ -134,10 +166,10 @@ export const claimWithoutRequestTestSuite = () => {
         subject: subject.did,
         registrationTypes,
       },
-      issuer
+      issuer,
+      201
     );
 
-    expect(data).toBeDefined();
     verifyClaim({
       subject: subject.did,
       claimType,
@@ -164,7 +196,7 @@ export const claimWithoutRequestTestSuite = () => {
     const claimTypeVersion = 1;
     const registrationTypes = [RegistrationTypes.OnChain];
 
-    const data = await issueClaim(
+    await issueClaim(
       {
         id: claimId,
         requester: issuer.did,
@@ -173,10 +205,10 @@ export const claimWithoutRequestTestSuite = () => {
         subject: subject.did,
         registrationTypes,
       },
-      issuer
+      issuer,
+      201
     );
 
-    expect(data).toBeUndefined();
     await verifyClaim({
       subject: subject.did,
       claimType,
@@ -206,7 +238,7 @@ export const claimWithoutRequestTestSuite = () => {
       RegistrationTypes.OffChain,
     ];
 
-    const data = await issueClaim(
+    await issueClaim(
       {
         id: claimId,
         requester: issuer.did,
@@ -215,10 +247,10 @@ export const claimWithoutRequestTestSuite = () => {
         subject: subject.did,
         registrationTypes,
       },
-      issuer
+      issuer,
+      201
     );
 
-    expect(data).toBeDefined();
     await verifyClaim({
       subject: subject.did,
       claimType,
@@ -270,7 +302,7 @@ export const claimWithoutRequestTestSuite = () => {
     const claimTypeVersion = 1;
     const registrationTypes = [RegistrationTypes.OnChain];
 
-    const data = await issueClaim(
+    await issueClaim(
       {
         id: claimId,
         requester: issuer.did,
@@ -279,10 +311,10 @@ export const claimWithoutRequestTestSuite = () => {
         subject: subject.did,
         registrationTypes,
       },
-      issuer
+      issuer,
+      201
     );
 
-    expect(data).toBeUndefined();
     await verifyClaim({
       subject: subject.did,
       claimType,
@@ -334,7 +366,7 @@ export const claimWithoutRequestTestSuite = () => {
     const claimTypeVersion = 1;
     const registrationTypes = [RegistrationTypes.OffChain];
 
-    const data = await issueClaim(
+    await issueClaim(
       {
         id: claimId,
         requester: issuer.did,
@@ -343,10 +375,10 @@ export const claimWithoutRequestTestSuite = () => {
         subject: subject.did,
         registrationTypes,
       },
-      issuer
+      issuer,
+      201
     );
 
-    expect(data).toBeDefined();
     await verifyClaim({
       subject: subject.did,
       claimType,
@@ -398,7 +430,7 @@ export const claimWithoutRequestTestSuite = () => {
     const claimTypeVersion = 1;
     const registrationTypes = [RegistrationTypes.OffChain];
 
-    const data = await issueClaim(
+    await issueClaim(
       {
         id: claimId,
         requester: issuer.did,
@@ -407,16 +439,58 @@ export const claimWithoutRequestTestSuite = () => {
         subject: subject.did,
         registrationTypes,
       },
-      issuer
+      issuer,
+      201
     );
 
-    expect(data).toBeDefined();
     await verifyClaim({
       subject: subject.did,
       claimType,
       registrationTypes,
       claimTypeVersion: claimTypeVersion.toString(),
       issuer: issuer.did,
+    });
+  });
+
+  it(`should issue a claim request with expiration timestamp`, async () => {
+    const [subject, issuer] = await Promise.all([randomUser(), randomUser()]);
+    await createRole(
+      {
+        name: 'test1',
+        issuerDid: [issuer.wallet.address],
+        revokerDid: [issuer.wallet.address],
+        ownerAddr: issuer.wallet.address,
+      },
+      roleService
+    );
+
+    const claimId = v4();
+    const claimType = 'test1.roles.e2e.iam.ewc';
+    const claimTypeVersion = 1;
+    const registrationTypes = [RegistrationTypes.OffChain];
+    const expirationTimestamp = Date.now() + 5000;
+
+    await issueClaim(
+      {
+        id: claimId,
+        requester: issuer.did,
+        claimType,
+        claimTypeVersion,
+        subject: subject.did,
+        registrationTypes,
+        expirationTimestamp,
+      },
+      issuer,
+      201
+    );
+
+    verifyClaim({
+      subject: subject.did,
+      claimType,
+      registrationTypes,
+      claimTypeVersion: claimTypeVersion.toString(),
+      issuer: issuer.did,
+      expirationTimestamp,
     });
   });
 };

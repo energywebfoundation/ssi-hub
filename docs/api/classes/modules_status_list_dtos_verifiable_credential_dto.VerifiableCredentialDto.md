@@ -40,7 +40,7 @@
 
 ### @context
 
-• **@context**: `string` \| `string`[]
+• **@context**: `ICredentialContextType`[]
 
 #### Inherited from
 
@@ -116,7 +116,7 @@ ___
 
 ### type
 
-• **type**: `string`[]
+• **type**: `CredentialType`[]
 
 #### Inherited from
 

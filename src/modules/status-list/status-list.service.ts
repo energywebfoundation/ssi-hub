@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,6 +20,7 @@ import {
   NamespaceStatusLists,
   NamespaceStatusList,
 } from './entities';
+import { RevocationVerificationService } from '../claim/services';
 
 @Injectable()
 export class StatusListService {
@@ -28,7 +33,8 @@ export class StatusListService {
     @InjectRepository(NamespaceStatusList)
     private readonly namespaceStatusListRepository: Repository<NamespaceStatusList>,
     @InjectRepository(StatusListCredential)
-    private readonly statusListCredentialRepository: Repository<StatusListCredential>
+    private readonly statusListCredentialRepository: Repository<StatusListCredential>,
+    private readonly revocationVerificationService: RevocationVerificationService
   ) {}
 
   /**
@@ -259,5 +265,22 @@ export class StatusListService {
       });
 
     return namespaceRevocations?.namespace;
+  }
+
+  /**
+   * Verifies that `revoker` is authorized to revoke `role` credential.
+   * Throws error if not.
+   *
+   * @param {String} user revoker
+   * @param {String} namespace namespace
+   */
+  async verifyRevoker(user: string, namespace: string) {
+    try {
+      await this.revocationVerificationService.verifyRevoker(user, namespace);
+    } catch {
+      throw new ForbiddenException(
+        `${user} is not allowed to revoke ${namespace}`
+      );
+    }
   }
 }
