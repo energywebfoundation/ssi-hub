@@ -2,7 +2,11 @@
 
 [modules/claim/claim.types](../modules/modules_claim_claim_types.md).ClaimEventType
 
-Types inspired by Aries Issue-Credential protocol [https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md](https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md)
+Types inspired by Aries Issue-Credential protocol
+
+**`Link`**
+
+https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md
 
 ## Table of contents
 
