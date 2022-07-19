@@ -84,6 +84,8 @@ jobs:
           STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
           ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
           DID_SYNC_MODE_FULL: false
+          STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
+          NATS_ENVIRONMENT_NAME: dev
 
       - name: Running E2E tests
         run: npm run test:e2e
@@ -127,3 +129,5 @@ jobs:
           STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
           DID_SYNC_MODE_FULL: false
           ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
+          STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
+          NATS_ENVIRONMENT_NAME: dev

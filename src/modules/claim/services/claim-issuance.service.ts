@@ -7,7 +7,6 @@ import { RoleService } from '../../role/role.service';
 import { Logger } from '../../logger/logger.service';
 import { ClaimIssueDTO, NewClaimIssueDTO } from '../claim.dto';
 import { RoleClaim } from '../entities/roleClaim.entity';
-import { ClaimService } from './claim.service';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
 
 @Injectable()
@@ -128,7 +127,6 @@ export class ClaimIssuanceService {
     const parent = data.claimType.split('.').slice(2).join('.');
 
     const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
       subject,
       namespace: parent,
@@ -143,7 +141,7 @@ export class ClaimIssuanceService {
    * @param data Raw claim data
    */
   private async issue(data: ClaimIssueDTO) {
-    const claim = await this.roleClaimRepository.findOne(data.id);
+    const claim = await this.roleClaimRepository.findOneBy({ id: data.id });
     const updatedClaim = RoleClaim.create({
       ...claim,
       ...data,

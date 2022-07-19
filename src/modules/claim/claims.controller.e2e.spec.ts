@@ -28,7 +28,7 @@ import { Asset, AssetsHistory } from '../assets/assets.entity';
 import { DIDService } from '../did/did.service';
 import { Wallet } from '@ethersproject/wallet';
 import { BullModule } from '@nestjs/bull';
-import { IRoleDefinition } from '@energyweb/credential-governance';
+import { IRoleDefinitionV2 } from '@energyweb/credential-governance';
 import { Organization } from '../organization/organization.entity';
 import { Application } from '../application/application.entity';
 
@@ -90,7 +90,7 @@ describe('ClaimsController', () => {
       claimTypeVersion,
       id,
       requester,
-      claimIssuer: issuer,
+      claimIssuer: [issuer],
       token,
     };
 
@@ -299,7 +299,7 @@ describe('ClaimsController', () => {
         name: 'myRole',
         namespace: 'myRole.roles.myOrg.iam.ewc',
         owner: issuer,
-        definition: {} as IRoleDefinition,
+        definition: {} as IRoleDefinitionV2,
         parentOrg: {} as Organization,
         parentApp: {} as Application,
       },

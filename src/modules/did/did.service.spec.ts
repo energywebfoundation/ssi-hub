@@ -45,7 +45,7 @@ const didDoc: IDIDDocument = {
 };
 let cachedDoc: DIDDocumentEntity;
 const repositoryMockFactory = jest.fn(() => ({
-  findOne: jest.fn((did: string) => {
+  findOneBy: jest.fn((did: string) => {
     return did === cachedDoc?.id ? cachedDoc : null;
   }),
   save: jest.fn((entity) => entity),

@@ -2,17 +2,13 @@ import d from 'dotenv';
 d.config();
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { setCacheConfig, VOLTA_CHAIN_ID } from 'iam-client-lib';
 import { appConfig } from '../src/common/test.utils';
 import { AppModule } from '../src/app.module';
 import { authTestSuite } from './auth';
 import { claimTestSuite } from './claim';
+import { statusList2021TestSuite } from './status-list';
 
 export let app: INestApplication;
-
-setCacheConfig(VOLTA_CHAIN_ID, {
-  url: process.env.STRATEGY_CACHE_SERVER,
-});
 
 jest.setTimeout(20000000);
 describe('iam-cache-server E2E tests', () => {
@@ -38,5 +34,6 @@ describe('iam-cache-server E2E tests', () => {
   describe('Modules v1', () => {
     describe('Auth module', authTestSuite);
     describe('Claim module', claimTestSuite);
+    describe('StatusList2021 module', statusList2021TestSuite);
   });
 });

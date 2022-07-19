@@ -4,19 +4,19 @@
 
 ## Table of contents
 
-### Enumeration members
+### Enumeration Members
 
 - [ASC](modules_assets_assets_types.Order.md#asc)
 - [DESC](modules_assets_assets_types.Order.md#desc)
 
-## Enumeration members
+## Enumeration Members
 
 ### ASC
 
-• **ASC** = `"ASC"`
+• **ASC** = ``"ASC"``
 
 ___
 
 ### DESC
 
-• **DESC** = `"DESC"`
+• **DESC** = ``"DESC"``

@@ -1,4 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
+import jwt from 'jsonwebtoken';
 import {
   IClaimRejection,
   IClaimRequest,
@@ -13,14 +16,10 @@ import {
 } from '../claim.dto';
 import { Claim } from '../entities/claim.entity';
 import { RoleClaim } from '../entities/roleClaim.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, In, Repository, SelectQueryBuilder } from 'typeorm';
-import jwt from 'jsonwebtoken';
-import { v5 } from 'uuid';
 import { AssetsService } from '../../assets/assets.service';
 import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
-import { UUID_NAMESPACE } from '../claim.const';
+
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -116,19 +115,33 @@ export class ClaimService {
     subject: string,
     redirectUri: string
   ): Promise<RoleClaim> {
+    const previousRequest = await this.roleClaimRepository.findOneBy({
+      subject,
+      claimType: data.claimType,
+      claimTypeVersion: data.claimTypeVersion,
+      isAccepted: false,
+      isRejected: false,
+    });
+
+    if (previousRequest) {
+      throw new ForbiddenException('Claim request already exists');
+    }
+
     const parent = data.claimType.split('.').slice(2).join('.');
 
     const claim = RoleClaim.create({
-      id: ClaimService.idOfClaim({ ...data, subject }),
       ...data,
+      isAccepted: false,
+      isRejected: false,
       namespace: parent,
       redirectUri,
     });
+
     return this.roleClaimRepository.save(claim);
   }
 
   public async reject({ id, rejectionReason }: ClaimRejectionDTO) {
-    const claim = await this.roleClaimRepository.findOne(id);
+    const claim = await this.roleClaimRepository.findOneBy({ id });
     const updatedClaim = RoleClaim.create({
       ...claim,
       isRejected: true,
@@ -142,7 +155,7 @@ export class ClaimService {
    * @param id claim ID
    */
   public async getById(id: string): Promise<RoleClaim> {
-    return this.roleClaimRepository.findOne(id);
+    return this.roleClaimRepository.findOneBy({ id });
   }
 
   /**
@@ -269,6 +282,42 @@ export class ClaimService {
   }
 
   /**
+   * Get claims able to be revoked by user with matching DID
+   * @param revoker revoker DID
+   * @param filters additional filters
+   * @param currentUser current user's DID
+   * @returns allowed claims to revoke
+   */
+  async getByRevoker({
+    revoker,
+    currentUser,
+    filters: { namespace } = {},
+  }: {
+    revoker: string;
+    filters?: QueryFilters;
+    currentUser?: string;
+  }) {
+    const currentRevoker = currentUser || revoker;
+    let allRolesByRevoker = await this.rolesByRevoker(currentRevoker);
+    if (namespace) {
+      allRolesByRevoker = allRolesByRevoker.filter(
+        (role) => role.namespace === namespace
+      );
+    }
+    const rolesByRevoker = allRolesByRevoker.map((r) => r.namespace);
+
+    if (!rolesByRevoker.length) {
+      return [];
+    }
+
+    const qb = this.roleClaimRepository
+      .createQueryBuilder('claim')
+      .where('claim.claimType IN (:...rolesByRevoker)', { rolesByRevoker })
+      .andWhere('claim.isAccepted = true');
+    return qb.getMany();
+  }
+
+  /**
    * Get claims requested by user with matching DID
    * @param did requester's DID
    * @param filters additional filters
@@ -323,6 +372,27 @@ export class ClaimService {
     currentUser?: string;
   }) {
     return this.getBySubjects({ subjects: [subject], filters, currentUser });
+  }
+
+  /**
+   * Get approved claim for given did and claim type
+   * @param options.subject subject DID
+   * @param options.claimType claim type
+   */
+  async getByClaimType({
+    subject,
+    claimType,
+  }: {
+    subject: string;
+    claimType: string;
+  }) {
+    return await this.roleClaimRepository.findOne({
+      where: {
+        subject,
+        claimType,
+        isAccepted: true,
+      },
+    });
   }
 
   /**
@@ -390,15 +460,6 @@ export class ClaimService {
     });
   }
 
-  static idOfClaim(claimReq: {
-    subject: string;
-    claimType: string;
-    claimTypeVersion: string;
-  }) {
-    const { subject, claimType: role, claimTypeVersion: version } = claimReq;
-    return v5(JSON.stringify({ subject, role, version }), UUID_NAMESPACE);
-  }
-
   public async rolesByIssuer(
     issuer: string,
     namespace?: string
@@ -417,6 +478,39 @@ export class ClaimService {
     return namespace
       ? roles.filter((r: Role) => r.namespace === namespace)
       : roles;
+  }
+
+  /**
+   * Get allowed roles to revoke by given DID
+   * @param {String} revokerDid - revoker DID
+   * @returns allowed roles to revoke
+   */
+  public async rolesByRevoker(revokerDid: string): Promise<Role[]> {
+    const [revokerClaims, allRoles] = await Promise.all([
+      this.getBySubject({
+        subject: revokerDid,
+        filters: { isAccepted: true },
+      }),
+      this.roleService.getAll(),
+    ]);
+
+    const revokerRoles = revokerClaims.map((r) => r.claimType);
+
+    const isRevokerAllowedToRevoke = (role: Role) => {
+      const revokerDefinition = role.definition?.revoker;
+      if (!revokerDefinition) return false;
+
+      switch (revokerDefinition.revokerType) {
+        case 'DID':
+          return revokerDefinition.did?.includes(revokerDid);
+        case 'ROLE':
+          return revokerRoles.includes(revokerDefinition.roleName);
+        default:
+          return false;
+      }
+    };
+
+    return allRoles.filter(isRevokerAllowedToRevoke);
   }
 
   private async filterUserRelatedClaims(

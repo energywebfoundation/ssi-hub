@@ -20,6 +20,7 @@
 - [claimIssuer](modules_claim_claim_dto.NewClaimIssueDTO.md#claimissuer)
 - [claimType](modules_claim_claim_dto.NewClaimIssueDTO.md#claimtype)
 - [claimTypeVersion](modules_claim_claim_dto.NewClaimIssueDTO.md#claimtypeversion)
+- [expirationTimestamp](modules_claim_claim_dto.NewClaimIssueDTO.md#expirationtimestamp)
 - [id](modules_claim_claim_dto.NewClaimIssueDTO.md#id)
 - [issuedToken](modules_claim_claim_dto.NewClaimIssueDTO.md#issuedtoken)
 - [onChainProof](modules_claim_claim_dto.NewClaimIssueDTO.md#onchainproof)
@@ -55,7 +56,7 @@ ___
 
 ### claimIssuer
 
-• `Optional` **claimIssuer**: `string`
+• `Optional` **claimIssuer**: `string`[]
 
 ___
 
@@ -76,6 +77,16 @@ ___
 #### Overrides
 
 [ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[claimTypeVersion](modules_claim_claim_dto.ClaimIssueDTO.md#claimtypeversion)
+
+___
+
+### expirationTimestamp
+
+• `Optional` **expirationTimestamp**: `number`
+
+#### Inherited from
+
+[ClaimIssueDTO](modules_claim_claim_dto.ClaimIssueDTO.md).[expirationTimestamp](modules_claim_claim_dto.ClaimIssueDTO.md#expirationtimestamp)
 
 ___
 

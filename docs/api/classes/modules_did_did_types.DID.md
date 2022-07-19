@@ -17,6 +17,11 @@ A value object representing EIP-1056 DID
 - [id](modules_did_did_types.DID.md#id)
 - [method](modules_did_did_types.DID.md#method)
 
+### Methods
+
+- [withHexChain](modules_did_did_types.DID.md#withhexchain)
+- [from](modules_did_did_types.DID.md#from)
+
 ## Constructors
 
 ### constructor
@@ -54,3 +59,29 @@ ___
 ### method
 
 • `Readonly` **method**: `Methods`
+
+## Methods
+
+### withHexChain
+
+▸ **withHexChain**(): `string`
+
+#### Returns
+
+`string`
+
+___
+
+### from
+
+▸ `Static` **from**(`did`): [`DID`](modules_did_did_types.DID.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
+
+#### Returns
+
+[`DID`](modules_did_did_types.DID.md)

@@ -10,7 +10,7 @@ import { BaseEnsEntity } from '../../common/ENSBaseEntity';
 import { Organization } from '../organization/organization.entity';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { RoleDefinitionSchema } from './role.schema';
-import { IRoleDefinition } from '@energyweb/credential-governance';
+import { IRoleDefinitionV2 } from '@energyweb/credential-governance';
 
 @ObjectType()
 @Entity()
@@ -45,7 +45,7 @@ export class Role implements BaseEnsEntity {
 
   @Field(() => RoleDefinitionSchema)
   @Column({ type: 'jsonb' })
-  definition: IRoleDefinition;
+  definition: IRoleDefinitionV2;
 
   @ManyToOne(() => Organization, (org) => org.roles)
   parentOrg: Organization;

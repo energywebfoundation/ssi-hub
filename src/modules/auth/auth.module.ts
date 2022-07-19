@@ -19,6 +19,7 @@ import { GqlAuthGuard } from './jwt.gql.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
+import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
 
 @Global()
 @Module({
@@ -58,7 +59,11 @@ export class AuthModule implements NestModule {
         { path: '/v1/health/live', method: RequestMethod.GET },
         { path: '/v1/health/ready', method: RequestMethod.GET },
         { path: '/v1/health', method: RequestMethod.GET },
-        { path: '/v1/auth/status', method: RequestMethod.GET }
+        { path: '/v1/auth/status', method: RequestMethod.GET },
+        {
+          path: `/v1/${STATUS_LIST_MODULE_PATH}/:credentialId`,
+          method: RequestMethod.GET,
+        }
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }

@@ -144,7 +144,7 @@ describe('DIDContactController', () => {
           expect(res.body.did).toEqual(didContactToSave.did);
           expect(res.body.createdBy.id).toBe(userDID1);
 
-          const savedContact = await didContactRepo.findOne({
+          const savedContact = await didContactRepo.findOneBy({
             id: res.body.id,
           });
 

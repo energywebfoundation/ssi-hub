@@ -18,6 +18,7 @@
 - [claimType](modules_claim_entities_roleClaim_entity.RoleClaim.md#claimtype)
 - [claimTypeVersion](modules_claim_entities_roleClaim_entity.RoleClaim.md#claimtypeversion)
 - [createdAt](modules_claim_entities_roleClaim_entity.RoleClaim.md#createdat)
+- [expirationTimestamp](modules_claim_entities_roleClaim_entity.RoleClaim.md#expirationtimestamp)
 - [id](modules_claim_entities_roleClaim_entity.RoleClaim.md#id)
 - [isAccepted](modules_claim_entities_roleClaim_entity.RoleClaim.md#isaccepted)
 - [isRejected](modules_claim_entities_roleClaim_entity.RoleClaim.md#isrejected)
@@ -78,6 +79,12 @@ ___
 ### createdAt
 
 • **createdAt**: `Date`
+
+___
+
+### expirationTimestamp
+
+• `Optional` **expirationTimestamp**: `number`
 
 ___
 

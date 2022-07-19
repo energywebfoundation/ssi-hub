@@ -6,7 +6,7 @@ Role's Definition DTO providing validation and API schema for swagger UI
 
 ## Implements
 
-- `IRoleDefinition`
+- `IRoleDefinitionV2`
 
 ## Table of contents
 
@@ -17,9 +17,11 @@ Role's Definition DTO providing validation and API schema for swagger UI
 ### Properties
 
 - [enrolmentPreconditions](modules_role_role_dto.RoleDefinitionDTO.md#enrolmentpreconditions)
-- [fields](modules_role_role_dto.RoleDefinitionDTO.md#fields)
 - [issuer](modules_role_role_dto.RoleDefinitionDTO.md#issuer)
+- [issuerFields](modules_role_role_dto.RoleDefinitionDTO.md#issuerfields)
 - [metadata](modules_role_role_dto.RoleDefinitionDTO.md#metadata)
+- [requestorFields](modules_role_role_dto.RoleDefinitionDTO.md#requestorfields)
+- [revoker](modules_role_role_dto.RoleDefinitionDTO.md#revoker)
 - [roleName](modules_role_role_dto.RoleDefinitionDTO.md#rolename)
 - [roleType](modules_role_role_dto.RoleDefinitionDTO.md#roletype)
 - [version](modules_role_role_dto.RoleDefinitionDTO.md#version)
@@ -38,13 +40,7 @@ Role's Definition DTO providing validation and API schema for swagger UI
 
 #### Implementation of
 
-IRoleDefinition.enrolmentPreconditions
-
-___
-
-### fields
-
-• **fields**: [`FieldsDTO`](modules_role_role_dto.FieldsDTO.md)[]
+IRoleDefinitionV2.enrolmentPreconditions
 
 ___
 
@@ -54,7 +50,17 @@ ___
 
 #### Implementation of
 
-IRoleDefinition.issuer
+IRoleDefinitionV2.issuer
+
+___
+
+### issuerFields
+
+• `Optional` **issuerFields**: [`FieldsDTO`](modules_role_role_dto.FieldsDTO.md)[]
+
+#### Implementation of
+
+IRoleDefinitionV2.issuerFields
 
 ___
 
@@ -64,7 +70,27 @@ ___
 
 #### Implementation of
 
-IRoleDefinition.metadata
+IRoleDefinitionV2.metadata
+
+___
+
+### requestorFields
+
+• `Optional` **requestorFields**: [`FieldsDTO`](modules_role_role_dto.FieldsDTO.md)[]
+
+#### Implementation of
+
+IRoleDefinitionV2.requestorFields
+
+___
+
+### revoker
+
+• **revoker**: [`RevokerDTO`](modules_role_role_dto.RevokerDTO.md)
+
+#### Implementation of
+
+IRoleDefinitionV2.revoker
 
 ___
 
@@ -74,7 +100,7 @@ ___
 
 #### Implementation of
 
-IRoleDefinition.roleName
+IRoleDefinitionV2.roleName
 
 ___
 
@@ -84,7 +110,7 @@ ___
 
 #### Implementation of
 
-IRoleDefinition.roleType
+IRoleDefinitionV2.roleType
 
 ___
 
@@ -94,4 +120,4 @@ ___
 
 #### Implementation of
 
-IRoleDefinition.version
+IRoleDefinitionV2.version

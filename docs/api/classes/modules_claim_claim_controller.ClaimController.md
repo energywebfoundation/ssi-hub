@@ -11,10 +11,12 @@
 ### Methods
 
 - [getByAllowedRolesByIssuer](modules_claim_claim_controller.ClaimController.md#getbyallowedrolesbyissuer)
+- [getByAllowedRolesByRevoker](modules_claim_claim_controller.ClaimController.md#getbyallowedrolesbyrevoker)
 - [getById](modules_claim_claim_controller.ClaimController.md#getbyid)
 - [getByIssuerDid](modules_claim_claim_controller.ClaimController.md#getbyissuerdid)
 - [getByParentNamespace](modules_claim_claim_controller.ClaimController.md#getbyparentnamespace)
 - [getByRequesterDid](modules_claim_claim_controller.ClaimController.md#getbyrequesterdid)
+- [getByRevokerDid](modules_claim_claim_controller.ClaimController.md#getbyrevokerdid)
 - [getBySubject](modules_claim_claim_controller.ClaimController.md#getbysubject)
 - [getBySubjects](modules_claim_claim_controller.ClaimController.md#getbysubjects)
 - [getByUserDid](modules_claim_claim_controller.ClaimController.md#getbyuserdid)
@@ -54,6 +56,22 @@
 | Name | Type |
 | :------ | :------ |
 | `issuer` | [`DID`](modules_did_did_types.DID.md) |
+
+#### Returns
+
+`Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+___
+
+### getByAllowedRolesByRevoker
+
+▸ **getByAllowedRolesByRevoker**(`revoker`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `revoker` | [`DID`](modules_did_did_types.DID.md) |
 
 #### Returns
 
@@ -124,6 +142,24 @@ ___
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+___
+
+### getByRevokerDid
+
+▸ **getByRevokerDid**(`revoker`, `user?`, `namespace?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `revoker` | `string` |
+| `user?` | `string` |
+| `namespace?` | `string` |
 
 #### Returns
 
@@ -245,7 +281,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `did` | `string` |
-| `data` | [`IClaimIssuance`](../interfaces/modules_claim_claim_types.IClaimIssuance.md) |
+| `data` | [`ClaimIssueDTO`](modules_claim_claim_dto.ClaimIssueDTO.md) |
 
 #### Returns
 

@@ -6,7 +6,7 @@ import { Provider } from '../../common/provider';
 import {
   IAppDefinition,
   IOrganizationDefinition,
-  IRoleDefinition,
+  IRoleDefinitionV2,
 } from '@energyweb/credential-governance';
 import { EnsService } from './ens.service';
 import { OrganizationService } from '../organization/organization.service';
@@ -81,11 +81,11 @@ const APP_MOCK_DATA: IAppDefinition = {
   },
 };
 
-const ROLE_MOCK_DATA: IRoleDefinition = {
+const ROLE_MOCK_DATA: IRoleDefinitionV2 = {
   version: 1,
   roleType: 'app',
   roleName: 'admin',
-  requestorFields: [
+  issuerFields: [
     {
       fieldType: 'a',
       label: 'bb',
@@ -99,6 +99,10 @@ const ROLE_MOCK_DATA: IRoleDefinition = {
   },
   issuer: {
     issuerType: 'issuer',
+    did: ['did_0000000'],
+  },
+  revoker: {
+    revokerType: 'issuer',
     did: ['did_0000000'],
   },
   enrolmentPreconditions: [],
