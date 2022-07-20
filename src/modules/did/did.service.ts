@@ -1,4 +1,23 @@
+import {
+  Injectable,
+  HttpException,
+  OnModuleInit,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Methods } from '@ew-did-registry/did';
+import { Transaction } from '@sentry/types';
+import { isJWT } from 'class-validator';
+import { firstValueFrom } from 'rxjs';
+import { CID } from 'multiformats/cid';
+import { Queue } from 'bull';
+import { Repository } from 'typeorm';
+import jwt from 'jsonwebtoken';
+import { BigNumber } from 'ethers';
 import {
   IDIDDocument,
   IDIDLogData,
@@ -8,36 +27,19 @@ import {
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
 import {
-  Injectable,
-  HttpException,
-  OnModuleInit,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import { firstValueFrom } from 'rxjs';
-import { CID } from 'multiformats/cid';
-import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
-import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
-import { BigNumber } from 'ethers';
-import { Logger } from '../logger/logger.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DIDDocumentEntity, IClaim } from './did.entity';
-import { Repository } from 'typeorm';
-import jwt from 'jsonwebtoken';
-import { Provider } from '../../common/provider';
-import {
   documentFromLogs,
   Resolver,
   mergeLogs,
   ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
+import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
+import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
+import { Logger } from '../logger/logger.service';
+import { DIDDocumentEntity, IClaim } from './did.entity';
+import { Provider } from '../../common/provider';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
-import { Transaction } from '@sentry/types';
+import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 
 @Injectable()
 export class DIDService implements OnModuleInit {
@@ -413,22 +415,42 @@ export class DIDService implements OnModuleInit {
 
         const token = await this.ipfsStore.get(serviceEndpoint);
 
-        const decodedData = jwt.decode(token) as {
-          claimData: Record<string, string>;
-        };
+        if (isJWT(token)) {
+          const decodedData = jwt.decode(token) as {
+            claimData: Record<string, string>;
+          };
 
-        if (!decodedData) {
-          return { serviceEndpoint, ...rest };
+          if (!decodedData) {
+            return { serviceEndpoint, ...rest };
+          }
+
+          const { claimData, ...claimRest } = decodedData;
+
+          return {
+            serviceEndpoint,
+            ...rest,
+            ...claimData,
+            ...claimRest,
+          };
         }
 
-        const { claimData, ...claimRest } = decodedData;
-
-        return {
-          serviceEndpoint,
-          ...rest,
-          ...claimData,
-          ...claimRest,
-        };
+        try {
+          const data = JSON.parse(token);
+          if (isVerifiableCredential(data)) {
+            return {
+              serviceEndpoint,
+              ...rest,
+              verifiableCredentials: data,
+            };
+          }
+          return {
+            serviceEndpoint,
+            ...rest,
+            ...data,
+          };
+        } catch {
+          return { serviceEndpoint, ...rest };
+        }
       })
     );
   }
