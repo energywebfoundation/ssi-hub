@@ -449,6 +449,9 @@ export class DIDService implements OnModuleInit {
             ...data,
           };
         } catch {
+          this.logger.debug(
+            `Could not parse service: serviceEndpoint: ${serviceEndpoint}`
+          );
           return { serviceEndpoint, ...rest };
         }
       })
