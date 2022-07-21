@@ -126,20 +126,24 @@ iam-cache-server-helm:
     DB_MAXIMUM_CONNECTION_POOL: 56 # https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: dev
 
-  resources:
-    limits:
-      cpu: 750m
-      memory: 768Mi # spike of memory on initilaization of didkit-wasm-node requires higher limit https://github.com/spruceid/didkit/issues/301
-    requests:
-      cpu: 500m
-      memory: 256Mi
+  resources: { }
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
   autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 4
-    targetCPUUtilizationPercentage: 60
-    targetMemoryUtilizationPercentage: 85
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 1
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: { }
 
