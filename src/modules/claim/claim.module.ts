@@ -13,6 +13,7 @@ import {
 } from './services';
 import { AssetsModule } from '../assets/assets.module';
 import { DIDModule } from '../did/did.module';
+import { Provider } from '../../common/provider';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { DIDModule } from '../did/did.module';
     ClaimIssuanceService,
     ClaimResolver,
     RevocationVerificationService,
+    Provider,
   ],
   exports: [RevocationVerificationService],
 })

@@ -3,6 +3,7 @@ import {
   HttpException,
   OnModuleInit,
   InternalServerErrorException,
+  Inject,
 } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +24,7 @@ import {
   IDIDLogData,
   IServiceEndpoint,
   DidEventNames,
+  RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import { IDidStore } from '@ew-did-registry/did-store-interface';
@@ -30,7 +32,6 @@ import {
   documentFromLogs,
   Resolver,
   mergeLogs,
-  ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
@@ -55,7 +56,8 @@ export class DIDService implements OnModuleInit {
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
-    private readonly sentryTracingService: SentryTracingService
+    private readonly sentryTracingService: SentryTracingService,
+    @Inject('RegistrySettings') registrySettings: RegistrySettings
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -66,11 +68,7 @@ export class DIDService implements OnModuleInit {
       'DID_REGISTRY_ADDRESS'
     );
 
-    this.resolver = new Resolver(this.provider, {
-      abi: ethrReg.abi,
-      address: DID_REGISTRY_ADDRESS,
-      method: Methods.Erc1056,
-    });
+    this.resolver = new Resolver(this.provider, registrySettings);
 
     this.didRegistry = EthereumDIDRegistry__factory.connect(
       DID_REGISTRY_ADDRESS,
