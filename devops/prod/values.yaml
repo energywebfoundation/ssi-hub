@@ -131,7 +131,7 @@ iam-cache-server-helm:
   resources:
     limits:
       cpu: 750m
-      memory: 384Mi
+      memory: 768Mi # spike of memory on initilaization of didkit-wasm-node requires higher limit https://github.com/spruceid/didkit/issues/301
     requests:
       cpu: 500m
       memory: 256Mi
@@ -140,7 +140,7 @@ iam-cache-server-helm:
     enabled: true
     minReplicas: 3
     maxReplicas: 6
-    targetCPUUtilizationPercentage: 50
+    targetCPUUtilizationPercentage: 60
     targetMemoryUtilizationPercentage: 85
 
   nodeSelector: { }
