@@ -108,6 +108,15 @@ describe('DidDocumentService', () => {
         },
         { provide: Provider, useValue: provider },
         { provide: SentryTracingService, useValue: MockSentryTracing },
+        {
+          provide: 'RegistrySettings',
+          useFactory: (configService: ConfigService) => ({
+            abi: ethrReg.abi,
+            address: configService.get<string>('DID_REGISTRY_ADDRESS'),
+            method: Methods.Erc1056,
+          }),
+          inject: [ConfigService],
+        },
       ],
     }).compile();
     await module.init();
