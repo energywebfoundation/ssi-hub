@@ -5,10 +5,8 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
   Post,
   Res,
-  Req,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -19,8 +17,9 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { URL } from 'url';
+import { UrlDecoded } from '../../common/url-decode.decorator';
 import { User } from '../../common/user.decorator';
 import { Auth } from '../auth/auth.decorator';
 import { DID } from '../did/did.types';
@@ -140,13 +139,12 @@ export class StatusListController {
   @ApiOkResponse({ type: StatusListVerifiableCredentialDto })
   @ApiNoContentResponse({ description: 'Credential not revoked.' })
   async getStatusListCredential(
-    @Param('credentialId') credentialId: string,
-    @Res() response: Response,
-    @Req() request: Request
+    @UrlDecoded() url: string,
+    @Res() response: Response
   ): Promise<Response> {
     const statusListDomain = this.configService.get('STATUS_LIST_DOMAIN');
     const statusListCredentialUrl = new URL(
-      `${request.originalUrl}`,
+      url,
       statusListDomain.endsWith('/') ? statusListDomain : `${statusListDomain}/`
     );
     const statusList = await this.statusListService.getStatusList(

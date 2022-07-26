@@ -776,38 +776,42 @@ export const statusList2021TestSuite = () => {
   });
 
   describe('/:credentialId', () => {
-    it(`should fetch credential status for anonymous user`, async () => {
-      const statusListCredential = getStatusListCredential('did:ethr:0x123');
+    const credentialId = 'urn:uuid:b40311fa-cf70-4fec-b268';
+    it.each([credentialId, encodeURIComponent(credentialId)])(
+      `should fetch credential status of credential with id %p for anonymous user`,
+      async (id: string) => {
+        const statusListCredential = getStatusListCredential('did:ethr:0x123');
 
-      const mockFunc = jest.spyOn(statusListCredentialRepository, 'findOne');
-      jest
-        .spyOn(statusListCredentialRepository, 'findOne')
-        .mockResolvedValueOnce({
-          statusListId: '',
-          vc: statusListCredential,
-          getStatusListCredential: (issuerDid) => {
-            return StatusListCredential.create({
-              statusListId: '',
-              vc: statusListCredential,
-            }).getStatusListCredential(issuerDid);
-          },
-        });
+        const mockFunc = jest.spyOn(statusListCredentialRepository, 'findOne');
+        jest
+          .spyOn(statusListCredentialRepository, 'findOne')
+          .mockResolvedValueOnce({
+            statusListId: '',
+            vc: statusListCredential,
+            getStatusListCredential: (issuerDid) => {
+              return StatusListCredential.create({
+                statusListId: '',
+                vc: statusListCredential,
+              }).getStatusListCredential(issuerDid);
+            },
+          });
 
-      const { body } = await request(app.getHttpServer())
-        .get(`/v1/${STATUS_LIST_MODULE_PATH}/urn:uuid:b40311fa-cf70-4fec-b268`)
-        .expect(200);
+        const { body } = await request(app.getHttpServer())
+          .get(`/v1/${STATUS_LIST_MODULE_PATH}/${id}`)
+          .expect(200);
 
-      expect(mockFunc).toBeCalledWith(
-        expect.objectContaining({
-          where: {
-            statusListId: expect.stringContaining(
-              `/v1/${STATUS_LIST_MODULE_PATH}/urn:uuid:b40311fa-cf70-4fec-b268`
-            ),
-          },
-        })
-      );
-      expect(body).toEqual(statusListCredential);
-    });
+        expect(mockFunc).toBeCalledWith(
+          expect.objectContaining({
+            where: {
+              statusListId: expect.stringContaining(
+                `/v1/${STATUS_LIST_MODULE_PATH}/${credentialId}`
+              ),
+            },
+          })
+        );
+        expect(body).toEqual(statusListCredential);
+      }
+    );
 
     it(`should result with NO_CONTENT status code when credential is not revoked`, async () => {
       const mockFunc = jest
