@@ -18,7 +18,7 @@
 
 ### constructor
 
-• **new RevocationVerificationService**(`claimService`, `roleService`)
+• **new RevocationVerificationService**(`claimService`, `roleService`, `provider`, `registrySettings`)
 
 #### Parameters
 
@@ -26,6 +26,8 @@
 | :------ | :------ |
 | `claimService` | [`ClaimService`](modules_claim_services_claim_service.ClaimService.md) |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
+| `provider` | [`Provider`](common_provider.Provider.md) |
+| `registrySettings` | `RegistrySettings` |
 
 #### Overrides
 

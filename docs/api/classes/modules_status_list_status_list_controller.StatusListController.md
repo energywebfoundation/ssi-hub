@@ -50,15 +50,14 @@ ___
 
 ### getStatusListCredential
 
-▸ **getStatusListCredential**(`credentialId`, `response`, `request`): `Promise`<`Response`<`any`, `Record`<`string`, `any`\>\>\>
+▸ **getStatusListCredential**(`url`, `response`): `Promise`<`Response`<`any`, `Record`<`string`, `any`\>\>\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `credentialId` | `string` |
+| `url` | `string` |
 | `response` | `Response`<`any`, `Record`<`string`, `any`\>\> |
-| `request` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
 
 #### Returns
 

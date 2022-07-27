@@ -12,6 +12,7 @@
 - [common/json.scalar](modules/common_json_scalar.md)
 - [common/provider](modules/common_provider.md)
 - [common/test.utils](modules/common_test_utils.md)
+- [common/url-decode.decorator](modules/common_url_decode_decorator.md)
 - [common/user.decorator](modules/common_user_decorator.md)
 - [db/cli](modules/db_cli.md)
 - [db/config](modules/db_config.md)
