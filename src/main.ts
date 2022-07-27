@@ -71,5 +71,7 @@ async function bootstrap() {
 
   app.use(SentryNode.Handlers.errorHandler());
   await app.listen(configService.get('NESTJS_PORT'));
+
+  throw new Error('Failed to start');
 }
 bootstrap();
