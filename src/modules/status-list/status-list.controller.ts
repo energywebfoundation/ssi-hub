@@ -15,6 +15,7 @@ import {
   ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -136,6 +137,7 @@ export class StatusListController {
   }
 
   @Get('/:credentialId')
+  @ApiParam({ name: 'credential id', required: true })
   @ApiOkResponse({ type: StatusListVerifiableCredentialDto })
   @ApiNoContentResponse({ description: 'Credential not revoked.' })
   async getStatusListCredential(
