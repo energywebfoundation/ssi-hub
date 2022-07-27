@@ -24,6 +24,7 @@ export class BullHealthCheckIndicatorService extends HealthIndicator {
       for (const client of redisClients) {
         await client.ping();
       }
+      throw new Error('redis ping failed');
     } catch (e) {
       throw new HealthCheckError(e.message, this.getStatus(key, false));
     }
