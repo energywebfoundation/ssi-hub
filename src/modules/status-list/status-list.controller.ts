@@ -137,7 +137,7 @@ export class StatusListController {
   }
 
   @Get('/:credentialId')
-  @ApiParam({ name: 'credential id', required: true })
+  @ApiParam({ name: 'credentialId', required: true })
   @ApiOkResponse({ type: StatusListVerifiableCredentialDto })
   @ApiNoContentResponse({ description: 'Credential not revoked.' })
   async getStatusListCredential(
