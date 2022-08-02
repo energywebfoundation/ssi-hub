@@ -102,7 +102,9 @@ iam-cache-server-helm:
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
 
-  resources: { }
+  resources:
+    limits:
+      memory: 900Mi
 
   autoscaling:
     enabled: false
