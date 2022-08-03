@@ -105,7 +105,9 @@ iam-cache-server-helm:
       DB_MAXIMUM_CONNECTION_POOL: 56 # https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
       SENTRY_ENV: sandbox
 
-  resources: { }
+  resources:
+    limits:
+      memory: 900Mi
 
   autoscaling:
     enabled: false
