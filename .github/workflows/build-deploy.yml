@@ -2,7 +2,7 @@ name: Build and deploy
 
 on:
   push:
-    branches: [ develop, master, release ]
+    branches: [develop, master, release]
   workflow_dispatch:
 
 jobs:
@@ -36,6 +36,11 @@ jobs:
             echo "::set-output name=env_name::staging"
           elif [ "${{ github.ref }}" = "refs/heads/release" ]; then
             echo "::set-output name=env_name::prod"
+          elif [ "${{ github.ref }}" = "refs/heads/sandbox" ]; then
+            echo "::set-output name=env_name::sandbox"
+          else
+            echo "Branch ${{ github.ref }} is not configured for deployment"
+            exit 1
           fi
       - name: Use specified environment secrets from previous step
         run: echo "Environment secrets set name ${{ steps.env_name.outputs.env_name }}"
