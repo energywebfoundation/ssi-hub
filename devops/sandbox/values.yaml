@@ -108,7 +108,7 @@ iam-cache-server-helm:
 
   resources:
     limits:
-      memory: 900Mi
+      memory: 500Mi
 
   autoscaling:
     enabled: false
