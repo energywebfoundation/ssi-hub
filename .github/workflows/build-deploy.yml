@@ -2,7 +2,7 @@ name: Build and deploy
 
 on:
   push:
-    branches: [develop, master, release]
+    branches: [develop, master, release, sandbox]
   workflow_dispatch:
 
 jobs:
