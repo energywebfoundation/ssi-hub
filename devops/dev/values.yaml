@@ -132,6 +132,8 @@ iam-cache-server-helm:
       memory: 1Gi
     requests:
       cpu: 500m
+      # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
+      # We anticipate memory usage to decrease once node v18 is used
       memory: 900Mi
 
   autoscaling:
