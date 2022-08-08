@@ -118,7 +118,8 @@ iam-cache-server-helm:
     enabled: false
     minReplicas: 1
     maxReplicas: 1
-    targetCPUUtilizationPercentage: 80
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 85
 
   nodeSelector: { }
 
