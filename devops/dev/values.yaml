@@ -137,11 +137,11 @@ iam-cache-server-helm:
       memory: 900Mi
 
   autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 1
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 85
 
   nodeSelector: { }
 
