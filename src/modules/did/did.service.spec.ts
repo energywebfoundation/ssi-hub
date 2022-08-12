@@ -16,6 +16,7 @@ import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+import { DidStore } from '@ew-did-registry/did-ipfs-store';
 
 const { formatBytes32String } = utils;
 
@@ -108,6 +109,16 @@ describe('DidDocumentService', () => {
         },
         { provide: Provider, useValue: provider },
         { provide: SentryTracingService, useValue: MockSentryTracing },
+        {
+          provide: 'RegistrySettings',
+          useFactory: (configService: ConfigService) => ({
+            abi: ethrReg.abi,
+            address: configService.get<string>('DID_REGISTRY_ADDRESS'),
+            method: Methods.Erc1056,
+          }),
+          inject: [ConfigService],
+        },
+        { provide: DidStore, useValue: MockObject },
       ],
     }).compile();
     await module.init();

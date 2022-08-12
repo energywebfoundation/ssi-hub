@@ -14,8 +14,9 @@
 
 ### Methods
 
-- [getClaimIssuedToken](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getclaimissuedtoken)
 - [getCredential](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getcredential)
+- [getEIP191JWT](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#geteip191jwt)
+- [getVerifiableCredential](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getverifiablecredential)
 
 ## Constructors
 
@@ -31,9 +32,30 @@
 
 ## Methods
 
-### getClaimIssuedToken
+### getCredential
 
-▸ **getClaimIssuedToken**(`subject`, `claimType`): `Promise`<`string`\>
+▸ **getCredential**(`did`, `namespace`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\> \| `RoleEIP191JWT`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
+| `namespace` | `string` |
+
+#### Returns
+
+`Promise`<`VerifiableCredential`<`RoleCredentialSubject`\> \| `RoleEIP191JWT`\>
+
+#### Implementation of
+
+CredentialResolver.getCredential
+
+___
+
+### getEIP191JWT
+
+▸ **getEIP191JWT**(`subject`, `claimType`): `Promise`<`RoleEIP191JWT`\>
 
 #### Parameters
 
@@ -44,17 +66,17 @@
 
 #### Returns
 
-`Promise`<`string`\>
+`Promise`<`RoleEIP191JWT`\>
 
 #### Implementation of
 
-CredentialResolver.getClaimIssuedToken
+CredentialResolver.getEIP191JWT
 
 ___
 
-### getCredential
+### getVerifiableCredential
 
-▸ **getCredential**(`subject`, `claimType`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>\>
+▸ **getVerifiableCredential**(`subject`, `claimType`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>\>
 
 #### Parameters
 
@@ -69,4 +91,4 @@ ___
 
 #### Implementation of
 
-CredentialResolver.getCredential
+CredentialResolver.getVerifiableCredential
