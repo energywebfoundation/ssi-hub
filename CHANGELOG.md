@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.8.0...v2.9.0) (2022-08-12)
+
+
+### Features
+
+* add ipfs module ([a42a630](https://github.com/energywebfoundation/ssi-hub/commit/a42a63074ba5562a1976de88dae311bb4ff7020a))
+* handle unexpected did service ([45cdcc5](https://github.com/energywebfoundation/ssi-hub/commit/45cdcc532b943d11b6d04f5f74782c27b2c6a1c1))
+* urldecode url ([a809b63](https://github.com/energywebfoundation/ssi-hub/commit/a809b637423b872e483f33ab7fd579f11edb82ac))
+
+
+### Bug Fixes
+
+* annotate credentialid as api param ([#452](https://github.com/energywebfoundation/ssi-hub/issues/452)) ([d44d1a3](https://github.com/energywebfoundation/ssi-hub/commit/d44d1a3d423b204955edc929618fe5dfbe38873d))
+
 ## [2.8.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.7.0...v2.8.0) (2022-07-19)
 
 
