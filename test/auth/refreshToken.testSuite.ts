@@ -12,10 +12,7 @@ export const authRefreshTokenTestSuite = () => {
   describe('Refresh token (version: 1)', () => {
     const getRefreshToken = async () => {
       const provider = new providers.JsonRpcProvider(process.env.ENS_URL);
-      const wallet = new Wallet(
-        '779907598c747ff45a4f8e1b7e0fde0756585a9f936aecc95c1c738a3d85bbc4',
-        provider
-      );
+      const wallet = Wallet.createRandom().connect(provider);
       const userAddress = await wallet.getAddress();
       const tokenService = app.get(TokenService);
       return tokenService.generateRefreshToken({

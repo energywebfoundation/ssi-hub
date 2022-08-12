@@ -26,6 +26,7 @@ import { BullModule } from '@nestjs/bull';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { DIDContactModule } from './modules/did-contact/did.contact.module';
 import { StatusListModule } from './modules/status-list/status-list.module';
+import { IPFSModule } from './modules/ipfs/ipfs.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { StatusListModule } from './modules/status-list/status-list.module';
     StakingModule,
     HealthCheckModule,
     StatusListModule,
+    IPFSModule,
   ],
   providers: [JSONObjectScalar],
 })
