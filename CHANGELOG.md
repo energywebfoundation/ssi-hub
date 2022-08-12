@@ -2,39 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.9.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.7.0...v2.9.0) (2022-08-12)
+## [2.9.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.8.0...v2.9.0) (2022-08-12)
 
 
 ### Features
 
-* add `expirationTimestamp` to role claim entity ([ef1e63e](https://github.com/energywebfoundation/ssi-hub/commit/ef1e63e09ab1ee5c54b0e82282080e617c871df4))
 * add ipfs module ([a42a630](https://github.com/energywebfoundation/ssi-hub/commit/a42a63074ba5562a1976de88dae311bb4ff7020a))
-* add status list module ([0d2ba40](https://github.com/energywebfoundation/ssi-hub/commit/0d2ba405f5ca37fa86deded9adfaeafef9e48b6f)), closes [/w3c-ccg.github.io/vc-status-list-2021/#statuslist2021](https://github.com/energywebfoundation//w3c-ccg.github.io/vc-status-list-2021//issues/statuslist2021)
-* get allowed roles to revoke ([2735cfa](https://github.com/energywebfoundation/ssi-hub/commit/2735cfa39e8a239e9100c8b99a3a55c36b01a2b7))
 * handle unexpected did service ([45cdcc5](https://github.com/energywebfoundation/ssi-hub/commit/45cdcc532b943d11b6d04f5f74782c27b2c6a1c1))
-* remove comment ([416a5f2](https://github.com/energywebfoundation/ssi-hub/commit/416a5f290360e5388f04e897a8a088e2e2bd362e))
-* remove unneeded tests, make DID param required ([41868dd](https://github.com/energywebfoundation/ssi-hub/commit/41868ddddb495cba7f82a2af9f4614113b5bde4b))
-* **revocation:** add endpoint to fetch revocable claims by DID ([a7bbc42](https://github.com/energywebfoundation/ssi-hub/commit/a7bbc42f8c2c3cd831435006a1a89c4ae835b599))
-* status list module improvement ([74b99d0](https://github.com/energywebfoundation/ssi-hub/commit/74b99d0b88a3690a4daf50846418eb19e7d37883))
-* **status-list:** change credential subject id to vc id ([cd9a4e0](https://github.com/energywebfoundation/ssi-hub/commit/cd9a4e0361e7d74e57ef3ced491cdf84cd68aa49))
 * urldecode url ([a809b63](https://github.com/energywebfoundation/ssi-hub/commit/a809b637423b872e483f33ab7fd579f11edb82ac))
 
 
 ### Bug Fixes
 
-* add prefix to credential status url ([52c765b](https://github.com/energywebfoundation/ssi-hub/commit/52c765bbfc04ef9c7ae18903b407ff03018ad5b9))
 * annotate credentialid as api param ([#452](https://github.com/energywebfoundation/ssi-hub/issues/452)) ([d44d1a3](https://github.com/energywebfoundation/ssi-hub/commit/d44d1a3d423b204955edc929618fe5dfbe38873d))
-* claim issuance nats id broadcast ([eaaa09c](https://github.com/energywebfoundation/ssi-hub/commit/eaaa09c16ca82645ca148f9612f634d86f0c429d))
-* duplicate claim requests ([6347b8d](https://github.com/energywebfoundation/ssi-hub/commit/6347b8d5425c702208028bf927a9d3486e0997a4))
-* ens sync when no revoker specified ([57b381d](https://github.com/energywebfoundation/ssi-hub/commit/57b381d213192a8ffe6428aeb492c8518ba3a069))
-* fix address checking in VC entry ([2b25d83](https://github.com/energywebfoundation/ssi-hub/commit/2b25d830294f8bfb99d2144e935a94476bfa41e7))
-* fix verifying enrolment issuer ([b6544ba](https://github.com/energywebfoundation/ssi-hub/commit/b6544ba23211c1e653263ac74d10a48f9ae28a59))
-* get hostname from env instead of request object ([6c2ea85](https://github.com/energywebfoundation/ssi-hub/commit/6c2ea85ac311092ac9fa1283128945c4666b39dd))
-* multiple claim requests ([5cc2998](https://github.com/energywebfoundation/ssi-hub/commit/5cc2998ab0665f6b95c8877b9fe12a3cf0a5bd6d))
-* reorder revoker authority params ([030caf6](https://github.com/energywebfoundation/ssi-hub/commit/030caf60ca7e1015356b834639bb060b15114590))
-* status list issuer lowercase ([8ebe807](https://github.com/energywebfoundation/ssi-hub/commit/8ebe807b9340f9f2ca68a53e16ab26979058a630))
-* update sentry dsn in dev, staging, prod env ([2fb9dcd](https://github.com/energywebfoundation/ssi-hub/commit/2fb9dcd48213ab330fada4671470492b30bca8df))
-* updating roles definition ([099507c](https://github.com/energywebfoundation/ssi-hub/commit/099507c736ac16163780803bad45fc25e208852c))
 
 ## [2.8.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.7.0...v2.8.0) (2022-07-19)
 
