@@ -27,7 +27,6 @@ import {
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
-import { IDidStore } from '@ew-did-registry/did-store-interface';
 import {
   documentFromLogs,
   Resolver,
@@ -45,7 +44,6 @@ import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 @Injectable()
 export class DIDService implements OnModuleInit {
   private readonly didRegistry: EthereumDIDRegistry;
-  private readonly ipfsStore: IDidStore;
   private readonly resolver: Resolver;
   constructor(
     private readonly config: ConfigService,
@@ -57,12 +55,10 @@ export class DIDService implements OnModuleInit {
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
-    @Inject('RegistrySettings') registrySettings: RegistrySettings
+    @Inject('RegistrySettings') registrySettings: RegistrySettings,
+    private readonly didStore: DidStore
   ) {
     this.logger.setContext(DIDService.name);
-
-    const IPFS_URL = this.config.get<string>('IPFS_URL');
-    this.ipfsStore = new DidStore(IPFS_URL);
 
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
       'DID_REGISTRY_ADDRESS'
@@ -411,7 +407,7 @@ export class DIDService implements OnModuleInit {
           return { serviceEndpoint, ...rest };
         }
 
-        const token = await this.ipfsStore.get(serviceEndpoint);
+        const token = await this.didStore.get(serviceEndpoint);
 
         if (isJWT(token)) {
           const decodedData = jwt.decode(token) as {
