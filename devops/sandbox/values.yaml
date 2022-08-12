@@ -94,13 +94,16 @@ iam-cache-server-helm:
   opsValues:
     DB_NAME: ics
     NODE_ENV: production
-    IPFS_URL: https://ipfs.infura.io:5001/api/v0/
     ENS_URL: https://volta-rpc-vkn5r5zx4ke71f9hcu0c.energyweb.org/
     UNIVERSAL_RESOLVER_URL: https://dev.uniresolver.io/10/identifiers/
     NATS_VERSION: 2.1.8
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
+    IPFS_CLIENT_PORT: 5001
+    IPFS_CLIENT_PROJECT_SECRET: 9506198a91243f03417aaed60e5eb654
+    IPFS_CLIENT_PROJECT_ID: 2DBFBP5zsjfImw1wBPn1Vx08Yd5
+    IPFS_CLIENT_HOST: ipfs.infura.io
 
   resources: { }
 
