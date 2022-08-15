@@ -48,9 +48,13 @@ export class DIDController {
 
     this.logger.info(`Retrieving document for did: ${did.did}`);
     if (did.method !== 'ethr') {
+      this.logger.info(
+        `Retrieving document for did: ${did.did} from universal resolver for DID method ${did.method}`
+      );
       return this.didService.getDIDDocumentFromUniversalResolver(did.did);
     }
     const document = await this.didService.getById(did.did, transaction);
+    this.logger.info(`Retrieved document for did: ${did.did}`);
     transaction?.finish();
     return document;
   }
