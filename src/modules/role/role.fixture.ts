@@ -20,9 +20,15 @@ export const roleFixture = async (
       version: 1.0,
       enrolmentPreconditions: [],
       roleType: '',
-      fields: [],
+      issuerFields: [],
+      requestorFields: [],
       issuer: {
         issuerType: 'Role',
+        did: [owner],
+        roleName: 'testRole',
+      },
+      revoker: {
+        revokerType: 'Role',
         did: [owner],
         roleName: 'testRole',
       },

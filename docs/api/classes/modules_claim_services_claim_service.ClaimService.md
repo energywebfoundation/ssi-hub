@@ -11,10 +11,12 @@
 ### Methods
 
 - [create](modules_claim_services_claim_service.ClaimService.md#create)
+- [getByClaimType](modules_claim_services_claim_service.ClaimService.md#getbyclaimtype)
 - [getById](modules_claim_services_claim_service.ClaimService.md#getbyid)
 - [getByIssuer](modules_claim_services_claim_service.ClaimService.md#getbyissuer)
 - [getByParentNamespace](modules_claim_services_claim_service.ClaimService.md#getbyparentnamespace)
 - [getByRequester](modules_claim_services_claim_service.ClaimService.md#getbyrequester)
+- [getByRevoker](modules_claim_services_claim_service.ClaimService.md#getbyrevoker)
 - [getBySubject](modules_claim_services_claim_service.ClaimService.md#getbysubject)
 - [getBySubjects](modules_claim_services_claim_service.ClaimService.md#getbysubjects)
 - [getByUserDid](modules_claim_services_claim_service.ClaimService.md#getbyuserdid)
@@ -25,8 +27,8 @@
 - [reject](modules_claim_services_claim_service.ClaimService.md#reject)
 - [removeById](modules_claim_services_claim_service.ClaimService.md#removebyid)
 - [rolesByIssuer](modules_claim_services_claim_service.ClaimService.md#rolesbyissuer)
+- [rolesByRevoker](modules_claim_services_claim_service.ClaimService.md#rolesbyrevoker)
 - [saveIssuedClaim](modules_claim_services_claim_service.ClaimService.md#saveissuedclaim)
-- [idOfClaim](modules_claim_services_claim_service.ClaimService.md#idofclaim)
 
 ## Constructors
 
@@ -59,6 +61,26 @@ Saves claim to database
 | `data` | [`ClaimRequestDTO`](modules_claim_claim_dto.ClaimRequestDTO.md) | Raw claim data |
 | `subject` | `string` | - |
 | `redirectUri` | `string` | - |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+___
+
+### getByClaimType
+
+▸ **getByClaimType**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+
+Get approved claim for given did and claim type
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.subject` | `string` |
 
 #### Returns
 
@@ -142,6 +164,29 @@ Get claims requested by user with matching DID
 #### Returns
 
 `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+___
+
+### getByRevoker
+
+▸ **getByRevoker**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+Get claims able to be revoked by user with matching DID
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.revoker` | `string` |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+allowed claims to revoke
 
 ___
 
@@ -334,6 +379,26 @@ ___
 
 ___
 
+### rolesByRevoker
+
+▸ **rolesByRevoker**(`revokerDid`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+Get allowed roles to revoke by given DID
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `revokerDid` | `string` | revoker DID |
+
+#### Returns
+
+`Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+
+allowed roles to revoke
+
+___
+
 ### saveIssuedClaim
 
 ▸ **saveIssuedClaim**(`claim`): `Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
@@ -349,22 +414,3 @@ Save issued claim
 #### Returns
 
 `Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
-
-___
-
-### idOfClaim
-
-▸ `Static` **idOfClaim**(`claimReq`): `string`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `claimReq` | `Object` |
-| `claimReq.claimType` | `string` |
-| `claimReq.claimTypeVersion` | `string` |
-| `claimReq.subject` | `string` |
-
-#### Returns
-
-`string`

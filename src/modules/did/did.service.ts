@@ -1,48 +1,49 @@
-import { Methods } from '@ew-did-registry/did';
-import {
-  IDIDDocument,
-  IDIDLogData,
-  IServiceEndpoint,
-  DidEventNames,
-} from '@ew-did-registry/did-resolver-interface';
-import { DidStore } from '@ew-did-registry/did-ipfs-store';
-import { IDidStore } from '@ew-did-registry/did-store-interface';
 import {
   Injectable,
   HttpException,
   OnModuleInit,
   InternalServerErrorException,
+  Inject,
 } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { InjectRepository } from '@nestjs/typeorm';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { Methods } from '@ew-did-registry/did';
+import { Transaction } from '@sentry/types';
+import { isJWT } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
 import { CID } from 'multiformats/cid';
-import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
-import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
-import { BigNumber } from 'ethers';
-import { Logger } from '../logger/logger.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DIDDocumentEntity, IClaim } from './did.entity';
 import { Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
-import { Provider } from '../../common/provider';
+import { BigNumber } from 'ethers';
+import {
+  IDIDDocument,
+  IDIDLogData,
+  IServiceEndpoint,
+  DidEventNames,
+  RegistrySettings,
+} from '@ew-did-registry/did-resolver-interface';
+import { DidStore } from '@ew-did-registry/did-ipfs-store';
 import {
   documentFromLogs,
   Resolver,
   mergeLogs,
-  ethrReg,
 } from '@ew-did-registry/did-ethr-resolver';
+import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
+import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
+import { Logger } from '../logger/logger.service';
+import { DIDDocumentEntity, IClaim } from './did.entity';
+import { Provider } from '../../common/provider';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
-import { Transaction } from '@sentry/types';
+import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 
 @Injectable()
 export class DIDService implements OnModuleInit {
   private readonly didRegistry: EthereumDIDRegistry;
-  private readonly ipfsStore: IDidStore;
   private readonly resolver: Resolver;
   constructor(
     private readonly config: ConfigService,
@@ -53,22 +54,17 @@ export class DIDService implements OnModuleInit {
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
-    private readonly sentryTracingService: SentryTracingService
+    private readonly sentryTracingService: SentryTracingService,
+    @Inject('RegistrySettings') registrySettings: RegistrySettings,
+    private readonly didStore: DidStore
   ) {
     this.logger.setContext(DIDService.name);
-
-    const IPFS_URL = this.config.get<string>('IPFS_URL');
-    this.ipfsStore = new DidStore(IPFS_URL);
 
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
       'DID_REGISTRY_ADDRESS'
     );
 
-    this.resolver = new Resolver(this.provider, {
-      abi: ethrReg.abi,
-      address: DID_REGISTRY_ADDRESS,
-      method: Methods.Erc1056,
-    });
+    this.resolver = new Resolver(this.provider, registrySettings);
 
     this.didRegistry = EthereumDIDRegistry__factory.connect(
       DID_REGISTRY_ADDRESS,
@@ -121,7 +117,7 @@ export class DIDService implements OnModuleInit {
       op: 'get_cached_did_document',
       description: 'Get cached DID document',
     });
-    const cachedDIDDocument = await this.didRepository.findOne(did);
+    const cachedDIDDocument = await this.didRepository.findOneBy({ id: did });
     span?.finish();
 
     if (cachedDIDDocument) {
@@ -239,7 +235,7 @@ export class DIDService implements OnModuleInit {
         op: 'find_did_document',
         description: 'Find DID Document',
       });
-      const cachedDIDDocument = await this.didRepository.findOne(did);
+      const cachedDIDDocument = await this.didRepository.findOneBy({ id: did });
       span?.finish();
 
       span = transaction?.startChild({
@@ -321,7 +317,9 @@ export class DIDService implements OnModuleInit {
       );
 
       const didObject = new DID(did);
-      const didDocEntity = await this.didRepository.findOne(didObject.did);
+      const didDocEntity = await this.didRepository.findOneBy({
+        id: didObject.did,
+      });
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
@@ -409,24 +407,47 @@ export class DIDService implements OnModuleInit {
           return { serviceEndpoint, ...rest };
         }
 
-        const token = await this.ipfsStore.get(serviceEndpoint);
+        const token = await this.didStore.get(serviceEndpoint);
 
-        const decodedData = jwt.decode(token) as {
-          claimData: Record<string, string>;
-        };
+        if (isJWT(token)) {
+          const decodedData = jwt.decode(token) as {
+            claimData: Record<string, string>;
+          };
 
-        if (!decodedData) {
-          return { serviceEndpoint, ...rest };
+          if (!decodedData) {
+            return { serviceEndpoint, ...rest };
+          }
+
+          const { claimData, ...claimRest } = decodedData;
+
+          return {
+            serviceEndpoint,
+            ...rest,
+            ...claimData,
+            ...claimRest,
+          };
         }
 
-        const { claimData, ...claimRest } = decodedData;
-
-        return {
-          serviceEndpoint,
-          ...rest,
-          ...claimData,
-          ...claimRest,
-        };
+        try {
+          const data = JSON.parse(token);
+          if (isVerifiableCredential(data)) {
+            return {
+              serviceEndpoint,
+              ...rest,
+              verifiableCredentials: data,
+            };
+          }
+          return {
+            serviceEndpoint,
+            ...rest,
+            ...data,
+          };
+        } catch {
+          this.logger.debug(
+            `Could not parse service: serviceEndpoint: ${serviceEndpoint}`
+          );
+          return { serviceEndpoint, ...rest };
+        }
       })
     );
   }

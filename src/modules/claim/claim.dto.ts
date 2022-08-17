@@ -10,6 +10,7 @@ import {
   IsEnum,
   IsJSON,
   IsJWT,
+  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
@@ -116,6 +117,11 @@ export class ClaimIssueDTO implements IClaimIssuance {
   @IsOptional()
   @ApiProperty()
   vp?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  expirationTimestamp?: number;
 }
 
 export class NewClaimIssueDTO extends ClaimIssueDTO {
@@ -163,7 +169,7 @@ export class NewClaimIssueDTO extends ClaimIssueDTO {
 
   @IsString({ each: true })
   @ApiProperty()
-  claimIssuer?: string;
+  claimIssuer?: string[];
 }
 
 export class ClaimRejectionDTO implements IClaimRejection {
@@ -180,7 +186,7 @@ export class ClaimRejectionDTO implements IClaimRejection {
 
   @IsArray()
   @ApiProperty()
-  claimIssuer: string;
+  claimIssuer: string[];
 
   @IsString()
   @ApiProperty()

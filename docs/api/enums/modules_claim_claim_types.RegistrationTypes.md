@@ -4,19 +4,19 @@
 
 ## Table of contents
 
-### Enumeration members
+### Enumeration Members
 
 - [OffChain](modules_claim_claim_types.RegistrationTypes.md#offchain)
 - [OnChain](modules_claim_claim_types.RegistrationTypes.md#onchain)
 
-## Enumeration members
+## Enumeration Members
 
 ### OffChain
 
-• **OffChain** = `"RegistrationTypes::OffChain"`
+• **OffChain** = ``"RegistrationTypes::OffChain"``
 
 ___
 
 ### OnChain
 
-• **OnChain** = `"RegistrationTypes::OnChain"`
+• **OnChain** = ``"RegistrationTypes::OnChain"``

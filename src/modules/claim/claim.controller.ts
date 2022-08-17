@@ -82,7 +82,7 @@ export class ClaimController {
   })
   public async postIssuerClaim(
     @Param('did') did: string,
-    @Body() data: IClaimIssuance
+    @Body() data: ClaimIssueDTO
   ) {
     const didDoc = await this.didService.getById(did);
     const proofVerifier = new ProofVerifier(didDoc);
@@ -170,7 +170,6 @@ export class ClaimController {
     }
 
     const claimData: IClaimRequest = {
-      id: ClaimService.idOfClaim({ ...data, subject: sub }),
       ...data,
     };
 
@@ -182,6 +181,7 @@ export class ClaimController {
       claimData,
       originUrl
     );
+
     if (!result.isSuccessful) {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
@@ -189,7 +189,7 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
-      [claimData.claimIssuer],
+      claimData.claimIssuer,
       { claimId: claimData.id }
     );
 
@@ -233,7 +233,7 @@ export class ClaimController {
     await this.nats.publishForDids(
       ClaimEventType.REJECT_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
-      [claimData.claimIssuer],
+      claimData.claimIssuer,
       { claimId: claimData.id }
     );
 
@@ -269,7 +269,6 @@ export class ClaimController {
   public async getByUserDid(@Param('did') did: string, @User() user?: string) {
     return await this.claimService.getByUserDid({ did, currentUser: user });
   }
-
   @Get('/issuer/:did')
   @ApiTags('Claims')
   @ApiOperation({
@@ -302,6 +301,30 @@ export class ClaimController {
     });
   }
 
+  @Get('/revoker/:did')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary: 'returns claims that can be revoked by a given DID',
+  })
+  @ApiQuery({
+    name: 'namespace',
+    required: false,
+    description: 'filter only claims of given namespace',
+  })
+  public async getByRevokerDid(
+    @Param('did') revoker: string,
+    @User() user?: string,
+    @Query('namespace') namespace?: string
+  ) {
+    return await this.claimService.getByRevoker({
+      revoker,
+      currentUser: user,
+      filters: {
+        namespace,
+      },
+    });
+  }
+
   @Get('/issuer/roles/allowed/:did')
   @ApiTags('Claims')
   @ApiOperation({
@@ -315,6 +338,21 @@ export class ClaimController {
   })
   public async getByAllowedRolesByIssuer(@Param('did', DIDPipe) issuer: DID) {
     return await this.claimService.rolesByIssuer(issuer.did);
+  }
+
+  @Get('/revoker/roles/allowed/:did')
+  @ApiTags('Claims')
+  @ApiOperation({
+    summary:
+      'Returns the Roles that an revoker DID can revoke, given the permissions in the role definitions',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: [RoleDTO],
+    description: 'Roles that the revoker can revoke',
+  })
+  public async getByAllowedRolesByRevoker(@Param('did', DIDPipe) revoker: DID) {
+    return await this.claimService.rolesByRevoker(revoker.did);
   }
 
   @Get('/requester/:did')

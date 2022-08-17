@@ -2,6 +2,8 @@ import { Signer, providers, utils, Wallet } from 'ethers';
 import base64url from 'base64url';
 import request from 'supertest';
 import { app } from './app.e2e.spec';
+import { RoleService } from '../src/modules/role/role.service';
+import { RoleDTO } from '../src/modules/role/role.dto';
 
 export const provider = new providers.JsonRpcProvider(process.env.ENS_URL);
 
@@ -40,6 +42,7 @@ export const getIdentityToken = async (
 export interface TestUser {
   wallet: Wallet;
   did: string;
+  didHex: string;
   cookies: string[];
 }
 export const randomUser = async (Origin?: string): Promise<TestUser> => {
@@ -58,9 +61,64 @@ export const randomUser = async (Origin?: string): Promise<TestUser> => {
   return {
     wallet: wallet,
     did: `did:ethr:volta:${wallet.address}`,
+    didHex: `did:ethr:0x12047:${wallet.address}`,
     cookies: [
       loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
       loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
     ],
   };
+};
+
+export const createRole = async (
+  {
+    roleName,
+    issuerDid,
+    revokerDid,
+    name,
+    ownerAddr,
+    namespace,
+  }: {
+    ownerAddr: string;
+    roleName?: string;
+    issuerDid?: string[];
+    revokerDid?: string[];
+    name: string;
+    namespace?: string;
+  },
+  roleService: RoleService
+) => {
+  const roleNamespace = namespace
+    ? `${name}.${namespace}`
+    : `${name}.roles.e2e.iam.ewc`;
+  return roleService.create(
+    await RoleDTO.create({
+      name: name,
+      namespace: roleNamespace,
+      namehash: utils.namehash(roleNamespace),
+      owner: ownerAddr,
+      definition: {
+        requestorFields: [],
+        issuerFields: [],
+        metadata: {},
+        issuer: {
+          issuerType: issuerDid ? 'DID' : 'ROLE',
+          did: issuerDid
+            ? issuerDid.map((did) => `did:ethr:volta:${did}`)
+            : undefined,
+          roleName,
+        },
+        revoker: {
+          revokerType: revokerDid ? 'DID' : 'ROLE',
+          did: revokerDid
+            ? revokerDid.map((did) => `did:ethr:volta:${did}`)
+            : undefined,
+          roleName,
+        },
+        enrolmentPreconditions: [],
+        roleName: name,
+        roleType: 'org',
+        version: 1,
+      },
+    })
+  );
 };

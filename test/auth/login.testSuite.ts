@@ -14,10 +14,7 @@ export const authLoginTestSuite = () => {
       consoleLogSpy = jest.spyOn(global.console, 'log');
 
       provider = new providers.JsonRpcProvider(process.env.ENS_URL);
-      wallet = new Wallet(
-        '779907598c747ff45a4f8e1b7e0fde0756585a9f936aecc95c1c738a3d85bbc4',
-        provider
-      );
+      wallet = Wallet.createRandom().connect(provider);
     });
 
     it(`should throw 401 error when user not logged in`, () => {

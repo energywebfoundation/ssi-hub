@@ -18,13 +18,14 @@
 
 ### constructor
 
-• **new AuthStrategy**(`configService`)
+• **new AuthStrategy**(`configService`, `ipfsConfig`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `ipfsConfig` | `any` |
 
 #### Overrides
 

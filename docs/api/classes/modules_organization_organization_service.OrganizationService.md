@@ -142,7 +142,7 @@ Also returns the suborgs of the org and, optionally, associated apps and/or role
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
-| `__namedParameters` | `Object` |
+| `__namedParameters?` | `Object` |
 | `__namedParameters.withRelations?` | `boolean` |
 
 #### Returns
