@@ -2,6 +2,8 @@ import { Methods, Chain } from '@ew-did-registry/did';
 import { utils } from 'ethers';
 import { MalformedDIDError } from '../../errors/MalformedDIDErrro';
 
+const { getAddress } = utils;
+
 /**
  * @todo >> ew-did-registry/did
  * matches did:ethr:volta:address, did:ethr:vOLTa:address and did:ethr:address
@@ -36,7 +38,7 @@ export class DID {
     }
     this.method = <Methods>method;
     this.chain = <Chain>chain;
-    this.id = id;
+    this.id = getAddress(id);
     // If an ethr DID is received that doesn't have chain info, then add it.
     // This is because we want to be backwards compatible with EWF code that didn't include the chain info in the DID
     // But we want to add the chain info because the DID resolution is actually occurring from a specific chain

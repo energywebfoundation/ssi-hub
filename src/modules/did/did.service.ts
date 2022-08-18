@@ -99,6 +99,7 @@ export class DIDService implements OnModuleInit {
     did: string,
     transaction?: Transaction
   ): Promise<IDIDDocument> {
+    did = new DID(did).did;
     const convertToIDIDDocument = (entity: DIDDocumentEntity): IDIDDocument => {
       return {
         '@context': entity['@context'],
