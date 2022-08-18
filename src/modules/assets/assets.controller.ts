@@ -8,7 +8,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from '../../common/user.decorator';
 import { Auth } from '../auth/auth.decorator';
 import { DIDPipe } from '../did/did.pipe';
@@ -44,6 +44,7 @@ export class AssetsController {
   }
 
   @Get('history/:id')
+  @ApiParam({ name: 'id', type: 'string', required: true })
   @ApiQuery({
     name: 'skip',
     required: false,
