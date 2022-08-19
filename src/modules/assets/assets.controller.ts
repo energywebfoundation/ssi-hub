@@ -66,7 +66,7 @@ export class AssetsController {
     enum: AssetHistoryEventType,
   })
   async getHistoryByAssetId(
-    @Param('id', DIDPipe) { id }: DID,
+    @Param('id', DIDPipe) { did: id }: DID,
     @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
     @Query('order') order?: Order,
