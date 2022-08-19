@@ -27,6 +27,7 @@ export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
   @Get(':id')
+  @ApiParam({ name: 'id', type: 'string', required: true })
   async getByID(
     @Param('id', DIDPipe) { did }: DID,
     @User() currentUser?: string
