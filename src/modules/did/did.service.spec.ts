@@ -9,7 +9,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MockProvider, deployContract } from 'ethereum-waffle';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, utils, Wallet } from 'ethers';
 import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
@@ -140,9 +140,17 @@ describe('DidDocumentService', () => {
     checkReturnedDIDDoc(returnedDoc);
   });
 
+  it('getById should return cached document when DID is in lower case', async () => {
+    cachedDoc = { ...didDoc, logs: '<logs>' };
+    const returnedDoc = await service.getById(cachedDoc.id.toLowerCase());
+    checkReturnedDIDDoc(returnedDoc);
+  });
+
   it('getByID should not return non-cached document', async () => {
     cachedDoc = undefined;
-    const returnedDoc = await service.getById('<any DID>');
+    const returnedDoc = await service.getById(
+      `did:ethr:${Chain.VOLTA}:${Wallet.createRandom().address}`
+    );
     checkReturnedDIDDoc(returnedDoc);
   });
 
