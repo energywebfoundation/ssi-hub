@@ -117,7 +117,9 @@ export class ClaimController {
       const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as {
         sub: string;
       };
-      dids.push(sub);
+      if (!dids.includes(sub)) {
+        dids.push(sub);
+      }
     }
 
     await this.nats.publishForDids(
@@ -176,7 +178,6 @@ export class ClaimController {
     const claimDTO = ClaimRequestDTO.create(claimData);
 
     await validateOrReject(claimDTO);
-
     const result = await this.claimService.handleClaimEnrolmentRequest(
       claimData,
       originUrl
@@ -294,7 +295,7 @@ export class ClaimController {
     return await this.claimService.getByIssuer({
       issuer,
       filters: {
-        isAccepted,
+        isApproved: isAccepted,
         namespace,
       },
       currentUser: user,
@@ -380,7 +381,7 @@ export class ClaimController {
     return await this.claimService.getByRequester({
       requester,
       filters: {
-        isAccepted,
+        isApproved: isAccepted,
         namespace,
       },
       currentUser: user,
@@ -412,7 +413,7 @@ export class ClaimController {
     return await this.claimService.getBySubject({
       subject,
       filters: {
-        isAccepted,
+        isApproved: isAccepted,
         namespace,
       },
       currentUser: user,
@@ -456,7 +457,7 @@ export class ClaimController {
   ) {
     return this.claimService.getBySubjects({
       subjects,
-      filters: { isAccepted, namespace },
+      filters: { isApproved: isAccepted, namespace },
       currentUser: user,
     });
   }
