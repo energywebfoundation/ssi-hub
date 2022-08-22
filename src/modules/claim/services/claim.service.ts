@@ -22,7 +22,7 @@ import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
 
 interface QueryFilters {
-  isApproved?: boolean;
+  isAccepted?: boolean;
   namespace?: string;
 }
 
@@ -46,10 +46,10 @@ export class ClaimService {
    * @return QueryFilters
    * @private
    */
-  private parseFilters({ isApproved, namespace }: QueryFilters): QueryFilters {
+  private parseFilters({ isAccepted, namespace }: QueryFilters): QueryFilters {
     const filters: QueryFilters = {};
-    if (isApproved !== undefined) {
-      filters.isApproved = isApproved;
+    if (isAccepted !== undefined) {
+      filters.isAccepted = isAccepted;
     }
     if (namespace) {
       filters.namespace = namespace;
@@ -165,7 +165,7 @@ export class ClaimService {
    */
   public async getBySubjects({
     subjects,
-    filters: { isApproved: isAccepted, namespace } = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     subjects: string[];
@@ -211,7 +211,7 @@ export class ClaimService {
    */
   async getByUserDid({
     did,
-    filters: { isApproved: isAccepted, namespace } = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     did: string;
@@ -251,7 +251,7 @@ export class ClaimService {
    */
   async getByIssuer({
     issuer,
-    filters: { isApproved: isAccepted, namespace } = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     issuer: string;
@@ -325,7 +325,7 @@ export class ClaimService {
    */
   async getByRequester({
     requester,
-    filters: { isApproved: isAccepted, namespace } = {},
+    filters: { isAccepted, namespace } = {},
     currentUser,
   }: {
     requester: string;
@@ -415,17 +415,17 @@ export class ClaimService {
 
   /**
    * Returns claims for given role
-   * @param param0.roleName - role name
-   * @param param0.isApproved filters non-approved claims
+   * @param param0.roleName role name
+   * @param param0.isAccepted filters non-approved claims
    */
   public async getClaims({
     roleName,
-    isApproved = true,
+    isAccepted = true,
   }: {
     roleName: string;
-    isApproved?: boolean;
+    isAccepted?: boolean;
   }): Promise<RoleClaim[]> {
-    const parsedFilters = this.parseFilters({ isApproved });
+    const parsedFilters = this.parseFilters({ isAccepted });
     return this.roleClaimRepository.find({
       where: [{ ...parsedFilters, claimType: roleName }],
     });
@@ -434,13 +434,13 @@ export class ClaimService {
   /**
    * get all DID of requesters of given namespace
    * @param roleName target claim namespace
-   * @param isApproved flag for filtering only accepted claims
+   * @param isAccepted flag for filtering only accepted claims
    */
   public async getDidOfClaimsOfNamespace(
     roleName: string,
-    isApproved?: boolean
+    isAccepted?: boolean
   ): Promise<string[]> {
-    return (await this.getClaims({ roleName, isApproved })).map(
+    return (await this.getClaims({ roleName, isAccepted })).map(
       (claim) => claim.requester
     );
   }
@@ -484,7 +484,7 @@ export class ClaimService {
     const rolesOfIssuer = (
       await this.getBySubject({
         subject: issuer,
-        filters: { isApproved: true },
+        filters: { isAccepted: true },
       })
     ).map((r) => r.claimType);
     const roles = (await this.roleService.getAll()).filter(
@@ -516,6 +516,11 @@ export class ClaimService {
         return (await this.getClaims({ roleName: issuerRole })).map(
           ({ subject }) => subject
         );
+      default:
+        /**@todo replace from @energyweb/vc-verification */
+        throw new Error(
+          `Invalid issuer type ${issuerType} of role ${roleName}`
+        );
     }
   }
 
@@ -528,7 +533,7 @@ export class ClaimService {
     const [revokerClaims, allRoles] = await Promise.all([
       this.getBySubject({
         subject: revokerDid,
-        filters: { isApproved: true },
+        filters: { isAccepted: true },
       }),
       this.roleService.getAll(),
     ]);

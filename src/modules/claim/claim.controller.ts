@@ -187,10 +187,12 @@ export class ClaimController {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
+    const issuers = await this.claimService.issuersOfRole(claimData.claimType);
+
     await this.nats.publishForDids(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
+      issuers,
       { claimId: claimData.id }
     );
 
@@ -295,7 +297,7 @@ export class ClaimController {
     return await this.claimService.getByIssuer({
       issuer,
       filters: {
-        isApproved: isAccepted,
+        isAccepted,
         namespace,
       },
       currentUser: user,
@@ -381,7 +383,7 @@ export class ClaimController {
     return await this.claimService.getByRequester({
       requester,
       filters: {
-        isApproved: isAccepted,
+        isAccepted,
         namespace,
       },
       currentUser: user,
@@ -413,7 +415,7 @@ export class ClaimController {
     return await this.claimService.getBySubject({
       subject,
       filters: {
-        isApproved: isAccepted,
+        isAccepted,
         namespace,
       },
       currentUser: user,
@@ -457,7 +459,7 @@ export class ClaimController {
   ) {
     return this.claimService.getBySubjects({
       subjects,
-      filters: { isApproved: isAccepted, namespace },
+      filters: { isAccepted, namespace },
       currentUser: user,
     });
   }

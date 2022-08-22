@@ -65,9 +65,12 @@ describe('ClaimsController', () => {
   );
   const isAuthorizeMock = jest.fn(() => true);
 
+  const getByNamespace = jest.fn();
+
   const MockRoleService = {
     verifyEnrolmentPrecondition: jest.fn(),
     getAll: jest.fn().mockResolvedValue([]),
+    getByNamespace,
   };
 
   const MockJWTAuthGuard = {
@@ -101,6 +104,9 @@ describe('ClaimsController', () => {
     };
 
     didMock.mockReturnValueOnce(requester);
+    getByNamespace.mockResolvedValue({
+      definition: { issuer: { issuerType: 'DID', did: [issuer] } },
+    });
 
     await testHttpServer
       .post(`/v1/claim/request`)
