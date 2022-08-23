@@ -16,7 +16,13 @@ import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
 import { ClaimIssuanceService, ClaimService } from './services';
 import { UUID_NAMESPACE } from './claim.const';
-import { IClaimRequest, IRoleClaim, RegistrationTypes } from './claim.types';
+import {
+  ClaimEventType,
+  IClaimRequest,
+  IRoleClaim,
+  NATS_EXCHANGE_TOPIC,
+  RegistrationTypes,
+} from './claim.types';
 import { NatsModule } from '../nats/nats.module';
 import { RoleService } from '../role/role.service';
 import { AssetsService } from '../assets/assets.service';
@@ -31,8 +37,7 @@ import { BullModule } from '@nestjs/bull';
 import { IRoleDefinitionV2 } from '@energyweb/credential-governance';
 import { Organization } from '../organization/organization.entity';
 import { Application } from '../application/application.entity';
-
-// const emptyAddress = '0x0000000000000000000000000000000000000000';
+import { NatsService } from '../nats/nats.service';
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -49,6 +54,7 @@ describe('ClaimsController', () => {
   let testHttpServer: request.SuperTest<request.Test>;
   let app: INestApplication;
   let service: ClaimService;
+  let nats: NatsService;
 
   const randomDID = () => {
     return `did:ethr:volta:${Wallet.createRandom().address}`;
@@ -59,9 +65,12 @@ describe('ClaimsController', () => {
   );
   const isAuthorizeMock = jest.fn(() => true);
 
+  const getByNamespace = jest.fn();
+
   const MockRoleService = {
     verifyEnrolmentPrecondition: jest.fn(),
     getAll: jest.fn().mockResolvedValue([]),
+    getByNamespace,
   };
 
   const MockJWTAuthGuard = {
@@ -95,13 +104,16 @@ describe('ClaimsController', () => {
     };
 
     didMock.mockReturnValueOnce(requester);
+    getByNamespace.mockResolvedValue({
+      definition: { issuer: { issuerType: 'DID', did: [issuer] } },
+    });
 
     await testHttpServer
       .post(`/v1/claim/request`)
       .send(claimRequest)
       .expect(201);
 
-    return { id, token };
+    return claimRequest;
   };
 
   beforeAll(async () => {
@@ -138,6 +150,7 @@ describe('ClaimsController', () => {
     appConfig(app);
     await app.init();
     service = app.get(ClaimService);
+    nats = app.get(NatsService);
 
     testHttpServer = request(app.getHttpServer());
   });
@@ -166,11 +179,20 @@ describe('ClaimsController', () => {
     const claimTypeVersion = '1';
     const requester = randomDID();
     const registrationTypes = [RegistrationTypes.OffChain];
-    const { id, token } = await addClaim({
+
+    const publishForDids = jest.spyOn(nats, 'publishForDids');
+    const { id, token, claimIssuer } = await addClaim({
       claimType,
       claimTypeVersion,
       requester,
     });
+    expect(publishForDids).toBeCalledTimes(1);
+    expect(publishForDids).toBeCalledWith(
+      ClaimEventType.REQUEST_CREDENTIALS,
+      NATS_EXCHANGE_TOPIC,
+      claimIssuer,
+      { claimId: id }
+    );
 
     didMock.mockReturnValueOnce(requester);
     await testHttpServer
