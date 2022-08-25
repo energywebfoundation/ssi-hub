@@ -266,7 +266,7 @@ Returns claims for given role
 | Name | Type |
 | :------ | :------ |
 | `__namedParameters` | `Object` |
-| `__namedParameters.isApproved?` | `boolean` |
+| `__namedParameters.isAccepted?` | `boolean` |
 | `__namedParameters.roleName` | `string` |
 
 #### Returns
@@ -277,7 +277,7 @@ ___
 
 ### getDidOfClaimsOfNamespace
 
-▸ **getDidOfClaimsOfNamespace**(`roleName`, `isApproved?`): `Promise`<`string`[]\>
+▸ **getDidOfClaimsOfNamespace**(`roleName`, `isAccepted?`): `Promise`<`string`[]\>
 
 get all DID of requesters of given namespace
 
@@ -286,7 +286,7 @@ get all DID of requesters of given namespace
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `roleName` | `string` | target claim namespace |
-| `isApproved?` | `boolean` | flag for filtering only accepted claims |
+| `isAccepted?` | `boolean` | flag for filtering only accepted claims |
 
 #### Returns
 

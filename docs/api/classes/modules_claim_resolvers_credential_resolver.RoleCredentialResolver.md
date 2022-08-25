@@ -14,23 +14,67 @@
 
 ### Methods
 
+- [credentialsOf](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#credentialsof)
+- [eip191JwtsOf](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#eip191jwtsof)
 - [getCredential](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getcredential)
 - [getEIP191JWT](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#geteip191jwt)
 - [getVerifiableCredential](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getverifiablecredential)
+- [serviceEndpointsToCredentials](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#serviceendpointstocredentials)
+- [serviceEndpointsToEIP191](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#serviceendpointstoeip191)
 
 ## Constructors
 
 ### constructor
 
-• **new RoleCredentialResolver**(`claimService`)
+• **new RoleCredentialResolver**(`didService`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `claimService` | [`ClaimService`](modules_claim_services_claim_service.ClaimService.md) |
+| `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 
 ## Methods
+
+### credentialsOf
+
+▸ **credentialsOf**(`subject`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `subject` | `string` |
+
+#### Returns
+
+`Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>[]\>
+
+#### Implementation of
+
+CredentialResolver.credentialsOf
+
+___
+
+### eip191JwtsOf
+
+▸ **eip191JwtsOf**(`subject`): `Promise`<`RoleEIP191JWT`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `subject` | `string` |
+
+#### Returns
+
+`Promise`<`RoleEIP191JWT`[]\>
+
+#### Implementation of
+
+CredentialResolver.eip191JwtsOf
+
+___
 
 ### getCredential
 
@@ -76,14 +120,14 @@ ___
 
 ### getVerifiableCredential
 
-▸ **getVerifiableCredential**(`subject`, `claimType`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>\>
+▸ **getVerifiableCredential**(`subject`, `namespace`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\>\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `subject` | `string` |
-| `claimType` | `string` |
+| `namespace` | `string` |
 
 #### Returns
 
@@ -92,3 +136,43 @@ ___
 #### Implementation of
 
 CredentialResolver.getVerifiableCredential
+
+___
+
+### serviceEndpointsToCredentials
+
+▸ **serviceEndpointsToCredentials**(`tokens`): `VerifiableCredential`<`RoleCredentialSubject`\>[]
+
+Finds verifiable credentials among service ednpoints
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tokens` | `string`[] | resolved service endpoints of DID document services |
+
+#### Returns
+
+`VerifiableCredential`<`RoleCredentialSubject`\>[]
+
+verifiable credentials
+
+___
+
+### serviceEndpointsToEIP191
+
+▸ **serviceEndpointsToEIP191**(`tokens`): `RoleEIP191JWT`[]
+
+Finds EIP191 role tokens among service endpoints
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tokens` | `string`[] | resolved service endpoints of DID document services |
+
+#### Returns
+
+`RoleEIP191JWT`[]
+
+EIP191 role tokens
