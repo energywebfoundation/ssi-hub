@@ -20,6 +20,7 @@
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
 - [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
+- [resolveServiceEndpoints](modules_did_did_service.DIDService.md#resolveserviceendpoints)
 
 ## Constructors
 
@@ -147,3 +148,21 @@ ___
 #### Implementation of
 
 OnModuleInit.onModuleInit
+
+___
+
+### resolveServiceEndpoints
+
+▸ **resolveServiceEndpoints**(`did`): `Promise`<`string`[]\>
+
+Resolves document service endponts
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `did` | `string` | DID of the document service endpoints |
+
+#### Returns
+
+`Promise`<`string`[]\>
