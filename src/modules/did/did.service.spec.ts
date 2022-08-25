@@ -208,29 +208,6 @@ describe('DidDocumentService', () => {
     expect(refreshedDID).resolves.toEqual(cachedDoc.id);
   });
 
-  it('should check valid IPFS cid', async () => {
-    // CID v0
-    expect(
-      service['isCID']('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR')
-    ).toBeTruthy();
-
-    // CID v1
-    expect(
-      service['isCID'](
-        'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi'
-      )
-    ).toBeTruthy();
-
-    // Invalid CID
-    expect(service['isCID']({ foo: 'bar' })).toBeFalsy();
-
-    // Invalid CID
-    expect(service['isCID']('random-string')).toBeFalsy();
-
-    // Invalid CID
-    expect(service['isCID'](null)).toBeFalsy();
-  });
-
   function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {
     for (const property in returnedDoc) {
       expect(returnedDoc[property]).toStrictEqual(didDoc[property]);
