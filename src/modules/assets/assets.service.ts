@@ -183,8 +183,8 @@ export class AssetsService {
       async (identity: string, owner: string, at: BigNumber) => {
         const atAsNumber = at.toNumber();
         const assetDto = await AssetDto.create({
-          id: new DID(identity).did,
-          owner: new DID(owner).did,
+          id: getDIDFromAddress(identity),
+          owner: getDIDFromAddress(owner),
           at: atAsNumber,
         });
 
