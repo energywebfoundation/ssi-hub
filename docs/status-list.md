@@ -72,21 +72,38 @@ This allows a sequence as follows
 This approach allows bulk revocation of credential of the same role
 
 ### Client-side proving/signing of CredentialStatus VC
-[StatusList2021Credentials](https://w3c-ccg.github.io/vc-status-list-2021/#example-example-statuslist2021credential-0) should have a proof so that verifiers can con
+[StatusList2021Credentials](https://w3c-ccg.github.io/vc-status-list-2021/#example-example-statuslist2021credential-0) should have a proof so that verifiers can verify the authenticity of the status list.
 
 Due to the IAM stack's signature being client-side (performed, for example by Metamask) means that the server cannot forge status list credentials.
-However this introduces challenges because the revocations cannot be performed synchronously by the server.
+However this introduces synchronization challenges.
 
-The challenge is as follows:
+A possible challenging scenario is as follows:
+```mermaid
+sequenceDiagram
+actor rA as Revoker A
+actor rB as Revoker B
+participant sh as SSI-Hub
 
+rA->>sh: read current status list for role XYZ
+sh-->>rA: return { cred1: notRevoked, cred2: notRevoked }
+rB->>sh: read current status list for role XYZ
+sh-->>rA: return { cred1: notRevoked, cred2: notRevoked }
 
-Therefore, only one revoker may update a given StatusList2021Credential at a given time.
+rA->>rA: mark cred1 as revoked and sign
+rB->>rB: mark cred2 as revoked and sign
+  
+rA->>sh: submit status list
+rB->>sh: submit status list
+
+Note over rA,sh: status list don't have cred1 as revoked!
+
+```
 
 **Chosen solution:**
 
-Have a 1to1 mapping of StatusListCredential to VC.
-  - This elimates the [herd privacy benefits of StatusList2021](https://w3c-ccg.github.io/vc-status-list-2021/#introduction) as the server providing the StatusList2021Credential can map a request to a particular held VC. 
-  - Decentralized storage was used (such that the 1to1 mapped lists could be published to shared locations), it may be possible to restore holder privacy.
+Have a 1 to 1 mapping of StatusListCredential to VC.
+  - This reduces/elimates the need for synchronization at the cost of the [possible herd privacy benefits of StatusList2021](https://w3c-ccg.github.io/vc-status-list-2021/#introduction).
+  - Decentralized storage was used (such that the 1 to 1 mapped lists could be published to shared locations), it may be possible to restore holder privacy.
 
 ### Credential Issuers May Not Be Authorized Revokers 
 Given EnergyWeb's Role Definition implementation, a role credential issuer may not be necessarily be authorized to prove (sign) the `StatusList2021Credential`.
