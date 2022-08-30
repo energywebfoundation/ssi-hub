@@ -62,14 +62,15 @@ This is because it is not feasible that a given revoker is authorized to revoke 
 
 **Chosen solution**:
 
-This authorization challenge is eliminated by having one list per role definition/namespace.
+This authorization challenge is eliminated by having the credentials on each given list be only for one role.
+
 This allows a sequence as follows
   1. Revoker A revokes credential A on list 1 (signing list 1).
   1. Revoker B then revokes credential B on list 1 (signing list 1).
   1. Revoker B therefore also signing the previous revocation of Revoker A (in addition to their new revocation).
   *This is acceptable as long as Revoker B trusts what Revoker A has done*.
 
-This approach allows bulk revocation of credential of the same role
+This approach allows bulk revocation of credential of the same role.
 
 ### Client-side proving/signing of CredentialStatus VC
 [StatusList2021Credentials](https://w3c-ccg.github.io/vc-status-list-2021/#example-example-statuslist2021credential-0) should have a proof so that verifiers can verify the authenticity of the status list.
