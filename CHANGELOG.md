@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.9.2](https://github.com/energywebfoundation/ssi-hub/compare/v2.9.1...v2.9.2) (2022-08-30)
+
+
+### Bug Fixes
+
+* add nestJS API param for asset DID ([a8235f2](https://github.com/energywebfoundation/ssi-hub/commit/a8235f2dfbf67a1fc1ff4c1bc1ac3ae0b228ab8d))
+* **claims:** dont notify subject when he requester ([5b65812](https://github.com/energywebfoundation/ssi-hub/commit/5b65812eb1fec88a901ceb97f235e735870958a9))
+* **claims:** notify issuers ([3a146d8](https://github.com/energywebfoundation/ssi-hub/commit/3a146d8fcf9ae9a525b86433a4d8f9224dac4a9a))
+* convert addresses to DIDs before inserting to DB ([9b4f217](https://github.com/energywebfoundation/ssi-hub/commit/9b4f2175703dd49b6de9cc0ee23d549c5aaa146e))
+* **did:** convert did id to checksum address ([aa1d20c](https://github.com/energywebfoundation/ssi-hub/commit/aa1d20c6e162d2bd206660cf6f90ea0efb44eddd))
+* **helm:** update chart version and rpc url ([6b58be5](https://github.com/energywebfoundation/ssi-hub/commit/6b58be5fa7f6a832430bd66f100be545a0e9bfc9))
+* **prod.values:** revert ([7bc51fe](https://github.com/energywebfoundation/ssi-hub/commit/7bc51fe26119025a10ea003c2603d73e99f9d924))
+* **prod.values:** update rpc url to consortia ([df70f01](https://github.com/energywebfoundation/ssi-hub/commit/df70f0159fc0daf674f2de17dd845a1fb525b5e4))
+* **prod.values:** update to archive RPC node ([47eb5de](https://github.com/energywebfoundation/ssi-hub/commit/47eb5ded80427c6aaf014420a74df1c00ec6672c))
+* **prod.values:** update to sealed secret ([c0abb6e](https://github.com/energywebfoundation/ssi-hub/commit/c0abb6eecb3c8c7ef2f43e69ea5cdd11213c18a1))
+* send asset id as did to DID pipe ([2357e5c](https://github.com/energywebfoundation/ssi-hub/commit/2357e5c11f6b860b3b1c834679702620d689ea4d))
+* update sentry dsn in dev, staging, prod env ([#438](https://github.com/energywebfoundation/ssi-hub/issues/438)) ([4dd24a2](https://github.com/energywebfoundation/ssi-hub/commit/4dd24a29ef881cd7c564fc566da560acad300823))
+* **url:** Update ENS_URL value ([e337f4c](https://github.com/energywebfoundation/ssi-hub/commit/e337f4c2000308a74982998ffee4a57bbacc74ec))
+* use DID class formatter ([46ed5dd](https://github.com/energywebfoundation/ssi-hub/commit/46ed5dd33e3e0d8f735e44ba3e2a36050c1d95f8))
+
 ### [2.9.1](https://github.com/energywebfoundation/ssi-hub/compare/v2.9.0...v2.9.1) (2022-08-15)
 
 This version only contains the addition of additional log of DID Document resolution completion. 
