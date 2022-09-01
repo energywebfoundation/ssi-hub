@@ -20,10 +20,12 @@
 - [getBySubject](modules_claim_services_claim_service.ClaimService.md#getbysubject)
 - [getBySubjects](modules_claim_services_claim_service.ClaimService.md#getbysubjects)
 - [getByUserDid](modules_claim_services_claim_service.ClaimService.md#getbyuserdid)
+- [getClaims](modules_claim_services_claim_service.ClaimService.md#getclaims)
 - [getDidOfClaimsOfNamespace](modules_claim_services_claim_service.ClaimService.md#getdidofclaimsofnamespace)
 - [getIssuedClaimsBySubjects](modules_claim_services_claim_service.ClaimService.md#getissuedclaimsbysubjects)
 - [handleClaimEnrolmentRequest](modules_claim_services_claim_service.ClaimService.md#handleclaimenrolmentrequest)
 - [handleClaimRejectionRequest](modules_claim_services_claim_service.ClaimService.md#handleclaimrejectionrequest)
+- [issuersOfRole](modules_claim_services_claim_service.ClaimService.md#issuersofrole)
 - [reject](modules_claim_services_claim_service.ClaimService.md#reject)
 - [removeById](modules_claim_services_claim_service.ClaimService.md#removebyid)
 - [rolesByIssuer](modules_claim_services_claim_service.ClaimService.md#rolesbyissuer)
@@ -253,9 +255,29 @@ Get claims requested or issued by user with matching DID
 
 ___
 
+### getClaims
+
+▸ **getClaims**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+Returns claims for given role
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.isAccepted?` | `boolean` |
+| `__namedParameters.roleName` | `string` |
+
+#### Returns
+
+`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+
+___
+
 ### getDidOfClaimsOfNamespace
 
-▸ **getDidOfClaimsOfNamespace**(`namespace`, `isAccepted?`): `Promise`<`string`[]\>
+▸ **getDidOfClaimsOfNamespace**(`roleName`, `isAccepted?`): `Promise`<`string`[]\>
 
 get all DID of requesters of given namespace
 
@@ -263,7 +285,7 @@ get all DID of requesters of given namespace
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `namespace` | `string` | target claim namespace |
+| `roleName` | `string` | target claim namespace |
 | `isAccepted?` | `boolean` | flag for filtering only accepted claims |
 
 #### Returns
@@ -324,6 +346,24 @@ Handles claim rejection request saving and updates.
 #### Returns
 
 `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
+
+___
+
+### issuersOfRole
+
+▸ **issuersOfRole**(`roleName`): `Promise`<`string`[]\>
+
+Finds DID's specified as issuers of `roleName`
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `roleName` | `string` | role name |
+
+#### Returns
+
+`Promise`<`string`[]\>
 
 ___
 

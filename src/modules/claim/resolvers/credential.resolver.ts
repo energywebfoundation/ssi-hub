@@ -1,69 +1,107 @@
-import jsonwebtoken from 'jsonwebtoken';
 import {
   CredentialResolver,
+  isEIP191Jwt,
+  isVerifiableCredential,
   RoleEIP191JWT,
+  transformClaim,
   VerifiableCredential,
 } from '@energyweb/vc-verification';
-import { ClaimData } from '@energyweb/vc-verification/dist/src/models';
+import { RolePayload } from '@energyweb/vc-verification';
 import { RoleCredentialSubject } from '@energyweb/credential-governance';
-import { IPublicClaim } from '@ew-did-registry/claims';
-import { ClaimService } from '../services';
-import { RegistrationTypes } from '../claim.types';
+import * as jwt from 'jsonwebtoken';
+import { DIDService } from '../../did/did.service';
 
 export class RoleCredentialResolver implements CredentialResolver {
-  constructor(private readonly claimService: ClaimService) {}
+  constructor(private readonly didService: DIDService) {}
+
   async getCredential(
     did: string,
     namespace: string
   ): Promise<
     VerifiableCredential<RoleCredentialSubject> | RoleEIP191JWT | null
   > {
+    const resolvedEndpoints = await this.didService.resolveServiceEndpoints(
+      did
+    );
     return (
-      (await this.getVerifiableCredential(did, namespace)) ||
-      (await this.getEIP191JWT(did, namespace))
+      this.serviceEndpointsToCredentials(resolvedEndpoints).find(
+        (cred) => cred?.credentialSubject?.role?.namespace === namespace
+      ) ||
+      this.serviceEndpointsToEIP191(resolvedEndpoints).find(
+        (token) => token.payload.claimData.claimType === namespace
+      )
     );
   }
 
   async getVerifiableCredential(
     subject: string,
-    claimType: string
+    namespace: string
   ): Promise<VerifiableCredential<RoleCredentialSubject> | null> {
-    const claim = await this.claimService.getByClaimType({
-      subject,
-      claimType,
-    });
-
-    return claim?.vp
-      ?.verifiableCredential?.[0] as VerifiableCredential<RoleCredentialSubject>;
+    return (await this.credentialsOf(subject)).find(
+      (credential) =>
+        credential?.credentialSubject?.role?.namespace === namespace
+    );
   }
 
   async getEIP191JWT(
     subject: string,
     claimType: string
   ): Promise<RoleEIP191JWT | null> {
-    const claim = await this.claimService.getByClaimType({
-      subject,
-      claimType,
-    });
-    if (
-      !claim ||
-      !claim.registrationTypes.includes(RegistrationTypes.OffChain)
-    ) {
-      return null;
-    }
+    return (await this.eip191JwtsOf(subject)).find(
+      (token) => token.payload.claimData.claimType === claimType
+    );
+  }
 
-    const { issuedToken } = claim;
-    const { claimData, signer, credentialStatus } = jsonwebtoken.decode(
-      issuedToken
-    ) as IPublicClaim & { claimData: ClaimData };
+  async eip191JwtsOf(subject: string): Promise<RoleEIP191JWT[]> {
+    return this.serviceEndpointsToEIP191(
+      await this.didService.resolveServiceEndpoints(subject)
+    );
+  }
 
-    return {
-      payload: {
-        credentialStatus,
-        claimData,
-        signer,
-      },
-      eip191Jwt: issuedToken,
-    };
+  async credentialsOf(
+    subject: string
+  ): Promise<VerifiableCredential<RoleCredentialSubject>[]> {
+    return this.serviceEndpointsToCredentials(
+      await this.didService.resolveServiceEndpoints(subject)
+    );
+  }
+
+  /**
+   * Finds EIP191 role tokens among service endpoints
+   *
+   * @param tokens resolved service endpoints of DID document services
+   * @returns EIP191 role tokens
+   */
+  serviceEndpointsToEIP191(tokens: string[]): RoleEIP191JWT[] {
+    return tokens
+      .map((token) => {
+        try {
+          return jwt.decode(token) as RolePayload;
+        } catch (_) {
+          return {};
+        }
+      })
+      .filter(isEIP191Jwt)
+      .map((claim) => transformClaim(claim));
+  }
+
+  /**
+   * Finds verifiable credentials among service ednpoints
+   *
+   * @param tokens resolved service endpoints of DID document services
+   * @returns verifiable credentials
+   */
+  serviceEndpointsToCredentials(
+    tokens: string[]
+  ): VerifiableCredential<RoleCredentialSubject>[] {
+    return tokens
+      .map((token) => {
+        try {
+          return JSON.parse(token);
+        } catch (_) {
+          return {};
+        }
+      })
+      .filter(isVerifiableCredential);
   }
 }

@@ -117,7 +117,6 @@ iam-cache-server-helm:
   opsValues:
     DB_NAME: ics
     NODE_ENV: production
-    IPFS_URL: https://ipfs.infura.io:5001/api/v0/
     UNIVERSAL_RESOLVER_URL: https://dev.uniresolver.io/10/identifiers/
     NATS_VERSION: 2.1.8
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
@@ -125,17 +124,26 @@ iam-cache-server-helm:
     NESTJS_PORT: 3000
     DB_MAXIMUM_CONNECTION_POOL: 56 # https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: dev
+    IPFS_CLIENT_PORT: 5001
+    IPFS_CLIENT_PROJECT_ID: 2DFOVbJGkFy289ekGv5BjgZngCt
+    IPFS_CLIENT_HOST: ipfs.infura.io
 
-    resources:
+  resources:
     limits:
+      cpu: 750m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
+      # We anticipate memory usage to decrease once node v18 is used
       memory: 900Mi
 
   autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 1
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 85
 
   nodeSelector: { }
 
@@ -150,3 +158,4 @@ iam-cache-server-helm:
       SENTRY_DNS: AgA514UichO84MIa6faaxfrIALEQHR30YSQ2U577w7Oxjp7xx1ylpGweooBFzSGu39M+4KFysTpHllKAeaKcpt25p6xif4mSaMb8bzmeOrEKRTMuCgYU6mAGT4lvLu4IyQx3HYoyokym7Q4qEO2QZbS+QaDYUm1U3xhu/ie/N0w25g1LEbdMd7TcYzo3Q6aWE3AklgpK57gqMuksPvMMkU397M90ZqKE/Pl62NBPtCq3u4LY9zmzhH2B0WXWSa79OiEUcCzi8JpO8WMIcIBt62LAaD37yKRECoHqC77eaeCnaKqOzEhsrKbQAPnPxuw9T6gO0EnxQGKCCzZrx7ACF9DYlFseAVlMTg8EOB0fNK8UVgLUSblkUprt4iDVWX1ZhEm2L5qWvNcxkb+gI1TKnkIcrd8JAw6Mw+cb7P33AgVrP4yz9b0fGZ8+7U8ZLHLrA0o18X30zyseU0biwz4jwn5PCGIjGMcT6AoZ/LPNdwbN72jXhWynz02YVsC3uZ0+aTlgvGeIb97qvNSCNKWukYCm/lQP7br2RyVyLRfXT0uZMM255CYE7L34lRkLkBYrYmbUXPOlIKXHTI0rli1dnwEVRmAL03H6NX0ChwqCyhpcy/B9dFiZKBt0Hz1tI/bHXPUZ0tphLTARlvzMRj6ecQ2nZKl3ovwkZN3IowXmWfpJ/LGfH5RItrEZIO1xcSkV2BHGq1XPEsKzX4+NRGyFL4hqJajIv8Ok6ndp2Emco/TKru2ozJsS74Ei0T+BCjoxAbWFw5BA1Qe/KzgZ45U0zzLZyPkFdbyKdZHA
       STRATEGY_PRIVATE_KEY: AgBM4BIbZIvZ9ErUDLWmmgw0UMEGk4k9hO54/tos4Rf9bUeewlDyAOrnz+gcl8uXuwFiGazQYNia2JFOjCapKnVt0h3LUjvubN4G2cVoQQl9E2+BDzSb7Ucji2UsdleN1ScOwd6XOADdw7Pa1LUXdpf32rf5YADhdYLGDiYy6hqpJ0OPd+61s92HgtyKHioTSP3fJ4YyFqgXQ4wORRR15rdwJdvzSxUrzGnft/ceuB+ilGJc0qSu/jT+SifQ1411zZ6/vsvhfvSq7q4wXEibn2OWSy7MxxNdYafVC7PbyFgc9i6t8V2YKJzUigIGV53ds9GuMK8i8CeGVg2R3e4iHyuOuWv6LeNjbdUd6QeAynOFVos9rBWwS/L7g+Rv0aUUnD016GYSoPwLGPRwvpyhk3jRtJ94uj4FAkUwWGWKagTA+F0uZyIjq2emO4opE8J5FwbPJOA3SKxfo0yPxgQF7S7uTAGlslQdxSrBk9ICUb5FuMVZ32Bxv3fbJ4R3xIS6D8g9hfPG3/P+zpvTxMzPlOjn7bgXHpbV6qOtt47OjTb9A+ELEVnwF/hOY6efSNa/MYlDU0wjF8CGveKFmYkSo9QHnTx7ruGu1s18yXMQZGK47WEERFR3WS0JqB7iQKv2KhPlMJLQapbROLP3MEYGWpEExDdfQRksmvCpQvQhM/7rtBpjobktxKfP6FVsiCTiL0A8Lkbo+i48oVti3SK6vNF2kDBhy4b6uLWwztYNvz3XL1ZalmcWSwe6iMtscD8Vcjms4FVe3hBRPZbXK5/wOpMq
       ENS_URL: AgCaICh+WJ7pQ2MsRfznNhqFAqauOls7BMQeKb79yyrrFE9PbGRfVaFjL/R1HPzFbdfPzD2OT1kvcJDN/R6Jc4CH9+Vg1z6QTaknXhHsZtBiN+BRCmRwfyno0QFjsWTLVZ83NTSKP2EvwqU5h4/peKavCx7pSkDb31xqf0Mq9V9Kapqw7YvKjEjfvRzdbtAxBtLt3v2UoyOyCldnfXcnenDyHmSgBn6uKS6U8pK/5RlGlsegvCokzR20vw4l8bf60uR/36fX+5ttoYzF+BWI3FWgrry2S/EChv4umk0M8Nr8vYeNc40cLuVJPlxFTr/eHAb+uqKe/bhavJqAvzJFW714/QTNDDKyWqmZMVj6H6BSLSVHHmh6M0Cp2YOH07xecHCgPWqTWzJq1HCfMAuB9hH5wQYVxLhYoIze6XzD8AAzJEFUJ+n+TXmaxH7kuqhVJGbgTtXxbk+QvKeZmX36IcBOl6BxkUlm9VGvj91zCip9zC/HiBbl8zL6nTd6JpFYgJylaLBeOLvMjoyk25vfs+viehC9HbEtsgcLtNevSAzA1sCBFF1c2x4vkyi4yFI2OIp1+FY6xPBkaR5rqMlwiPXS8Al9lgTATHoZgr+tkdcjFwg2wEokmyYPTzOcLc82NU0bZeBclUCVEkxeWCHcNwBRW2heNyujRLWl35klbQPbFlQjQNNOnj0wpp1K1+KFetqjKm7s4Xqjk7UAiCjAX59VIkPpvvTc7iOFHEWqvfdLHciJDxYNuN7nPZk+bVtj/7KNSdCf2Q==
+      IPFS_CLIENT_PROJECT_SECRET: AgCD3q5miwVO6GjALhdNMsbLQul35EQybREj9bV3IQJtC3ij7b65vpySapMAG1NBx6UMm8cqBRKySPxs85ICAevdtPXp9QtDLndTb/HiuEKC945Pw4R7g2V3RJaKgnKO/WZb2HRnaFq3ol63A4eIC2gcxAcU/M2Cinf3mQ8+Ha4D3ZwRTZBp+Vl7aD0vmDF8DrAaczBYs5qX0e4QYwCMlTviHGw/XNNKoQidl+jL+QGWE0aklOMrS9EBgcGtggYaBaNl5eqPAvhNllfsLIKAe4yt5QTQ2hCCih12/8HifOkAQAQw4l6xtzl3idfCSstwsMwMuAeBS/WUd40Y6tD1gR40AxSYiRC/FfMgDhW/ftqZD5wQq67YM7fD2BjJaM2UPDmzcyCdDqRGtHQNeCc9wf6iksGUv/4e68HRlrDQEw+DYqudeKcDs8jbQhJiecCDLGUr3Bb0Ww7Wi+tvs/rqtGrJzLyEJ5kM3XlEeuvA5qaGoJpEOa/0AnHLysfL3KnK+uA6t9KQTNUlRasmATIiHO0X0xSVJj0w30qgN6My83SbnIcbyno2rzlLktBxc+ZeB7pLb2ZvdFYYNgh05F0BXUMmqNXMAYerLpfZvAG4Y7JYcaPVkXnR16rG0vl0Qv+6/mVXbHV/Udfa8wjUrkbzl17mPGKZjmYdF8GoeGbjHsFM4JWceHsxbrX8d8m9NqPqYDRD420a6cqCFZUkpoq7RTa1hZUJ7HX5hlGyg75DuomDNQ==

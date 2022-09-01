@@ -14,7 +14,6 @@ import { Methods } from '@ew-did-registry/did';
 import { Transaction } from '@sentry/types';
 import { isJWT } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
-import { CID } from 'multiformats/cid';
 import { Queue } from 'bull';
 import { Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
@@ -27,7 +26,6 @@ import {
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
-import { IDidStore } from '@ew-did-registry/did-store-interface';
 import {
   documentFromLogs,
   Resolver,
@@ -41,11 +39,11 @@ import { DIDDocumentEntity, IClaim } from './did.entity';
 import { Provider } from '../../common/provider';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
+import { IPFSService } from '../ipfs/ipfs.service';
 
 @Injectable()
 export class DIDService implements OnModuleInit {
   private readonly didRegistry: EthereumDIDRegistry;
-  private readonly ipfsStore: IDidStore;
   private readonly resolver: Resolver;
   constructor(
     private readonly config: ConfigService,
@@ -57,12 +55,10 @@ export class DIDService implements OnModuleInit {
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
-    @Inject('RegistrySettings') registrySettings: RegistrySettings
+    @Inject('RegistrySettings') registrySettings: RegistrySettings,
+    private readonly didStore: DidStore
   ) {
     this.logger.setContext(DIDService.name);
-
-    const IPFS_URL = this.config.get<string>('IPFS_URL');
-    this.ipfsStore = new DidStore(IPFS_URL);
 
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
       'DID_REGISTRY_ADDRESS'
@@ -103,6 +99,7 @@ export class DIDService implements OnModuleInit {
     did: string,
     transaction?: Transaction
   ): Promise<IDIDDocument> {
+    did = new DID(did).did;
     const convertToIDIDDocument = (entity: DIDDocumentEntity): IDIDDocument => {
       return {
         '@context': entity['@context'],
@@ -312,6 +309,21 @@ export class DIDService implements OnModuleInit {
     }
   }
 
+  /**
+   * Resolves document service endponts
+   *
+   * @param did DID of the document service endpoints
+   */
+  public async resolveServiceEndpoints(did: string) {
+    const { service } = await this.getById(did);
+    return Promise.all(
+      service
+        .map(({ serviceEndpoint }) => serviceEndpoint)
+        .filter(IPFSService.isCID)
+        .map(this.didStore.get)
+    );
+  }
+
   private async InitEventListeners(): Promise<void> {
     this.didRegistry.on(DidEventNames.AttributeChanged, async (address) => {
       const did = `did:${Methods.Erc1056}:${process.env.CHAIN_NAME}:${address}`;
@@ -407,11 +419,11 @@ export class DIDService implements OnModuleInit {
         );
         if (cachedService) return cachedService;
 
-        if (!this.isCID(serviceEndpoint)) {
+        if (!IPFSService.isCID(serviceEndpoint)) {
           return { serviceEndpoint, ...rest };
         }
 
-        const token = await this.ipfsStore.get(serviceEndpoint);
+        const token = await this.didStore.get(serviceEndpoint);
 
         if (isJWT(token)) {
           const decodedData = jwt.decode(token) as {
@@ -454,31 +466,5 @@ export class DIDService implements OnModuleInit {
         }
       })
     );
-  }
-
-  /**
-   * Check if given value is a valid IPFS CID.
-   *
-   * ```typescript
-   * didService.isCID('Qm...');
-   * ```
-   *
-   * @param {Any} hash value to check
-   *
-   */
-  private isCID(hash: unknown): boolean {
-    try {
-      if (typeof hash === 'string') {
-        return Boolean(CID.parse(hash));
-      }
-
-      if (hash instanceof Uint8Array) {
-        return Boolean(CID.decode(hash));
-      }
-
-      return Boolean(CID.asCID(hash));
-    } catch (e) {
-      return false;
-    }
   }
 }

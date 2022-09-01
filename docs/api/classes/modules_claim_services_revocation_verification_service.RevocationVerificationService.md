@@ -18,13 +18,13 @@
 
 ### constructor
 
-• **new RevocationVerificationService**(`claimService`, `roleService`, `provider`, `registrySettings`)
+• **new RevocationVerificationService**(`didService`, `roleService`, `provider`, `registrySettings`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `claimService` | [`ClaimService`](modules_claim_services_claim_service.ClaimService.md) |
+| `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `registrySettings` | `RegistrySettings` |

@@ -33,7 +33,7 @@
 
 ### login
 
-▸ **login**(`req`, `res`): `Promise`<`Response`<`any`, `Record`<`string`, `any`\>\>\>
+▸ **login**(`req`, `res`): `Promise`<`void`\>
 
 #### Parameters
 
@@ -44,7 +44,7 @@
 
 #### Returns
 
-`Promise`<`Response`<`any`, `Record`<`string`, `any`\>\>\>
+`Promise`<`void`\>
 
 ___
 

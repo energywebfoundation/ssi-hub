@@ -7,6 +7,7 @@ import { AppModule } from '../src/app.module';
 import { authTestSuite } from './auth';
 import { claimTestSuite } from './claim';
 import { statusList2021TestSuite } from './status-list';
+import { shutDownIpfsDaemon, spawnIpfsDaemon } from './setup-ipfs';
 
 export let app: INestApplication;
 
@@ -18,7 +19,10 @@ describe('iam-cache-server E2E tests', () => {
 
     const testingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider('IPFSClientConfig')
+      .useValue(await spawnIpfsDaemon())
+      .compile();
     app = testingModule.createNestApplication();
     appConfig(app);
     await app.listen(3000);
@@ -29,6 +33,7 @@ describe('iam-cache-server E2E tests', () => {
       expect.stringMatching(/^error \[.+\] : .+/)
     );
     await app.close();
+    await shutDownIpfsDaemon();
   }, 60_000); // 1min
 
   describe('Modules v1', () => {

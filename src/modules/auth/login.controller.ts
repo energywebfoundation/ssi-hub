@@ -76,7 +76,7 @@ export class LoginController {
       cookiesOptions
     );
 
-    return res.send({ token, refreshToken });
+    res.send({ token, refreshToken });
   }
 
   @ApiQuery({ name: 'refresh_token', required: false })

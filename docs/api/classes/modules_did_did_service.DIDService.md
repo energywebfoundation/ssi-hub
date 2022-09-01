@@ -20,12 +20,13 @@
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
 - [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
+- [resolveServiceEndpoints](modules_did_did_service.DIDService.md#resolveserviceendpoints)
 
 ## Constructors
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `didStore`)
 
 #### Parameters
 
@@ -40,6 +41,7 @@
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 | `registrySettings` | `RegistrySettings` |
+| `didStore` | `DidStore` |
 
 ## Methods
 
@@ -146,3 +148,21 @@ ___
 #### Implementation of
 
 OnModuleInit.onModuleInit
+
+___
+
+### resolveServiceEndpoints
+
+▸ **resolveServiceEndpoints**(`did`): `Promise`<`string`[]\>
+
+Resolves document service endponts
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `did` | `string` | DID of the document service endpoints |
+
+#### Returns
+
+`Promise`<`string`[]\>

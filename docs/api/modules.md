@@ -89,6 +89,8 @@
 - [modules/interceptors/interceptors.module](modules/modules_interceptors_interceptors_module.md)
 - [modules/interceptors/not-found.interceptor](modules/modules_interceptors_not_found_interceptor.md)
 - [modules/interceptors/sentry-error-interceptor](modules/modules_interceptors_sentry_error_interceptor.md)
+- [modules/ipfs/ipfs.module](modules/modules_ipfs_ipfs_module.md)
+- [modules/ipfs/ipfs.service](modules/modules_ipfs_ipfs_service.md)
 - [modules/logger/logger.module](modules/modules_logger_logger_module.md)
 - [modules/logger/logger.service](modules/modules_logger_logger_service.md)
 - [modules/nats/nats.module](modules/modules_nats_nats_module.md)

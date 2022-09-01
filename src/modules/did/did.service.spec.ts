@@ -9,13 +9,14 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MockProvider, deployContract } from 'ethereum-waffle';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, utils, Wallet } from 'ethers';
 import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+import { DidStore } from '@ew-did-registry/did-ipfs-store';
 
 const { formatBytes32String } = utils;
 
@@ -117,6 +118,7 @@ describe('DidDocumentService', () => {
           }),
           inject: [ConfigService],
         },
+        { provide: DidStore, useValue: MockObject },
       ],
     }).compile();
     await module.init();
@@ -138,9 +140,17 @@ describe('DidDocumentService', () => {
     checkReturnedDIDDoc(returnedDoc);
   });
 
+  it('getById should return cached document when DID is in lower case', async () => {
+    cachedDoc = { ...didDoc, logs: '<logs>' };
+    const returnedDoc = await service.getById(cachedDoc.id.toLowerCase());
+    checkReturnedDIDDoc(returnedDoc);
+  });
+
   it('getByID should not return non-cached document', async () => {
     cachedDoc = undefined;
-    const returnedDoc = await service.getById('<any DID>');
+    const returnedDoc = await service.getById(
+      `did:ethr:${Chain.VOLTA}:${Wallet.createRandom().address}`
+    );
     checkReturnedDIDDoc(returnedDoc);
   });
 
@@ -196,29 +206,6 @@ describe('DidDocumentService', () => {
       )
     ).wait();
     expect(refreshedDID).resolves.toEqual(cachedDoc.id);
-  });
-
-  it('should check valid IPFS cid', async () => {
-    // CID v0
-    expect(
-      service['isCID']('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR')
-    ).toBeTruthy();
-
-    // CID v1
-    expect(
-      service['isCID'](
-        'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi'
-      )
-    ).toBeTruthy();
-
-    // Invalid CID
-    expect(service['isCID']({ foo: 'bar' })).toBeFalsy();
-
-    // Invalid CID
-    expect(service['isCID']('random-string')).toBeFalsy();
-
-    // Invalid CID
-    expect(service['isCID'](null)).toBeFalsy();
   });
 
   function checkReturnedDIDDoc(returnedDoc: IDIDDocument) {
