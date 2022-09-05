@@ -19,6 +19,7 @@ import { RoleClaim } from '../entities/roleClaim.entity';
 import { AssetsService } from '../../assets/assets.service';
 import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
+import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
 
 interface QueryFilters {
   isAccepted?: boolean;
@@ -413,19 +414,35 @@ export class ClaimService {
   }
 
   /**
+   * Returns claims for given role
+   * @param param0.roleName role name
+   * @param param0.isAccepted filters non-approved claims
+   */
+  public async getClaims({
+    roleName,
+    isAccepted = true,
+  }: {
+    roleName: string;
+    isAccepted?: boolean;
+  }): Promise<RoleClaim[]> {
+    const parsedFilters = this.parseFilters({ isAccepted });
+    return this.roleClaimRepository.find({
+      where: [{ ...parsedFilters, claimType: roleName }],
+    });
+  }
+
+  /**
    * get all DID of requesters of given namespace
-   * @param namespace target claim namespace
+   * @param roleName target claim namespace
    * @param isAccepted flag for filtering only accepted claims
    */
   public async getDidOfClaimsOfNamespace(
-    namespace: string,
+    roleName: string,
     isAccepted?: boolean
   ): Promise<string[]> {
-    const parsedFilters = this.parseFilters({ isAccepted });
-    const claims = await this.roleClaimRepository.find({
-      where: [{ ...parsedFilters, claimType: namespace }],
-    });
-    return claims.map((claim) => claim.requester);
+    return (await this.getClaims({ roleName, isAccepted })).map(
+      (claim) => claim.requester
+    );
   }
 
   /**
@@ -478,6 +495,33 @@ export class ClaimService {
     return namespace
       ? roles.filter((r: Role) => r.namespace === namespace)
       : roles;
+  }
+
+  /**
+   * Finds DID's specified as issuers of `roleName`
+   * @param roleName role name
+   */
+  public async issuersOfRole(roleName: string): Promise<string[]> {
+    const {
+      did,
+      issuerType,
+      roleName: issuerRole,
+    } = await new RoleIssuerResolver(this.roleService).getIssuerDefinition(
+      roleName
+    );
+    switch (issuerType) {
+      case 'DID':
+        return did;
+      case 'ROLE':
+        return (await this.getClaims({ roleName: issuerRole })).map(
+          ({ subject }) => subject
+        );
+      default:
+        /**@todo replace from @energyweb/vc-verification */
+        throw new Error(
+          `Invalid issuer type ${issuerType} of role ${roleName}`
+        );
+    }
   }
 
   /**

@@ -1,5 +1,6 @@
 import { Module, Global } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { IPFSService } from './ipfs.service';
 
 const IPFSClientConfigProvider = {
   provide: 'IPFSClientConfig',
@@ -30,7 +31,7 @@ const IPFSClientConfigProvider = {
 
 @Global()
 @Module({
-  providers: [IPFSClientConfigProvider],
-  exports: [IPFSClientConfigProvider],
+  providers: [IPFSClientConfigProvider, IPFSService],
+  exports: [IPFSClientConfigProvider, IPFSService],
 })
 export class IPFSModule {}

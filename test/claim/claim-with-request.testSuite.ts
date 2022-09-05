@@ -10,12 +10,18 @@ import { RoleService } from '../../src/modules/role/role.service';
 import { ClaimService } from '../../src/modules/claim/services/claim.service';
 import { DIDDocumentEntity } from '../../src/modules/did/did.entity';
 import { randomUser, createRole } from '../utils';
+import { NatsService } from '../../src/modules/nats/nats.service';
+import {
+  ClaimEventType,
+  NATS_EXCHANGE_TOPIC,
+} from '../../src/modules/claim/claim.types';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
 export const claimWithRequestTestSuite = () => {
   let roleService: RoleService;
   let claimService: ClaimService;
+  let nats: NatsService;
   let queryRunner;
 
   const createClaimRequest = async (
@@ -140,6 +146,7 @@ export const claimWithRequestTestSuite = () => {
   beforeAll(async () => {
     roleService = app.get(RoleService);
     claimService = app.get(ClaimService);
+    nats = app.get(NatsService);
   });
 
   beforeEach(async () => {
@@ -175,7 +182,16 @@ export const claimWithRequestTestSuite = () => {
       issuer,
       201
     );
+
+    const publishForDids = jest.spyOn(nats, 'publishForDids');
     await issueClaimRequest(claimData, issuer, 201);
+    expect(publishForDids).toBeCalledTimes(1);
+    expect(publishForDids).toBeCalledWith(
+      ClaimEventType.ISSUE_CREDENTIAL,
+      NATS_EXCHANGE_TOPIC,
+      [requester.did],
+      { claimId: claimData.id }
+    );
   });
 
   it(`should issue a claim request with role issuer type ROLE`, async () => {
