@@ -14,6 +14,10 @@
 
 - [constructor](common_provider.Provider.md#constructor)
 
+### Methods
+
+- [perform](common_provider.Provider.md#perform)
+
 ## Constructors
 
 ### constructor
@@ -28,4 +32,25 @@
 
 #### Overrides
 
-JsonRpcProvider.constructor
+providers.JsonRpcProvider.constructor
+
+## Methods
+
+### perform
+
+▸ **perform**(`method`, `params`): `Promise`<`any`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `method` | `string` |
+| `params` | `any` |
+
+#### Returns
+
+`Promise`<`any`\>
+
+#### Overrides
+
+providers.JsonRpcProvider.perform

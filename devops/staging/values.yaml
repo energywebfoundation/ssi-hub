@@ -132,6 +132,7 @@ iam-cache-server-helm:
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFOoYU78LsICBTNhrwRGctWE7i
     IPFS_CLIENT_HOST: ipfs.infura.io
+    CHAIN_REQUEST_ATTEMPTS: 5
 
   resources:
     limits:
