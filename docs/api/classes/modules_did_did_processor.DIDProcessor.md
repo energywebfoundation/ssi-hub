@@ -11,6 +11,7 @@
 ### Methods
 
 - [onError](modules_did_did_processor.DIDProcessor.md#onerror)
+- [pinServices](modules_did_did_processor.DIDProcessor.md#pinservices)
 - [processDIDDocumentAddition](modules_did_did_processor.DIDProcessor.md#processdiddocumentaddition)
 - [processDIDDocumentRefresh](modules_did_did_processor.DIDProcessor.md#processdiddocumentrefresh)
 
@@ -18,7 +19,7 @@
 
 ### constructor
 
-• **new DIDProcessor**(`didService`, `logger`, `configService`)
+• **new DIDProcessor**(`didService`, `logger`, `configService`, `didRepository`)
 
 #### Parameters
 
@@ -27,6 +28,7 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `didRepository` | `Repository`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\> |
 
 ## Methods
 
@@ -43,6 +45,22 @@
 #### Returns
 
 `void`
+
+___
+
+### pinServices
+
+▸ **pinServices**(`services`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `services` | [`IClaim`](../interfaces/modules_did_did_entity.IClaim.md)[] |
+
+#### Returns
+
+`Promise`<`void`\>
 
 ___
 
