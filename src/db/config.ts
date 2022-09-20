@@ -28,9 +28,8 @@ export const getDBConfig = (configService: ConfigService) => {
       max: configService.get<number>('DB_MAXIMUM_CONNECTION_POOL', 10),
       connectionTimeoutMillis: configService.get<number>(
         'DB_CONNECTION_TIMEOUT',
-        1000
+        3000
       ),
-      idleTimeoutMillis: 10000,
     },
   };
 
