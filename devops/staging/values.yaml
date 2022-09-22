@@ -132,16 +132,17 @@ iam-cache-server-helm:
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFOoYU78LsICBTNhrwRGctWE7i
     IPFS_CLIENT_HOST: ipfs.infura.io
+    CHAIN_REQUEST_ATTEMPTS: 5
 
   resources:
     limits:
       cpu: 750m
-      memory: 700Mi
+      memory: 1Gi
     requests:
       cpu: 500m
       # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
       # We anticipate memory usage to decrease once node v18 is used
-      memory: 600Mi
+      memory: 900Mi
 
   autoscaling:
     enabled: true

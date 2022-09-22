@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.10.0](https://github.com/energywebfoundation/iam-cache-server/compare/v2.9.2...v2.10.0) (2022-09-21)
+
+
+### Features
+
+* retry chain request ([fac3ad8](https://github.com/energywebfoundation/iam-cache-server/commit/fac3ad840883b7584681e3fff6709a7e6f7fb509))
+
+
+### Bug Fixes
+
+* increase connectionTimeoutMillis ([598a120](https://github.com/energywebfoundation/iam-cache-server/commit/598a1201642f288e9ede67d8fb48dd6b1c411346))
+
 ### [2.9.2](https://github.com/energywebfoundation/ssi-hub/compare/v2.9.1...v2.9.2) (2022-08-30)
 
 

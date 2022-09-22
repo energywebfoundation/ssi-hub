@@ -115,6 +115,7 @@ iam-cache-server-helm:
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache.energyweb.org/v1
+    CHAIN_REQUEST_ATTEMPTS: 5
 
   opsValues:
     DB_NAME: ics
@@ -132,12 +133,12 @@ iam-cache-server-helm:
   resources:
     limits:
       cpu: 750m
-      memory: 700Mi
+      memory: 1Gi
     requests:
       cpu: 500m
       # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
       # We anticipate memory usage to decrease once node v18 is used
-      memory: 600Mi
+      memory: 900Mi
 
   autoscaling:
     enabled: true
