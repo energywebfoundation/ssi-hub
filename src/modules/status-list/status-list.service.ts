@@ -282,7 +282,7 @@ export class StatusListService {
     try {
       await this.revocationVerificationService.verifyRevoker(user, namespace);
     } catch (e) {
-      this.logger.error(`Revoker verification failed with error ${e}`);
+      this.logger.error(`Revoker verification failed with error: ${e}`);
       throw new ForbiddenException(
         `${user} is not allowed to revoke ${namespace}`
       );
