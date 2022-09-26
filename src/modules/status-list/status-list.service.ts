@@ -21,6 +21,7 @@ import {
   NamespaceStatusList,
 } from './entities';
 import { RevocationVerificationService } from '../claim/services';
+import { Logger } from '../logger/logger.service';
 
 @Injectable()
 export class StatusListService {
@@ -34,8 +35,11 @@ export class StatusListService {
     private readonly namespaceStatusListRepository: Repository<NamespaceStatusList>,
     @InjectRepository(StatusListCredential)
     private readonly statusListCredentialRepository: Repository<StatusListCredential>,
-    private readonly revocationVerificationService: RevocationVerificationService
-  ) {}
+    private readonly revocationVerificationService: RevocationVerificationService,
+    private readonly logger: Logger
+  ) {
+    this.logger.setContext(StatusListService.name);
+  }
 
   /**
    * Add StatusList2021Entry as `credentialStatus` parameter to given credential object.
@@ -277,7 +281,8 @@ export class StatusListService {
   async verifyRevoker(user: string, namespace: string) {
     try {
       await this.revocationVerificationService.verifyRevoker(user, namespace);
-    } catch {
+    } catch (e) {
+      this.logger.error(`Revoker verification failed with error ${e}`);
       throw new ForbiddenException(
         `${user} is not allowed to revoke ${namespace}`
       );
