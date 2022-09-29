@@ -315,6 +315,9 @@ export class DIDService implements OnModuleInit {
    * @param did DID of the document service endpoints
    */
   public async resolveServiceEndpoints(did: string) {
+    if (!this.didStore) {
+      this.logger.info(`resolveServiceEndpoints: DIDStore is undefined`);
+    }
     const { service } = await this.getById(did);
     return Promise.all(
       service
