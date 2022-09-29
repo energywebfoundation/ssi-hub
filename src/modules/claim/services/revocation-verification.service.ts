@@ -8,7 +8,6 @@ import { RoleCredentialResolver } from '../resolvers/credential.resolver';
 import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
 import { RoleRevokerResolver } from '../resolvers/revoker.resolver';
 import { DIDService } from '../../did/did.service';
-import { Logger } from '../../logger/logger.service';
 
 @Injectable()
 export class RevocationVerificationService extends RevocationVerification {
@@ -16,12 +15,11 @@ export class RevocationVerificationService extends RevocationVerification {
     didService: DIDService,
     roleService: RoleService,
     provider: Provider,
-    @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    logger: Logger
+    @Inject('RegistrySettings') registrySettings: RegistrySettings
   ) {
     const issuerResolver = new RoleIssuerResolver(roleService);
     const revokerResolver = new RoleRevokerResolver(roleService);
-    const credentialResolver = new RoleCredentialResolver(didService, logger);
+    const credentialResolver = new RoleCredentialResolver(didService);
     super(
       revokerResolver,
       issuerResolver,
