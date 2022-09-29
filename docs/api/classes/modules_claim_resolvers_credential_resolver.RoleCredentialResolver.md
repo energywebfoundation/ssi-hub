@@ -26,14 +26,13 @@
 
 ### constructor
 
-• **new RoleCredentialResolver**(`didService`, `logger`)
+• **new RoleCredentialResolver**(`didService`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
-| `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
 
