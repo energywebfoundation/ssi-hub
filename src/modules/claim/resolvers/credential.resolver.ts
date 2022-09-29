@@ -10,15 +10,9 @@ import { RolePayload } from '@energyweb/vc-verification';
 import { RoleCredentialSubject } from '@energyweb/credential-governance';
 import * as jwt from 'jsonwebtoken';
 import { DIDService } from '../../did/did.service';
-import { Logger } from '../../logger/logger.service';
 
 export class RoleCredentialResolver implements CredentialResolver {
-  constructor(
-    private readonly didService: DIDService,
-    private readonly logger: Logger
-  ) {
-    this.logger.setContext(RoleCredentialResolver.name);
-  }
+  constructor(private readonly didService: DIDService) {}
 
   async getCredential(
     did: string,
@@ -26,9 +20,6 @@ export class RoleCredentialResolver implements CredentialResolver {
   ): Promise<
     VerifiableCredential<RoleCredentialSubject> | RoleEIP191JWT | null
   > {
-    this.logger.debug(
-      `Using getCredential from SSI Hub RoleCredentialResolver for did: ${did} and namespace: ${namespace}`
-    );
     const resolvedEndpoints = await this.didService.resolveServiceEndpoints(
       did
     );
@@ -70,10 +61,6 @@ export class RoleCredentialResolver implements CredentialResolver {
   async credentialsOf(
     subject: string
   ): Promise<VerifiableCredential<RoleCredentialSubject>[]> {
-    this.logger.debug(
-      `Using credentialsOf from SSI Hub RoleCredentialResolver for subject did: ${subject}`
-    );
-
     return this.serviceEndpointsToCredentials(
       await this.didService.resolveServiceEndpoints(subject)
     );

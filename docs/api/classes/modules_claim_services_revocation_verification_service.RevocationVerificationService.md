@@ -18,7 +18,7 @@
 
 ### constructor
 
-• **new RevocationVerificationService**(`didService`, `roleService`, `provider`, `registrySettings`, `logger`)
+• **new RevocationVerificationService**(`didService`, `roleService`, `provider`, `registrySettings`)
 
 #### Parameters
 
@@ -28,7 +28,6 @@
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `registrySettings` | `RegistrySettings` |
-| `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 #### Overrides
 
