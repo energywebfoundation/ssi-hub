@@ -1,4 +1,4 @@
-import { RevocationVerification, Ipfs } from '@energyweb/vc-verification';
+import { RevocationVerification } from '@energyweb/vc-verification';
 import { Inject, Injectable } from '@nestjs/common';
 import { verifyCredential } from 'didkit-wasm-node';
 import { RegistrySettings } from '@ew-did-registry/did-resolver-interface';
