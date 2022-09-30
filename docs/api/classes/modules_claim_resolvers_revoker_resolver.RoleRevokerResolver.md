@@ -12,9 +12,14 @@
 
 - [constructor](modules_claim_resolvers_revoker_resolver.RoleRevokerResolver.md#constructor)
 
+### Properties
+
+- [roleDefinitionCache](modules_claim_resolvers_revoker_resolver.RoleRevokerResolver.md#roledefinitioncache)
+
 ### Methods
 
 - [getRevokerDefinition](modules_claim_resolvers_revoker_resolver.RoleRevokerResolver.md#getrevokerdefinition)
+- [setRoleDefinitionCache](modules_claim_resolvers_revoker_resolver.RoleRevokerResolver.md#setroledefinitioncache)
 
 ## Constructors
 
@@ -27,6 +32,12 @@
 | Name | Type |
 | :------ | :------ |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
+
+## Properties
+
+### roleDefinitionCache
+
+• **roleDefinitionCache**: `IRoleDefinitionCache`
 
 ## Methods
 
@@ -47,3 +58,23 @@
 #### Implementation of
 
 RevokerResolver.getRevokerDefinition
+
+___
+
+### setRoleDefinitionCache
+
+▸ **setRoleDefinitionCache**(`roleDefCache`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `roleDefCache` | `IRoleDefinitionCache` |
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+RevokerResolver.setRoleDefinitionCache

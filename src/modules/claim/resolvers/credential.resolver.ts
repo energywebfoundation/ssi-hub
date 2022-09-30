@@ -1,5 +1,6 @@
 import {
   CredentialResolver,
+  IRoleCredentialCache,
   isEIP191Jwt,
   isVerifiableCredential,
   RoleEIP191JWT,
@@ -12,6 +13,7 @@ import * as jwt from 'jsonwebtoken';
 import { DIDService } from '../../did/did.service';
 
 export class RoleCredentialResolver implements CredentialResolver {
+  roleCredentialCache: IRoleCredentialCache;
   constructor(private readonly didService: DIDService) {}
 
   async getCredential(
@@ -53,6 +55,7 @@ export class RoleCredentialResolver implements CredentialResolver {
   }
 
   async eip191JwtsOf(subject: string): Promise<RoleEIP191JWT[]> {
+    console.log(this.didService, 'THE SERVICE');
     return this.serviceEndpointsToEIP191(
       await this.didService.resolveServiceEndpoints(subject)
     );
@@ -103,5 +106,13 @@ export class RoleCredentialResolver implements CredentialResolver {
         }
       })
       .filter(isVerifiableCredential);
+  }
+
+  /**
+   * Sets role credential cache
+   * @param roleCredentialcache
+   */
+  setRoleCredentialCache(roleCredentialcache: IRoleCredentialCache): void {
+    this.roleCredentialCache = roleCredentialcache;
   }
 }
