@@ -1,10 +1,14 @@
 import { IRevokerDefinition } from '@energyweb/credential-governance';
-import { RevokerResolver } from '@energyweb/vc-verification';
+import {
+  IRoleDefinitionCache,
+  RevokerResolver,
+} from '@energyweb/vc-verification';
 import { RoleService } from '../../role/role.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RoleRevokerResolver implements RevokerResolver {
+  roleDefinitionCache: IRoleDefinitionCache;
   constructor(private readonly roleService: RoleService) {}
 
   async getRevokerDefinition(namespace: string): Promise<IRevokerDefinition> {
@@ -16,5 +20,9 @@ export class RoleRevokerResolver implements RevokerResolver {
     return 'revoker' in definition
       ? definition.revoker
       : { ...definition.issuer, revokerType: definition.issuer.issuerType };
+  }
+
+  setRoleDefinitionCache(roleDefCache: IRoleDefinitionCache): void {
+    this.roleDefinitionCache = roleDefCache;
   }
 }
