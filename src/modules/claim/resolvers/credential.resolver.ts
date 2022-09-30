@@ -55,7 +55,6 @@ export class RoleCredentialResolver implements CredentialResolver {
   }
 
   async eip191JwtsOf(subject: string): Promise<RoleEIP191JWT[]> {
-    console.log(this.didService, 'THE SERVICE');
     return this.serviceEndpointsToEIP191(
       await this.didService.resolveServiceEndpoints(subject)
     );
