@@ -4,6 +4,7 @@ import {
   OnModuleInit,
   InternalServerErrorException,
   Inject,
+  OnModuleDestroy,
 } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -42,9 +43,11 @@ import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { IPFSService } from '../ipfs/ipfs.service';
 
 @Injectable()
-export class DIDService implements OnModuleInit {
+export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly resolver: Resolver;
+  private readonly JOBS_CLEANUP_DELAY = 1000;
+
   constructor(
     private readonly config: ConfigService,
     private readonly schedulerRegistry: SchedulerRegistry,
@@ -88,6 +91,13 @@ export class DIDService implements OnModuleInit {
 
   async onModuleInit() {
     await this.InitEventListeners();
+  }
+
+  async onModuleDestroy() {
+    await this.didQueue.clean(this.JOBS_CLEANUP_DELAY, 'wait');
+    await this.didQueue.clean(this.JOBS_CLEANUP_DELAY, 'active');
+    await this.didQueue.clean(this.JOBS_CLEANUP_DELAY, 'delayed');
+    this.didRegistry.removeAllListeners(DidEventNames.AttributeChanged);
   }
 
   /**
