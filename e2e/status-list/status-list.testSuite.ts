@@ -1,4 +1,4 @@
-import { Connection, EntityManager, Repository } from 'typeorm';
+import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import request from 'supertest';
 import didKit from '@spruceid/didkit-wasm-node';
@@ -26,7 +26,7 @@ export const statusList2021TestSuite = () => {
   let namespaceStatusListsRepository: Repository<NamespaceStatusLists>;
   let statusListCredentialRepository: Repository<StatusListCredential>;
   let statusListEntryRepository: Repository<StatusListEntry>;
-  let queryRunner;
+  let queryRunner: QueryRunner;
 
   beforeAll(async () => {
     roleService = app.get(RoleService);

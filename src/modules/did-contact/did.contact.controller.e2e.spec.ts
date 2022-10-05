@@ -8,7 +8,7 @@ import {
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { Provider } from '../../common/provider';
 import { LoggerModule } from '../logger/logger.module';
-import * as TestDbCOnfig from '../../../test/config';
+import * as TestDbCOnfig from '../../../e2e/config';
 import request from 'supertest';
 import { appConfig, MockJWTAuthGuard } from '../../common/test.utils';
 import { didContactFixture, didDocumentFixture } from './did.contact.fixture';
