@@ -12,6 +12,7 @@ import {
 } from './entities';
 import { CredentialType } from '@ew-did-registry/credentials-interface';
 import { RevocationVerificationService } from '../claim/services';
+import { Logger } from '../logger/logger.service';
 
 describe('StatusList2021 service', () => {
   let service: StatusListService;
@@ -43,6 +44,14 @@ describe('StatusList2021 service', () => {
     save: jest.fn(),
   };
 
+  const mockLogger = {
+    log: jest.fn(),
+    error: jest.fn(),
+    setContext: jest.fn(),
+    info: jest.fn(),
+    debug: jest.fn(),
+  };
+
   beforeEach(async () => {
     jest.resetAllMocks();
 
@@ -52,7 +61,8 @@ describe('StatusList2021 service', () => {
       namespaceStatusListsRepository as unknown as Repository<NamespaceStatusLists>,
       namespaceStatusListRepository as unknown as Repository<NamespaceStatusList>,
       statusListCredentialRepository as unknown as Repository<StatusListCredential>,
-      {} as unknown as RevocationVerificationService
+      {} as unknown as RevocationVerificationService,
+      mockLogger as unknown as Logger
     );
   });
 
