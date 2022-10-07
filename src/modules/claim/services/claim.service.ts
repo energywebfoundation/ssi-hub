@@ -35,7 +35,8 @@ export class ClaimService {
     private readonly roleClaimRepository: Repository<RoleClaim>,
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
-    private readonly assetService: AssetsService
+    private readonly assetService: AssetsService,
+    private readonly roleIssuerResolver: RoleIssuerResolver
   ) {
     this.logger.setContext(ClaimService.name);
   }
@@ -506,9 +507,7 @@ export class ClaimService {
       did,
       issuerType,
       roleName: issuerRole,
-    } = await new RoleIssuerResolver(this.roleService).getIssuerDefinition(
-      roleName
-    );
+    } = await this.roleIssuerResolver.getIssuerDefinition(roleName);
     switch (issuerType) {
       case 'DID':
         return did;

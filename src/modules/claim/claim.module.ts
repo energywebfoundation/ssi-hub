@@ -14,6 +14,9 @@ import {
 import { AssetsModule } from '../assets/assets.module';
 import { DIDModule } from '../did/did.module';
 import { Provider } from '../../common/provider';
+import { RoleIssuerResolver } from './resolvers/issuer.resolver';
+import { RoleCredentialResolver } from './resolvers/credential.resolver';
+import { RoleRevokerResolver } from './resolvers/revoker.resolver';
 
 @Module({
   imports: [
@@ -30,7 +33,15 @@ import { Provider } from '../../common/provider';
     ClaimResolver,
     RevocationVerificationService,
     Provider,
+    RoleIssuerResolver,
+    RoleRevokerResolver,
+    RoleCredentialResolver,
   ],
-  exports: [RevocationVerificationService],
+  exports: [
+    RevocationVerificationService,
+    RoleIssuerResolver,
+    RoleRevokerResolver,
+    RoleCredentialResolver,
+  ],
 })
 export class ClaimModule {}
