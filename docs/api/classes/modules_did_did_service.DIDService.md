@@ -90,7 +90,7 @@ ___
 
 ### getDIDDocumentFromUniversalResolver
 
-▸ **getDIDDocumentFromUniversalResolver**(`did`): `Promise`<`any`\>
+▸ **getDIDDocumentFromUniversalResolver**(`did`): `Promise`<`IDIDDocument`\>
 
 #### Parameters
 
@@ -100,7 +100,7 @@ ___
 
 #### Returns
 
-`Promise`<`any`\>
+`Promise`<`IDIDDocument`\>
 
 ___
 

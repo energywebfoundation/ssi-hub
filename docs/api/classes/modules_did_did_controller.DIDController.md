@@ -30,7 +30,7 @@
 
 ### getById
 
-▸ **getById**(`did`): `Promise`<`any`\>
+▸ **getById**(`did`): `Promise`<`IDIDDocument`\>
 
 Retrieves a cached DID Document. If not in cache, retrieves from blockchain.
 
@@ -42,6 +42,6 @@ Retrieves a cached DID Document. If not in cache, retrieves from blockchain.
 
 #### Returns
 
-`Promise`<`any`\>
+`Promise`<`IDIDDocument`\>
 
 A DID Document representation which optionally includes full claims.

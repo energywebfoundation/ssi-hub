@@ -293,7 +293,9 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  public async getDIDDocumentFromUniversalResolver(did: string) {
+  public async getDIDDocumentFromUniversalResolver(
+    did: string
+  ): Promise<IDIDDocument> {
     const universalResolverUrl = this.config.get<string>(
       'UNIVERSAL_RESOLVER_URL'
     );

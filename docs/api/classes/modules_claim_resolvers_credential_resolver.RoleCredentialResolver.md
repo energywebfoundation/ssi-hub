@@ -111,7 +111,7 @@ ___
 
 ### getDIDDocument
 
-▸ **getDIDDocument**(`did`, `didDocumentCache?`): `Promise`<`any`\>
+▸ **getDIDDocument**(`did`, `didDocumentCache?`): `Promise`<`IDIDDocument`\>
 
 Fetches DID Document for the given DID
 
@@ -124,7 +124,7 @@ Fetches DID Document for the given DID
 
 #### Returns
 
-`Promise`<`any`\>
+`Promise`<`IDIDDocument`\>
 
 #### Implementation of
 
