@@ -74,7 +74,3 @@ ___
 #### Returns
 
 `void`
-
-#### Implementation of
-
-RevokerResolver.setRoleDefinitionCache
