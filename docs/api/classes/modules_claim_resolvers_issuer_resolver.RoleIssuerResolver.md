@@ -74,3 +74,7 @@ ___
 #### Returns
 
 `void`
+
+#### Implementation of
+
+IssuerResolver.setRoleDefinitionCache
