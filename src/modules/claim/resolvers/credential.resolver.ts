@@ -12,6 +12,7 @@ import { RolePayload } from '@energyweb/vc-verification';
 import { RoleCredentialSubject } from '@energyweb/credential-governance';
 import * as jwt from 'jsonwebtoken';
 import { DIDService } from '../../did/did.service';
+import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 
 export class RoleCredentialResolver implements CredentialResolver {
   roleCredentialCache: IRoleCredentialCache;
@@ -125,7 +126,7 @@ export class RoleCredentialResolver implements CredentialResolver {
   async getDIDDocument(
     did: string,
     didDocumentCache?: IDIDDocumentCache
-  ): Promise<any> {
+  ): Promise<IDIDDocument> {
     const cachedDIDDocument = didDocumentCache?.getDIDDocument(did);
     if (cachedDIDDocument) {
       return cachedDIDDocument;
