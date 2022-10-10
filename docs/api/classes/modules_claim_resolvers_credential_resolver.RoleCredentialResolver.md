@@ -126,10 +126,6 @@ Fetches DID Document for the given DID
 
 `Promise`<`IDIDDocument`\>
 
-#### Implementation of
-
-CredentialResolver.getDIDDocument
-
 ___
 
 ### getEIP191JWT
@@ -229,3 +225,7 @@ Sets role credential cache
 #### Returns
 
 `void`
+
+#### Implementation of
+
+CredentialResolver.setRoleCredentialCache
