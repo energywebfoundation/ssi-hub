@@ -1,5 +1,6 @@
 import {
   CredentialResolver,
+  IDIDDocumentCache,
   IRoleCredentialCache,
   isEIP191Jwt,
   isVerifiableCredential,
@@ -113,5 +114,25 @@ export class RoleCredentialResolver implements CredentialResolver {
    */
   setRoleCredentialCache(roleCredentialcache: IRoleCredentialCache): void {
     this.roleCredentialCache = roleCredentialcache;
+  }
+
+  /**
+   * Fetches DID Document for the given DID
+   * @param did subject DID
+   * @param didDocumentCache Cache to store DIDDocument. Cache is updated with Document retrieved for the DID
+   * @returns
+   */
+  async getDIDDocument(
+    did: string,
+    didDocumentCache?: IDIDDocumentCache
+  ): Promise<any> {
+    const cachedDIDDocument = didDocumentCache?.getDIDDocument(did);
+    if (cachedDIDDocument) {
+      return cachedDIDDocument;
+    }
+    const resolvedDIDDocument =
+      await this.didService.getDIDDocumentFromUniversalResolver(did);
+    didDocumentCache?.setDIDDocument(did, resolvedDIDDocument);
+    return resolvedDIDDocument;
   }
 }

@@ -24,8 +24,8 @@ export class RevocationVerificationService extends RevocationVerification {
       revokerResolver,
       issuerResolver,
       credentialResolver,
-      provider,
-      registrySettings,
+      // provider,
+      // registrySettings,
       verifyCredential
     );
   }
