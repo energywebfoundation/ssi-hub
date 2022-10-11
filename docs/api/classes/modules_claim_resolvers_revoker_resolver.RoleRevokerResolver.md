@@ -32,14 +32,13 @@
 
 ### getRevokerDefinition
 
-▸ **getRevokerDefinition**(`namespace`, `roleDefCache`): `Promise`<`IRevokerDefinition`\>
+▸ **getRevokerDefinition**(`namespace`): `Promise`<`IRevokerDefinition`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `namespace` | `string` |
-| `roleDefCache` | `IRoleDefinitionCache` |
 
 #### Returns
 
