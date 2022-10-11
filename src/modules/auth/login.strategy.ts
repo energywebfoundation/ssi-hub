@@ -24,7 +24,6 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
       privateKey: configService.get<string>('STRATEGY_PRIVATE_KEY'),
       didContractAddress: configService.get<string>('DID_REGISTRY_ADDRESS'),
       ensRegistryAddress: configService.get<string>('ENS_REGISTRY_ADDRESS'),
-      //ipfsUrl: ipfsConfig,
     };
     const numBlocksBack = configService.get<string>('STRATEGY_NUM_BLOCKS_BACK');
     if (numBlocksBack) {
