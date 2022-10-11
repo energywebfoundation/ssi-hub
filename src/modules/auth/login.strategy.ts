@@ -2,7 +2,6 @@ import { LoginStrategy } from 'passport-did-auth';
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { LoginStrategyOptions } from 'passport-did-auth/dist/lib/LoginStrategy';
 import { RoleIssuerResolver } from '../claim/resolvers/issuer.resolver';
 import { verifyCredential } from 'didkit-wasm-node';
 import { RoleRevokerResolver } from '../claim/resolvers/revoker.resolver';
@@ -17,7 +16,7 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
     revokerResolver: RoleRevokerResolver,
     credentialResolver: RoleCredentialResolver
   ) {
-    let loginStrategyOptions: LoginStrategyOptions = {
+    let loginStrategyOptions = {
       name: 'login',
       rpcUrl: configService.get<string>('ENS_URL'),
       cacheServerUrl: configService.get<string>('STRATEGY_CACHE_SERVER'),
