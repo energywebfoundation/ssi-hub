@@ -35,7 +35,6 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
     }
     super(
       loginStrategyOptions,
-      loginStrategyOptions,
       issuerResolver,
       revokerResolver,
       credentialResolver,
