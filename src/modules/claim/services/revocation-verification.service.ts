@@ -12,9 +12,9 @@ export class RevocationVerificationService extends RevocationVerification {
   constructor(
     provider: Provider,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    issuerResolver = RoleIssuerResolver,
-    revokerResolver = RoleRevokerResolver,
-    credentialResolver = RoleCredentialResolver
+    issuerResolver: RoleIssuerResolver,
+    revokerResolver: RoleRevokerResolver,
+    credentialResolver: RoleCredentialResolver
   ) {
     super(
       revokerResolver,
