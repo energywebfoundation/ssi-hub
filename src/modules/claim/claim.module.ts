@@ -6,6 +6,9 @@ import { ClaimController } from './claim.controller';
 import { RoleClaim } from './entities/roleClaim.entity';
 import { Claim } from './entities/claim.entity';
 import { ClaimResolver } from './claim.resolver';
+import { RoleIssuerResolver } from './resolvers/issuer.resolver';
+import { RoleCredentialResolver } from './resolvers/credential.resolver';
+import { RoleRevokerResolver } from './resolvers/revoker.resolver';
 import {
   ClaimService,
   ClaimIssuanceService,
@@ -31,8 +34,15 @@ import { RoleRevokerResolver } from './resolvers/revoker.resolver';
     ClaimResolver,
     RevocationVerificationService,
     Provider,
+    RoleIssuerResolver,
     RoleRevokerResolver,
+    RoleCredentialResolver,
   ],
-  exports: [RevocationVerificationService, RoleRevokerResolver],
+  exports: [
+    RevocationVerificationService,
+    RoleIssuerResolver,
+    RoleRevokerResolver,
+    RoleCredentialResolver,
+  ],
 })
 export class ClaimModule {}

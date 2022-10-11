@@ -38,6 +38,7 @@ import { IRoleDefinitionV2 } from '@energyweb/credential-governance';
 import { Organization } from '../organization/organization.entity';
 import { Application } from '../application/application.entity';
 import { NatsService } from '../nats/nats.service';
+import { RoleIssuerResolver } from './resolvers/issuer.resolver';
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -140,6 +141,7 @@ describe('ClaimsController', () => {
         Provider,
         EventEmitter2,
         SchedulerRegistry,
+        RoleIssuerResolver,
       ],
     })
       .overrideGuard(JwtAuthGuard)

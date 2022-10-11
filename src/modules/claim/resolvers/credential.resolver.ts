@@ -1,7 +1,6 @@
 import {
   CredentialResolver,
   IDIDDocumentCache,
-  IRoleCredentialCache,
   isEIP191Jwt,
   isVerifiableCredential,
   RoleEIP191JWT,
@@ -13,9 +12,10 @@ import { RoleCredentialSubject } from '@energyweb/credential-governance';
 import * as jwt from 'jsonwebtoken';
 import { DIDService } from '../../did/did.service';
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RoleCredentialResolver implements CredentialResolver {
-  roleCredentialCache: IRoleCredentialCache;
   constructor(private readonly didService: DIDService) {}
 
   async getCredential(
@@ -107,14 +107,6 @@ export class RoleCredentialResolver implements CredentialResolver {
         }
       })
       .filter(isVerifiableCredential);
-  }
-
-  /**
-   * Sets role credential cache
-   * @param roleCredentialcache
-   */
-  setRoleCredentialCache(roleCredentialcache: IRoleCredentialCache): void {
-    this.roleCredentialCache = roleCredentialcache;
   }
 
   /**
