@@ -45,18 +45,18 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@energyweb/credential-governance": "^2.2.1-alpha.291.0",
-    "@energyweb/vc-verification": "^2.2.1-alpha.291.0",
+    "@energyweb/credential-governance": "2.2.1-alpha.302.0",
+    "@energyweb/vc-verification": "2.2.1-alpha.302.0",
     "@ensdomains/ens": "^0.4.5",
     "@ensdomains/resolver": "^0.2.4",
-    "@ew-did-registry/claims": "^0.7.1-alpha.795.0",
-    "@ew-did-registry/credentials-interface": "^0.7.1-alpha.795.0",
-    "@ew-did-registry/did-document": "^0.7.1-alpha.795.0",
-    "@ew-did-registry/did-ethr-resolver": "^0.7.1-alpha.795.0",
-    "@ew-did-registry/did-ipfs-store": "^0.7.1-alpha.795.0",
-    "@ew-did-registry/jwt": "^0.7.1-alpha.795.0",
-    "@ew-did-registry/keys": "^0.7.1-alpha.795.0",
-    "@ew-did-registry/proxyidentity": "^0.7.1-alpha.795.0",
+    "@ew-did-registry/claims": "0.8.1-alpha.933.0",
+    "@ew-did-registry/credentials-interface": "0.8.1-alpha.933.0",
+    "@ew-did-registry/did-document": "0.8.1-alpha.933.0",
+    "@ew-did-registry/did-ethr-resolver": "0.8.1-alpha.933.0",
+    "@ew-did-registry/did-ipfs-store": "0.8.1-alpha.933.0",
+    "@ew-did-registry/jwt": "0.8.1-alpha.933.0",
+    "@ew-did-registry/keys": "0.8.1-alpha.933.0",
+    "@ew-did-registry/proxyidentity": "0.8.1-alpha.933.0",
     "@nestjs/axios": "0.1.0",
     "@nestjs/bull": "^0.6.0",
     "@nestjs/common": "^8.0.6",
@@ -104,7 +104,7 @@
     "pako": "^2.0.4",
     "parse-duration": "^1.0.2",
     "passport": "^0.6.0",
-    "passport-did-auth": "^2.0.0-alpha.6",
+    "passport-did-auth": "^2.0.0-alpha.20",
     "passport-jwt": "^4.0.0",
     "pg": "^8.5.1",
     "redact-pii": "^3.2.3",
@@ -174,7 +174,8 @@
     "typedoc": "^0.23.6",
     "typedoc-plugin-markdown": "^3.13.3",
     "typeorm": "^0.3.6",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "wait-on": "^6.0.1"
   },
   "jest": {
     "moduleFileExtensions": [
