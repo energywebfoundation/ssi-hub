@@ -19,6 +19,7 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+/test/setUpIpfs/compose
 
 # IDEs and editors
 /.idea
@@ -40,6 +41,7 @@ lerna-debug.log*
 
 # Using either dev or prod docker-compose file
 docker-compose.yml
+!test/setUpIpfs/docker-compose.yml
 db_dumps
 ormconfig.json
 private.pem
