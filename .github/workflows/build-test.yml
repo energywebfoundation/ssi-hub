@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('./package-lock.json') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.lock') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
@@ -86,7 +86,6 @@ jobs:
           DID_SYNC_MODE_FULL: false
           STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
           NATS_ENVIRONMENT_NAME: dev
-          IPFS_CLUSTER_ROOT: http://localhost:8080
 
       - name: Running E2E tests
         run: npm run test:e2e

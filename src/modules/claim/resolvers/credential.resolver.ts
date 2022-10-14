@@ -10,9 +10,7 @@ import { RolePayload } from '@energyweb/vc-verification';
 import { RoleCredentialSubject } from '@energyweb/credential-governance';
 import * as jwt from 'jsonwebtoken';
 import { DIDService } from '../../did/did.service';
-import { Injectable } from '@nestjs/common';
 
-@Injectable()
 export class RoleCredentialResolver implements CredentialResolver {
   constructor(private readonly didService: DIDService) {}
 
