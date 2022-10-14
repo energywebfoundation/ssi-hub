@@ -1,7 +1,9 @@
 import { IRevokerDefinition } from '@energyweb/credential-governance';
 import { RevokerResolver } from '@energyweb/vc-verification';
 import { RoleService } from '../../role/role.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RoleRevokerResolver implements RevokerResolver {
   constructor(private readonly roleService: RoleService) {}
 
