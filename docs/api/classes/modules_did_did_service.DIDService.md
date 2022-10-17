@@ -5,6 +5,7 @@
 ## Implements
 
 - `OnModuleInit`
+- `OnModuleDestroy`
 
 ## Table of contents
 
@@ -19,6 +20,7 @@
 - [getDIDDocumentFromUniversalResolver](modules_did_did_service.DIDService.md#getdiddocumentfromuniversalresolver)
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
 - [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
+- [onModuleDestroy](modules_did_did_service.DIDService.md#onmoduledestroy)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
 - [resolveServiceEndpoints](modules_did_did_service.DIDService.md#resolveserviceendpoints)
 
@@ -134,6 +136,20 @@ ___
 #### Returns
 
 `string`
+
+___
+
+### onModuleDestroy
+
+▸ **onModuleDestroy**(): `Promise`<`void`\>
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Implementation of
+
+OnModuleDestroy.onModuleDestroy
 
 ___
 

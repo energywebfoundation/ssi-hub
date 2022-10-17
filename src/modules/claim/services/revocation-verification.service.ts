@@ -15,10 +15,10 @@ export class RevocationVerificationService extends RevocationVerification {
     didService: DIDService,
     roleService: RoleService,
     provider: Provider,
-    @Inject('RegistrySettings') registrySettings: RegistrySettings
+    @Inject('RegistrySettings') registrySettings: RegistrySettings,
+    revokerResolver: RoleRevokerResolver
   ) {
     const issuerResolver = new RoleIssuerResolver(roleService);
-    const revokerResolver = new RoleRevokerResolver(roleService);
     const credentialResolver = new RoleCredentialResolver(didService);
     super(
       revokerResolver,
