@@ -6,7 +6,7 @@ import {
 } from '@nestjs/typeorm';
 import { Wallet } from 'ethers';
 import { OrganizationController } from './organization.controller';
-import * as TestDbCOnfig from '../../../test/config';
+import * as TestDbCOnfig from '../../../e2e/config';
 import { Organization } from './organization.entity';
 import { LoggerModule } from '../logger/logger.module';
 import { Application } from '../application/application.entity';
