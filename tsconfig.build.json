@@ -5,5 +5,5 @@
     "inlineSources": true,
     "sourceRoot": "/"
   },
-  "exclude": ["node_modules", "e2e", "dist", "**/*spec.ts"]
+  "exclude": ["node_modules", "e2e", "dist", "**/*spec.ts", "hardhat.config.ts"]
 }
