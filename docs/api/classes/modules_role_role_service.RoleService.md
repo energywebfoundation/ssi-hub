@@ -8,6 +8,11 @@
 
 - [constructor](modules_role_role_service.RoleService.md#constructor)
 
+### Properties
+
+- [credentialResolver](modules_role_role_service.RoleService.md#credentialresolver)
+- [issuerVerification](modules_role_role_service.RoleService.md#issuerverification)
+
 ### Methods
 
 - [create](modules_role_role_service.RoleService.md#create)
@@ -20,9 +25,12 @@
 - [handleRoleSyncWithEns](modules_role_role_service.RoleService.md#handlerolesyncwithens)
 - [remove](modules_role_role_service.RoleService.md#remove)
 - [removeByNameHash](modules_role_role_service.RoleService.md#removebynamehash)
+- [resolveCredentialAndVerify](modules_role_role_service.RoleService.md#resolvecredentialandverify)
 - [update](modules_role_role_service.RoleService.md#update)
 - [verifyEnrolmentIssuer](modules_role_role_service.RoleService.md#verifyenrolmentissuer)
 - [verifyEnrolmentPrecondition](modules_role_role_service.RoleService.md#verifyenrolmentprecondition)
+- [verifyPublicClaim](modules_role_role_service.RoleService.md#verifypublicclaim)
+- [verifyRoleEIP191JWT](modules_role_role_service.RoleService.md#verifyroleeip191jwt)
 - [verifyUserRoles](modules_role_role_service.RoleService.md#verifyuserroles)
 
 ## Constructors
@@ -40,6 +48,18 @@
 | `appService` | [`ApplicationService`](modules_application_application_service.ApplicationService.md) |
 | `orgService` | [`OrganizationService`](modules_organization_organization_service.OrganizationService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
+
+## Properties
+
+### credentialResolver
+
+• **credentialResolver**: `CredentialResolver`
+
+___
+
+### issuerVerification
+
+• **issuerVerification**: `IssuerVerification`
 
 ## Methods
 
@@ -222,6 +242,23 @@ removes Role with matching namehash
 
 ___
 
+### resolveCredentialAndVerify
+
+▸ **resolveCredentialAndVerify**(`subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `subjectDID` | `string` |
+| `roleNamespace` | `string` |
+
+#### Returns
+
+`Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
+
+___
+
 ### update
 
 ▸ **update**(`data`): `Promise`<[`Role`](modules_role_role_entity.Role.md)\>
@@ -273,6 +310,58 @@ ___
 #### Returns
 
 `Promise`<`void`\>
+
+___
+
+### verifyPublicClaim
+
+▸ **verifyPublicClaim**(`token`, `did`): `Promise`<`string`\>
+
+Verifies issued token of the public claim.
+
+```typescript
+didRegistry.verifyPublicClaim({
+    token: 'eyJh...VCJ9.ey...IyfQ.SflK...sw5c',
+    iss: 'did:ethr:volta:0x00...0',
+});
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `token` | `string` | JWT token of the public claim |
+| `did` | `string` | - |
+
+#### Returns
+
+`Promise`<`string`\>
+
+DID of the authenticated identity on successful verification or null otherwise
+
+___
+
+### verifyRoleEIP191JWT
+
+▸ **verifyRoleEIP191JWT**(`roleEIP191JWT`, `subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
+
+Verifies:
+- That off-chain claim was issued by authorized issuer
+- That off-chain claim proof is valid
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `roleEIP191JWT` | `RoleEIP191JWT` |
+| `subjectDID` | `string` |
+| `roleNamespace` | `string` |
+
+#### Returns
+
+`Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
+
+Boolean indicating if verified and array of error messages
 
 ___
 
