@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApplicationModule } from '../application/application.module';
-import { ClaimModule } from '../claim/claim.module';
 import { DIDModule } from '../did/did.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { RoleController } from './role.controller';
@@ -15,7 +14,6 @@ import { RoleService } from './role.service';
     DIDModule,
     ApplicationModule,
     OrganizationModule,
-    ClaimModule,
   ],
   controllers: [RoleController],
   providers: [RoleService, RoleResolver],

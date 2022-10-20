@@ -46,7 +46,7 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `appService` | [`ApplicationService`](modules_application_application_service.ApplicationService.md) |
 | `orgService` | [`OrganizationService`](modules_organization_organization_service.OrganizationService.md) |
-| `issuerVerificationService` | [`IssuerVerificationService`](modules_claim_services_issuer_verification_service.IssuerVerificationService.md) |
+| `issuerVerificationService` | [`IssuerVerificationService`](modules_role_issuer_verification_service.IssuerVerificationService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Properties
