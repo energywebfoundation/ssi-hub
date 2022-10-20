@@ -16,6 +16,7 @@
 
 - [create](modules_role_role_service.RoleService.md#create)
 - [exists](modules_role_role_service.RoleService.md#exists)
+- [fetchEnrolmentPreconditions](modules_role_role_service.RoleService.md#fetchenrolmentpreconditions)
 - [getAll](modules_role_role_service.RoleService.md#getall)
 - [getByNamehash](modules_role_role_service.RoleService.md#getbynamehash)
 - [getByNamespace](modules_role_role_service.RoleService.md#getbynamespace)
@@ -36,7 +37,7 @@
 
 ### constructor
 
-• **new RoleService**(`roleRepository`, `didService`, `appService`, `orgService`, `issuerVerificationService`, `logger`)
+• **new RoleService**(`roleRepository`, `didService`, `appService`, `orgService`, `logger`)
 
 #### Parameters
 
@@ -46,7 +47,6 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `appService` | [`ApplicationService`](modules_application_application_service.ApplicationService.md) |
 | `orgService` | [`OrganizationService`](modules_organization_organization_service.OrganizationService.md) |
-| `issuerVerificationService` | [`IssuerVerificationService`](modules_role_issuer_verification_service.IssuerVerificationService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Properties
@@ -92,6 +92,23 @@ return true if role with given namespace exists
 #### Returns
 
 `Promise`<`boolean`\>
+
+___
+
+### fetchEnrolmentPreconditions
+
+▸ **fetchEnrolmentPreconditions**(`__namedParameters`): `Promise`<{}[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+
+#### Returns
+
+`Promise`<{}[]\>
 
 ___
 
@@ -291,7 +308,7 @@ ___
 
 ### verifyEnrolmentPrecondition
 
-▸ **verifyEnrolmentPrecondition**(`__namedParameters`): `Promise`<`void`\>
+▸ **verifyEnrolmentPrecondition**(`__namedParameters`): `Promise`<`string`[]\>
 
 #### Parameters
 
@@ -299,11 +316,12 @@ ___
 | :------ | :------ |
 | `__namedParameters` | `Object` |
 | `__namedParameters.claimType` | `string` |
+| `__namedParameters.enrolmentPreconditions` | { `conditions`: `string`[] ; `type`: `Role`  }[] |
 | `__namedParameters.userDID` | `string` |
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<`string`[]\>
 
 ___
 

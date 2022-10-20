@@ -78,15 +78,25 @@ export class ClaimIssuanceService {
       claimTypeVersion,
     });
 
+    const enrolmentPreconditions =
+      await this.roleService.fetchEnrolmentPreconditions({
+        claimType: dto.claimType,
+      });
+    await this.roleService.verifyEnrolmentPrecondition({
+      claimType,
+      userDID: dto.requester,
+      enrolmentPreconditions,
+    });
+
     await this.roleService.verifyEnrolmentIssuer({
       issuerDID: dto.acceptedBy,
       claimType: dto.claimType,
     });
 
-    await this.roleService.verifyEnrolmentPrecondition({
-      claimType: dto.claimType,
-      userDID: dto.requester,
-    });
+    // await this.roleService.verifyEnrolmentPrecondition({
+    //   claimType: dto.claimType,
+    //   userDID: dto.requester,
+    // });
 
     await this.createAndIssue(dto, dto.requester);
 

@@ -80,9 +80,18 @@ export class ClaimService {
       claimType,
       claimTypeVersion,
     });
+    // await this.roleService.verifyEnrolmentPrecondition({
+    //   claimType,
+    //   userDID: dto.requester,
+    // });
+    const enrolmentPreconditions =
+      await this.roleService.fetchEnrolmentPreconditions({
+        claimType: dto.claimType,
+      });
     await this.roleService.verifyEnrolmentPrecondition({
       claimType,
       userDID: dto.requester,
+      enrolmentPreconditions,
     });
 
     await this.create(dto, sub, redirectUri);

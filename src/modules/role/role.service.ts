@@ -15,13 +15,13 @@ import { Logger } from '../logger/logger.service';
 import {
   IRoleDefinition,
   IRoleDefinitionV2,
+  PreconditionType,
 } from '@energyweb/credential-governance';
 import { Application } from '../application/application.entity';
 import { Organization } from '../organization/organization.entity';
 import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
 import { CredentialResolver, RoleEIP191JWT } from '@energyweb/vc-verification';
 import { ProofVerifier } from '@ew-did-registry/claims';
-import { IssuerVerificationService } from './issuer-verification.service';
 
 @Injectable()
 export class RoleService {
@@ -31,7 +31,6 @@ export class RoleService {
     private readonly didService: DIDService,
     private readonly appService: ApplicationService,
     private readonly orgService: OrganizationService,
-    private readonly issuerVerificationService: IssuerVerificationService,
     private readonly logger: Logger
   ) {
     this.logger.setContext(RoleService.name);
@@ -212,18 +211,12 @@ export class RoleService {
     return verifiedRoles.filter(Boolean);
   }
 
-  public async verifyEnrolmentPrecondition({
-    userDID,
+  public async fetchEnrolmentPreconditions({
     claimType,
   }: {
-    userDID: string;
     claimType: string;
   }) {
-    const [didDocument, role] = await Promise.all([
-      this.didService.getById(userDID),
-      this.getByNamespace(claimType),
-    ]);
-
+    const role = await this.getByNamespace(claimType);
     if (!role) {
       throw new Error(`There is no created role for ${claimType} namespace`);
     }
@@ -231,6 +224,35 @@ export class RoleService {
     const {
       definition: { enrolmentPreconditions },
     } = role;
+    return enrolmentPreconditions;
+  }
+
+  public async verifyEnrolmentPrecondition({
+    claimType,
+    userDID,
+    enrolmentPreconditions,
+  }: {
+    claimType: string;
+    userDID: string;
+    enrolmentPreconditions: {
+      type: PreconditionType;
+      conditions: string[];
+    }[];
+  }) {
+    const didDocument = await this.didService.getById(userDID);
+
+    // const [didDocument, role] = await Promise.all([
+    //   this.didService.getById(userDID),
+    //   this.getByNamespace(claimType),
+    // ]);
+
+    // if (!role) {
+    //   throw new Error(`There is no created role for ${claimType} namespace`);
+    // }
+
+    // const {
+    //   definition: { enrolmentPreconditions },
+    // } = role;
 
     if (!enrolmentPreconditions || enrolmentPreconditions.length < 1) return;
     for (const { type, conditions } of enrolmentPreconditions) {
@@ -248,24 +270,8 @@ export class RoleService {
             `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}. User does not have this claim.`
           );
         }
-        /*
-          Second, for each enrolment pre-condition (role), resolve and perform verification on the user's corresponding credential;
-          If a credential is not verified, throw an error describing the verification failure
-        */
-        await Promise.all(
-          conditions.map(async (condition) => {
-            const { isVerified, errors } =
-              await this.resolveCredentialAndVerify(userDID, condition);
-            if (!isVerified) {
-              throw new Error(
-                `Role enrolment precondition not met for user: ${userDID} and role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
-                  errors
-                )}`
-              );
-            }
-          })
-        );
       }
+      return conditions;
     }
   }
 
@@ -328,19 +334,19 @@ export class RoleService {
         `Verification failed for ${roleNamespace} for ${subjectDID}: Credential for prerequisite role expired`
       );
     }
-    const { verified: issuerVerified, error } =
-      await this.issuerVerificationService.verifyIssuer(
-        issuerDID,
-        payload?.claimData?.claimType
-      );
-    if (!issuerVerified && error) {
-      throw new Error(
-        `Verification failed for ${roleNamespace} for ${subjectDID}: No Issuer Specified for ${roleNamespace} for ${subjectDID}`
-      );
-    }
+    // const { verified: issuerVerified, error } =
+    //   await this.issuerVerificationService.verifyIssuer(
+    //     issuerDID,
+    //     payload?.claimData?.claimType
+    //   );
+    // if (!issuerVerified && error) {
+    //   throw new Error(
+    //     `Verification failed for ${roleNamespace} for ${subjectDID}: No Issuer Specified for ${roleNamespace} for ${subjectDID}`
+    //   );
+    // }
     return {
       errors: errors,
-      isVerified: !!proofVerified && issuerVerified && !isExpired,
+      isVerified: !!proofVerified && !isExpired,
     };
   }
 
