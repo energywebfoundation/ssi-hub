@@ -21,7 +21,7 @@ import { Organization } from '../organization/organization.entity';
 import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
 import { CredentialResolver, RoleEIP191JWT } from '@energyweb/vc-verification';
 import { ProofVerifier } from '@ew-did-registry/claims';
-import { IssuerVerificationService } from '../claim/services/issuer-verification.service';
+import { IssuerVerificationService } from './issuer-verification.service';
 
 @Injectable()
 export class RoleService {

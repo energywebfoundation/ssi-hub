@@ -1,6 +1,6 @@
 # Class: IssuerVerificationService
 
-[modules/claim/services/issuer-verification.service](../modules/modules_claim_services_issuer_verification_service.md).IssuerVerificationService
+[modules/role/issuer-verification.service](../modules/modules_role_issuer_verification_service.md).IssuerVerificationService
 
 ## Hierarchy
 
@@ -12,7 +12,7 @@
 
 ### Constructors
 
-- [constructor](modules_claim_services_issuer_verification_service.IssuerVerificationService.md#constructor)
+- [constructor](modules_role_issuer_verification_service.IssuerVerificationService.md#constructor)
 
 ## Constructors
 
