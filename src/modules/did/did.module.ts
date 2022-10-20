@@ -12,6 +12,7 @@ import { DIDService } from './did.service';
 import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { ConfigService } from '@nestjs/config';
 import { DidStore } from '@ew-did-registry/did-ipfs-store';
+import { IpfsConfig } from '../ipfs/ipfs.types';
 
 const RegistrySettingsProvider = {
   provide: 'RegistrySettings',
@@ -40,8 +41,9 @@ const RegistrySettingsProvider = {
     RegistrySettingsProvider,
     {
       provide: DidStore,
-      useFactory: (ipfsConfig) => {
-        return new DidStore(ipfsConfig);
+      useFactory: ({ protocol, host, port, headers }: IpfsConfig) => {
+        const url = `${protocol}://${host}:${port}`;
+        return new DidStore(url, headers);
       },
       inject: [{ token: 'IPFSClientConfig', optional: false }],
     },
