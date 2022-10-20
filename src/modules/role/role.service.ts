@@ -19,22 +19,19 @@ import {
 import { Application } from '../application/application.entity';
 import { Organization } from '../organization/organization.entity';
 import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
-import {
-  CredentialResolver,
-  RoleEIP191JWT,
-  IssuerVerification,
-} from '@energyweb/vc-verification';
+import { CredentialResolver, RoleEIP191JWT } from '@energyweb/vc-verification';
 import { ProofVerifier } from '@ew-did-registry/claims';
+import { IssuerVerificationService } from '../claim/services/issuer-verification.service';
 
 @Injectable()
 export class RoleService {
   credentialResolver: CredentialResolver;
-  issuerVerification: IssuerVerification;
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
     private readonly didService: DIDService,
     private readonly appService: ApplicationService,
     private readonly orgService: OrganizationService,
+    private readonly issuerVerificationService: IssuerVerificationService,
     private readonly logger: Logger
   ) {
     this.logger.setContext(RoleService.name);
@@ -332,7 +329,7 @@ export class RoleService {
       );
     }
     const { verified: issuerVerified, error } =
-      await this.issuerVerification.verifyIssuer(
+      await this.issuerVerificationService.verifyIssuer(
         issuerDID,
         payload?.claimData?.claimType
       );
