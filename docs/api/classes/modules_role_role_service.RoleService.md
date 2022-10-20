@@ -11,7 +11,6 @@
 ### Properties
 
 - [credentialResolver](modules_role_role_service.RoleService.md#credentialresolver)
-- [issuerVerification](modules_role_role_service.RoleService.md#issuerverification)
 
 ### Methods
 
@@ -37,7 +36,7 @@
 
 ### constructor
 
-• **new RoleService**(`roleRepository`, `didService`, `appService`, `orgService`, `logger`)
+• **new RoleService**(`roleRepository`, `didService`, `appService`, `orgService`, `issuerVerificationService`, `logger`)
 
 #### Parameters
 
@@ -47,6 +46,7 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `appService` | [`ApplicationService`](modules_application_application_service.ApplicationService.md) |
 | `orgService` | [`OrganizationService`](modules_organization_organization_service.OrganizationService.md) |
+| `issuerVerificationService` | [`IssuerVerificationService`](modules_claim_services_issuer_verification_service.IssuerVerificationService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Properties
@@ -54,12 +54,6 @@
 ### credentialResolver
 
 • **credentialResolver**: `CredentialResolver`
-
-___
-
-### issuerVerification
-
-• **issuerVerification**: `IssuerVerification`
 
 ## Methods
 
