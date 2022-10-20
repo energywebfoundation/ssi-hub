@@ -80,7 +80,6 @@ export class ClaimService {
       claimType,
       claimTypeVersion,
     });
-    //here is verify
     await this.roleService.verifyEnrolmentPrecondition({
       claimType,
       userDID: dto.requester,
