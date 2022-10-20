@@ -317,27 +317,16 @@ ___
 
 ▸ **verifyPublicClaim**(`token`, `did`): `Promise`<`string`\>
 
-Verifies issued token of the public claim.
-
-```typescript
-didRegistry.verifyPublicClaim({
-    token: 'eyJh...VCJ9.ey...IyfQ.SflK...sw5c',
-    iss: 'did:ethr:volta:0x00...0',
-});
-```
-
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `token` | `string` | JWT token of the public claim |
-| `did` | `string` | - |
+| Name | Type |
+| :------ | :------ |
+| `token` | `string` |
+| `did` | `string` |
 
 #### Returns
 
 `Promise`<`string`\>
-
-DID of the authenticated identity on successful verification or null otherwise
 
 ___
 
@@ -347,6 +336,7 @@ ___
 
 Verifies:
 - That off-chain claim was issued by authorized issuer
+- That claim is not expired
 - That off-chain claim proof is valid
 
 #### Parameters

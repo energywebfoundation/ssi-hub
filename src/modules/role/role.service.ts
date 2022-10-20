@@ -261,7 +261,9 @@ export class RoleService {
               await this.resolveCredentialAndVerify(userDID, condition);
             if (!isVerified) {
               throw new Error(
-                `Role enrolment precondition not met for user: ${userDID} and role: ${condition}. Verification errors for enrolment preconditions: ${errors}`
+                `Role enrolment precondition not met for user: ${userDID} and role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
+                  errors
+                )}`
               );
             }
           })
@@ -296,6 +298,7 @@ export class RoleService {
   /**
    * Verifies:
    * - That off-chain claim was issued by authorized issuer
+   * - That claim is not expired
    * - That off-chain claim proof is valid
    *
    * @param {OffChainClaim} off chain claim to verify
@@ -312,7 +315,6 @@ export class RoleService {
     if (!issuerDID) {
       throw new Error('No issuer specified for credential');
     }
-    //HERE!!!
     const proofVerified = await this.verifyPublicClaim(
       eip191Jwt,
       payload?.iss as string
@@ -336,7 +338,7 @@ export class RoleService {
       );
     if (!issuerVerified && error) {
       throw new Error(
-        `No Issuer Specified for ${roleNamespace} for ${subjectDID}`
+        `Verification failed for ${roleNamespace} for ${subjectDID}: No Issuer Specified for ${roleNamespace} for ${subjectDID}`
       );
     }
     return {
@@ -345,19 +347,6 @@ export class RoleService {
     };
   }
 
-  /**
-   * Verifies issued token of the public claim.
-   *
-   * ```typescript
-   * didRegistry.verifyPublicClaim({
-   *     token: 'eyJh...VCJ9.ey...IyfQ.SflK...sw5c',
-   *     iss: 'did:ethr:volta:0x00...0',
-   * });
-   * ```
-   * @param {String} token JWT token of the public claim
-   * @param {String} iss DID of the issuer
-   * @return DID of the authenticated identity on successful verification or null otherwise
-   */
   async verifyPublicClaim(token: string, did: string): Promise<string | null> {
     const didDoc = await this.didService.getById(did);
     const verifier = new ProofVerifier(didDoc);
