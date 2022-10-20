@@ -18,9 +18,18 @@ import {
 } from '@energyweb/credential-governance';
 import { Application } from '../application/application.entity';
 import { Organization } from '../organization/organization.entity';
+import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
+import {
+  CredentialResolver,
+  RoleEIP191JWT,
+  IssuerVerification,
+} from '@energyweb/vc-verification';
+import { ProofVerifier } from '@ew-did-registry/claims';
 
 @Injectable()
 export class RoleService {
+  credentialResolver: CredentialResolver;
+  issuerVerification: IssuerVerification;
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
     private readonly didService: DIDService,
@@ -29,6 +38,7 @@ export class RoleService {
     private readonly logger: Logger
   ) {
     this.logger.setContext(RoleService.name);
+    this.credentialResolver = new RoleCredentialResolver(didService);
   }
 
   /**
@@ -228,17 +238,130 @@ export class RoleService {
     if (!enrolmentPreconditions || enrolmentPreconditions.length < 1) return;
     for (const { type, conditions } of enrolmentPreconditions) {
       if (type === 'role' && conditions && conditions?.length > 0) {
-        const conditionMet = didDocument.service.some(
+        /*
+          First, check if the enrolment pre-condition is present in the user's Did Document service array:
+          If any pre-required roles are not present, throw and discontinue verification
+        */
+        const hasConditionAsClaim = didDocument.service.some(
           ({ claimType }) =>
             claimType && conditions.includes(claimType as string)
         );
-        if (!conditionMet) {
+        if (!hasConditionAsClaim) {
           throw new Error(
-            `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}`
+            `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}. User does not have this claim.`
           );
         }
+        /*
+          Second, for each enrolment pre-condition (role), resolve and perform verification on the user's corresponding credential;
+          If a credential is not verified, throw an error describing the verification failure
+        */
+        await Promise.all(
+          conditions.map(async (condition) => {
+            const { isVerified, errors } =
+              await this.resolveCredentialAndVerify(userDID, condition);
+            if (!isVerified) {
+              throw new Error(
+                `Role enrolment precondition not met for user: ${userDID} and role: ${condition}. Verification errors for enrolment preconditions: ${errors}`
+              );
+            }
+          })
+        );
       }
     }
+  }
+
+  public async resolveCredentialAndVerify(
+    subjectDID: string,
+    roleNamespace: string
+  ) {
+    const resolvedCredential = await this.credentialResolver.getCredential(
+      subjectDID,
+      roleNamespace
+    );
+    if (!resolvedCredential) {
+      return {
+        isVerified: false,
+        errors: [
+          `No credential found for required enrolment pre-condition for ${subjectDID} and role: ${roleNamespace}`,
+        ],
+      };
+    }
+    return this.verifyRoleEIP191JWT(
+      resolvedCredential as RoleEIP191JWT,
+      subjectDID,
+      roleNamespace
+    );
+  }
+
+  /**
+   * Verifies:
+   * - That off-chain claim was issued by authorized issuer
+   * - That off-chain claim proof is valid
+   *
+   * @param {OffChainClaim} off chain claim to verify
+   * @return Boolean indicating if verified and array of error messages
+   */
+  async verifyRoleEIP191JWT(
+    roleEIP191JWT: RoleEIP191JWT,
+    subjectDID: string,
+    roleNamespace: string
+  ): Promise<{ isVerified: boolean; errors: string[] }> {
+    const { payload, eip191Jwt } = roleEIP191JWT;
+    const errors: string[] = [];
+    const issuerDID = roleEIP191JWT.payload?.iss;
+    if (!issuerDID) {
+      throw new Error('No issuer specified for credential');
+    }
+    //HERE!!!
+    const proofVerified = await this.verifyPublicClaim(
+      eip191Jwt,
+      payload?.iss as string
+    );
+    if (!proofVerified) {
+      errors.push(
+        `Verification failed for ${roleNamespace} for ${subjectDID}: Proof not verified for role`
+      );
+    }
+    // Date.now() and JWT expiration time both identify the time elapsed since January 1, 1970 00:00:00 UTC
+    const isExpired = payload?.exp && payload?.exp * 1000 < Date.now();
+    if (isExpired) {
+      errors.push(
+        `Verification failed for ${roleNamespace} for ${subjectDID}: Credential for prerequisite role expired`
+      );
+    }
+    const { verified: issuerVerified, error } =
+      await this.issuerVerification.verifyIssuer(
+        issuerDID,
+        payload?.claimData?.claimType
+      );
+    if (!issuerVerified && error) {
+      throw new Error(
+        `No Issuer Specified for ${roleNamespace} for ${subjectDID}`
+      );
+    }
+    return {
+      errors: errors,
+      isVerified: !!proofVerified && issuerVerified && !isExpired,
+    };
+  }
+
+  /**
+   * Verifies issued token of the public claim.
+   *
+   * ```typescript
+   * didRegistry.verifyPublicClaim({
+   *     token: 'eyJh...VCJ9.ey...IyfQ.SflK...sw5c',
+   *     iss: 'did:ethr:volta:0x00...0',
+   * });
+   * ```
+   * @param {String} token JWT token of the public claim
+   * @param {String} iss DID of the issuer
+   * @return DID of the authenticated identity on successful verification or null otherwise
+   */
+  async verifyPublicClaim(token: string, did: string): Promise<string | null> {
+    const didDoc = await this.didService.getById(did);
+    const verifier = new ProofVerifier(didDoc);
+    return verifier.verifyAssertionProof(token);
   }
 
   public async verifyEnrolmentIssuer({
