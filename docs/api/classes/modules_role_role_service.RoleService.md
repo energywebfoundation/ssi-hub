@@ -25,12 +25,9 @@
 - [handleRoleSyncWithEns](modules_role_role_service.RoleService.md#handlerolesyncwithens)
 - [remove](modules_role_role_service.RoleService.md#remove)
 - [removeByNameHash](modules_role_role_service.RoleService.md#removebynamehash)
-- [resolveCredentialAndVerify](modules_role_role_service.RoleService.md#resolvecredentialandverify)
 - [update](modules_role_role_service.RoleService.md#update)
+- [verifyDidDocumentContainsEnrolmentPreconditions](modules_role_role_service.RoleService.md#verifydiddocumentcontainsenrolmentpreconditions)
 - [verifyEnrolmentIssuer](modules_role_role_service.RoleService.md#verifyenrolmentissuer)
-- [verifyEnrolmentPrecondition](modules_role_role_service.RoleService.md#verifyenrolmentprecondition)
-- [verifyPublicClaim](modules_role_role_service.RoleService.md#verifypublicclaim)
-- [verifyRoleEIP191JWT](modules_role_role_service.RoleService.md#verifyroleeip191jwt)
 - [verifyUserRoles](modules_role_role_service.RoleService.md#verifyuserroles)
 
 ## Constructors
@@ -97,18 +94,22 @@ ___
 
 ### fetchEnrolmentPreconditions
 
-▸ **fetchEnrolmentPreconditions**(`__namedParameters`): `Promise`<{}[]\>
+▸ **fetchEnrolmentPreconditions**(`claimType`): `Promise`<{}[]\>
+
+Fetches enrolment preconditions for a given role (claim type)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.claimType` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `claimType` | `Object` | the role to fetch enrolment preconditions for |
+| `claimType.claimType` | `string` | - |
 
 #### Returns
 
 `Promise`<{}[]\>
+
+enrolment preconditions for a given role (claim type)
 
 ___
 
@@ -253,23 +254,6 @@ removes Role with matching namehash
 
 ___
 
-### resolveCredentialAndVerify
-
-▸ **resolveCredentialAndVerify**(`subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `subjectDID` | `string` |
-| `roleNamespace` | `string` |
-
-#### Returns
-
-`Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
-
-___
-
 ### update
 
 ▸ **update**(`data`): `Promise`<[`Role`](modules_role_role_entity.Role.md)\>
@@ -288,6 +272,27 @@ Update existing role with given namespace
 
 ___
 
+### verifyDidDocumentContainsEnrolmentPreconditions
+
+▸ **verifyDidDocumentContainsEnrolmentPreconditions**(`__namedParameters`): `Promise`<`void`\>
+
+Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.conditions` | `string`[] |
+| `__namedParameters.userDID` | `string` |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
+
 ### verifyEnrolmentIssuer
 
 ▸ **verifyEnrolmentIssuer**(`__namedParameters`): `Promise`<`void`\>
@@ -303,67 +308,6 @@ ___
 #### Returns
 
 `Promise`<`void`\>
-
-___
-
-### verifyEnrolmentPrecondition
-
-▸ **verifyEnrolmentPrecondition**(`__namedParameters`): `Promise`<`string`[]\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.claimType` | `string` |
-| `__namedParameters.enrolmentPreconditions` | { `conditions`: `string`[] ; `type`: `Role`  }[] |
-| `__namedParameters.userDID` | `string` |
-
-#### Returns
-
-`Promise`<`string`[]\>
-
-___
-
-### verifyPublicClaim
-
-▸ **verifyPublicClaim**(`token`, `did`): `Promise`<`string`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `token` | `string` |
-| `did` | `string` |
-
-#### Returns
-
-`Promise`<`string`\>
-
-___
-
-### verifyRoleEIP191JWT
-
-▸ **verifyRoleEIP191JWT**(`roleEIP191JWT`, `subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
-
-Verifies:
-- That off-chain claim was issued by authorized issuer
-- That claim is not expired
-- That off-chain claim proof is valid
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `roleEIP191JWT` | `RoleEIP191JWT` |
-| `subjectDID` | `string` |
-| `roleNamespace` | `string` |
-
-#### Returns
-
-`Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
-
-Boolean indicating if verified and array of error messages
 
 ___
 
