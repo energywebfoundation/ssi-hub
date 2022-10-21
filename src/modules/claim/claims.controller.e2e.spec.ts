@@ -14,7 +14,12 @@ import { LoggerModule } from '../logger/logger.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { RoleClaim } from './entities/roleClaim.entity';
 import { ClaimController } from './claim.controller';
-import { ClaimIssuanceService, ClaimService } from './services';
+import {
+  ClaimIssuanceService,
+  ClaimService,
+  IssuerVerificationService,
+  ClaimVerificationService,
+} from './services';
 import { UUID_NAMESPACE } from './claim.const';
 import {
   ClaimEventType,
@@ -140,6 +145,8 @@ describe('ClaimsController', () => {
         Provider,
         EventEmitter2,
         SchedulerRegistry,
+        ClaimVerificationService,
+        IssuerVerificationService,
       ],
     })
       .overrideGuard(JwtAuthGuard)
