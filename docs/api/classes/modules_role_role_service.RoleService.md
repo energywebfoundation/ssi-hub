@@ -8,10 +8,6 @@
 
 - [constructor](modules_role_role_service.RoleService.md#constructor)
 
-### Properties
-
-- [credentialResolver](modules_role_role_service.RoleService.md#credentialresolver)
-
 ### Methods
 
 - [create](modules_role_role_service.RoleService.md#create)
@@ -45,12 +41,6 @@
 | `appService` | [`ApplicationService`](modules_application_application_service.ApplicationService.md) |
 | `orgService` | [`OrganizationService`](modules_organization_organization_service.OrganizationService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
-
-## Properties
-
-### credentialResolver
-
-• **credentialResolver**: `CredentialResolver`
 
 ## Methods
 

@@ -18,12 +18,9 @@ import {
 } from '@energyweb/credential-governance';
 import { Application } from '../application/application.entity';
 import { Organization } from '../organization/organization.entity';
-import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
-import { CredentialResolver } from '@energyweb/vc-verification';
 
 @Injectable()
 export class RoleService {
-  credentialResolver: CredentialResolver;
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
     private readonly didService: DIDService,
@@ -32,7 +29,6 @@ export class RoleService {
     private readonly logger: Logger
   ) {
     this.logger.setContext(RoleService.name);
-    this.credentialResolver = new RoleCredentialResolver(didService);
   }
 
   /**
