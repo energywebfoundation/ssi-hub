@@ -8,6 +8,7 @@ import { Logger } from '../../logger/logger.service';
 import { ClaimIssueDTO, NewClaimIssueDTO } from '../claim.dto';
 import { RoleClaim } from '../entities/roleClaim.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
+import { ClaimVerificationService } from './claim-verification.service';
 
 @Injectable()
 export class ClaimIssuanceService {
@@ -15,7 +16,8 @@ export class ClaimIssuanceService {
     private readonly roleService: RoleService,
     private readonly logger: Logger,
     @InjectRepository(RoleClaim)
-    private readonly roleClaimRepository: Repository<RoleClaim>
+    private readonly roleClaimRepository: Repository<RoleClaim>,
+    private claimVerificationService: ClaimVerificationService
   ) {
     this.logger.setContext(ClaimIssuanceService.name);
   }
@@ -82,21 +84,37 @@ export class ClaimIssuanceService {
       await this.roleService.fetchEnrolmentPreconditions({
         claimType: dto.claimType,
       });
-    await this.roleService.verifyEnrolmentPrecondition({
-      claimType,
-      userDID: dto.requester,
-      enrolmentPreconditions,
-    });
-
-    await this.roleService.verifyEnrolmentIssuer({
-      issuerDID: dto.acceptedBy,
-      claimType: dto.claimType,
-    });
-
-    // await this.roleService.verifyEnrolmentPrecondition({
-    //   claimType: dto.claimType,
-    //   userDID: dto.requester,
-    // });
+    if (enrolmentPreconditions?.length > 0) {
+      for (const { type, conditions } of enrolmentPreconditions) {
+        if (type === 'role' && conditions?.length > 0) {
+          await this.roleService.verifyDidDocumentContainsEnrolmentPreconditions(
+            {
+              claimType,
+              userDID: dto.requester,
+              conditions,
+            }
+          );
+          await Promise.all(
+            conditions.map(async (condition) => {
+              const { isVerified, errors } =
+                await this.claimVerificationService.resolveCredentialAndVerify(
+                  dto.requester,
+                  condition
+                );
+              if (!isVerified) {
+                throw new Error(
+                  `Role enrolment precondition not met for user: ${
+                    dto.requester
+                  } for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
+                    errors
+                  )}`
+                );
+              }
+            })
+          );
+        }
+      }
+    }
 
     await this.createAndIssue(dto, dto.requester);
 

@@ -4,7 +4,11 @@ import { IssuerVerificationService } from './issuer-verification.service';
 import { DIDService } from '../../did/did.service';
 import { RoleCredentialResolver } from '../resolvers/credential.resolver';
 import { ProofVerifier } from '@ew-did-registry/claims';
-import { CredentialResolver, RoleEIP191JWT } from '@energyweb/vc-verification';
+import {
+  CredentialResolver,
+  RoleEIP191JWT,
+  isEIP191Jwt,
+} from '@energyweb/vc-verification';
 
 @Injectable()
 export class ClaimVerificationService {
@@ -18,6 +22,13 @@ export class ClaimVerificationService {
     this.credentialResolver = new RoleCredentialResolver(didService);
   }
 
+  /**
+   * Resolve a credential from storage and verify its proof/signature and its issuer's authority
+   *
+   * @param subjectDID The DID to try to resolve a credential for
+   * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
+   * @return void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
+   */
   public async resolveCredentialAndVerify(
     subjectDID: string,
     roleNamespace: string
@@ -30,15 +41,17 @@ export class ClaimVerificationService {
       return {
         isVerified: false,
         errors: [
-          `No credential found for required enrolment pre-condition for ${subjectDID} and role: ${roleNamespace}`,
+          `No credential found for role ${roleNamespace} for Did ${subjectDID}`,
         ],
       };
     }
-    return this.verifyRoleEIP191JWT(
-      resolvedCredential as RoleEIP191JWT,
-      subjectDID,
-      roleNamespace
-    );
+    if (isEIP191Jwt(resolvedCredential)) {
+      return this.verifyRoleEIP191JWT(
+        resolvedCredential as RoleEIP191JWT,
+        subjectDID,
+        roleNamespace
+      );
+    }
   }
 
   /**
@@ -47,7 +60,9 @@ export class ClaimVerificationService {
    * - That claim is not expired
    * - That off-chain claim proof is valid
    *
-   * @param {OffChainClaim} off chain claim to verify
+   * @param roleEIP191JWT off chain claim to verify
+   * @param subjectDID The credential subject
+   * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
    * @return Boolean indicating if verified and array of error messages
    */
   async verifyRoleEIP191JWT(
@@ -93,6 +108,13 @@ export class ClaimVerificationService {
     };
   }
 
+  /**
+   * Verifies issued token of the public claim.
+   *
+   * @param {String} token JWT token of the public claim
+   * @param {String} iss DID of the issuer
+   * @return DID of the authenticated identity on successful verification or null otherwise
+   */
   async verifyPublicClaim(token: string, did: string): Promise<string | null> {
     const didDoc = await this.didService.getById(did);
     const verifier = new ProofVerifier(didDoc);

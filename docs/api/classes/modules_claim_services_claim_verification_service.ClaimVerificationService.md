@@ -44,16 +44,20 @@
 
 ▸ **resolveCredentialAndVerify**(`subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
 
+Resolve a credential from storage and verify its proof/signature and its issuer's authority
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `subjectDID` | `string` |
-| `roleNamespace` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `subjectDID` | `string` | The DID to try to resolve a credential for |
+| `roleNamespace` | `string` | - |
 
 #### Returns
 
 `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
+
+void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
 
 ___
 
@@ -61,16 +65,20 @@ ___
 
 ▸ **verifyPublicClaim**(`token`, `did`): `Promise`<`string`\>
 
+Verifies issued token of the public claim.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `token` | `string` |
-| `did` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `token` | `string` | JWT token of the public claim |
+| `did` | `string` | - |
 
 #### Returns
 
 `Promise`<`string`\>
+
+DID of the authenticated identity on successful verification or null otherwise
 
 ___
 
@@ -85,11 +93,11 @@ Verifies:
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `roleEIP191JWT` | `RoleEIP191JWT` |
-| `subjectDID` | `string` |
-| `roleNamespace` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `roleEIP191JWT` | `RoleEIP191JWT` | off chain claim to verify |
+| `subjectDID` | `string` | The credential subject |
+| `roleNamespace` | `string` | - |
 
 #### Returns
 

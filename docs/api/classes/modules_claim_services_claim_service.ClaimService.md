@@ -36,7 +36,7 @@
 
 ### constructor
 
-• **new ClaimService**(`roleService`, `logger`, `roleClaimRepository`, `claimRepository`, `assetService`)
+• **new ClaimService**(`roleService`, `logger`, `roleClaimRepository`, `claimRepository`, `assetService`, `claimVerificationService`)
 
 #### Parameters
 
@@ -47,6 +47,7 @@
 | `roleClaimRepository` | `Repository`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\> |
 | `claimRepository` | `Repository`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)\> |
 | `assetService` | [`AssetsService`](modules_assets_assets_service.AssetsService.md) |
+| `claimVerificationService` | [`ClaimVerificationService`](modules_claim_services_claim_verification_service.ClaimVerificationService.md) |
 
 ## Methods
 
