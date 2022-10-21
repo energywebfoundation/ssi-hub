@@ -19,6 +19,7 @@ import {
   ClaimService,
   IssuerVerificationService,
   ClaimVerificationService,
+  RevocationVerificationService,
 } from './services';
 import { UUID_NAMESPACE } from './claim.const';
 import {
@@ -45,6 +46,7 @@ import { Application } from '../application/application.entity';
 import { NatsService } from '../nats/nats.service';
 import { Methods } from '@ew-did-registry/did';
 import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
+import { RoleRevokerResolver } from './resolvers/revoker.resolver';
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -76,6 +78,8 @@ describe('ClaimsController', () => {
 
   const MockRoleService = {
     verifyEnrolmentPrecondition: jest.fn(),
+    fetchEnrolmentPreconditions: jest.fn(),
+    verifyDidDocumentContainsEnrolmentPreconditions: jest.fn(),
     getAll: jest.fn().mockResolvedValue([]),
     getByNamespace,
   };
@@ -149,6 +153,7 @@ describe('ClaimsController', () => {
         SchedulerRegistry,
         ClaimVerificationService,
         IssuerVerificationService,
+
         {
           provide: 'RegistrySettings',
           useFactory: (configService: ConfigService) => ({
@@ -158,6 +163,8 @@ describe('ClaimsController', () => {
           }),
           inject: [ConfigService],
         },
+        RevocationVerificationService,
+        RoleRevokerResolver,
       ],
     })
       .overrideGuard(JwtAuthGuard)

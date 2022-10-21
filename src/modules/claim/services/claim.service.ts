@@ -81,7 +81,6 @@ export class ClaimService {
       claimType,
       claimTypeVersion,
     });
-
     const enrolmentPreconditions =
       await this.roleService.fetchEnrolmentPreconditions({
         claimType: dto.claimType,
