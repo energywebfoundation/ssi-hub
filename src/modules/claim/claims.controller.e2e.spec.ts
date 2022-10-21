@@ -1,7 +1,7 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Connection, EntityManager, QueryRunner } from 'typeorm';
@@ -43,6 +43,8 @@ import { IRoleDefinitionV2 } from '@energyweb/credential-governance';
 import { Organization } from '../organization/organization.entity';
 import { Application } from '../application/application.entity';
 import { NatsService } from '../nats/nats.service';
+import { Methods } from '@ew-did-registry/did';
+import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
 
 const redisConfig = {
   port: parseInt(process.env.REDIS_PORT),
@@ -147,6 +149,15 @@ describe('ClaimsController', () => {
         SchedulerRegistry,
         ClaimVerificationService,
         IssuerVerificationService,
+        {
+          provide: 'RegistrySettings',
+          useFactory: (configService: ConfigService) => ({
+            abi: ethrReg.abi,
+            address: configService.get<string>('DID_REGISTRY_ADDRESS'),
+            method: Methods,
+          }),
+          inject: [ConfigService],
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)
