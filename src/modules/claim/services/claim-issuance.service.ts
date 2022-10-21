@@ -80,6 +80,11 @@ export class ClaimIssuanceService {
       claimTypeVersion,
     });
 
+    await this.roleService.verifyEnrolmentIssuer({
+      issuerDID: dto.acceptedBy,
+      claimType: dto.claimType,
+    });
+
     const enrolmentPreconditions =
       await this.roleService.fetchEnrolmentPreconditions({
         claimType: dto.claimType,
