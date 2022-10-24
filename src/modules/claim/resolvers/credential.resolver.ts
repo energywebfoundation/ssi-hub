@@ -51,15 +51,31 @@ export class RoleCredentialResolver implements CredentialResolver {
     subject: string,
     claimType: string
   ): Promise<RoleEIP191JWT | null> {
-    return (await this.eip191JwtsOf(subject)).find(
-      (token) => token.payload.claimData.claimType === claimType
-    );
+    console.log('in get eip!', subject, claimType);
+    const theTokens = await this.eip191JwtsOf(subject);
+    console.log(claimType, 'THE CLAIM TYPE WE NEED!!!!');
+    console.log(theTokens, 'THE TOKENS!!!!');
+    const theEips = theTokens.find((token) => {
+      console.log(token, 'THE TOKEN!!!');
+      return token.payload.claimData.claimType === claimType;
+    });
+    // const theEIPS =  (await this.eip191JwtsOf(subject)).find(
+    //   (token) => token.payload.claimData.claimType === claimType
+    // );
+    console.log(theEips, 'THE EIPS');
+    return theEips;
   }
 
   async eip191JwtsOf(subject: string): Promise<RoleEIP191JWT[]> {
-    return this.serviceEndpointsToEIP191(
-      await this.didService.resolveServiceEndpoints(subject)
+    const resolvedServiceEndpoints =
+      await this.didService.resolveServiceEndpoints(subject);
+    console.log(
+      resolvedServiceEndpoints,
+      'THE RESOLVED SERVICE ENDPOINTS!!!!!!!!****'
     );
+    const eipResult = this.serviceEndpointsToEIP191(resolvedServiceEndpoints);
+    console.log(eipResult, 'THE EIPR RESULT!!!!!!****');
+    return eipResult;
   }
 
   async credentialsOf(
@@ -79,14 +95,25 @@ export class RoleCredentialResolver implements CredentialResolver {
   serviceEndpointsToEIP191(tokens: string[]): RoleEIP191JWT[] {
     return tokens
       .map((token) => {
+        console.log(token, 'EACH TOKEN');
         try {
-          return jwt.decode(token) as RolePayload;
-        } catch (_) {
+          const decoded = jwt.decode(token) as RolePayload;
+          console.log(decoded, 'THE DECOKDED TOKEN');
+          return {
+            eip191Jwt: token,
+            payload: decoded,
+          };
+        } catch (e) {
+          console.log(e, 'IS THERE AN ERRORR?');
           return {};
         }
       })
-      .filter(isEIP191Jwt)
-      .map((claim) => transformClaim(claim));
+      .filter((token) => {
+        console.log(token, 'THE TOKEN BEING CHECKED!!!');
+        console.log(isEIP191Jwt(token), 'IS EIP???');
+        return isEIP191Jwt(token);
+      })
+      .map((claim) => transformClaim(claim as RoleEIP191JWT));
   }
 
   /**

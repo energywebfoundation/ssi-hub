@@ -326,6 +326,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
    * @param did DID of the document service endpoints
    */
   public async resolveServiceEndpoints(did: string) {
+    // console.log(this.didStore, "THE DID STORE")
     if (!this.didStore) {
       throw new Error(`resolveServiceEndpoints: DIDStore is undefined`);
     }
@@ -333,8 +334,14 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     return Promise.all(
       service
         .map(({ serviceEndpoint }) => serviceEndpoint)
-        .filter(IPFSService.isCID)
-        .map(this.didStore.get)
+        .filter((endpoint) => {
+          return IPFSService.isCID(endpoint);
+        })
+        .map((did) => {
+          //console.log(did, "THE DID")
+          //console.log(!!this.didStore, "THE STORE BEFORE GET ")
+          return this.didStore.get(did);
+        })
     );
   }
 
