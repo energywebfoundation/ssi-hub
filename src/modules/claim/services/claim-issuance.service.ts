@@ -92,10 +92,12 @@ export class ClaimIssuanceService {
     if (enrolmentPreconditions?.length > 0) {
       for (const { type, conditions } of enrolmentPreconditions) {
         if (type === 'role' && conditions?.length > 0) {
-          await this.verifyEnrolmentPreconditionsinDidDocument(
-            conditions,
-            claimType,
-            dto.requester
+          await this.claimVerificationService.verifyDidDocumentContainsEnrolmentPreconditions(
+            {
+              claimType,
+              userDID: dto.requester,
+              conditions,
+            }
           );
           await this.resolveAndVerifyEnrolmentPreconditions(
             conditions,
@@ -108,18 +110,6 @@ export class ClaimIssuanceService {
     await this.createAndIssue(dto, dto.requester);
 
     return ClaimHandleResult.Success();
-  }
-
-  private async verifyEnrolmentPreconditionsinDidDocument(
-    conditions: string[],
-    claimType: string,
-    requester: string
-  ) {
-    await this.roleService.verifyDidDocumentContainsEnrolmentPreconditions({
-      claimType,
-      userDID: requester,
-      conditions,
-    });
   }
 
   private async resolveAndVerifyEnrolmentPreconditions(

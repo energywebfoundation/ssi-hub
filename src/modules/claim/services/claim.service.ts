@@ -89,30 +89,16 @@ export class ClaimService {
     if (enrolmentPreconditions?.length > 0) {
       for (const { type, conditions } of enrolmentPreconditions) {
         if (type === 'role' && conditions?.length > 0) {
-          await this.roleService.verifyDidDocumentContainsEnrolmentPreconditions(
+          await this.claimVerificationService.verifyDidDocumentContainsEnrolmentPreconditions(
             {
               claimType,
               userDID: dto.requester,
               conditions,
             }
           );
-          await Promise.all(
-            conditions.map(async (condition) => {
-              const { isVerified, errors } =
-                await this.claimVerificationService.resolveCredentialAndVerify(
-                  dto.requester,
-                  condition
-                );
-              if (!isVerified) {
-                throw new Error(
-                  `Role enrolment precondition not met for user: ${
-                    dto.requester
-                  } for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
-                    errors
-                  )}`
-                );
-              }
-            })
+          await this.resolveAndVerifyEnrolmentPreconditions(
+            conditions,
+            dto.requester
           );
         }
       }
@@ -120,6 +106,28 @@ export class ClaimService {
     await this.create(dto, sub, redirectUri);
 
     return ClaimHandleResult.Success();
+  }
+
+  private async resolveAndVerifyEnrolmentPreconditions(
+    conditions: string[],
+    requester: string
+  ) {
+    await Promise.all(
+      conditions.map(async (condition) => {
+        const { isVerified, errors } =
+          await this.claimVerificationService.resolveCredentialAndVerify(
+            requester,
+            condition
+          );
+        if (!isVerified) {
+          throw new Error(
+            `Role enrolment precondition not met for user: ${requester} for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
+              errors
+            )}`
+          );
+        }
+      })
+    );
   }
 
   /**

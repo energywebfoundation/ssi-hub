@@ -22,7 +22,6 @@
 - [remove](modules_role_role_service.RoleService.md#remove)
 - [removeByNameHash](modules_role_role_service.RoleService.md#removebynamehash)
 - [update](modules_role_role_service.RoleService.md#update)
-- [verifyDidDocumentContainsEnrolmentPreconditions](modules_role_role_service.RoleService.md#verifydiddocumentcontainsenrolmentpreconditions)
 - [verifyEnrolmentIssuer](modules_role_role_service.RoleService.md#verifyenrolmentissuer)
 - [verifyUserRoles](modules_role_role_service.RoleService.md#verifyuserroles)
 
@@ -259,27 +258,6 @@ Update existing role with given namespace
 #### Returns
 
 `Promise`<[`Role`](modules_role_role_entity.Role.md)\>
-
-___
-
-### verifyDidDocumentContainsEnrolmentPreconditions
-
-▸ **verifyDidDocumentContainsEnrolmentPreconditions**(`__namedParameters`): `Promise`<`void`\>
-
-Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.claimType` | `string` |
-| `__namedParameters.conditions` | `string`[] |
-| `__namedParameters.userDID` | `string` |
-
-#### Returns
-
-`Promise`<`void`\>
 
 ___
 

@@ -226,32 +226,6 @@ export class RoleService {
     return enrolmentPreconditions;
   }
 
-  /**
-   * Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
-   * @param claimType the role to verify enrollment preconditions for
-   * @param userDID the Did of the user seeking to obtain the role. Must posses enrolment preconditions
-   * @param conditions enrolment preconditions needed to obtain the role (claimType)
-   */
-  public async verifyDidDocumentContainsEnrolmentPreconditions({
-    claimType,
-    userDID,
-    conditions,
-  }: {
-    claimType: string;
-    userDID: string;
-    conditions: string[];
-  }) {
-    const didDocument = await this.didService.getById(userDID);
-    const hasConditionAsClaim = didDocument.service.some(
-      ({ claimType }) => claimType && conditions.includes(claimType as string)
-    );
-    if (!hasConditionAsClaim) {
-      throw new Error(
-        `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}. User does not have this claim.`
-      );
-    }
-  }
-
   public async verifyEnrolmentIssuer({
     issuerDID,
     claimType,

@@ -15,6 +15,7 @@
 ### Methods
 
 - [resolveCredentialAndVerify](modules_claim_services_claim_verification_service.ClaimVerificationService.md#resolvecredentialandverify)
+- [verifyDidDocumentContainsEnrolmentPreconditions](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifydiddocumentcontainsenrolmentpreconditions)
 - [verifyPublicClaim](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifypublicclaim)
 - [verifyRoleEIP191JWT](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyroleeip191jwt)
 
@@ -58,6 +59,27 @@ Resolve a credential from storage and verify its proof/signature and its issuer'
 `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
 
 void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
+
+___
+
+### verifyDidDocumentContainsEnrolmentPreconditions
+
+▸ **verifyDidDocumentContainsEnrolmentPreconditions**(`__namedParameters`): `Promise`<`void`\>
+
+Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.conditions` | `string`[] |
+| `__namedParameters.userDID` | `string` |
+
+#### Returns
+
+`Promise`<`void`\>
 
 ___
 
