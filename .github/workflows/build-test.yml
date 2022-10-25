@@ -86,6 +86,7 @@ jobs:
           DID_SYNC_MODE_FULL: false
           STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
           NATS_ENVIRONMENT_NAME: dev
+          DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
 
       - name: Running E2E tests
         run: npm run test:e2e
