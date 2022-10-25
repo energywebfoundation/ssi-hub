@@ -89,13 +89,11 @@ export class ClaimService {
     if (enrolmentPreconditions?.length > 0) {
       for (const { type, conditions } of enrolmentPreconditions) {
         if (type === 'role' && conditions?.length > 0) {
-          await this.claimVerificationService.verifyDidDocumentContainsEnrolmentPreconditions(
-            {
-              claimType,
-              userDID: dto.requester,
-              conditions,
-            }
-          );
+          await this.claimVerificationService.verifyClaimPresentinDidDocument({
+            claimType,
+            userDID: dto.requester,
+            conditions,
+          });
           await this.resolveAndVerifyEnrolmentPreconditions(
             conditions,
             dto.requester

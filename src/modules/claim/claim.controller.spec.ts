@@ -79,7 +79,6 @@ describe('ClaimsController', () => {
   const MockRoleService = {
     verifyEnrolmentPrecondition: jest.fn(),
     fetchEnrolmentPreconditions: jest.fn(),
-    verifyDidDocumentContainsEnrolmentPreconditions: jest.fn(),
     getAll: jest.fn().mockResolvedValue([]),
     getByNamespace,
   };
@@ -131,7 +130,6 @@ describe('ClaimsController', () => {
     const module = await Test.createTestingModule({
       imports: [
         BullModule.forRoot({ redis: redisConfig }),
-
         TypeOrmModule.forRoot(TestDbCOnfig.default as TypeOrmModuleOptions),
         TypeOrmModule.forFeature([RoleClaim, Claim, Asset, AssetsHistory]),
         NatsModule,
@@ -410,7 +408,52 @@ describe('ClaimsController', () => {
       });
   });
 
-  it('`/subject/:did` should return only claim related to authenticated user', async () => {
+  it('`/requester/:did` should return only claims requested by authenticated user', async () => {
+    const requester = randomDID();
+    const foreignRequester = randomDID();
+    const [ownedClaim] = await Promise.all([
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+      addClaim({
+        claimType: 'myRole.roles.myOrg.iam.ewc',
+        claimTypeVersion: '1',
+        requester: foreignRequester,
+      }),
+    ]);
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/requester/${requester}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(1);
+        expect(res.body[0]).toBeInstanceOf(Object);
+        expect(res.body[0].token).toEqual(ownedClaim.token);
+        expect(res.body[0].id).toEqual(ownedClaim.id);
+        expect(res.body[0].subject).toEqual(requester);
+      });
+
+    didMock.mockReturnValueOnce(requester);
+    await testHttpServer
+      .get(`/v1/claim/requester/${foreignRequester}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toEqual(0);
+      });
+  });
+
+  it('`/requeset/:did` should throw an error if verification fails for enrolmemt pre-requisite(s)', async () => {
+    // 1. add a claim with an enrolment pre-requisite
     const requester = randomDID();
     const foreignRequester = randomDID();
     const [ownedClaim] = await Promise.all([

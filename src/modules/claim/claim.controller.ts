@@ -178,6 +178,7 @@ export class ClaimController {
     const claimDTO = ClaimRequestDTO.create(claimData);
 
     await validateOrReject(claimDTO);
+    //THIS IS WHERE IT IS!!
     const result = await this.claimService.handleClaimEnrolmentRequest(
       claimData,
       originUrl
