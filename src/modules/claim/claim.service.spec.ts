@@ -18,18 +18,7 @@ import { Asset, AssetsHistory } from '../assets/assets.entity';
 import { DIDService } from '../did/did.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SchedulerRegistry } from '@nestjs/schedule';
-// TODO: fix test so pending can be removed
-// private readonly roleService: RoleService,
-// private readonly logger: Logger,
-// @InjectRepository(RoleClaim)
-// private readonly roleClaimRepository: Repository<RoleClaim>,
-// @InjectRepository(Claim)
-// private readonly claimRepository: Repository<Claim>,
-// private readonly assetService: AssetsService,
-// private claimVerificationService: ClaimVerificationService
-// ) {
-// this.logger.setContext(ClaimService.name);
-// }
+
 const MockLogger = {
   log: jest.fn(),
   error: jest.fn(),
@@ -38,15 +27,15 @@ const MockLogger = {
   debug: jest.fn(),
 };
 
-const MockClaimVerificationService = {
-  log: jest.fn(),
-  error: jest.fn(),
-  setContext: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
+const MockDidService = {
+  getByNamespace: jest.fn(),
 };
 
-//let service: DIDService;
+const MockClaimVerificationService = {
+  verifyClaimPresentinDidDocument: jest.fn(),
+  resolveCredentialAndVerify: jest.fn(),
+};
+
 const provider = new MockProvider();
 let didRegistry: EthereumDIDRegistry;
 const cachedIdentity = provider.getWallets()[0];
@@ -64,19 +53,9 @@ const MockConfigService = {
 };
 
 const MockRoleService = {
-  log: jest.fn(),
-  error: jest.fn(),
-  setContext: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
+  fetchEnrolmentPreconditions: jest.fn(),
 };
-const MockDidService = {
-  log: jest.fn(),
-  error: jest.fn(),
-  setContext: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
-};
+
 describe('ClaimService', () => {
   let service: ClaimService;
   let queryRunner: QueryRunner;
