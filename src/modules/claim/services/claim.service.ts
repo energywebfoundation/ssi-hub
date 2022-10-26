@@ -21,6 +21,7 @@ import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
 import { ClaimVerificationService } from './claim-verification.service';
+import { PreconditionType } from '@energyweb/credential-governance';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -86,41 +87,62 @@ export class ClaimService {
         claimType: dto.claimType,
       });
 
-    if (enrolmentPreconditions?.length > 0) {
-      for (const { type, conditions } of enrolmentPreconditions) {
-        if (type === 'role' && conditions?.length > 0) {
-          await this.claimVerificationService.verifyClaimPresentinDidDocument({
-            claimType,
-            userDID: dto.requester,
-            conditions,
-          });
-          await this.resolveAndVerifyEnrolmentPreconditions(
-            conditions,
-            dto.requester
-          );
-        }
-      }
+    if (
+      enrolmentPreconditions?.length > 0 &&
+      enrolmentPreconditions.find((cond) => cond.type === 'role')
+    ) {
+      await this.verifyEnrolmentPrerequisites(
+        enrolmentPreconditions,
+        dto.requester,
+        claimType
+      );
     }
     await this.create(dto, sub, redirectUri);
 
     return ClaimHandleResult.Success();
   }
 
-  private async resolveAndVerifyEnrolmentPreconditions(
+  public async verifyEnrolmentPrerequisites(
+    enrolmentPreconditions: {
+      type: PreconditionType;
+      conditions: string[];
+    }[],
+    requester: string,
+    claimType: string
+  ) {
+    for (const { type, conditions } of enrolmentPreconditions) {
+      if (type === 'role' && conditions?.length > 0) {
+        await this.claimVerificationService.verifyClaimPresentinDidDocument({
+          claimType,
+          userDID: requester,
+          conditions,
+        });
+        await this.resolveAndVerifyPrerequisiteCredentials(
+          conditions,
+          requester
+        );
+      }
+    }
+  }
+
+  private async resolveAndVerifyPrerequisiteCredentials(
     conditions: string[],
     requester: string
   ) {
     await Promise.all(
       conditions.map(async (condition) => {
-        const { isVerified, errors } =
+        const verificationResult =
           await this.claimVerificationService.resolveCredentialAndVerify(
             requester,
             condition
           );
-        if (!isVerified) {
+        if (
+          !verificationResult?.isVerified &&
+          verificationResult?.errors.length > 0
+        ) {
           throw new Error(
             `Role enrolment precondition not met for user: ${requester} for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
-              errors
+              verificationResult?.errors
             )}`
           );
         }
@@ -160,7 +182,6 @@ export class ClaimService {
       isAccepted: false,
       isRejected: false,
     });
-
     if (previousRequest) {
       throw new ForbiddenException('Claim request already exists');
     }
