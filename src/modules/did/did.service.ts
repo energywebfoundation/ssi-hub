@@ -331,8 +331,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     return Promise.all(
       service
         .map(({ serviceEndpoint }) => serviceEndpoint)
-        .filter(IPFSService.isCID)
-        .map(this.didStore.get)
+        .filter((endpoint) => IPFSService.isCID(endpoint))
+        .map((cid) => this.didStore.get(cid))
     );
   }
 
