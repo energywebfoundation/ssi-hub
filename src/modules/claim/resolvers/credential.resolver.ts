@@ -24,10 +24,10 @@ export class RoleCredentialResolver implements CredentialResolver {
       did
     );
     return (
-      this.serviceEndpointsToCredentials(resolvedEndpoints).find(
+      this.serviceEndpointsToCredentials(resolvedEndpoints)?.find(
         (cred) => cred?.credentialSubject?.role?.namespace === namespace
       ) ||
-      this.serviceEndpointsToEIP191(resolvedEndpoints).find(
+      this.serviceEndpointsToEIP191(resolvedEndpoints)?.find(
         (token) => token.payload.claimData.claimType === namespace
       )
     );
@@ -74,9 +74,13 @@ export class RoleCredentialResolver implements CredentialResolver {
    */
   serviceEndpointsToEIP191(tokens: string[]): RoleEIP191JWT[] {
     return tokens
-      .map((token) => {
+      ?.map((token) => {
         try {
-          return jwt.decode(token) as RolePayload;
+          const decoded = jwt.decode(token) as RolePayload;
+          return {
+            eip191Jwt: token,
+            payload: decoded,
+          };
         } catch (_) {
           return {};
         }
@@ -95,7 +99,7 @@ export class RoleCredentialResolver implements CredentialResolver {
     tokens: string[]
   ): VerifiableCredential<RoleCredentialSubject>[] {
     return tokens
-      .map((token) => {
+      ?.map((token) => {
         try {
           return JSON.parse(token);
         } catch (_) {
