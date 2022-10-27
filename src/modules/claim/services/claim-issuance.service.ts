@@ -89,7 +89,10 @@ export class ClaimIssuanceService {
       await this.roleService.fetchEnrolmentPreconditions({
         claimType: dto.claimType,
       });
-    if (enrolmentPreconditions?.length > 0) {
+    if (
+      enrolmentPreconditions?.length > 0 &&
+      enrolmentPreconditions.find((precond) => precond.type === 'role')
+    ) {
       for (const { type, conditions } of enrolmentPreconditions) {
         if (type === 'role' && conditions?.length > 0) {
           await this.claimVerificationService.verifyClaimPresentinDidDocument({
