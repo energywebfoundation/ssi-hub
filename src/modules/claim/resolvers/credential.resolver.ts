@@ -6,11 +6,13 @@ import {
   transformClaim,
   VerifiableCredential,
 } from '@energyweb/vc-verification';
+import { Injectable } from '@nestjs/common';
 import { RolePayload } from '@energyweb/vc-verification';
 import { RoleCredentialSubject } from '@energyweb/credential-governance';
 import * as jwt from 'jsonwebtoken';
 import { DIDService } from '../../did/did.service';
 
+@Injectable()
 export class RoleCredentialResolver implements CredentialResolver {
   constructor(private readonly didService: DIDService) {}
 
