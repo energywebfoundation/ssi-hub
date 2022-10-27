@@ -99,7 +99,7 @@ describe('ClaimVerificationService', () => {
     const did = 'did:ethr:01987654321';
     const roleNamespace = 'whitney.roles.ewc';
     it('should call return a No credential found" error', async () => {
-      MockRoleCredentialResolver.getCredential.mockResolvedValueOnce(null);
+      MockRoleCredentialResolver.getCredential.mockReturnValue(null);
       const result = await service.resolveCredentialAndVerify(
         did,
         roleNamespace
@@ -110,17 +110,6 @@ describe('ClaimVerificationService', () => {
           `No credential found for role ${roleNamespace} for Did ${did}`,
         ],
       });
-    });
-    xit('should call the verify method if the return is of type Eip191Jwt', async () => {
-      const spiedMethod = jest.spyOn(service, 'verifyRoleEIP191JWT');
-      jest
-        .spyOn(MockRoleCredentialResolver, 'getCredential')
-        .mockResolvedValueOnce(resolvedCredential);
-      await service.resolveCredentialAndVerify(
-        resolvedCredential.payload.did,
-        resolvedCredential.payload.claimData.claimType
-      );
-      expect(spiedMethod).toHaveBeenCalledTimes(1);
     });
   });
 

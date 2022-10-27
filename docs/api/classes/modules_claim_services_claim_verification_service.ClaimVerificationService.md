@@ -8,6 +8,10 @@
 
 - [constructor](modules_claim_services_claim_verification_service.ClaimVerificationService.md#constructor)
 
+### Properties
+
+- [credentialResolver](modules_claim_services_claim_verification_service.ClaimVerificationService.md#credentialresolver)
+
 ### Methods
 
 - [resolveCredentialAndVerify](modules_claim_services_claim_verification_service.ClaimVerificationService.md#resolvecredentialandverify)
@@ -19,7 +23,7 @@
 
 ### constructor
 
-• **new ClaimVerificationService**(`logger`, `didService`, `issuerVerificationService`, `credentialResolver`)
+• **new ClaimVerificationService**(`logger`, `didService`, `issuerVerificationService`)
 
 #### Parameters
 
@@ -28,7 +32,12 @@
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `issuerVerificationService` | [`IssuerVerificationService`](modules_claim_services_issuer_verification_service.IssuerVerificationService.md) |
-| `credentialResolver` | [`RoleCredentialResolver`](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md) |
+
+## Properties
+
+### credentialResolver
+
+• **credentialResolver**: [`RoleCredentialResolver`](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md)
 
 ## Methods
 

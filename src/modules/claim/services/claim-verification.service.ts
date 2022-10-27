@@ -8,13 +8,14 @@ import { RoleEIP191JWT, isEIP191Jwt } from '@energyweb/vc-verification';
 
 @Injectable()
 export class ClaimVerificationService {
+  credentialResolver: RoleCredentialResolver;
   constructor(
     private readonly logger: Logger,
     private readonly didService: DIDService,
-    private readonly issuerVerificationService: IssuerVerificationService,
-    private readonly credentialResolver: RoleCredentialResolver
+    private readonly issuerVerificationService: IssuerVerificationService
   ) {
     this.logger.setContext(ClaimVerificationService.name);
+    this.credentialResolver = new RoleCredentialResolver(didService);
   }
 
   /**
