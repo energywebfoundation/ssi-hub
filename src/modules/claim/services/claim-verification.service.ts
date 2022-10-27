@@ -4,22 +4,17 @@ import { IssuerVerificationService } from './issuer-verification.service';
 import { DIDService } from '../../did/did.service';
 import { RoleCredentialResolver } from '../resolvers/credential.resolver';
 import { ProofVerifier } from '@ew-did-registry/claims';
-import {
-  CredentialResolver,
-  RoleEIP191JWT,
-  isEIP191Jwt,
-} from '@energyweb/vc-verification';
+import { RoleEIP191JWT, isEIP191Jwt } from '@energyweb/vc-verification';
 
 @Injectable()
 export class ClaimVerificationService {
-  credentialResolver: CredentialResolver;
   constructor(
     private readonly logger: Logger,
     private readonly didService: DIDService,
-    private readonly issuerVerificationService: IssuerVerificationService
+    private readonly issuerVerificationService: IssuerVerificationService,
+    private readonly credentialResolver: RoleCredentialResolver
   ) {
     this.logger.setContext(ClaimVerificationService.name);
-    this.credentialResolver = new RoleCredentialResolver(didService);
   }
 
   /**
@@ -86,7 +81,7 @@ export class ClaimVerificationService {
       );
     }
     // Date.now() and JWT expiration time both identify the time elapsed since January 1, 1970 00:00:00 UTC
-    const isExpired = payload?.exp && payload?.exp * 1000 < Date.now();
+    const isExpired = payload?.exp && payload?.exp < Date.now();
     if (isExpired) {
       errors.push(
         `Verification failed for ${roleNamespace} for ${subjectDID}: Credential for prerequisite role expired`
@@ -99,9 +94,10 @@ export class ClaimVerificationService {
       );
     if (!issuerVerified && error) {
       throw new Error(
-        `Verification failed for ${roleNamespace} for ${subjectDID}: No Issuer Specified for ${roleNamespace} for ${subjectDID}`
+        `Verification failed for ${roleNamespace} for ${subjectDID}: Issuer verification failed: ${error}`
       );
     }
+    console.log(proofVerified, issuerVerified, isExpired, 'THE VALUES');
     return {
       errors: errors,
       isVerified: !!proofVerified && issuerVerified && !isExpired,
@@ -140,6 +136,7 @@ export class ClaimVerificationService {
     const hasConditionAsClaim = didDocument.service.some(
       ({ claimType }) => claimType && conditions.includes(claimType as string)
     );
+    console.log(hasConditionAsClaim, 'HAS CONDITION AS CLAIM!!!!');
     if (!hasConditionAsClaim) {
       throw new Error(
         `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}. User does not have this claim.`

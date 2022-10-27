@@ -17,6 +17,7 @@ import { AssetsModule } from '../assets/assets.module';
 import { DIDModule } from '../did/did.module';
 import { Provider } from '../../common/provider';
 import { RoleRevokerResolver } from './resolvers/revoker.resolver';
+import { RoleCredentialResolver } from './resolvers/credential.resolver';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { RoleRevokerResolver } from './resolvers/revoker.resolver';
     RoleRevokerResolver,
     ClaimVerificationService,
     IssuerVerificationService,
+    RoleCredentialResolver,
   ],
   exports: [RevocationVerificationService, RoleRevokerResolver],
 })
