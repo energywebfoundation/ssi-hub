@@ -11,7 +11,7 @@
 ### Methods
 
 - [resolveCredentialAndVerify](modules_claim_services_claim_verification_service.ClaimVerificationService.md#resolvecredentialandverify)
-- [verifyClaimPresentinDidDocument](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyclaimpresentindiddocument)
+- [verifyClaimPresentInDidDocument](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyclaimpresentindiddocument)
 - [verifyPublicClaim](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifypublicclaim)
 - [verifyRoleEIP191JWT](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyroleeip191jwt)
 
@@ -53,9 +53,9 @@ void. Returns boolean indicating if credential is verified. Contains array of er
 
 ___
 
-### verifyClaimPresentinDidDocument
+### verifyClaimPresentInDidDocument
 
-▸ **verifyClaimPresentinDidDocument**(`__namedParameters`): `Promise`<`void`\>
+▸ **verifyClaimPresentInDidDocument**(`__namedParameters`): `Promise`<`void`\>
 
 Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
 

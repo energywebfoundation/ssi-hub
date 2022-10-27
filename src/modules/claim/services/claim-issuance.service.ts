@@ -9,6 +9,7 @@ import { ClaimIssueDTO, NewClaimIssueDTO } from '../claim.dto';
 import { RoleClaim } from '../entities/roleClaim.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { ClaimVerificationService } from './claim-verification.service';
+import { PreconditionType } from '@energyweb/credential-governance';
 
 @Injectable()
 export class ClaimIssuanceService {
@@ -92,28 +93,42 @@ export class ClaimIssuanceService {
     if (
       enrolmentPreconditions?.length > 0 &&
       enrolmentPreconditions.find((precond) => precond.type === 'role')
-    ) {
-      for (const { type, conditions } of enrolmentPreconditions) {
-        if (type === 'role' && conditions?.length > 0) {
-          await this.claimVerificationService.verifyClaimPresentinDidDocument({
-            claimType,
-            userDID: dto.requester,
-            conditions,
-          });
-          await this.resolveAndVerifyEnrolmentPreconditions(
-            conditions,
-            dto.requester
-          );
-        }
-      }
-    }
+    )
+      await this.verifyEnrolmentPrerequisites(
+        enrolmentPreconditions,
+        dto.requester,
+        claimType
+      );
 
     await this.createAndIssue(dto, dto.requester);
 
     return ClaimHandleResult.Success();
   }
 
-  private async resolveAndVerifyEnrolmentPreconditions(
+  public async verifyEnrolmentPrerequisites(
+    enrolmentPreconditions: {
+      type: PreconditionType;
+      conditions: string[];
+    }[],
+    requester: string,
+    claimType: string
+  ) {
+    for (const { type, conditions } of enrolmentPreconditions) {
+      if (type === 'role' && conditions?.length > 0) {
+        await this.claimVerificationService.verifyClaimPresentInDidDocument({
+          claimType,
+          userDID: requester,
+          conditions,
+        });
+        await this.resolveAndVerifyPrerequisiteCredentials(
+          conditions,
+          requester
+        );
+      }
+    }
+  }
+
+  private async resolveAndVerifyPrerequisiteCredentials(
     conditions: string[],
     requester: string
   ) {

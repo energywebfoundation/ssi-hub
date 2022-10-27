@@ -112,7 +112,7 @@ export class ClaimService {
   ) {
     for (const { type, conditions } of enrolmentPreconditions) {
       if (type === 'role' && conditions?.length > 0) {
-        await this.claimVerificationService.verifyClaimPresentinDidDocument({
+        await this.claimVerificationService.verifyClaimPresentInDidDocument({
           claimType,
           userDID: requester,
           conditions,

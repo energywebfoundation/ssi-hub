@@ -123,7 +123,7 @@ export class ClaimVerificationService {
    * @param userDID the Did of the user seeking to obtain the role. Must posses enrolment preconditions
    * @param conditions enrolment preconditions needed to obtain the role (claimType)
    */
-  public async verifyClaimPresentinDidDocument({
+  public async verifyClaimPresentInDidDocument({
     claimType,
     userDID,
     conditions,
