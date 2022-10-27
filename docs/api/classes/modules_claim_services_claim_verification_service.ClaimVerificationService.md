@@ -14,6 +14,7 @@
 
 ### Methods
 
+- [getCredential](modules_claim_services_claim_verification_service.ClaimVerificationService.md#getcredential)
 - [resolveCredentialAndVerify](modules_claim_services_claim_verification_service.ClaimVerificationService.md#resolvecredentialandverify)
 - [verifyClaimPresentInDidDocument](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyclaimpresentindiddocument)
 - [verifyPublicClaim](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifypublicclaim)
@@ -40,6 +41,27 @@
 • **credentialResolver**: [`RoleCredentialResolver`](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md)
 
 ## Methods
+
+### getCredential
+
+▸ **getCredential**(`did`, `namespace`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\> \| `RoleEIP191JWT`\>
+
+Resolve a credential from storage
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
+| `namespace` | `string` |
+
+#### Returns
+
+`Promise`<`VerifiableCredential`<`RoleCredentialSubject`\> \| `RoleEIP191JWT`\>
+
+void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
+
+___
 
 ### resolveCredentialAndVerify
 

@@ -99,7 +99,7 @@ describe('ClaimVerificationService', () => {
     const did = 'did:ethr:01987654321';
     const roleNamespace = 'whitney.roles.ewc';
     it('should call return a No credential found" error', async () => {
-      MockRoleCredentialResolver.getCredential.mockReturnValue(null);
+      jest.spyOn(service, 'getCredential').mockResolvedValue(null);
       const result = await service.resolveCredentialAndVerify(
         did,
         roleNamespace

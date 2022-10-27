@@ -29,7 +29,7 @@ export class ClaimVerificationService {
     subjectDID: string,
     roleNamespace: string
   ) {
-    const resolvedCredential = await this.credentialResolver.getCredential(
+    const resolvedCredential = await this.getCredential(
       subjectDID,
       roleNamespace
     );
@@ -48,6 +48,17 @@ export class ClaimVerificationService {
         roleNamespace
       );
     }
+  }
+
+  /**
+   * Resolve a credential from storage
+   *
+   * @param subjectDID The DID to try to resolve a credential for
+   * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
+   * @return void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
+   */
+  public async getCredential(did: string, namespace: string) {
+    return this.credentialResolver.getCredential(did, namespace);
   }
 
   /**
