@@ -109,7 +109,6 @@ export class ClaimVerificationService {
         `Verification failed for ${roleNamespace} for ${subjectDID}: Issuer verification failed: ${error}`
       );
     }
-    console.log(proofVerified, issuerVerified, isExpired, 'THE VALUES');
     return {
       errors: errors,
       isVerified: !!proofVerified && issuerVerified && !isExpired,
@@ -148,7 +147,6 @@ export class ClaimVerificationService {
     const hasConditionAsClaim = didDocument.service.some(
       ({ claimType }) => claimType && conditions.includes(claimType as string)
     );
-    console.log(hasConditionAsClaim, 'HAS CONDITION AS CLAIM!!!!');
     if (!hasConditionAsClaim) {
       throw new Error(
         `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}. User does not have this claim.`
