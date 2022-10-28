@@ -11,7 +11,6 @@
 ### Methods
 
 - [handleClaimIssuanceRequest](modules_claim_services_claim_issuance_service.ClaimIssuanceService.md#handleclaimissuancerequest)
-- [verifyEnrolmentPrerequisites](modules_claim_services_claim_issuance_service.ClaimIssuanceService.md#verifyenrolmentprerequisites)
 
 ## Constructors
 
@@ -47,21 +46,3 @@ Two scenarios are handled - issue requested claim and issue not-requested claim
 #### Returns
 
 `Promise`<[`ClaimHandleResult`](modules_claim_claim_handle_result_dto.ClaimHandleResult.md)\>
-
-___
-
-### verifyEnrolmentPrerequisites
-
-▸ **verifyEnrolmentPrerequisites**(`enrolmentPreconditions`, `requester`, `claimType`): `Promise`<`void`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `enrolmentPreconditions` | { `conditions`: `string`[] ; `type`: `Role`  }[] |
-| `requester` | `string` |
-| `claimType` | `string` |
-
-#### Returns
-
-`Promise`<`void`\>

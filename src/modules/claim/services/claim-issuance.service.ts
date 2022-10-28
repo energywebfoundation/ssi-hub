@@ -114,7 +114,7 @@ export class ClaimIssuanceService {
     return ClaimHandleResult.Success();
   }
 
-  public async verifyEnrolmentPrerequisites(
+  private async verifyEnrolmentPrerequisites(
     enrolmentPreconditions: {
       type: PreconditionType;
       conditions: string[];
