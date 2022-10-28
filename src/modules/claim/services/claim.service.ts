@@ -88,16 +88,24 @@ export class ClaimService {
         claimType: dto.claimType,
       });
 
-    if (
-      enrolmentPreconditions?.length > 0 &&
-      enrolmentPreconditions.find((cond) => cond.type === PreconditionType.Role)
-    ) {
-      await this.verifyEnrolmentPrerequisites(
-        enrolmentPreconditions,
-        dto.requester,
-        claimType
-      );
+    if (enrolmentPreconditions?.length > 0) {
+      if (
+        enrolmentPreconditions.every(
+          (cond) => cond.type === PreconditionType.Role
+        )
+      ) {
+        await this.verifyEnrolmentPrerequisites(
+          enrolmentPreconditions,
+          dto.requester,
+          claimType
+        );
+      } else {
+        throw new Error(
+          'An enrolment precondition has an unsupported precondition type. Supported precondition types include: "Role"'
+        );
+      }
     }
+
     await this.create(dto, sub, redirectUri);
 
     return ClaimHandleResult.Success();

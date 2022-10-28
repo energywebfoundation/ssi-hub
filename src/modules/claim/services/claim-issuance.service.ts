@@ -90,17 +90,24 @@ export class ClaimIssuanceService {
       await this.roleService.fetchEnrolmentPreconditions({
         claimType: dto.claimType,
       });
-    if (
-      enrolmentPreconditions?.length > 0 &&
-      enrolmentPreconditions.find(
-        (precond) => precond.type === PreconditionType.Role
-      )
-    )
-      await this.verifyEnrolmentPrerequisites(
-        enrolmentPreconditions,
-        dto.requester,
-        claimType
-      );
+
+    if (enrolmentPreconditions?.length > 0) {
+      if (
+        enrolmentPreconditions.every(
+          (cond) => cond.type === PreconditionType.Role
+        )
+      ) {
+        await this.verifyEnrolmentPrerequisites(
+          enrolmentPreconditions,
+          dto.requester,
+          claimType
+        );
+      } else {
+        throw new Error(
+          'An enrolment precondition has an unsupported precondition type. Supported precondition types include: "Role"'
+        );
+      }
+    }
 
     await this.createAndIssue(dto, dto.requester);
 
