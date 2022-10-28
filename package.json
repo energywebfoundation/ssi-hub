@@ -38,6 +38,7 @@
     "migrate:claim-subject": "node src/scripts/migrate_claim_subject.js",
     "migration:generate": "npm run typeorm:cli -- migration:generate -d src/db/cli.ts ",
     "migration:run": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:run && npm run migrate:claim-subject",
+    "migration:run:dev": "npx typeorm migration:run -d ormconfig.js && npm run migrate:claim-subject",
     "migration:revert": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:revert",
     "migration:create": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:create -n",
     "migration:test": "NODE_ENV=test ts-node ./node_modules/typeorm/cli.js migration:run -d src/db/cli.ts",
