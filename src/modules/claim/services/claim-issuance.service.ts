@@ -122,8 +122,8 @@ export class ClaimIssuanceService {
     requester: string,
     claimType: string
   ) {
-    for (const { type, conditions } of enrolmentPreconditions) {
-      if (type === PreconditionType.Role && conditions?.length > 0) {
+    for (const { conditions } of enrolmentPreconditions) {
+      if (conditions?.length > 0) {
         await this.claimVerificationService.verifyClaimPresentInDidDocument({
           claimType,
           userDID: requester,
