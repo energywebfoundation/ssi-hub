@@ -32,7 +32,7 @@ services:
     networks:
       - main
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
   nats:
     container_name: nats
     image: synadia/nats-server:nightly
@@ -42,9 +42,9 @@ services:
     networks:
       - main
     ports:
-      - '4222:4222'
-      - '8222:8222'
-      - '9222:9222'
+      - '127.0.0.1:4222:4222'
+      - '127.0.0.1:8222:8222'
+      - '127.0.0.1:9222:9222'
   redis:
     container_name: redis
     image: redis:${REDIS_VERSION}
