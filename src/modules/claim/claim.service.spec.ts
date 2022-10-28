@@ -21,6 +21,9 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { IClaimRequest } from './claim.types';
 import { v4 } from 'uuid';
+import { Keys } from '@ew-did-registry/keys';
+import { JWT } from '@ew-did-registry/jwt';
+import { Wallet } from '@ethersproject/wallet';
 
 const MockLogger = {
   log: jest.fn(),
@@ -59,10 +62,15 @@ const MockRoleService = {
   fetchEnrolmentPreconditions: jest.fn(),
 };
 
-xdescribe('ClaimService', () => {
+describe('ClaimService', () => {
   let service: ClaimService;
   let queryRunner: QueryRunner;
   let module: TestingModule;
+  const issuer = new Keys();
+  const issuerDID = `did:ethr:volta:${issuer.getAddress()}`;
+  const requesterDid = `did:ethr:volta:${Wallet.createRandom().address}`;
+  const jwt = new JWT(issuer);
+  const claimTypeVersion = '1';
   beforeEach(async () => {
     didRegistry = (await deployContract(
       cachedIdentity,
@@ -129,19 +137,20 @@ xdescribe('ClaimService', () => {
   });
   describe('handleClaimEnrolmentRequest', () => {
     const baseClaim = {
-      token:
-        'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJkaWQiOiJkaWQ6ZXRocjp2b2x0YToweDE3YjY1QzhDOTc0NkY4N2M4MmNjNmY3QzRGQzM4ZkNBNWYxQWVCNzUiLCJzaWduZXIiOiJkaWQ6ZXRocjp2b2x0YToweDE3YjY1QzhDOTc0NkY4N2M4MmNjNmY3QzRGQzM4ZkNBNWYxQWVCNzUiLCJjbGFpbURhdGEiOnsicmVxdWVzdG9yRmllbGRzIjpbXSwiY2xhaW1UeXBlIjoic2hvdWxkZXJyb3Iucm9sZXMuc3Vib3Jncy53aGl0bmV5LmlhbS5ld2MiLCJjbGFpbVR5cGVWZXJzaW9uIjoxfSwiaXNzIjoiZGlkOmV0aHI6dm9sdGE6MHgxN2I2NUM4Qzk3NDZGODdjODJjYzZmN0M0RkMzOGZDQTVmMUFlQjc1Iiwic3ViIjoiZGlkOmV0aHI6dm9sdGE6MHgxN2I2NUM4Qzk3NDZGODdjODJjYzZmN0M0RkMzOGZDQTVmMUFlQjc1IiwiaWF0IjoxNjY2Nzk0MDg4NDczfQ.MHg1MzI2ZjFkODQzM2YxMzE2OTc4ODdmNmE0NzQ1M2I1M2UyNzc0ZGUxOTY4ZjdlNjhhYWU0Y2ZmOWJmMGQxNDk1N2QxNjI4NzExMmNlMzc0YTA1ZWRiYWUyMDUyZmY0ZmJhNWQyNWI0ZDJlZmQwNWI5MjNhODU1ZjY3ODgwNDZjMzFi',
-      claimIssuer: [
-        'did:ethr:volta:0x0000000000000000000000000000000000000000',
-      ],
-      requester: 'did:ethr:volta:0x17b65C8C9746F87c82cc6f7C4FC38fCA5f1AeB75',
+      claimIssuer: [issuerDID],
+      requester: requesterDid,
       claimTypeVersion: '1',
     };
     it('should return correct error if use does not have enrolment prerequisite in Did Document', async () => {
+      const claimType = 'testcaseone.roles.suborgs.whitney.iam.ewc';
       const claimRequest: IClaimRequest = {
+        token: await jwt.sign(
+          { claimData: { claimType: claimType, claimTypeVersion } },
+          { subject: requesterDid }
+        ),
         ...baseClaim,
         id: v4(),
-        claimType: 'testcaseone.roles.suborgs.whitney.iam.ewc',
+        claimType,
       };
       MockRoleService.fetchEnrolmentPreconditions.mockResolvedValue([
         {
@@ -165,10 +174,15 @@ xdescribe('ClaimService', () => {
       } catch (_) {}
     });
     xit('should not perform verification if there are no enrolment prerequisites', async () => {
+      const claimType = 'testcastwo.roles.suborgs.whitney.iam.ewc';
       const claimRequest: IClaimRequest = {
+        token: await jwt.sign(
+          { claimData: { claimType: claimType, claimTypeVersion } },
+          { subject: requesterDid }
+        ),
         ...baseClaim,
         id: v4(),
-        claimType: 'testcastwo.roles.suborgs.whitney.iam.ewc',
+        claimType,
       };
       MockRoleService.fetchEnrolmentPreconditions.mockResolvedValue([]);
       await service.handleClaimEnrolmentRequest(
@@ -178,10 +192,15 @@ xdescribe('ClaimService', () => {
       expect(service.verifyEnrolmentPrerequisites).toHaveBeenCalledTimes(0);
     });
     it('should return correct error if user does not have credential required for enrolment', async () => {
+      const claimType = 'blah.roles.suborgs.whitney.iam.ewc';
       const claimRequest: IClaimRequest = {
+        token: await jwt.sign(
+          { claimData: { claimType: claimType, claimTypeVersion } },
+          { subject: requesterDid }
+        ),
         ...baseClaim,
         id: v4(),
-        claimType: 'blah.roles.suborgs.whitney.iam.ewc',
+        claimType,
       };
       MockRoleService.fetchEnrolmentPreconditions.mockResolvedValue([
         {
@@ -210,16 +229,15 @@ xdescribe('ClaimService', () => {
     });
 
     it('should return correct error if verification fails for claim', async () => {
+      const claimType = 'testcasethree.roles.suborgs.whitney.iam.ewc';
       const claimRequest: IClaimRequest = {
+        token: await jwt.sign(
+          { claimData: { claimType: claimType, claimTypeVersion } },
+          { subject: requesterDid }
+        ),
+        ...baseClaim,
         id: v4(),
-        token:
-          'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJkaWQiOiJkaWQ6ZXRocjp2b2x0YToweDE3YjY1QzhDOTc0NkY4N2M4MmNjNmY3QzRGQzM4ZkNBNWYxQWVCNzUiLCJzaWduZXIiOiJkaWQ6ZXRocjp2b2x0YToweDE3YjY1QzhDOTc0NkY4N2M4MmNjNmY3QzRGQzM4ZkNBNWYxQWVCNzUiLCJjbGFpbURhdGEiOnsicmVxdWVzdG9yRmllbGRzIjpbXSwiY2xhaW1UeXBlIjoic2hvdWxkZXJyb3Iucm9sZXMuc3Vib3Jncy53aGl0bmV5LmlhbS5ld2MiLCJjbGFpbVR5cGVWZXJzaW9uIjoxfSwiaXNzIjoiZGlkOmV0aHI6dm9sdGE6MHgxN2I2NUM4Qzk3NDZGODdjODJjYzZmN0M0RkMzOGZDQTVmMUFlQjc1Iiwic3ViIjoiZGlkOmV0aHI6dm9sdGE6MHgxN2I2NUM4Qzk3NDZGODdjODJjYzZmN0M0RkMzOGZDQTVmMUFlQjc1IiwiaWF0IjoxNjY2Nzk0MDg4NDczfQ.MHg1MzI2ZjFkODQzM2YxMzE2OTc4ODdmNmE0NzQ1M2I1M2UyNzc0ZGUxOTY4ZjdlNjhhYWU0Y2ZmOWJmMGQxNDk1N2QxNjI4NzExMmNlMzc0YTA1ZWRiYWUyMDUyZmY0ZmJhNWQyNWI0ZDJlZmQwNWI5MjNhODU1ZjY3ODgwNDZjMzFi',
-        claimIssuer: [
-          'did:ethr:volta:0x0000000000000000000000000000000000000000',
-        ],
-        requester: 'did:ethr:volta:0x17b65C8C9746F87c82cc6f7C4FC38fCA5f1AeB75',
-        claimType: 'testcasethree.roles.suborgs.whitney.iam.ewc',
-        claimTypeVersion: '1',
+        claimType,
       };
       MockRoleService.fetchEnrolmentPreconditions.mockResolvedValue([
         {
@@ -248,16 +266,15 @@ xdescribe('ClaimService', () => {
     });
 
     it('should return correct error if claim is expired', async () => {
+      const claimType = 'testcasefour.roles.suborgs.whitney.iam.ewc';
       const claimRequest: IClaimRequest = {
         id: v4(),
-        token:
-          'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJkaWQiOiJkaWQ6ZXRocjp2b2x0YToweDE3YjY1QzhDOTc0NkY4N2M4MmNjNmY3QzRGQzM4ZkNBNWYxQWVCNzUiLCJzaWduZXIiOiJkaWQ6ZXRocjp2b2x0YToweDE3YjY1QzhDOTc0NkY4N2M4MmNjNmY3QzRGQzM4ZkNBNWYxQWVCNzUiLCJjbGFpbURhdGEiOnsicmVxdWVzdG9yRmllbGRzIjpbXSwiY2xhaW1UeXBlIjoic2hvdWxkZXJyb3Iucm9sZXMuc3Vib3Jncy53aGl0bmV5LmlhbS5ld2MiLCJjbGFpbVR5cGVWZXJzaW9uIjoxfSwiaXNzIjoiZGlkOmV0aHI6dm9sdGE6MHgxN2I2NUM4Qzk3NDZGODdjODJjYzZmN0M0RkMzOGZDQTVmMUFlQjc1Iiwic3ViIjoiZGlkOmV0aHI6dm9sdGE6MHgxN2I2NUM4Qzk3NDZGODdjODJjYzZmN0M0RkMzOGZDQTVmMUFlQjc1IiwiaWF0IjoxNjY2Nzk0MDg4NDczfQ.MHg1MzI2ZjFkODQzM2YxMzE2OTc4ODdmNmE0NzQ1M2I1M2UyNzc0ZGUxOTY4ZjdlNjhhYWU0Y2ZmOWJmMGQxNDk1N2QxNjI4NzExMmNlMzc0YTA1ZWRiYWUyMDUyZmY0ZmJhNWQyNWI0ZDJlZmQwNWI5MjNhODU1ZjY3ODgwNDZjMzFi',
-        claimIssuer: [
-          'did:ethr:volta:0x0000000000000000000000000000000000000000',
-        ],
-        requester: 'did:ethr:volta:0x17b65C8C9746F87c82cc6f7C4FC38fCA5f1AeB75',
-        claimType: 'testcasefour.roles.suborgs.whitney.iam.ewc',
-        claimTypeVersion: '1',
+        token: await jwt.sign(
+          { claimData: { claimType: claimType, claimTypeVersion } },
+          { subject: requesterDid }
+        ),
+        ...baseClaim,
+        claimType,
       };
       MockRoleService.fetchEnrolmentPreconditions.mockResolvedValue([
         {
