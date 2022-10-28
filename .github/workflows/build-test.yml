@@ -103,8 +103,8 @@ jobs:
           REDIS_HOST: ${{secrets.REDIS_HOST}}
           REDIS_PORT: ${{ job.services.redis.ports[6379] }}
           NATS_CLIENTS_URL: ${{secrets.NATS_CLIENTS_URL}}
-          JWT_PUBLIC_KEY: ${{secrets.JWT_PUBLIC_KEY}}
-          JWT_PRIVATE_KEY: ${{secrets.JWT_PRIVATE_KEY}}
+          JWT_PUBLIC_KEY_PATH: ${{secrets.JWT_PUBLIC_KEY}}
+          JWT_PRIVATE_KEY_PATH: ${{secrets.JWT_PRIVATE_KEY}}
           DB_HOST: ${{secrets.DB_HOST}}
           DB_PORT: ${{secrets.DB_PORT}}
           DB_USERNAME: ${{secrets.DB_USERNAME}}

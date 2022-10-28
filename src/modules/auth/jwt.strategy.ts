@@ -21,7 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: fs.readFileSync(configService.get<string>('JWT_PUBLIC_KEY')),
+      secretOrKey: fs.readFileSync(
+        configService.get<string>('JWT_PUBLIC_KEY_PATH')
+      ),
       algorithms: ['RS256'],
     });
   }
