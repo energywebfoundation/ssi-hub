@@ -154,7 +154,7 @@ describe('ClaimVerificationService', () => {
         verified: true,
         error: [],
       });
-      resolvedCredential.payload.exp = Date.now() - 1000;
+      resolvedCredential.payload.exp = Date.now() / 1000 - 1000;
       const result = await service.verifyRoleEIP191JWT(
         resolvedCredential,
         resolvedCredential.payload.did,
