@@ -22,6 +22,7 @@ import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
 import { ClaimVerificationService } from './claim-verification.service';
 import { PreconditionType } from '@energyweb/credential-governance';
+//import { PreconditionType } from '@energyweb/credential-governance';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -89,7 +90,7 @@ export class ClaimService {
 
     if (
       enrolmentPreconditions?.length > 0 &&
-      enrolmentPreconditions.find((cond) => cond.type === 'role')
+      enrolmentPreconditions.find((cond) => cond.type === PreconditionType.Role)
     ) {
       await this.verifyEnrolmentPrerequisites(
         enrolmentPreconditions,
@@ -111,7 +112,7 @@ export class ClaimService {
     claimType: string
   ) {
     for (const { type, conditions } of enrolmentPreconditions) {
-      if (type === 'role' && conditions?.length > 0) {
+      if (type === PreconditionType.Role && conditions?.length > 0) {
         await this.claimVerificationService.verifyClaimPresentInDidDocument({
           claimType,
           userDID: requester,

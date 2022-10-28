@@ -92,7 +92,9 @@ export class ClaimIssuanceService {
       });
     if (
       enrolmentPreconditions?.length > 0 &&
-      enrolmentPreconditions.find((precond) => precond.type === 'role')
+      enrolmentPreconditions.find(
+        (precond) => precond.type === PreconditionType.Role
+      )
     )
       await this.verifyEnrolmentPrerequisites(
         enrolmentPreconditions,
@@ -114,7 +116,7 @@ export class ClaimIssuanceService {
     claimType: string
   ) {
     for (const { type, conditions } of enrolmentPreconditions) {
-      if (type === 'role' && conditions?.length > 0) {
+      if (type === PreconditionType.Role && conditions?.length > 0) {
         await this.claimVerificationService.verifyClaimPresentInDidDocument({
           claimType,
           userDID: requester,

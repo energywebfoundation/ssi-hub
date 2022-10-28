@@ -93,7 +93,7 @@ export class ClaimVerificationService {
       );
     }
     // Date.now() and JWT expiration time both identify the time elapsed since January 1, 1970 00:00:00 UTC
-    const isExpired = payload?.exp && payload?.exp < Date.now();
+    const isExpired = payload?.exp && payload?.exp * 1000 < Date.now();
     if (isExpired) {
       errors.push(
         `Verification failed for ${roleNamespace} for ${subjectDID}: Credential for prerequisite role expired`
