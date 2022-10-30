@@ -40,7 +40,7 @@ const MockDidService = {
 const MockClaimVerificationService = {
   verifyClaimPresentInDidDocument: jest.fn(),
   resolveCredentialAndVerify: jest.fn(),
-  processEnrolmentPreconditions: jest.fn(),
+  verifyEnrolmentPreconditions: jest.fn(),
 };
 
 const provider = new MockProvider();
@@ -159,7 +159,7 @@ describe('ClaimService', () => {
           conditions: ['enrolmentprereq.roles.suborgs.whitney.iam.ewc'],
         },
       ]);
-      MockClaimVerificationService.processEnrolmentPreconditions.mockResolvedValueOnce(
+      MockClaimVerificationService.verifyEnrolmentPreconditions.mockResolvedValueOnce(
         undefined
       );
       const result = await service.handleClaimEnrolmentRequest(
