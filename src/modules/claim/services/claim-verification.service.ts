@@ -134,7 +134,6 @@ export class ClaimVerificationService {
     conditions: string[];
   }) {
     const didDocument = await this.didService.getById(userDID);
-    console.log(JSON.stringify(didDocument), 'THE DOCUMENT');
     return didDocument.service.some(
       ({ claimType }) => claimType && conditions.includes(claimType as string)
     );

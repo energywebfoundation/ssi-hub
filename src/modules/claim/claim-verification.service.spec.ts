@@ -204,7 +204,6 @@ describe('ClaimVerificationService', () => {
       });
       expect(result).toBe(false);
     });
-    //"regressiontestdid.roles.suborgs.whitney.iam.ewc"
 
     it('should throw an error if claim is not present in did document', async () => {
       MockDidService.getById.mockResolvedValueOnce(didDocument);
