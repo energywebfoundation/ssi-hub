@@ -148,7 +148,6 @@ export class ClaimVerificationService {
     requester: string,
     claimType: string
   ) {
-    //if (enrolmentPreconditions?.length > 0) {
     if (
       enrolmentPreconditions.every(
         (cond) => cond.type === PreconditionType.Role
