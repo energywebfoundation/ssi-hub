@@ -14,9 +14,9 @@
 
 ### Methods
 
-- [getCredential](modules_claim_services_claim_verification_service.ClaimVerificationService.md#getcredential)
 - [resolveCredentialAndVerify](modules_claim_services_claim_verification_service.ClaimVerificationService.md#resolvecredentialandverify)
 - [verifyClaimPresentInDidDocument](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyclaimpresentindiddocument)
+- [verifyEnrolmentPreconditions](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyenrolmentpreconditions)
 - [verifyPublicClaim](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifypublicclaim)
 - [verifyRoleEIP191JWT](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyroleeip191jwt)
 
@@ -42,27 +42,6 @@
 
 ## Methods
 
-### getCredential
-
-▸ **getCredential**(`did`, `namespace`): `Promise`<`VerifiableCredential`<`RoleCredentialSubject`\> \| `RoleEIP191JWT`\>
-
-Resolve a credential from storage
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `did` | `string` |
-| `namespace` | `string` |
-
-#### Returns
-
-`Promise`<`VerifiableCredential`<`RoleCredentialSubject`\> \| `RoleEIP191JWT`\>
-
-void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
-
-___
-
 ### resolveCredentialAndVerify
 
 ▸ **resolveCredentialAndVerify**(`subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
@@ -86,7 +65,7 @@ ___
 
 ### verifyClaimPresentInDidDocument
 
-▸ **verifyClaimPresentInDidDocument**(`__namedParameters`): `Promise`<`void`\>
+▸ **verifyClaimPresentInDidDocument**(`__namedParameters`): `Promise`<`boolean`\>
 
 Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
 
@@ -95,9 +74,26 @@ Verifies that a user's Did Document contains all roles required for enrolment (e
 | Name | Type |
 | :------ | :------ |
 | `__namedParameters` | `Object` |
-| `__namedParameters.claimType` | `string` |
 | `__namedParameters.conditions` | `string`[] |
 | `__namedParameters.userDID` | `string` |
+
+#### Returns
+
+`Promise`<`boolean`\>
+
+___
+
+### verifyEnrolmentPreconditions
+
+▸ **verifyEnrolmentPreconditions**(`enrolmentPreconditions`, `requester`, `claimType`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `enrolmentPreconditions` | { `conditions`: `string`[] ; `type`: `Role`  }[] |
+| `requester` | `string` |
+| `claimType` | `string` |
 
 #### Returns
 

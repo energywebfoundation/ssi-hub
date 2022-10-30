@@ -31,7 +31,6 @@
 - [rolesByIssuer](modules_claim_services_claim_service.ClaimService.md#rolesbyissuer)
 - [rolesByRevoker](modules_claim_services_claim_service.ClaimService.md#rolesbyrevoker)
 - [saveIssuedClaim](modules_claim_services_claim_service.ClaimService.md#saveissuedclaim)
-- [verifyEnrolmentPrerequisites](modules_claim_services_claim_service.ClaimService.md#verifyenrolmentprerequisites)
 
 ## Constructors
 
@@ -456,21 +455,3 @@ Save issued claim
 #### Returns
 
 `Promise`<[`IClaim`](../interfaces/modules_claim_claim_types.IClaim.md) & [`Claim`](modules_claim_entities_claim_entity.Claim.md)\>
-
-___
-
-### verifyEnrolmentPrerequisites
-
-▸ **verifyEnrolmentPrerequisites**(`enrolmentPreconditions`, `requester`, `claimType`): `Promise`<`void`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `enrolmentPreconditions` | { `conditions`: `string`[] ; `type`: `Role`  }[] |
-| `requester` | `string` |
-| `claimType` | `string` |
-
-#### Returns
-
-`Promise`<`void`\>

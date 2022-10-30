@@ -5,6 +5,7 @@ import { DIDService } from '../../did/did.service';
 import { RoleCredentialResolver } from '../resolvers/credential.resolver';
 import { ProofVerifier } from '@ew-did-registry/claims';
 import { RoleEIP191JWT, isEIP191Jwt } from '@energyweb/vc-verification';
+import { PreconditionType } from '@energyweb/credential-governance';
 
 @Injectable()
 export class ClaimVerificationService {
@@ -29,7 +30,7 @@ export class ClaimVerificationService {
     subjectDID: string,
     roleNamespace: string
   ) {
-    const resolvedCredential = await this.getCredential(
+    const resolvedCredential = await this.credentialResolver.getCredential(
       subjectDID,
       roleNamespace
     );
@@ -51,17 +52,6 @@ export class ClaimVerificationService {
   }
 
   /**
-   * Resolve a credential from storage
-   *
-   * @param subjectDID The DID to try to resolve a credential for
-   * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
-   * @return void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
-   */
-  public async getCredential(did: string, namespace: string) {
-    return this.credentialResolver.getCredential(did, namespace);
-  }
-
-  /**
    * Verifies:
    * - That off-chain claim was issued by authorized issuer
    * - That claim is not expired
@@ -72,7 +62,7 @@ export class ClaimVerificationService {
    * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
    * @return Boolean indicating if verified and array of error messages
    */
-  async verifyRoleEIP191JWT(
+  public async verifyRoleEIP191JWT(
     roleEIP191JWT: RoleEIP191JWT,
     subjectDID: string,
     roleNamespace: string
@@ -122,7 +112,10 @@ export class ClaimVerificationService {
    * @param {String} iss DID of the issuer
    * @return DID of the authenticated identity on successful verification or null otherwise
    */
-  async verifyPublicClaim(token: string, did: string): Promise<string | null> {
+  public async verifyPublicClaim(
+    token: string,
+    did: string
+  ): Promise<string | null> {
     const didDoc = await this.didService.getById(did);
     const verifier = new ProofVerifier(didDoc);
     return verifier.verifyAssertionProof(token);
@@ -130,26 +123,72 @@ export class ClaimVerificationService {
 
   /**
    * Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
-   * @param claimType the role to verify enrollment preconditions for
    * @param userDID the Did of the user seeking to obtain the role. Must posses enrolment preconditions
    * @param conditions enrolment preconditions needed to obtain the role (claimType)
    */
   public async verifyClaimPresentInDidDocument({
-    claimType,
     userDID,
     conditions,
   }: {
-    claimType: string;
     userDID: string;
     conditions: string[];
   }) {
     const didDocument = await this.didService.getById(userDID);
-    const hasConditionAsClaim = didDocument.service.some(
+    console.log(JSON.stringify(didDocument), 'THE DOCUMENT');
+    return didDocument.service.some(
       ({ claimType }) => claimType && conditions.includes(claimType as string)
     );
-    if (!hasConditionAsClaim) {
+  }
+
+  public async verifyEnrolmentPreconditions(
+    enrolmentPreconditions: {
+      type: PreconditionType;
+      conditions: string[];
+    }[],
+    requester: string,
+    claimType: string
+  ) {
+    //if (enrolmentPreconditions?.length > 0) {
+    if (
+      enrolmentPreconditions.every(
+        (cond) => cond.type === PreconditionType.Role
+      )
+    ) {
+      for (const { conditions } of enrolmentPreconditions) {
+        if (conditions?.length > 0) {
+          const conditionsInDidDocument =
+            await this.verifyClaimPresentInDidDocument({
+              userDID: requester,
+              conditions,
+            });
+          if (!conditionsInDidDocument) {
+            throw new Error(
+              `Role enrolment precondition not met for user: ${requester} and role: ${claimType}. User does not have this claim.`
+            );
+          }
+          await Promise.all(
+            conditions.map(async (condition) => {
+              const verificationResult = await this.resolveCredentialAndVerify(
+                requester,
+                condition
+              );
+              if (
+                !verificationResult?.isVerified &&
+                verificationResult?.errors.length > 0
+              ) {
+                throw new Error(
+                  `Role enrolment precondition not met for user: ${requester} for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
+                    verificationResult?.errors
+                  )}`
+                );
+              }
+            })
+          );
+        }
+      }
+    } else {
       throw new Error(
-        `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}. User does not have this claim.`
+        'An enrolment precondition has an unsupported precondition type. Supported precondition types include: "Role"'
       );
     }
   }

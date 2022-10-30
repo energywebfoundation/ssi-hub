@@ -21,7 +21,6 @@ import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
 import { ClaimVerificationService } from './claim-verification.service';
-import { PreconditionType } from '@energyweb/credential-governance';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -88,74 +87,16 @@ export class ClaimService {
       });
 
     if (enrolmentPreconditions?.length > 0) {
-      if (
-        enrolmentPreconditions.every(
-          (cond) => cond.type === PreconditionType.Role
-        )
-      ) {
-        await this.verifyEnrolmentPrerequisites(
-          enrolmentPreconditions,
-          dto.requester,
-          claimType
-        );
-      } else {
-        throw new Error(
-          'An enrolment precondition has an unsupported precondition type. Supported precondition types include: "Role"'
-        );
-      }
+      this.claimVerificationService.verifyEnrolmentPreconditions(
+        enrolmentPreconditions,
+        dto.requester,
+        claimType
+      );
     }
 
     await this.create(dto, sub, redirectUri);
 
     return ClaimHandleResult.Success();
-  }
-
-  public async verifyEnrolmentPrerequisites(
-    enrolmentPreconditions: {
-      type: PreconditionType;
-      conditions: string[];
-    }[],
-    requester: string,
-    claimType: string
-  ) {
-    for (const { conditions } of enrolmentPreconditions) {
-      if (conditions?.length > 0) {
-        await this.claimVerificationService.verifyClaimPresentInDidDocument({
-          claimType,
-          userDID: requester,
-          conditions,
-        });
-        await this.resolveAndVerifyPrerequisiteCredentials(
-          conditions,
-          requester
-        );
-      }
-    }
-  }
-
-  private async resolveAndVerifyPrerequisiteCredentials(
-    conditions: string[],
-    requester: string
-  ) {
-    await Promise.all(
-      conditions.map(async (condition) => {
-        const verificationResult =
-          await this.claimVerificationService.resolveCredentialAndVerify(
-            requester,
-            condition
-          );
-        if (
-          !verificationResult?.isVerified &&
-          verificationResult?.errors.length > 0
-        ) {
-          throw new Error(
-            `Role enrolment precondition not met for user: ${requester} for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
-              verificationResult?.errors
-            )}`
-          );
-        }
-      })
-    );
   }
 
   /**
