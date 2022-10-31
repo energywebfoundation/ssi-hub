@@ -2,7 +2,6 @@ version: '3.4'
 
 services:
   postgres:
-    container_name: postgres
     image: postgres:12-alpine
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -16,7 +15,6 @@ services:
     ports:
       - '127.0.0.1:${DB_PORT}:5432'
   nats:
-    container_name: nats
     image: synadia/nats-server:nightly
     volumes:
       - ./config/:/etc/nats
@@ -28,7 +26,6 @@ services:
       - '127.0.0.1:8222:8222'
       - '127.0.0.1:9222:9222'
   redis:
-    container_name: redis
     image: redis:${REDIS_VERSION}
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
