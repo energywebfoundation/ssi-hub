@@ -38,6 +38,11 @@ $ npm install
 $ npm run generate:jwtkeys
 ```
 
+## Generating types for contracts
+```bash
+$ npm run build:contracts
+```
+
 ## Running the app
 
 ### development
