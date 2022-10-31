@@ -1,26 +1,6 @@
 version: '3.4'
 
 services:
-  app:
-    container_name: app
-    build:
-      context: .
-      dockerfile: ./docker/dev/Dockerfile
-    volumes:
-      - .:/app
-      - /app/node_modules
-    ports:
-      - ${NESTJS_PORT}:${NESTJS_PORT}
-      - 9229:9229
-    command: npm run start:dev
-    env_file:
-      - .env
-    networks:
-      - main
-    depends_on:
-      - nats
-      - redis
-      - postgres
   postgres:
     container_name: postgres
     image: postgres:12-alpine
