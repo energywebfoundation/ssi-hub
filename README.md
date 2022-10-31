@@ -11,15 +11,16 @@ This repository was formerly refered to as the `iam-cache-server`.
 
 ## Prepare
 
+### Development
+
 ```bash
-# development
 $ git checkout develop
 $ cp .env.dev .env
 $ cp docker-compose.dev.yml docker-compose.yml
 ```
 
+### Production
 ```bash
-# production mode
 $ git checkout master
 $ cp .env.dist .env
 $ cp docker-compose.prod.yml docker-compose.yml
@@ -30,18 +31,23 @@ In `production` empty values need to be populated in `.env` file, while `develop
 
 ```bash
 $ npm install
-$ npm run docker:build
+```
+
+## Generating the keys pair
+```bash
 $ npm run generate:jwtkeys
 ```
 
 ## Running the app
 
-
+### development
 ```bash
-# development
-$ npm run docker:watch
+$ docker-compose up -d
+$ npm run start:dev
+```
 
-# production mode
+### production
+```bash
 $ npm run docker:start
 ```
 
