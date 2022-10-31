@@ -28,7 +28,6 @@
     "build:typechain:identityManager": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ew-did-registry/proxyidentity/build/contracts/IdentityManager.json'",
     "build:typechain:domainNotifier": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@energyweb/credential-governance/dist/contracts/DomainNotifier.json'",
     "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
-    "docker:build": "docker-compose build app",
     "docker:start:app": "docker-compose up -d",
     "docker:start:resolver": "make start-universal-resolver",
     "docker:watch": "npm run docker:start:app && docker-compose logs -f app",
