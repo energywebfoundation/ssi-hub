@@ -43,11 +43,7 @@ export class ClaimVerificationService {
       };
     }
     if (isEIP191Jwt(resolvedCredential)) {
-      return this.verifyRoleEIP191JWT(
-        resolvedCredential as RoleEIP191JWT,
-        subjectDID,
-        roleNamespace
-      );
+      return this.verifyRoleEIP191JWT(resolvedCredential as RoleEIP191JWT);
     }
   }
 
@@ -62,10 +58,8 @@ export class ClaimVerificationService {
    * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
    * @return Boolean indicating if verified and array of error messages
    */
-  public async verifyRoleEIP191JWT(
-    roleEIP191JWT: RoleEIP191JWT,
-    subjectDID: string,
-    roleNamespace: string
+  private async verifyRoleEIP191JWT(
+    roleEIP191JWT: RoleEIP191JWT
   ): Promise<{ isVerified: boolean; errors: string[] }> {
     const { payload, eip191Jwt } = roleEIP191JWT;
     const errors: string[] = [];
@@ -78,16 +72,12 @@ export class ClaimVerificationService {
       payload?.iss as string
     );
     if (!proofVerified) {
-      errors.push(
-        `Verification failed for ${roleNamespace} for ${subjectDID}: Proof not verified for role`
-      );
+      errors.push(`Proof not verified for role`);
     }
     // Date.now() and JWT expiration time both identify the time elapsed since January 1, 1970 00:00:00 UTC
     const isExpired = payload?.exp && payload?.exp * 1000 < Date.now();
     if (isExpired) {
-      errors.push(
-        `Verification failed for ${roleNamespace} for ${subjectDID}: Credential for prerequisite role expired`
-      );
+      errors.push(`Credential for prerequisite role expired`);
     }
     const { verified: issuerVerified, error } =
       await this.issuerVerificationService.verifyIssuer(
@@ -95,9 +85,7 @@ export class ClaimVerificationService {
         payload?.claimData?.claimType
       );
     if (!issuerVerified && error) {
-      throw new Error(
-        `Verification failed for ${roleNamespace} for ${subjectDID}: Issuer verification failed: ${error}`
-      );
+      throw new Error(`Issuer verification failed: ${error}`);
     }
     return {
       errors: errors,
@@ -112,7 +100,7 @@ export class ClaimVerificationService {
    * @param {String} iss DID of the issuer
    * @return DID of the authenticated identity on successful verification or null otherwise
    */
-  public async verifyPublicClaim(
+  private async verifyPublicClaim(
     token: string,
     did: string
   ): Promise<string | null> {
@@ -126,7 +114,7 @@ export class ClaimVerificationService {
    * @param userDID the Did of the user seeking to obtain the role. Must posses enrolment preconditions
    * @param conditions enrolment preconditions needed to obtain the role (claimType)
    */
-  public async verifyClaimPresentInDidDocument({
+  private async verifyClaimPresentInDidDocument({
     userDID,
     conditions,
   }: {

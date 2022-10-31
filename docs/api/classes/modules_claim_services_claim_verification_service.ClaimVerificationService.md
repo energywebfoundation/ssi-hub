@@ -15,10 +15,7 @@
 ### Methods
 
 - [resolveCredentialAndVerify](modules_claim_services_claim_verification_service.ClaimVerificationService.md#resolvecredentialandverify)
-- [verifyClaimPresentInDidDocument](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyclaimpresentindiddocument)
 - [verifyEnrolmentPreconditions](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyenrolmentpreconditions)
-- [verifyPublicClaim](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifypublicclaim)
-- [verifyRoleEIP191JWT](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyroleeip191jwt)
 
 ## Constructors
 
@@ -63,26 +60,6 @@ void. Returns boolean indicating if credential is verified. Contains array of er
 
 ___
 
-### verifyClaimPresentInDidDocument
-
-▸ **verifyClaimPresentInDidDocument**(`__namedParameters`): `Promise`<`boolean`\>
-
-Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.conditions` | `string`[] |
-| `__namedParameters.userDID` | `string` |
-
-#### Returns
-
-`Promise`<`boolean`\>
-
-___
-
 ### verifyEnrolmentPreconditions
 
 ▸ **verifyEnrolmentPreconditions**(`enrolmentPreconditions`, `requester`, `claimType`): `Promise`<`void`\>
@@ -98,49 +75,3 @@ ___
 #### Returns
 
 `Promise`<`void`\>
-
-___
-
-### verifyPublicClaim
-
-▸ **verifyPublicClaim**(`token`, `did`): `Promise`<`string`\>
-
-Verifies issued token of the public claim.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `token` | `string` | JWT token of the public claim |
-| `did` | `string` | - |
-
-#### Returns
-
-`Promise`<`string`\>
-
-DID of the authenticated identity on successful verification or null otherwise
-
-___
-
-### verifyRoleEIP191JWT
-
-▸ **verifyRoleEIP191JWT**(`roleEIP191JWT`, `subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
-
-Verifies:
-- That off-chain claim was issued by authorized issuer
-- That claim is not expired
-- That off-chain claim proof is valid
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `roleEIP191JWT` | `RoleEIP191JWT` | off chain claim to verify |
-| `subjectDID` | `string` | The credential subject |
-| `roleNamespace` | `string` | - |
-
-#### Returns
-
-`Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
-
-Boolean indicating if verified and array of error messages
