@@ -12,7 +12,7 @@
     "prebuild": "rimraf dist && npm run build:contracts",
     "build": "nest build",
     "start": "nest start",
-    "start:dev": "nest start --debug 0.0.0.0:9229 --watch",
+    "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test,e2e}/**/*.ts\" --fix",
