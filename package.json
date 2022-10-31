@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "clean": "rimraf src/ethers/factories node_modules dist",
     "commit": "git-cz",
     "commit:retry": "git-cz --retry",
     "prebuild": "rimraf dist && npm run build:contracts",
