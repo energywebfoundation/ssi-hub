@@ -21,7 +21,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "build:contracts": "npm run build:typechain:registry && npm run build:typechain:resolver && npm run build:typechain:didregistry && npm run build:typechain:offerableIdentity && npm run build:typechain:identityManager && npm run build:typechain:domainNotifier",
+    "build:contracts": "run-p build:typechain:*",
     "build:typechain:didregistry": "typechain --target ethers-v5 --out-dir src/ethers 'abi/EthereumDIDRegistry.json'",
     "build:typechain:registry": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ensdomains/ens/build/contracts/ENSRegistry.json'",
     "build:typechain:resolver": "typechain --target ethers-v5 --out-dir src/ethers './node_modules/@ensdomains/resolver/build/contracts/PublicResolver.json'",
