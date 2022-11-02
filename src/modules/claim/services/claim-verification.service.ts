@@ -29,7 +29,7 @@ export class ClaimVerificationService {
   public async resolveCredentialAndVerify(
     subjectDID: string,
     roleNamespace: string
-  ) {
+  ): Promise<{ isVerified: boolean; errors: string[] }> {
     const resolvedCredential = await this.credentialResolver.getCredential(
       subjectDID,
       roleNamespace

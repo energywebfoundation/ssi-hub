@@ -42,7 +42,7 @@
 
 ### resolveCredentialAndVerify
 
-▸ **resolveCredentialAndVerify**(`subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
+▸ **resolveCredentialAndVerify**(`subjectDID`, `roleNamespace`): `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
 
 Resolve a credential from storage and verify its proof/signature and its issuer's authority
 
@@ -55,7 +55,7 @@ Resolve a credential from storage and verify its proof/signature and its issuer'
 
 #### Returns
 
-`Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
+`Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean`  }\>
 
 Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
 
