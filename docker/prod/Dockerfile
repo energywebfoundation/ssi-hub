@@ -24,8 +24,6 @@ RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
 
 RUN curl -sf https://gobinaries.com/tj/node-prune | sh && node-prune
 
-RUN npm run generate:jwtkeys
-
 FROM $IMAGE
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 RUN apk add --no-cache curl
