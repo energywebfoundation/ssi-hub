@@ -15,6 +15,7 @@
 ### Methods
 
 - [resolveCredentialAndVerify](modules_claim_services_claim_verification_service.ClaimVerificationService.md#resolvecredentialandverify)
+- [verifyClaimPresentInDidDocument](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyclaimpresentindiddocument)
 - [verifyEnrolmentPreconditions](modules_claim_services_claim_verification_service.ClaimVerificationService.md#verifyenrolmentpreconditions)
 
 ## Constructors
@@ -56,7 +57,27 @@ Resolve a credential from storage and verify its proof/signature and its issuer'
 
 `Promise`<{ `errors`: `string`[] ; `isVerified`: `boolean` = false }\>
 
-void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
+Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
+
+___
+
+### verifyClaimPresentInDidDocument
+
+▸ **verifyClaimPresentInDidDocument**(`__namedParameters`): `Promise`<`boolean`\>
+
+Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `__namedParameters` | `Object` |
+| `__namedParameters.conditions` | `string`[] |
+| `__namedParameters.userDID` | `string` |
+
+#### Returns
+
+`Promise`<`boolean`\>
 
 ___
 
@@ -64,13 +85,15 @@ ___
 
 ▸ **verifyEnrolmentPreconditions**(`enrolmentPreconditions`, `requester`, `claimType`): `Promise`<`void`\>
 
+Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role is valid
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `enrolmentPreconditions` | { `conditions`: `string`[] ; `type`: `Role`  }[] |
-| `requester` | `string` |
-| `claimType` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `enrolmentPreconditions` | { `conditions`: `string`[] ; `type`: `Role`  }[] | the preconditions that must be met for enrolment to a role |
+| `requester` | `string` | the Did that is requesting enrolment |
+| `claimType` | `string` | the role that the user is requesting to enrol to |
 
 #### Returns
 

@@ -107,16 +107,13 @@ describe('ClaimVerificationService', () => {
           conditions: ['conditionone.org.ewc'],
         },
       ];
-      try {
-        const result = await service.verifyEnrolmentPreconditions(
+      await expect(
+        service.verifyEnrolmentPreconditions(
           enrolmentPreconditions,
           resolvedCredential.payload.did,
           'claimType'
-        );
-        expect(result).toThrowError(
-          'Error: An enrolment precondition has an unsupported precondition type. Supported precondition types include: "Role"'
-        );
-      } catch (_) {}
+        )
+      ).rejects.toThrowError();
     });
     it('should throw an error if the resolveCredentialAndVerify returns an error', async () => {
       const mockError = {
@@ -126,23 +123,49 @@ describe('ClaimVerificationService', () => {
       jest
         .spyOn(service, 'resolveCredentialAndVerify')
         .mockResolvedValueOnce(mockError);
+      jest
+        .spyOn(service, 'verifyClaimPresentInDidDocument')
+        .mockResolvedValueOnce(true);
       const enrolmentPreconditions = [
         { type: PreconditionType.Role, conditions: ['conditionone.org.ewc'] },
       ];
-      try {
-        const result = await service.verifyEnrolmentPreconditions(
+      await expect(
+        service.verifyEnrolmentPreconditions(
           enrolmentPreconditions,
           resolvedCredential.payload.did,
           'claimType'
-        );
-        expect(result).toThrowError(
-          `Role enrolment precondition not met for user: ${
-            resolvedCredential.payload.did
-          } for role: ${'conditionone.org.ewc'}. Verification errors for enrolment preconditions: ${JSON.stringify(
-            mockError.errors
-          )}`
-        );
-      } catch (_) {}
+        )
+      ).rejects.toThrowError(
+        `Role enrolment precondition not met for user: ${
+          resolvedCredential.payload.did
+        } for role: ${'conditionone.org.ewc'}. Verification errors for enrolment preconditions: ${JSON.stringify(
+          mockError.errors
+        )}`
+      );
+    });
+    it('should throw an error if required roles are not in the User DID Document', async () => {
+      // const mockError = {
+      //   isVerified: false,
+      //   errors: [`Issuer not authorised to issue the credential`],
+      // };
+      // jest
+      //   .spyOn(service, 'resolveCredentialAndVerify')
+      //   .mockResolvedValueOnce(mockError);
+      jest
+        .spyOn(service, 'verifyClaimPresentInDidDocument')
+        .mockResolvedValueOnce(false);
+      const enrolmentPreconditions = [
+        { type: PreconditionType.Role, conditions: ['conditionone.org.ewc'] },
+      ];
+      await expect(
+        service.verifyEnrolmentPreconditions(
+          enrolmentPreconditions,
+          resolvedCredential.payload.did,
+          'claimType'
+        )
+      ).rejects.toThrowError(
+        `Role enrolment precondition not met for user: ${resolvedCredential.payload.did} and role: claimType. User does not have the required enrolment preconditons.`
+      );
     });
   });
 });

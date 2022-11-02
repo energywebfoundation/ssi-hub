@@ -24,7 +24,7 @@ export class ClaimVerificationService {
    *
    * @param subjectDID The DID to try to resolve a credential for
    * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
-   * @return void. Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
+   * @return Returns boolean indicating if credential is verified. Contains array of error messages if not verified.
    */
   public async resolveCredentialAndVerify(
     subjectDID: string,
@@ -114,7 +114,7 @@ export class ClaimVerificationService {
    * @param userDID the Did of the user seeking to obtain the role. Must posses enrolment preconditions
    * @param conditions enrolment preconditions needed to obtain the role (claimType)
    */
-  private async verifyClaimPresentInDidDocument({
+  public async verifyClaimPresentInDidDocument({
     userDID,
     conditions,
   }: {
@@ -127,6 +127,12 @@ export class ClaimVerificationService {
     );
   }
 
+  /**
+   * Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role is valid
+   * @param enrolmentPreconditions the preconditions that must be met for enrolment to a role
+   * @param requester the Did that is requesting enrolment
+   * @param claimType the role that the user is requesting to enrol to
+   */
   public async verifyEnrolmentPreconditions(
     enrolmentPreconditions: {
       type: PreconditionType;
@@ -149,7 +155,7 @@ export class ClaimVerificationService {
             });
           if (!conditionsInDidDocument) {
             throw new Error(
-              `Role enrolment precondition not met for user: ${requester} and role: ${claimType}. User does not have this claim.`
+              `Role enrolment precondition not met for user: ${requester} and role: ${claimType}. User does not have the required enrolment preconditons.`
             );
           }
           await Promise.all(
