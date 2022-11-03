@@ -85,7 +85,7 @@ ___
 
 ▸ **verifyEnrolmentPreconditions**(`enrolmentPreconditions`, `requester`, `claimType`): `Promise`<`void`\>
 
-Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role is valid
+Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role credential is valid
 
 #### Parameters
 

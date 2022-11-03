@@ -128,7 +128,7 @@ export class ClaimVerificationService {
   }
 
   /**
-   * Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role is valid
+   * Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role credential is valid
    * @param enrolmentPreconditions the preconditions that must be met for enrolment to a role
    * @param requester the Did that is requesting enrolment
    * @param claimType the role that the user is requesting to enrol to
