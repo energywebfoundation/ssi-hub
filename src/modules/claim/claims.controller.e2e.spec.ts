@@ -9,7 +9,7 @@ import request from 'supertest';
 import { Keys } from '@ew-did-registry/keys';
 import { JWT } from '@ew-did-registry/jwt';
 import { v5 } from 'uuid';
-import * as TestDbCOnfig from '../../../test/config';
+import * as TestDbCOnfig from '../../../e2e/config';
 import { LoggerModule } from '../logger/logger.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { RoleClaim } from './entities/roleClaim.entity';

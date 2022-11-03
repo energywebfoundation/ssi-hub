@@ -66,7 +66,6 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
       'DID_REGISTRY_ADDRESS'
     );
-
     this.resolver = new Resolver(this.provider, registrySettings);
 
     this.didRegistry = EthereumDIDRegistry__factory.connect(
@@ -332,8 +331,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     return Promise.all(
       service
         .map(({ serviceEndpoint }) => serviceEndpoint)
-        .filter(IPFSService.isCID)
-        .map(this.didStore.get)
+        .filter((endpoint) => IPFSService.isCID(endpoint))
+        .map((cid) => this.didStore.get(cid))
     );
   }
 
@@ -413,12 +412,13 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   /**
    * Gets all logs for a given DID
-   * @param documentEntity
+   * @param id
    */
   private async getAllLogs(id: string): Promise<IDIDLogData> {
     const genesisBlockNumber = 0;
     const readFromBlock = BigNumber.from(genesisBlockNumber);
-    return await this.resolver.readFromBlock(id, readFromBlock);
+    const logs = await this.resolver.readFromBlock(id, readFromBlock);
+    return logs;
   }
 
   private resolveNotCachedClaims(
