@@ -45,6 +45,13 @@ export class ClaimVerificationService {
     if (isEIP191Jwt(resolvedCredential)) {
       return this.verifyRoleEIP191JWT(resolvedCredential as RoleEIP191JWT);
     }
+
+    return {
+      isVerified: false,
+      errors: [
+        `Credential found for role ${roleNamespace} but unable to verify for Did ${subjectDID}`,
+      ],
+    };
   }
 
   /**
@@ -55,7 +62,7 @@ export class ClaimVerificationService {
    *
    * @param roleEIP191JWT off chain claim to verify
    * @param subjectDID The credential subject
-   * @param roleNamesapce The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
+   * @param roleNamespace The role to try to get a credential for. Should be a full role namespace (for example, "myrole.roles.myorg.auth.ewc")
    * @return Boolean indicating if verified and array of error messages
    */
   private async verifyRoleEIP191JWT(
