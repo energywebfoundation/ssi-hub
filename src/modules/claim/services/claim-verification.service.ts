@@ -20,6 +20,64 @@ export class ClaimVerificationService {
   }
 
   /**
+   * Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role credential is valid
+   * @param enrolmentPreconditions the preconditions that must be met for enrolment to a role
+   * @param requester the Did that is requesting enrolment
+   * @param claimType the role that the user is requesting to enrol to
+   */
+  public async verifyEnrolmentPreconditions(
+    enrolmentPreconditions: {
+      type: PreconditionType;
+      conditions: string[];
+    }[],
+    requester: string,
+    claimType: string
+  ) {
+    if (
+      enrolmentPreconditions.every(
+        (cond) => cond.type === PreconditionType.Role
+      )
+    ) {
+      for (const { conditions } of enrolmentPreconditions) {
+        if (conditions?.length > 0) {
+          const conditionsInDidDocument =
+            await this.verifyClaimPresentInDidDocument({
+              userDID: requester,
+              conditions,
+            });
+          if (!conditionsInDidDocument) {
+            throw new Error(
+              `Role enrolment precondition not met for user: ${requester} and role: ${claimType}. User does not have the required enrolment preconditons.`
+            );
+          }
+          await Promise.all(
+            conditions.map(async (condition) => {
+              const verificationResult = await this.resolveCredentialAndVerify(
+                requester,
+                condition
+              );
+              if (
+                !verificationResult?.isVerified &&
+                verificationResult?.errors.length > 0
+              ) {
+                throw new Error(
+                  `Role enrolment precondition not met for user: ${requester} for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
+                    verificationResult?.errors
+                  )}`
+                );
+              }
+            })
+          );
+        }
+      }
+    } else {
+      throw new Error(
+        'An enrolment precondition has an unsupported precondition type. Supported precondition types include: "Role"'
+      );
+    }
+  }
+
+  /**
    * Resolve a credential from storage and verify its proof/signature and its issuer's authority
    *
    * @param subjectDID The DID to try to resolve a credential for
@@ -130,63 +188,5 @@ export class ClaimVerificationService {
     return didDocument.service.some(
       ({ claimType }) => claimType && conditions.includes(claimType as string)
     );
-  }
-
-  /**
-   * Verifies that a user posesses the necessary roles for enrolment preconditions, and that each role credential is valid
-   * @param enrolmentPreconditions the preconditions that must be met for enrolment to a role
-   * @param requester the Did that is requesting enrolment
-   * @param claimType the role that the user is requesting to enrol to
-   */
-  public async verifyEnrolmentPreconditions(
-    enrolmentPreconditions: {
-      type: PreconditionType;
-      conditions: string[];
-    }[],
-    requester: string,
-    claimType: string
-  ) {
-    if (
-      enrolmentPreconditions.every(
-        (cond) => cond.type === PreconditionType.Role
-      )
-    ) {
-      for (const { conditions } of enrolmentPreconditions) {
-        if (conditions?.length > 0) {
-          const conditionsInDidDocument =
-            await this.verifyClaimPresentInDidDocument({
-              userDID: requester,
-              conditions,
-            });
-          if (!conditionsInDidDocument) {
-            throw new Error(
-              `Role enrolment precondition not met for user: ${requester} and role: ${claimType}. User does not have the required enrolment preconditons.`
-            );
-          }
-          await Promise.all(
-            conditions.map(async (condition) => {
-              const verificationResult = await this.resolveCredentialAndVerify(
-                requester,
-                condition
-              );
-              if (
-                !verificationResult?.isVerified &&
-                verificationResult?.errors.length > 0
-              ) {
-                throw new Error(
-                  `Role enrolment precondition not met for user: ${requester} for role: ${condition}. Verification errors for enrolment preconditions: ${JSON.stringify(
-                    verificationResult?.errors
-                  )}`
-                );
-              }
-            })
-          );
-        }
-      }
-    } else {
-      throw new Error(
-        'An enrolment precondition has an unsupported precondition type. Supported precondition types include: "Role"'
-      );
-    }
   }
 }
