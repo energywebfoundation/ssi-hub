@@ -48,9 +48,7 @@ export class ClaimVerificationService {
 
     return {
       isVerified: false,
-      errors: [
-        `Credential found for role ${roleNamespace} but unable to verify for Did ${subjectDID}`,
-      ],
+      errors: [`Verification not supported for resolved credential type`],
     };
   }
 
