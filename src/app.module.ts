@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -27,6 +27,28 @@ import { HealthCheckModule } from './health-check/health-check.module';
 import { DIDContactModule } from './modules/did-contact/did.contact.module';
 import { StatusListModule } from './modules/status-list/status-list.module';
 import { IPFSModule } from './modules/ipfs/ipfs.module';
+import { ValidationOptions } from 'joi';
+import { envVarsValidationSchema } from './env-vars-validation-schema';
+
+const validationOptions: ValidationOptions = {
+  stripUnknown: true,
+  allowUnknown: false,
+  abortEarly: false,
+};
+
+let config: DynamicModule;
+
+try {
+  config = ConfigModule.forRoot({
+    isGlobal: true,
+    validationOptions,
+    validationSchema: envVarsValidationSchema,
+  });
+} catch (err) {
+  console.log(err.toString());
+  console.log('exiting');
+  process.exit(1);
+}
 
 @Module({
   imports: [
@@ -38,9 +60,7 @@ import { IPFSModule } from './modules/ipfs/ipfs.module';
       inject: [ConfigService],
       useFactory: getDBConfig,
     }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    config,
     BullModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
         redis: {
