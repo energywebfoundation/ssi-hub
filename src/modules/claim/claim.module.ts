@@ -10,6 +10,8 @@ import {
   ClaimService,
   ClaimIssuanceService,
   RevocationVerificationService,
+  ClaimVerificationService,
+  IssuerVerificationService,
 } from './services';
 import { AssetsModule } from '../assets/assets.module';
 import { DIDModule } from '../did/did.module';
@@ -32,6 +34,8 @@ import { RoleRevokerResolver } from './resolvers/revoker.resolver';
     RevocationVerificationService,
     Provider,
     RoleRevokerResolver,
+    ClaimVerificationService,
+    IssuerVerificationService,
   ],
   exports: [RevocationVerificationService, RoleRevokerResolver],
 })
