@@ -16,7 +16,6 @@
 - [common/user.decorator](modules/common_user_decorator.md)
 - [db/cli](modules/db_cli.md)
 - [db/config](modules/db_config.md)
-- [env-vars-validation-schema](modules/env_vars_validation_schema.md)
 - [errors/MalformedDIDErrro](modules/errors_MalformedDIDErrro.md)
 - [graphql/config](modules/graphql_config.md)
 - [graphql/graphql.parser](modules/graphql_graphql_parser.md)
