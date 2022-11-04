@@ -99,7 +99,7 @@ export class RoleCredentialResolver implements CredentialResolver {
     tokens: string[]
   ): VerifiableCredential<RoleCredentialSubject>[] {
     return tokens
-      .map((token) => {
+      ?.map((token) => {
         try {
           return JSON.parse(token);
         } catch (_) {
