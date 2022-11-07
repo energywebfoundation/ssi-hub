@@ -8,7 +8,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from '../../common/user.decorator';
 import { Auth } from '../auth/auth.decorator';
 import { DIDPipe } from '../did/did.pipe';
@@ -27,6 +27,7 @@ export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
   @Get(':id')
+  @ApiParam({ name: 'id', type: 'string', required: true })
   async getByID(
     @Param('id', DIDPipe) { did }: DID,
     @User() currentUser?: string
@@ -44,6 +45,7 @@ export class AssetsController {
   }
 
   @Get('history/:id')
+  @ApiParam({ name: 'id', type: 'string', required: true })
   @ApiQuery({
     name: 'skip',
     required: false,
@@ -65,7 +67,7 @@ export class AssetsController {
     enum: AssetHistoryEventType,
   })
   async getHistoryByAssetId(
-    @Param('id', DIDPipe) { id }: DID,
+    @Param('id', DIDPipe) { did: id }: DID,
     @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
     @Query('order') order?: Order,

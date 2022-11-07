@@ -90,6 +90,7 @@ iam-cache-server-helm:
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://ics-dev.energyweb.org/v1
+    CHAIN_REQUEST_ATTEMPTS: 5
 
   opsValues:
     DB_NAME: ics
@@ -105,7 +106,15 @@ iam-cache-server-helm:
     IPFS_CLIENT_PROJECT_ID: 2DBFBP5zsjfImw1wBPn1Vx08Yd5
     IPFS_CLIENT_HOST: ipfs.infura.io
 
-  resources: { }
+  resources:
+    limits:
+      cpu: 750m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
+      # We anticipate memory usage to decrease once node v18 is used
+      memory: 900Mi
 
   autoscaling:
     enabled: false

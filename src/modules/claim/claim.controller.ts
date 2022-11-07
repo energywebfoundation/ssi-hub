@@ -117,7 +117,9 @@ export class ClaimController {
       const { sub } = new JWT(new Keys()).decode(claimData.issuedToken) as {
         sub: string;
       };
-      dids.push(sub);
+      if (!dids.includes(sub)) {
+        dids.push(sub);
+      }
     }
 
     await this.nats.publishForDids(
@@ -176,7 +178,6 @@ export class ClaimController {
     const claimDTO = ClaimRequestDTO.create(claimData);
 
     await validateOrReject(claimDTO);
-
     const result = await this.claimService.handleClaimEnrolmentRequest(
       claimData,
       originUrl
@@ -186,10 +187,12 @@ export class ClaimController {
       throw new HttpException(result.details, HttpStatus.BAD_REQUEST);
     }
 
+    const issuers = await this.claimService.issuersOfRole(claimData.claimType);
+
     await this.nats.publishForDids(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
-      claimData.claimIssuer,
+      issuers,
       { claimId: claimData.id }
     );
 
