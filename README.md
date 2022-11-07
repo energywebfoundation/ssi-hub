@@ -33,6 +33,9 @@ In `production` empty values need to be populated in `.env` file, while `develop
 $ npm install
 ```
 
+On Apple Silicon (M1)  `TARGET_ARCH=amd64` may be required for dependencies to be build. So
+execute `TARGET_ARCH=amd64 npm install` or set `export TARGET_ARCH=amd64` in your shell.
+
 ## Generating the keys pair
 ```bash
 $ npm run generate:jwtkeys
@@ -75,6 +78,8 @@ secure: false,
 In this way, an app hosted on `localhost` (assuming the cache-server is also served on localhost) will store the authentication cookies even if the requests aren't sent over a secure connection.
 
 ## Test
+
+Make sure `ENABLE_AUTH=true` is set as it is required for tests passing.
 
 ```bash
 # unit tests
