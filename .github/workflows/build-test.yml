@@ -103,6 +103,7 @@ jobs:
           ENS_URL: ${{secrets.ENS_URL}}
           REDIS_HOST: ${{secrets.REDIS_HOST}}
           REDIS_PORT: ${{ job.services.redis.ports[6379] }}
+          REDIS_PASSWORD: foobar
           NATS_CLIENTS_URL: ${{secrets.NATS_CLIENTS_URL}}
           JWT_PUBLIC_KEY: ${{secrets.JWT_PUBLIC_KEY}}
           JWT_PRIVATE_KEY: ${{secrets.JWT_PRIVATE_KEY}}
