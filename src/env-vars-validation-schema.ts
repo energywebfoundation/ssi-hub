@@ -18,7 +18,7 @@ const Joi = <ExtendedJoi>JoiBase.extend((joi) => ({
       return { value, errors: helpers.error('ethAddr') };
     }
 
-    return { value };
+    return value;
   },
 }));
 
