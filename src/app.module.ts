@@ -28,7 +28,7 @@ import { DIDContactModule } from './modules/did-contact/did.contact.module';
 import { StatusListModule } from './modules/status-list/status-list.module';
 import { IPFSModule } from './modules/ipfs/ipfs.module';
 import { ValidationOptions } from 'joi';
-import { envVarsValidationSchema } from './env-vars-validation-schema';
+import { envVarsValidationSchema as validationSchema } from './env-vars-validation-schema';
 
 const validationOptions: ValidationOptions = {
   stripUnknown: true,
@@ -42,7 +42,7 @@ try {
   config = ConfigModule.forRoot({
     isGlobal: true,
     validationOptions,
-    validationSchema: envVarsValidationSchema,
+    validationSchema,
   });
 } catch (err) {
   console.log(err.toString());
