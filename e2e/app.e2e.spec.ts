@@ -18,7 +18,7 @@ import { ConfigService } from '@nestjs/config';
 
 export let app: INestApplication;
 
-jest.setTimeout(20000000);
+jest.setTimeout(600_000);
 describe('iam-cache-server E2E tests', () => {
   const provider = ethers.provider;
   const deployer = provider.getSigner(0);
