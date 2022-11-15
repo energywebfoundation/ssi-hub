@@ -54,7 +54,7 @@ iam-cache-server-helm:
     secretRefName: ics-secrets
     configRefName: ics-cm
     jwtKeysSecretName: jwt-keys
-    jwtKeysMountPath: "/app"
+    jwtKeysMountPath: "/keys"
 
   sealedSecret:
     enabled: true
