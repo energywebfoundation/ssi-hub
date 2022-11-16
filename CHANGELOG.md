@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.11.1](https://github.com/energywebfoundation/ssi-hub/compare/v2.11.0...v2.11.1) (2022-11-16)
+
+
+### Bug Fixes
+
+* fixing ENABLE_AUTH having no effect when set in .env file ([#537](https://github.com/energywebfoundation/ssi-hub/issues/537)) ([fe65ad7](https://github.com/energywebfoundation/ssi-hub/commit/fe65ad76cd1c7ab0a2eff5d03988d8189e48beea))
+
 ## [2.11.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.9.2...v2.11.0) (2022-11-07)
 
 
