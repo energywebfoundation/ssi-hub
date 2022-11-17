@@ -72,8 +72,8 @@ export const envVarsValidationSchema = Joi.object({
   ENS_SYNC_INTERVAL_IN_HOURS: Joi.number().positive().required(),
 
   ENABLE_AUTH: Joi.boolean().required(),
-  JWT_PRIVATE_KEY: Joi.string().required(),
-  JWT_PUBLIC_KEY: Joi.string().required(),
+  JWT_PRIVATE_KEY_PATH: Joi.string().required(),
+  JWT_PUBLIC_KEY_PATH: Joi.string().required(),
   STRATEGY_CACHE_SERVER: Joi.string().uri().required(),
   STRATEGY_PRIVATE_KEY: Joi.string().hex(),
   STRATEGY_NUM_BLOCKS_BACK: Joi.number().positive().required(),
