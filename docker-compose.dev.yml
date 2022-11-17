@@ -27,7 +27,6 @@ services:
       - '127.0.0.1:9222:9222'
   redis:
     image: redis:${REDIS_VERSION}
-    command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - dev-redis-data:/data
     environment:
