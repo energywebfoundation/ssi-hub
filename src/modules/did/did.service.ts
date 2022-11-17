@@ -4,6 +4,7 @@ import {
   OnModuleInit,
   InternalServerErrorException,
   Inject,
+  OnModuleDestroy,
 } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -42,9 +43,11 @@ import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { IPFSService } from '../ipfs/ipfs.service';
 
 @Injectable()
-export class DIDService implements OnModuleInit {
+export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly resolver: Resolver;
+  private readonly JOBS_CLEANUP_DELAY = 1000;
+
   constructor(
     private readonly config: ConfigService,
     private readonly schedulerRegistry: SchedulerRegistry,
@@ -63,7 +66,6 @@ export class DIDService implements OnModuleInit {
     const DID_REGISTRY_ADDRESS = this.config.get<string>(
       'DID_REGISTRY_ADDRESS'
     );
-
     this.resolver = new Resolver(this.provider, registrySettings);
 
     this.didRegistry = EthereumDIDRegistry__factory.connect(
@@ -88,6 +90,13 @@ export class DIDService implements OnModuleInit {
 
   async onModuleInit() {
     await this.InitEventListeners();
+  }
+
+  async onModuleDestroy() {
+    await this.didQueue.clean(this.JOBS_CLEANUP_DELAY, 'wait');
+    await this.didQueue.clean(this.JOBS_CLEANUP_DELAY, 'active');
+    await this.didQueue.clean(this.JOBS_CLEANUP_DELAY, 'delayed');
+    this.didRegistry.removeAllListeners(DidEventNames.AttributeChanged);
   }
 
   /**
@@ -315,12 +324,15 @@ export class DIDService implements OnModuleInit {
    * @param did DID of the document service endpoints
    */
   public async resolveServiceEndpoints(did: string) {
+    if (!this.didStore) {
+      throw new Error(`resolveServiceEndpoints: DIDStore is undefined`);
+    }
     const { service } = await this.getById(did);
     return Promise.all(
       service
         .map(({ serviceEndpoint }) => serviceEndpoint)
-        .filter(IPFSService.isCID)
-        .map(this.didStore.get)
+        .filter((endpoint) => IPFSService.isCID(endpoint))
+        .map((cid) => this.didStore.get(cid))
     );
   }
 
@@ -400,12 +412,13 @@ export class DIDService implements OnModuleInit {
 
   /**
    * Gets all logs for a given DID
-   * @param documentEntity
+   * @param id
    */
   private async getAllLogs(id: string): Promise<IDIDLogData> {
     const genesisBlockNumber = 0;
     const readFromBlock = BigNumber.from(genesisBlockNumber);
-    return await this.resolver.readFromBlock(id, readFromBlock);
+    const logs = await this.resolver.readFromBlock(id, readFromBlock);
+    return logs;
   }
 
   private resolveNotCachedClaims(

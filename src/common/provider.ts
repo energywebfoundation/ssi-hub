@@ -30,7 +30,9 @@ export class Provider extends providers.JsonRpcProvider {
         (error) => {
           if (attempts >= this.attempts) {
             this.logger.warn(
-              `Failed to ${method} with params ${params} after ${this.attempts}`
+              `Failed to perform rpc-method {${method}} with params ${JSON.stringify(
+                params
+              )} after ${this.attempts} attempts`
             );
             throw new Error(error);
           } else {

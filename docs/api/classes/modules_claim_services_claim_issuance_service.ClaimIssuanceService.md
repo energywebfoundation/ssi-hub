@@ -16,7 +16,7 @@
 
 ### constructor
 
-• **new ClaimIssuanceService**(`roleService`, `logger`, `roleClaimRepository`)
+• **new ClaimIssuanceService**(`roleService`, `logger`, `roleClaimRepository`, `claimVerificationService`)
 
 #### Parameters
 
@@ -25,6 +25,7 @@
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `roleClaimRepository` | `Repository`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\> |
+| `claimVerificationService` | [`ClaimVerificationService`](modules_claim_services_claim_verification_service.ClaimVerificationService.md) |
 
 ## Methods
 

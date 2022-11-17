@@ -8,6 +8,7 @@ import { Logger } from '../../logger/logger.service';
 import { ClaimIssueDTO, NewClaimIssueDTO } from '../claim.dto';
 import { RoleClaim } from '../entities/roleClaim.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
+import { ClaimVerificationService } from './claim-verification.service';
 
 @Injectable()
 export class ClaimIssuanceService {
@@ -15,7 +16,8 @@ export class ClaimIssuanceService {
     private readonly roleService: RoleService,
     private readonly logger: Logger,
     @InjectRepository(RoleClaim)
-    private readonly roleClaimRepository: Repository<RoleClaim>
+    private readonly roleClaimRepository: Repository<RoleClaim>,
+    private claimVerificationService: ClaimVerificationService
   ) {
     this.logger.setContext(ClaimIssuanceService.name);
   }
@@ -83,10 +85,18 @@ export class ClaimIssuanceService {
       claimType: dto.claimType,
     });
 
-    await this.roleService.verifyEnrolmentPrecondition({
-      claimType: dto.claimType,
-      userDID: dto.requester,
-    });
+    const enrolmentPreconditions =
+      await this.roleService.fetchEnrolmentPreconditions({
+        claimType: dto.claimType,
+      });
+
+    if (enrolmentPreconditions?.length > 0) {
+      this.claimVerificationService.verifyEnrolmentPreconditions(
+        enrolmentPreconditions,
+        dto.requester,
+        claimType
+      );
+    }
 
     await this.createAndIssue(dto, dto.requester);
 
