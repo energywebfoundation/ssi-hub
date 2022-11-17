@@ -48,7 +48,6 @@ services:
   redis:
     container_name: redis
     image: redis:${REDIS_VERSION}
-    command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - $PWD/redis-data:/var/lib/redis
     environment:
