@@ -30,8 +30,6 @@ RUN apk add --no-cache curl
 
 COPY --chown=node:node --from=build /app/dist /app/dist
 COPY --chown=node:node --from=build /app/node_modules /app/node_modules
-COPY --chown=node:node --from=build /app/private.pem /app/private.pem
-COPY --chown=node:node --from=build /app/public.pem /app/public.pem
 
 RUN mkdir /app/logs
 
