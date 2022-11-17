@@ -83,6 +83,8 @@ iam-cache-server-helm:
   config:
     secretRefName: ics-secrets
     configRefName: ics-cm
+    jwtKeysSecretName: jwt-keys
+    jwtKeysMountPath: "/keys"
 
   appValues:
     CHAIN_ID: 246
@@ -106,8 +108,8 @@ iam-cache-server-helm:
     ENS_SYNC_INTERVAL_IN_HOURS: 11
     ENS_SYNC_ENABLED: true
     ENABLE_AUTH: true
-    JWT_PRIVATE_KEY_PATH: /app/private.pem
-    JWT_PUBLIC_KEY_PATH: /app/public.pem
+    JWT_PRIVATE_KEY_PATH: /keys/private.pem
+    JWT_PUBLIC_KEY_PATH: /keys/public.pem
     STRATEGY_CACHE_SERVER: https://identitycache.energyweb.org/v1
     STRATEGY_NUM_BLOCKS_BACK: 10
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m

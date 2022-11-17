@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import ms from 'ms';
 import { LoginGuard } from './login.guard';
@@ -143,6 +143,7 @@ export class LoginController {
   }
 
   @Get('auth/status')
+  @ApiBearerAuth()
   async status(@Req() req: Request) {
     const accessTokenString =
       req.headers['authorization']?.replace('Bearer ', '') ||

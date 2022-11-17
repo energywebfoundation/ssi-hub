@@ -1,3 +1,6 @@
+import { config as loadEnvVars } from 'dotenv';
+loadEnvVars(); // this is required by the Auth decorator depending on process.env.ENABLE_AUTH
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
