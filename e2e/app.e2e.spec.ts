@@ -14,10 +14,11 @@ import { EthereumDIDRegistry } from '../src/ethers/EthereumDIDRegistry';
 import { EthereumDIDRegistry__factory } from '../src/ethers/factories/EthereumDIDRegistry__factory';
 import { didModuleTestSuite } from './did/did-service';
 import { Provider } from '../src/common/provider';
+import { ConfigService } from '@nestjs/config';
 
 export let app: INestApplication;
 
-jest.setTimeout(20000000);
+jest.setTimeout(600_000);
 describe('iam-cache-server E2E tests', () => {
   const provider = ethers.provider;
   const deployer = provider.getSigner(0);
@@ -37,6 +38,7 @@ describe('iam-cache-server E2E tests', () => {
 
     didRegistry = await loadFixture(deployDidRegistry);
     process.env.DID_REGISTRY_ADDRESS = didRegistry.address;
+    const configService = new ConfigService(); // this is necessary to have values updated in the ConfigService provider
 
     const testingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -45,6 +47,8 @@ describe('iam-cache-server E2E tests', () => {
       .useValue(await spawnIpfsDaemon())
       .overrideProvider(Provider)
       .useValue(provider)
+      .overrideProvider(ConfigService)
+      .useValue(configService)
       .compile();
     app = testingModule.createNestApplication();
     appConfig(app);
