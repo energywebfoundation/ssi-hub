@@ -72,7 +72,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `__namedParameters` | `Object` |
-| `__namedParameters.data` | `IRoleDefinition` \| `IRoleDefinitionV2` \| `IOrganizationDefinition` \| `IAppDefinition` |
+| `__namedParameters.data` | `IRoleDefinitionV2` \| `IRoleDefinition` \| `IOrganizationDefinition` \| `IAppDefinition` |
 | `__namedParameters.hash` | `string` |
 | `__namedParameters.namespace` | `string` |
 | `__namedParameters.owner` | `string` |
