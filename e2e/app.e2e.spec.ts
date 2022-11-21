@@ -5,7 +5,6 @@ import { INestApplication } from '@nestjs/common';
 import { ethers, network } from 'hardhat';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { appConfig } from '../src/common/test.utils';
-import { AppModule } from '../src/app.module';
 import { authTestSuite } from './auth';
 import { claimTestSuite } from './claim';
 import { statusList2021TestSuite } from './status-list';
@@ -14,7 +13,6 @@ import { EthereumDIDRegistry } from '../src/ethers/EthereumDIDRegistry';
 import { EthereumDIDRegistry__factory } from '../src/ethers/factories/EthereumDIDRegistry__factory';
 import { didModuleTestSuite } from './did/did-service';
 import { Provider } from '../src/common/provider';
-import { ConfigService } from '@nestjs/config';
 
 export let app: INestApplication;
 
@@ -38,8 +36,9 @@ describe('iam-cache-server E2E tests', () => {
 
     didRegistry = await loadFixture(deployDidRegistry);
     process.env.DID_REGISTRY_ADDRESS = didRegistry.address;
-    const configService = new ConfigService(); // this is necessary to have values updated in the ConfigService provider
 
+    // have to import dynamically to have opportunity to deploy DID registry before environment configuration validation
+    const { AppModule } = await import('../src/app.module');
     const testingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
@@ -47,8 +46,6 @@ describe('iam-cache-server E2E tests', () => {
       .useValue(await spawnIpfsDaemon())
       .overrideProvider(Provider)
       .useValue(provider)
-      .overrideProvider(ConfigService)
-      .useValue(configService)
       .compile();
     app = testingModule.createNestApplication();
     appConfig(app);
