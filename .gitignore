@@ -41,6 +41,5 @@ lerna-debug.log*
 # Using either dev or prod docker-compose file
 docker-compose.yml
 db_dumps
-ormconfig.json
 private.pem
 public.pem
