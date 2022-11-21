@@ -41,9 +41,8 @@ const RegistrySettingsProvider = {
     RegistrySettingsProvider,
     {
       provide: DidStore,
-      useFactory: ({ protocol, host, port, headers }: IpfsConfig) => {
-        const url = `${protocol}://${host}:${port}`;
-        return new DidStore(url, headers);
+      useFactory: (ipfsConfig: IpfsConfig) => {
+        return new DidStore(ipfsConfig);
       },
       inject: [{ token: 'IPFSClientConfig', optional: false }],
     },

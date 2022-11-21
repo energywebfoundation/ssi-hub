@@ -205,18 +205,17 @@ export class RoleService {
     return verifiedRoles.filter(Boolean);
   }
 
-  public async verifyEnrolmentPrecondition({
-    userDID,
+  /**
+   * Fetches enrolment preconditions for a given role (claim type)
+   * @param claimType the role to fetch enrolment preconditions for
+   * @return enrolment preconditions for a given role (claim type)
+   */
+  public async fetchEnrolmentPreconditions({
     claimType,
   }: {
-    userDID: string;
     claimType: string;
   }) {
-    const [didDocument, role] = await Promise.all([
-      this.didService.getById(userDID),
-      this.getByNamespace(claimType),
-    ]);
-
+    const role = await this.getByNamespace(claimType);
     if (!role) {
       throw new Error(`There is no created role for ${claimType} namespace`);
     }
@@ -224,21 +223,7 @@ export class RoleService {
     const {
       definition: { enrolmentPreconditions },
     } = role;
-
-    if (!enrolmentPreconditions || enrolmentPreconditions.length < 1) return;
-    for (const { type, conditions } of enrolmentPreconditions) {
-      if (type === 'role' && conditions && conditions?.length > 0) {
-        const conditionMet = didDocument.service.some(
-          ({ claimType }) =>
-            claimType && conditions.includes(claimType as string)
-        );
-        if (!conditionMet) {
-          throw new Error(
-            `Role enrolment precondition not met for user: ${userDID} and role: ${claimType}`
-          );
-        }
-      }
-    }
+    return enrolmentPreconditions;
   }
 
   public async verifyEnrolmentIssuer({

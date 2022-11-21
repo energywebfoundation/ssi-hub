@@ -76,7 +76,11 @@ export class RoleCredentialResolver implements CredentialResolver {
     return tokens
       .map((token) => {
         try {
-          return jwt.decode(token) as RolePayload;
+          const decoded = jwt.decode(token) as RolePayload;
+          return {
+            eip191Jwt: token,
+            payload: decoded,
+          };
         } catch (_) {
           return {};
         }
@@ -95,7 +99,7 @@ export class RoleCredentialResolver implements CredentialResolver {
     tokens: string[]
   ): VerifiableCredential<RoleCredentialSubject>[] {
     return tokens
-      .map((token) => {
+      ?.map((token) => {
         try {
           return JSON.parse(token);
         } catch (_) {

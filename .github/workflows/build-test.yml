@@ -86,6 +86,7 @@ jobs:
           DID_SYNC_MODE_FULL: false
           STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
           NATS_ENVIRONMENT_NAME: dev
+          DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
 
       - name: Running E2E tests
         run: npm run test:e2e
@@ -96,11 +97,13 @@ jobs:
           CHAIN_NAME: volta
           PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
           RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
+          RESOLVER_V2_ADDRESS: '0xcf72f16Ab886776232bea2fcf3689761a0b74EfE'
           DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
           ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
           ENS_URL: ${{secrets.ENS_URL}}
           REDIS_HOST: ${{secrets.REDIS_HOST}}
           REDIS_PORT: ${{ job.services.redis.ports[6379] }}
+          REDIS_PASSWORD: foobar
           NATS_CLIENTS_URL: ${{secrets.NATS_CLIENTS_URL}}
           JWT_PUBLIC_KEY: ${{secrets.JWT_PUBLIC_KEY}}
           JWT_PRIVATE_KEY: ${{secrets.JWT_PRIVATE_KEY}}
@@ -114,7 +117,10 @@ jobs:
           JWT_ACCESS_TOKEN_NAME: ${{secrets.JWT_ACCESS_TOKEN_NAME}}
           JWT_REFRESH_TOKEN_NAME: ${{secrets.JWT_REFRESH_TOKEN_NAME}}
           UNIVERSAL_RESOLVER_URL: ${{secrets.UNIVERSAL_RESOLVER_URL}}
+          ROOT_DOMAIN: iam.ewc
           ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
+          DID_SYNC_ENABLED: false
+          DIDDOC_SYNC_INTERVAL_IN_HOURS: 21
           DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
           CLAIM_MANAGER_ADDRESS: ${{secrets.CLAIM_MANAGER_ADDRESS}}
           ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}

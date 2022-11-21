@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.11.1](https://github.com/energywebfoundation/ssi-hub/compare/v2.11.0...v2.11.1) (2022-11-16)
+
+
+### Bug Fixes
+
+* fixing ENABLE_AUTH having no effect when set in .env file ([#537](https://github.com/energywebfoundation/ssi-hub/issues/537)) ([fe65ad7](https://github.com/energywebfoundation/ssi-hub/commit/fe65ad76cd1c7ab0a2eff5d03988d8189e48beea))
+
+## [2.11.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.9.2...v2.11.0) (2022-11-07)
+
+
+### Bug Fixes
+
+* add logging for role credential resolver ([#509](https://github.com/energywebfoundation/ssi-hub/issues/509)) ([459c9a9](https://github.com/energywebfoundation/ssi-hub/commit/459c9a95513235e4c9cad9342667428a93a5fec2))
+* add semicolon in error string ([7e49723](https://github.com/energywebfoundation/ssi-hub/commit/7e49723d4a3f1679df75e3d06e53b49c385f57c6))
+* **did:** cleanup did service resources ([a88848d](https://github.com/energywebfoundation/ssi-hub/commit/a88848d15b7b16b478ea0d6f92a227d1cede7b19))
+* log revoker error for debugging ([b9dbf07](https://github.com/energywebfoundation/ssi-hub/commit/b9dbf075f1eb8d915fa7acce578f50424ed60f19))
+* revert ew-did-reg version to fix did-doc syncing ([#523](https://github.com/energywebfoundation/ssi-hub/issues/523)) ([73d6553](https://github.com/energywebfoundation/ssi-hub/commit/73d6553a820fb9c7b20ed730118a4d8bc9cf41ce))
+* supporting revocation by role ([#528](https://github.com/energywebfoundation/ssi-hub/issues/528)) ([51acd9d](https://github.com/energywebfoundation/ssi-hub/commit/51acd9d285a10ecf266bcb85609c8f27b4bf9d52))
+
 ## [2.10.0](https://github.com/energywebfoundation/iam-cache-server/compare/v2.9.2...v2.10.0) (2022-09-21)
 
 
