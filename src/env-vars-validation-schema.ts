@@ -64,6 +64,9 @@ export const envVarsValidationSchema = Joi.object({
   IPFS_CLIENT_PORT: Joi.number().port(),
   IPFS_CLIENT_PROJECT_ID: Joi.string(),
   IPFS_CLIENT_PROJECT_SECRET: Joi.string(),
+  IPFS_CLUSTER_ROOT: Joi.string(),
+  IPFS_CLUSTER_USER: Joi.string(),
+  IPFS_CLUSTER_PASSWORD: Joi.string(),
 
   DID_SYNC_MODE_FULL: Joi.boolean().required(),
   DID_SYNC_ENABLED: Joi.boolean().required(),

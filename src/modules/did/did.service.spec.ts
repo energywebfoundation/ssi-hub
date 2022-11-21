@@ -2,6 +2,7 @@
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { addressOf, ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { Methods, Chain } from '@ew-did-registry/did';
+import { DidStore as DidStoreInfura } from 'didStoreInfura';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -16,7 +17,6 @@ import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { DidStore } from '@ew-did-registry/did-ipfs-store';
 
 const { formatBytes32String } = utils;
 
@@ -51,14 +51,7 @@ const repositoryMockFactory = jest.fn(() => ({
   }),
   save: jest.fn((entity) => entity),
 }));
-const queueMockFactory = jest.fn(() => ({}));
-jest.mock('@ew-did-registry/did-ipfs-store', () => {
-  return {
-    DidStore: jest.fn(() => {
-      return {};
-    }),
-  };
-});
+const queueMockFactory = jest.fn(() => ({ clean: jest.fn() }));
 jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
   ...(jest.requireActual('@ew-did-registry/did-ethr-resolver') as Record<
     string,
@@ -75,6 +68,7 @@ jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
 describe('DidDocumentService', () => {
   let service: DIDService;
   let didRegistry: EthereumDIDRegistry;
+  let module: TestingModule;
 
   beforeEach(async () => {
     didRegistry = (await deployContract(
@@ -82,7 +76,6 @@ describe('DidDocumentService', () => {
       ethrReg
     )) as EthereumDIDRegistry;
     await didRegistry.deployed();
-
     const MockConfigService = {
       get: jest.fn((key: string) => {
         if (key === 'DID_SYNC_ENABLED') {
@@ -95,7 +88,7 @@ describe('DidDocumentService', () => {
       }),
     };
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         DIDService,
         { provide: ConfigService, useValue: MockConfigService },
@@ -118,12 +111,16 @@ describe('DidDocumentService', () => {
           }),
           inject: [ConfigService],
         },
-        { provide: DidStore, useValue: MockObject },
+        { provide: DidStoreInfura, useValue: MockObject },
       ],
     }).compile();
     await module.init();
 
     service = module.get<DIDService>(DIDService);
+  });
+
+  afterEach(async () => {
+    await module.close();
   });
 
   afterAll(() => {

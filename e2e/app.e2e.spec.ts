@@ -36,6 +36,9 @@ describe('iam-cache-server E2E tests', () => {
 
     didRegistry = await loadFixture(deployDidRegistry);
     process.env.DID_REGISTRY_ADDRESS = didRegistry.address;
+    process.env.IPFS_CLUSTER_ROOT = 'http://localhost:8080';
+    process.env.IPFS_CLUSTER_USER = 'not-required-locally';
+    process.env.IPFS_CLUSTER_PASSWORD = 'not-required-locally';
 
     // have to import dynamically to have opportunity to deploy DID registry before environment configuration validation
     const { AppModule } = await import('../src/app.module');

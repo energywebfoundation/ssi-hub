@@ -26,7 +26,7 @@ import {
   DidEventNames,
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
-import { DidStore } from '@ew-did-registry/did-ipfs-store';
+import { DidStore as DidStoreInfura } from 'didStoreInfura';
 import {
   documentFromLogs,
   Resolver,
@@ -59,7 +59,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly didStore: DidStore
+    private readonly didStore: DidStoreInfura
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -430,7 +430,10 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         const cachedService = cachedServices.find(
           (claim) => claim.serviceEndpoint === serviceEndpoint
         );
-        if (cachedService) return cachedService;
+
+        if (cachedService) {
+          return cachedService;
+        }
 
         if (!IPFSService.isCID(serviceEndpoint)) {
           return { serviceEndpoint, ...rest };
