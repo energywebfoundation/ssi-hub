@@ -1,36 +1,21 @@
 import { OnQueueError, Process, Processor } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { Job } from 'bull';
-import { DidStore as DidStoreInfura } from 'didStoreInfura';
-import { DidStore as DidStoreCluster } from 'didStoreCluster';
 import { Logger } from '../logger/logger.service';
 import { DIDDocumentEntity } from './did.entity';
+import { IPFSService } from '../ipfs/ipfs.service';
 import { DIDService } from './did.service';
 import { ADD_DID_DOC_QUEUE_NAME, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
 
 @Processor('dids')
 export class DIDProcessor {
-  private didCluster: DidStoreCluster;
-
   constructor(
     private readonly didService: DIDService,
     private readonly logger: Logger,
     private readonly configService: ConfigService,
-    private didInfura: DidStoreInfura
+    private ipfsService: IPFSService
   ) {
     this.logger.setContext(DIDProcessor.name);
-
-    const IPFS_CLUSTER_ROOT = this.configService.get('IPFS_CLUSTER_ROOT');
-    const IPFS_CLUSTER_USER = this.configService.get('IPFS_CLUSTER_USER');
-    const IPFS_CLUSTER_PASSWORD = this.configService.get(
-      'IPFS_CLUSTER_PASSWORD'
-    );
-    const Authorization = `Basic ${Buffer.from(
-      `${IPFS_CLUSTER_USER}:${IPFS_CLUSTER_PASSWORD}`
-    ).toString('base64')}`;
-    this.didCluster = new DidStoreCluster(IPFS_CLUSTER_ROOT, {
-      Authorization,
-    });
   }
 
   @OnQueueError()
@@ -65,9 +50,9 @@ export class DIDProcessor {
    */
   private async pinClaims(cids: string[]) {
     for (const cid of cids) {
-      if (!(await this.didCluster.isPinned(cid))) {
-        const token = await this.didInfura.get(cid);
-        await this.didCluster.save(token);
+      if (!(await this.ipfsService.isPinned(cid))) {
+        const token = await this.ipfsService.get(cid);
+        await this.ipfsService.pin(token);
       }
     }
   }

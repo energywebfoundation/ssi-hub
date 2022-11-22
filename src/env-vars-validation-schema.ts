@@ -60,11 +60,12 @@ export const envVarsValidationSchema = Joi.object({
   ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: Joi.number().positive().required(),
   ASSETS_SYNC_ENABLED: Joi.boolean().required(),
 
+  IPFS_CLIENT_URL: Joi.string().uri(),
   IPFS_CLIENT_HOST: Joi.string().hostname(),
   IPFS_CLIENT_PORT: Joi.number().port(),
   IPFS_CLIENT_PROJECT_ID: Joi.string(),
   IPFS_CLIENT_PROJECT_SECRET: Joi.string(),
-  IPFS_CLUSTER_ROOT: Joi.string(),
+  IPFS_CLUSTER_ROOT: Joi.string().required(),
   IPFS_CLUSTER_USER: Joi.string(),
   IPFS_CLUSTER_PASSWORD: Joi.string(),
 
@@ -92,4 +93,6 @@ export const envVarsValidationSchema = Joi.object({
   SENTRY_RELEASE: Joi.string().allow(''),
 
   STATUS_LIST_DOMAIN: Joi.string().uri().required(),
-});
+})
+  .or('IPFS_CLIENT_URL', 'IPFS_CLIENT_HOST')
+  .with('IPFS_CLIENT_HOST', ['IPFS_CLIENT_PORT']);

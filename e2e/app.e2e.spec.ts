@@ -13,6 +13,8 @@ import { EthereumDIDRegistry } from '../src/ethers/EthereumDIDRegistry';
 import { EthereumDIDRegistry__factory } from '../src/ethers/factories/EthereumDIDRegistry__factory';
 import { didModuleTestSuite } from './did/did-service';
 import { Provider } from '../src/common/provider';
+import { ipfsModuleTestSuite } from './ipfs/ipfs.testSuite';
+// import { IPFSInfuraConfigToken } from '../src/modules/ipfs/ipfs.types';
 
 export let app: INestApplication;
 
@@ -36,17 +38,20 @@ describe('iam-cache-server E2E tests', () => {
 
     didRegistry = await loadFixture(deployDidRegistry);
     process.env.DID_REGISTRY_ADDRESS = didRegistry.address;
+
+    const ipfsConfig = await spawnIpfsDaemon();
+    console.log(ipfsConfig);
     process.env.IPFS_CLUSTER_ROOT = 'http://localhost:8080';
-    process.env.IPFS_CLUSTER_USER = 'not-required-locally';
-    process.env.IPFS_CLUSTER_PASSWORD = 'not-required-locally';
+    // process.env.IPFS_CLUSTER_USER = 'not-required-locally';
+    // process.env.IPFS_CLUSTER_PASSWORD = 'not-required-locally';
 
     // have to import dynamically to have opportunity to deploy DID registry before environment configuration validation
     const { AppModule } = await import('../src/app.module');
     const testingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider('IPFSClientConfig')
-      .useValue(await spawnIpfsDaemon())
+      // .overrideProvider(IPFSInfuraConfigToken)
+      // .useValue(await spawnIpfsDaemon())
       .overrideProvider(Provider)
       .useValue(provider)
       .compile();
@@ -68,5 +73,6 @@ describe('iam-cache-server E2E tests', () => {
     describe('Claim module', claimTestSuite);
     describe('StatusList2021 module', statusList2021TestSuite);
     describe('Did module', didModuleTestSuite);
+    describe.only('Ipfs module', ipfsModuleTestSuite);
   });
 });

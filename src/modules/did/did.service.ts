@@ -26,7 +26,6 @@ import {
   DidEventNames,
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
-import { DidStore as DidStoreInfura } from 'didStoreInfura';
 import {
   documentFromLogs,
   Resolver,
@@ -59,7 +58,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly didStore: DidStoreInfura
+    private readonly ipfsService: IPFSService
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -324,15 +323,12 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
    * @param did DID of the document service endpoints
    */
   public async resolveServiceEndpoints(did: string) {
-    if (!this.didStore) {
-      throw new Error(`resolveServiceEndpoints: DIDStore is undefined`);
-    }
     const { service } = await this.getById(did);
     return Promise.all(
       service
         .map(({ serviceEndpoint }) => serviceEndpoint)
-        .filter((endpoint) => IPFSService.isCID(endpoint))
-        .map((cid) => this.didStore.get(cid))
+        .filter(IPFSService.isCID)
+        .map(this.ipfsService.get)
     );
   }
 
@@ -439,7 +435,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           return { serviceEndpoint, ...rest };
         }
 
-        const token = await this.didStore.get(serviceEndpoint);
+        const token = await this.ipfsService.get(serviceEndpoint);
 
         if (isJWT(token)) {
           const decodedData = jwt.decode(token) as {
