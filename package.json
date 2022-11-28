@@ -36,6 +36,7 @@
     "build:docs": "rimraf docs/api && typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs true ./src",
     "generate:jwtkeys": "openssl genrsa -out private.pem 2048 && openssl rsa -in private.pem -pubout > public.pem",
     "migrate:claim-subject": "node src/scripts/migrate_claim_subject.js",
+    "migrate:asset-data": "node src/scripts/migrate_asset_data.js",
     "migration:generate": "npm run typeorm:cli -- migration:generate -d src/db/cli.ts ",
     "migration:run": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:run && npm run migrate:claim-subject",
     "migration:run:dev": "npx typeorm migration:run -d ormconfig.js && npm run migrate:claim-subject",
