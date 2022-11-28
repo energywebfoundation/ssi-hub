@@ -1,27 +1,38 @@
+/**
+ * Script to clear AssetsHistory and Asset Database
+ */
+
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { createConnection } = require('typeorm');
-const {
-  Asset,
-  AssetsHistory,
-} = require('../../dist/modules/assets/assets.entity.js');
+
+const { DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD } = process.env;
 
 (async function () {
   const connection = await createConnection({
-    // had to copy from orgmconfig because typeorm doesn't detect postgres driver
+    // had to copy from orgmconfig because typeorm doesn't detect postgres drive
     type: 'postgres',
-    host: '127.0.0.1',
-    port: 5432,
-    username: 'postgres',
-    password: 'password',
-    database: 'dev-test',
-    entities: ['dist/**/*.entity.js'],
+    host: DB_HOST,
+    port: DB_PORT,
+    username: DB_USERNAME,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+    // use the entity build directory specific to deployment and script location
+    entities: ['../modules/**/*.entity.js'],
   });
 
-  const assetsHistoryRepository = connection.getRepository(AssetsHistory);
+  const assetsHistoryRepository = connection.getRepository('AssetsHistory');
+  // validate DB records
+  // const assetsHistoryData = await assetsHistoryRepository.find();
+  // console.log(assetsHistoryData);
+
   await assetsHistoryRepository.delete({});
   console.log('Cleared data in AssetHistory DB');
 
-  const assetRepository = connection.getRepository(Asset);
+  const assetRepository = connection.getRepository('Asset');
+  // validate DB records
+  // const assetData = await assetRepository.find();
+  // console.log(assetData);
+
   await assetRepository.delete({});
   console.log('Cleared data in Asset DB');
 
