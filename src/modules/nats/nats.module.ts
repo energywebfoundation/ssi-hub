@@ -10,10 +10,8 @@ import { Logger } from '../logger/logger.service';
     BullModule.registerQueue({
       name: 'nats-messages',
     }),
-    ConfigService,
-    Logger,
   ],
-  providers: [NatsService, NatsWrapper],
+  providers: [NatsService, NatsWrapper, ConfigService, Logger],
   exports: [NatsService],
 })
 export class NatsModule {}
