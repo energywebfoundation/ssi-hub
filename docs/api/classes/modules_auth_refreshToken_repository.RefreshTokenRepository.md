@@ -48,7 +48,7 @@ ___
 
 ### deleteRefreshTokenById
 
-▸ **deleteRefreshTokenById**(`tokenId`): `Promise`<`void`\>
+▸ **deleteRefreshTokenById**(`tokenId`): `Promise`<`number`\>
 
 #### Parameters
 
@@ -58,7 +58,7 @@ ___
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<`number`\>
 
 ___
 
