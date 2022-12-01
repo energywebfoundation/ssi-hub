@@ -53,7 +53,7 @@ export class EnsService implements OnModuleDestroy {
     this.logger.setContext(EnsService.name);
     utils.Logger.setLogLevel(LogLevel.ERROR);
 
-    const CHAIN_ID = parseInt(this.config.get<string>('CHAIN_ID'));
+    const CHAIN_ID = this.config.get<number>('CHAIN_ID');
     const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
     const RESOLVER_V2_ADDRESS = this.config.get<string>('RESOLVER_V2_ADDRESS');
     this._ROOT_DOMAIN = this.config.get<string>('ROOT_DOMAIN');
@@ -110,7 +110,7 @@ export class EnsService implements OnModuleDestroy {
     });
 
     // Using setInterval so that interval can be set dynamically from config
-    const ensSyncInterval = this.config.get<string>(
+    const ensSyncInterval = this.config.get<number>(
       'ENS_SYNC_INTERVAL_IN_HOURS'
     );
     const ENS_SYNC_ENABLED = this.config.get<boolean>('ENS_SYNC_ENABLED');
@@ -119,7 +119,7 @@ export class EnsService implements OnModuleDestroy {
     if (ensSyncInterval && ENS_SYNC_ENABLED && !isTestEnv) {
       const interval = setInterval(
         () => this.syncENS(),
-        parseInt(ensSyncInterval) * 3600000
+        ensSyncInterval * 3600000
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
       this.InitEventListeners();

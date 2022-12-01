@@ -74,13 +74,13 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     );
 
     // Using setInterval so that interval can be set dynamically from config
-    const didDocSyncInterval = this.config.get<string>(
+    const didDocSyncInterval = this.config.get<number>(
       'DIDDOC_SYNC_INTERVAL_IN_HOURS'
     );
     if (didDocSyncInterval && this.config.get<boolean>('DID_SYNC_ENABLED')) {
       const interval = setInterval(
         () => this.syncDocuments(),
-        parseInt(didDocSyncInterval) * 3600000
+        didDocSyncInterval * 3600000
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
