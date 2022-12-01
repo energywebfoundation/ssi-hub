@@ -18,13 +18,14 @@
 
 ### constructor
 
-• **new RefreshTokenRepository**(`configService`)
+• **new RefreshTokenRepository**(`configService`, `logger`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
 
