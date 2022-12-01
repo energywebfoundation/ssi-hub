@@ -113,8 +113,7 @@ export class EnsService implements OnModuleDestroy {
     const ensSyncInterval = this.config.get<string>(
       'ENS_SYNC_INTERVAL_IN_HOURS'
     );
-    const ENS_SYNC_ENABLED =
-      this.config.get<string>('ENS_SYNC_ENABLED') !== 'false';
+    const ENS_SYNC_ENABLED = this.config.get<boolean>('ENS_SYNC_ENABLED');
     const isTestEnv = this.config.get<string>('NODE_ENV') === 'test';
 
     if (ensSyncInterval && ENS_SYNC_ENABLED && !isTestEnv) {

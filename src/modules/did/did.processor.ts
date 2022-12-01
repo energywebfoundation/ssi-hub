@@ -50,7 +50,7 @@ export class DIDProcessor {
   public async processDIDDocumentRefresh(job: Job<string>) {
     this.logger.debug(`processing cache refresh for ${job.data}`);
     let doc: DIDDocumentEntity;
-    if (this.configService.get('DID_SYNC_MODE_FULL') === 'true') {
+    if (this.configService.get<boolean>('DID_SYNC_MODE_FULL')) {
       doc = await this.didService.addCachedDocument(job.data, true);
     } else {
       doc = await this.didService.incrementalRefreshCachedDocument(job.data);
