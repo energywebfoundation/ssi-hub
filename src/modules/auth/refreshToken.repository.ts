@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RefreshToken } from './refreshToken.model';
-import { createClient as redisCreateClient, RedisClientType } from 'redis';
+import { createClient as createRedisClient, RedisClientType } from 'redis';
 import { ConfigService } from '@nestjs/config';
 import { classToPlain } from 'class-transformer';
 import parseDuration from 'parse-duration';
@@ -17,7 +17,7 @@ export class RefreshTokenRepository {
     const REDIS_HOST = this.configService.get<string>('REDIS_HOST');
     const REDIS_PORT = this.configService.get<string>('REDIS_PORT');
 
-    this.client = redisCreateClient({
+    this.client = createRedisClient({
       url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
       password: this.configService.get<string>('REDIS_PASSWORD'),
     });
