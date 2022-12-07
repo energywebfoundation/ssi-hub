@@ -99,7 +99,7 @@ ___
 
 ### invalidateRefreshToken
 
-▸ **invalidateRefreshToken**(`id`): `Promise`<`void`\>
+▸ **invalidateRefreshToken**(`id`): `Promise`<`number`\>
 
 #### Parameters
 
@@ -109,7 +109,7 @@ ___
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<`number`\>
 
 ___
 
