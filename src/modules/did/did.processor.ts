@@ -44,7 +44,11 @@ export class DIDProcessor {
       this.logger.debug(`processing cache add for ${job.data}`);
       const doc = await this.didService.addCachedDocument(job.data);
 
-      await this.pinClaims(doc.service.map((s) => s.serviceEndpoint));
+      await this.pinClaims(doc.service.map((s) => s.serviceEndpoint)).catch(
+        (err) => {
+          this.logger.error(`error pinning the claim: ${err}`);
+        }
+      );
     } catch (err) {
       this.logger.error(`error adding ${job.data}: ${err}`);
       throw err;
@@ -62,7 +66,11 @@ export class DIDProcessor {
         doc = await this.didService.incrementalRefreshCachedDocument(job.data);
       }
 
-      await this.pinClaims(doc.service.map((s) => s.serviceEndpoint));
+      await this.pinClaims(doc.service.map((s) => s.serviceEndpoint)).catch(
+        (err) => {
+          this.logger.error(`error pinning the claim: ${err}`);
+        }
+      );
     } catch (err) {
       this.logger.error(`error refreshing ${job.data}: ${err}`);
       throw err;
