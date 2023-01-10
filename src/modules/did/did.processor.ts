@@ -25,23 +25,41 @@ export class DIDProcessor {
 
   @Process(ADD_DID_DOC_QUEUE_NAME)
   public async processDIDDocumentAddition(job: Job<string>) {
-    this.logger.debug(`processing cache add for ${job.data}`);
-    const doc = await this.didService.addCachedDocument(job.data);
+    try {
+      this.logger.debug(`processing cache add for ${job.data}`);
+      const doc = await this.didService.addCachedDocument(job.data);
 
-    await this.pinClaims(doc.service.map((s) => s.serviceEndpoint));
+      await this.pinClaims(doc.service.map((s) => s.serviceEndpoint)).catch(
+        (err) => {
+          this.logger.error(`error pinning the claim: ${err}`);
+        }
+      );
+    } catch (err) {
+      this.logger.error(`error adding ${job.data}: ${err}`);
+      throw err;
+    }
   }
 
   @Process(UPDATE_DID_DOC_QUEUE_NAME)
   public async processDIDDocumentRefresh(job: Job<string>) {
-    this.logger.debug(`processing cache refresh for ${job.data}`);
-    let doc: DIDDocumentEntity;
-    if (this.configService.get('DID_SYNC_MODE_FULL') === 'true') {
-      doc = await this.didService.addCachedDocument(job.data, true);
-    } else {
-      doc = await this.didService.incrementalRefreshCachedDocument(job.data);
-    }
+    try {
+      this.logger.debug(`processing cache refresh for ${job.data}`);
+      let doc: DIDDocumentEntity;
+      if (this.configService.get<boolean>('DID_SYNC_MODE_FULL')) {
+        doc = await this.didService.addCachedDocument(job.data, true);
+      } else {
+        doc = await this.didService.incrementalRefreshCachedDocument(job.data);
+      }
 
-    await this.pinClaims(doc.service.map((s) => s.serviceEndpoint));
+      await this.pinClaims(doc.service.map((s) => s.serviceEndpoint)).catch(
+        (err) => {
+          this.logger.error(`error pinning the claim: ${err}`);
+        }
+      );
+    } catch (err) {
+      this.logger.error(`error refreshing ${job.data}: ${err}`);
+      throw err;
+    }
   }
 
   /**

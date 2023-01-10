@@ -85,8 +85,7 @@ export class TokenService {
    * A pattern such as the double cookie submit pattern cannot be used because the cache-server does not share an origin with it's clients.
    */
   async handleOriginCheck(req: Request, res: Response, next: NextFunction) {
-    const authEnabled = this.configService.get<string>('ENABLE_AUTH');
-    if (authEnabled === 'false') {
+    if (!this.configService.get<boolean>('ENABLE_AUTH')) {
       return next();
     }
     let token = null;

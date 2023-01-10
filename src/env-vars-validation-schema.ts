@@ -43,7 +43,7 @@ export const envVarsValidationSchema = Joi.object({
   NATS_ENVIRONMENT_NAME: Joi.string().required(),
 
   ROOT_DOMAIN: Joi.string().domain().required(),
-  CHAIN_ID: Joi.number().positive().required(),
+  CHAIN_ID: Joi.number().integer().positive().required(),
   CHAIN_NAME: Joi.string().required(),
   ENS_URL: Joi.string().uri().required(),
 
