@@ -2,7 +2,6 @@
 /dist
 /node_modules
 /src/ethers
-.env
 
 # Logs
 logs
@@ -20,6 +19,7 @@ ormlogs.log
 # Tests
 /coverage
 /.nyc_output
+/e2e/setupIpfsCluster/ipfs0/
 
 # IDEs and editors
 /.idea
@@ -41,6 +41,7 @@ ormlogs.log
 
 # Using either dev or prod docker-compose file
 docker-compose.yml
+!/e2e/setupIpfsCluster/docker-compose.yml
 db_dumps
 private.pem
 public.pem

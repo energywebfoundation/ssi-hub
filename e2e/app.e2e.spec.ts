@@ -8,11 +8,13 @@ import { appConfig } from '../src/common/test.utils';
 import { authTestSuite } from './auth';
 import { claimTestSuite } from './claim';
 import { statusList2021TestSuite } from './status-list';
-import { shutDownIpfsDaemon, spawnIpfsDaemon } from './setup-ipfs';
+import { shutdownIpfsCluster, spawnIpfsCluster } from './setupIpfsCluster';
 import { EthereumDIDRegistry } from '../src/ethers/EthereumDIDRegistry';
 import { EthereumDIDRegistry__factory } from '../src/ethers/factories/EthereumDIDRegistry__factory';
 import { didModuleTestSuite } from './did/did-service';
 import { Provider } from '../src/common/provider';
+import { ipfsModuleTestSuite } from './ipfs/ipfs.testSuite';
+import { ChildProcess } from 'child_process';
 
 export let app: INestApplication;
 
@@ -23,6 +25,7 @@ describe('iam-cache-server E2E tests', () => {
   let didRegistry: EthereumDIDRegistry;
   network.config.chainId = 73799;
   let consoleLogSpy: jest.SpyInstance;
+  let cluster: ChildProcess;
 
   async function deployDidRegistry() {
     const didRegistry = await new EthereumDIDRegistry__factory()
@@ -36,17 +39,17 @@ describe('iam-cache-server E2E tests', () => {
 
     didRegistry = await loadFixture(deployDidRegistry);
     process.env.DID_REGISTRY_ADDRESS = didRegistry.address;
-    process.env.IPFS_CLUSTER_ROOT = 'http://localhost:8080';
-    process.env.IPFS_CLUSTER_USER = 'not-required-locally';
-    process.env.IPFS_CLUSTER_PASSWORD = 'not-required-locally';
+
+    cluster = await spawnIpfsCluster();
+    process.env.IPFS_CLUSTER_ROOT_URL = 'http://localhost:8080';
+
+    process.env.IPFS_CLIENT_URL = 'http://mocked'; // CID resolved incorrectly through gateway exposed on cluster. TODO: instead of gateway try to expose IPFS API
 
     // have to import dynamically to have opportunity to deploy DID registry before environment configuration validation
     const { AppModule } = await import('../src/app.module');
     const testingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider('IPFSClientConfig')
-      .useValue(await spawnIpfsDaemon())
       .overrideProvider(Provider)
       .useValue(provider)
       .compile();
@@ -60,7 +63,7 @@ describe('iam-cache-server E2E tests', () => {
       expect.stringMatching(/^error \[.+\] : .+/)
     );
     await app.close();
-    await shutDownIpfsDaemon();
+    shutdownIpfsCluster(cluster);
   }, 60_000); // 1min
 
   describe('Modules v1', () => {
@@ -68,5 +71,6 @@ describe('iam-cache-server E2E tests', () => {
     describe('Claim module', claimTestSuite);
     describe('StatusList2021 module', statusList2021TestSuite);
     describe('Did module', didModuleTestSuite);
+    describe('Ipfs module', ipfsModuleTestSuite);
   });
 });

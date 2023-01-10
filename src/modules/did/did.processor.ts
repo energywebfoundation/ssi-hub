@@ -10,7 +10,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Job, Queue } from 'bull';
 import { Logger } from '../logger/logger.service';
-import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import {
   ADD_DID_DOC_JOB_NAME,

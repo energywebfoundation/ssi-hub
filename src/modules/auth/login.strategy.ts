@@ -7,6 +7,7 @@ import { URL } from 'url';
 import { RoleIssuerResolver } from '../claim/resolvers/issuer.resolver';
 import { RoleRevokerResolver } from '../claim/resolvers/revoker.resolver';
 import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
+import { IpfsGatewayConfig, IPFSGatewayConfigToken } from '../ipfs/ipfs.types';
 import { LoginStrategyOptions } from 'passport-did-auth/dist/lib/LoginStrategy';
 
 @Injectable()
@@ -23,6 +24,9 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
       new URL(configService.get<string>('STRATEGY_CACHE_SERVER')).origin
     ).href;
     const loginStrategyOptions: LoginStrategyOptions = {
+    @Inject(IPFSGatewayConfigToken) ipfsConfig: IpfsGatewayConfig
+  ) {
+    let loginStrategyParams: Omit<LoginStrategyOptions, 'jwtSecret'> = {
       name: 'login',
       rpcUrl: configService.get<string>('ENS_URL'),
       cacheServerUrl: configService.get<string>('STRATEGY_CACHE_SERVER'),
@@ -44,6 +48,14 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
     );
     if (numberOfBlocksBack) {
       loginStrategyOptions.numberOfBlocksBack = numberOfBlocksBack;
+      ipfsUrl: ipfsConfig.url,
+    };
+    const numBlocksBack = configService.get<string>('STRATEGY_NUM_BLOCKS_BACK');
+    if (numBlocksBack) {
+      loginStrategyParams = {
+        ...loginStrategyParams,
+        ...{ numberOfBlocksBack: parseInt(numBlocksBack) },
+      };
     }
     super(...loginStrategyParams);
   }
