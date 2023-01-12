@@ -50,32 +50,9 @@ iam-cache-server-helm:
             pathType: Prefix
             backend:
               service:
-                name: ssl-redirect
-                port:
-                  name: use-annotation
-          - path: "/"
-            pathType: Prefix
-            backend:
-              service:
                 name: ics
                 port:
-                  number: 80
-      - host: dev-identitycache.energyweb.org
-        paths:
-          - path: "/"
-            pathType: Prefix
-            backend:
-              service:
-                name: ssl-redirect
-                port:
-                  name: use-annotation
-          - path: "/"
-            pathType: Prefix
-            backend:
-              service:
-                name: ics
-                port:
-                  number: 80
+                  number: 3000
     tls: [ ]
 
   config:
