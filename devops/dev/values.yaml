@@ -38,11 +38,15 @@ iam-cache-server-helm:
   ingress:
     enabled: true
     annotations:
-      kubernetes.io/ingress.class: alb
-      alb.ingress.kubernetes.io/scheme: internet-facing
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
-      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:098061033856:certificate/21f80062-a224-497a-b598-e3c3799a3310
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+      # Cloudflare Origin certificate
+      cert-manager.io/issuer: prod-issuer
+      cert-manager.io/issuer-kind: OriginIssuer
+      cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+      cert-manager.io/duration: 90d
+      cert-manager.io/renew-before: 30d
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
     hosts:
       - host: identitycache-dev.energyweb.org
         paths:
@@ -53,7 +57,10 @@ iam-cache-server-helm:
                 name: ics
                 port:
                   number: 3000
-    tls: [ ]
+    tls:
+      - secretName: identitycache-dev-tls
+        hosts:
+          - identitycache-dev.energyweb.org
 
   config:
     secretRefName: ics-secrets
