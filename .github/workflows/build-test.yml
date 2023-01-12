@@ -3,7 +3,10 @@ name: Build and test
 # Controls when the action will run.
 on:
   pull_request:
+    paths-ignore:
+      - 'devops/**'  
   workflow_dispatch:
+
 
 jobs:
   deployment:
