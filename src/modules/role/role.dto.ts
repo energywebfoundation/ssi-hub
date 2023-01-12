@@ -81,7 +81,7 @@ export class FieldsDTO implements Fields {
    * For more information about JSON Schema, see https://json-schema.org/
    */
   @IsOptional()
-  @IsDate()
+  @IsObject()
   @ApiProperty()
   schema?: Record<string, unknown>;
 }
