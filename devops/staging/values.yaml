@@ -36,7 +36,7 @@ iam-cache-server-helm:
   # runAsUser: 1000
 
   service:
-    type: NodePort
+    type: ClusterIP
     port: 3000
 
   ingress:
