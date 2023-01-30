@@ -70,7 +70,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, builtOptions);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({ credentials: true, origin: true });
+  app.enableCors({
+    credentials: true,
+    origin: ['https://switchboard-staging.energyweb.org'],
+  });
 
   app.use(SentryNode.Handlers.errorHandler());
   await app.listen(configService.get('NESTJS_PORT'));
