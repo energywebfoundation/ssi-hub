@@ -67,29 +67,29 @@ jobs:
         with:
           port: '4222 4223 4224'
 
-#      - name: Running tests
-#        run: npm run test --forceExit
-#        env:
-#          CI: true
-#          ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
-#          CHAIN_ID: ${{secrets.CHAIN_ID}}
-#          CHAIN_NAME: volta
-#          PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
-#          RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
-#          DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
-#          ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
-#          ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
-#          ENS_URL: ${{secrets.ENS_URL}}
-#          ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
-#          REDIS_HOST: localhost
-#          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
-#          NATS_CLIENTS_URL: localhost:4222
-#          STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
-#          ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
-#          DID_SYNC_MODE_FULL: false
-#          STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
-#          NATS_ENVIRONMENT_NAME: dev
-#          DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
+      - name: Running tests
+        run: npm run test --forceExit
+        env:
+          CI: true
+          ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
+          CHAIN_ID: ${{secrets.CHAIN_ID}}
+          CHAIN_NAME: volta
+          PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
+          RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
+          DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
+          ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
+          ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
+          ENS_URL: ${{secrets.ENS_URL}}
+          ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
+          REDIS_HOST: localhost
+          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
+          NATS_CLIENTS_URL: localhost:4222
+          STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
+          ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
+          DID_SYNC_MODE_FULL: false
+          STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
+          NATS_ENVIRONMENT_NAME: dev
+          DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
 
       - name: Execute DB Schema migrations
         run: npm run migration:test
