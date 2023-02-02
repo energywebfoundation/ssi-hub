@@ -65,6 +65,7 @@ jobs:
         with:
           node-version: '16.10.0'
       - name: Cache node_modules
+        id: cache-npm
         uses: actions/cache@v3
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
