@@ -55,7 +55,29 @@ env:
   NATS_ENVIRONMENT_NAME: dev
 
 jobs:
+  install:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup app dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.10.0'
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+            ${{ runner.os }}-node-modules
+      - run: npm ci
+
   deployment:
+    needs: [install]
     services:
       postgres:
         image: postgres:12
@@ -90,16 +112,12 @@ jobs:
         with:
           node-version: '16.10.0'
 
-      - name: Cache Dependencies
-        uses: actions/cache@v2
+      - name: Restore node_modules
+        uses: actions/cache@v3
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Install dependencies
-        run: npm ci
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Generate keys
         run: npm run generate:jwtkeys
