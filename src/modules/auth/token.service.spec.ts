@@ -63,7 +63,7 @@ class TestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply((req, res, next) =>
-        this.tokenService.handleOriginCheck(req, res, next)
+        this.tokenService.checkAccessTokenOrigin(req, res, next)
       )
       .exclude(
         { path: '/login', method: RequestMethod.ALL },

@@ -10,6 +10,7 @@
 
 ### Methods
 
+- [authenticateTokenOrigin](modules_auth_token_service.TokenService.md#authenticatetokenorigin)
 - [generateAccessToken](modules_auth_token_service.TokenService.md#generateaccesstoken)
 - [generateRefreshToken](modules_auth_token_service.TokenService.md#generaterefreshtoken)
 - [handleOriginCheck](modules_auth_token_service.TokenService.md#handleorigincheck)
@@ -32,6 +33,23 @@
 | `refreshTokenRepository` | [`RefreshTokenRepository`](modules_auth_refreshToken_repository.RefreshTokenRepository.md) |
 
 ## Methods
+
+### authenticateTokenOrigin
+
+▸ **authenticateTokenOrigin**(`origin`, `req`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `origin` | `string` |
+| `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
+
+#### Returns
+
+`void`
+
+___
 
 ### generateAccessToken
 

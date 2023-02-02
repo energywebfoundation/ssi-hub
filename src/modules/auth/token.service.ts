@@ -84,7 +84,11 @@ export class TokenService {
    *
    * A pattern such as the double cookie submit pattern cannot be used because the cache-server does not share an origin with it's clients.
    */
-  async handleOriginCheck(req: Request, res: Response, next: NextFunction) {
+  async checkAccessTokenOrigin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     if (!this.configService.get<boolean>('ENABLE_AUTH')) {
       return next();
     }
@@ -95,22 +99,33 @@ export class TokenService {
       token = req.cookies?.token;
     }
 
-    if (token) {
-      const decodedToken = jwt.decode(token) as TokenPayload;
-      const isBrowserRequestFromAuthenticatedOrigin =
-        decodedToken?.origin === req.headers['origin'];
-      const isServerRequestOrGETFromSameDomain =
-        req.headers['origin'] === undefined;
-      if (
-        isBrowserRequestFromAuthenticatedOrigin ||
-        isServerRequestOrGETFromSameDomain
-      ) {
-        next();
-      } else {
-        throw new UnauthorizedException('Origins not matched');
-      }
-    } else {
-      throw new UnauthorizedException('Unauthorized');
+    if (!token) {
+      throw new UnauthorizedException('Access token was not set');
+    }
+
+    const decodedToken = jwt.decode(token) as TokenPayload;
+    this.matchOriginAgainstRequest(decodedToken?.origin, req);
+
+    next();
+  }
+
+  /**
+   * Checks that `origin` of token corresponds to origin of request
+   * @param origin Origin specified for token
+   * @param req Http request object being authenticated with token
+   */
+  matchOriginAgainstRequest(origin: string, req: Request) {
+    const isBrowserRequestFromAuthenticatedOrigin =
+      origin === req.headers['origin'];
+    const isServerRequestOrGETFromSameDomain =
+      req.headers['origin'] === undefined;
+    if (
+      !isBrowserRequestFromAuthenticatedOrigin &&
+      !isServerRequestOrGETFromSameDomain
+    ) {
+      throw new UnauthorizedException(
+        `Token origin ${origin} does not matches request origin ${req.headers['origin']}`
+      );
     }
   }
 }
