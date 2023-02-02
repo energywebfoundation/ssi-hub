@@ -116,6 +116,69 @@ jobs:
       - name: Build the app
         run: npm run build
 
+  unit-tests:
+    name: Unit tests
+    needs: [build]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: ${{secrets.DB_USERNAME}}
+          POSTGRES_DB: ${{secrets.DB_NAME}}
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
+        ports:
+          - 5432:5432
+        # Add a health check
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        # NATS
+      jetstream:
+        image: synadia/jsm:latest
+        options: >-
+          -e JSM_MODE=server
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5 --entrypoint redis-server
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.10.0'
+
+      - name: Restore node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Restore build artefacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist
+            src/ethers
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      - name: Create Nats cluster
+        uses: onichandame/nats-action@master
+        with:
+          port: '4222 4223 4224'
+
+      - name: Generate keys
+        run: npm run generate:jwtkeys
+
+      - name: Execute tests
+        run: npm run test
+
   deployment:
     if: false
     needs: [install]
