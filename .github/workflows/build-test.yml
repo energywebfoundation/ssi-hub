@@ -71,10 +71,8 @@ jobs:
           path: |
             node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-            ${{ runner.os }}-node-modules
       - run: npm ci
+        if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
 
   build:
     name: Build application
