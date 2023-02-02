@@ -180,7 +180,7 @@ jobs:
         run: npm run migration:run:dev
 
       - name: Execute tests
-        run: npm run test
+        run: npm run test --forceExit
 
   deployment:
     if: false
