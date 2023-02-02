@@ -176,6 +176,9 @@ jobs:
       - name: Generate keys
         run: npm run generate:jwtkeys
 
+      - name: execute DB migrations
+        run: npm run migration:run:dev
+
       - name: Execute tests
         run: npm run test
 
