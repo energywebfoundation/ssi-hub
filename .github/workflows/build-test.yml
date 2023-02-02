@@ -71,8 +71,9 @@ jobs:
           path: |
             node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-      - run: npm ci
-        if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: npm ci
+        run: npm ci
 
   build:
     name: Build application
