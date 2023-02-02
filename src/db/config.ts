@@ -2,7 +2,7 @@ import path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { LoggerOptions } from 'typeorm';
-
+// triggering CI
 export const getDBConfig = (configService: ConfigService) => {
   const typeormLoggerOptions = configService
     .get<string>('TYPEORM_LOGGING', 'error,migration,warn,info')
