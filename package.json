@@ -17,7 +17,7 @@
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test,e2e}/**/*.ts\" --fix",
     "test": "NODE_ENV=test jest -i \"/src/.*\\.spec\\.ts$\" --verbose --runInBand --force-exit",
-    "test:e2e": "run-s migration:test && jest -i \"/e2e/.*\\.e2e.spec.(ts|js)$\" --force-exit",
+    "test:e2e": "jest -i \"/e2e/.*\\.e2e.spec.(ts|js)$\" --force-exit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
