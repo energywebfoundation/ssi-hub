@@ -5,22 +5,45 @@ declare type JoiType = typeof JoiBase;
 
 interface ExtendedJoi extends JoiType {
   ethAddr(): this;
+  stringifiedArray(): this;
 }
 
-const Joi = <ExtendedJoi>JoiBase.extend((joi) => ({
-  type: 'ethAddr',
-  base: joi.string(),
-  messages: {
-    ethAddr: '{{#label}} must be a valid ethereum address',
-  },
-  validate(value: string, helpers: CustomHelpers) {
-    if (!utils.isAddress(value)) {
-      return { value, errors: helpers.error('ethAddr') };
-    }
+const Joi = <ExtendedJoi>JoiBase.extend(
+  (joi) => ({
+    type: 'ethAddr',
+    base: joi.string(),
+    messages: {
+      ethAddr: '{{#label}} must be a valid ethereum address',
+    },
+    validate(value: string, helpers: CustomHelpers) {
+      if (!utils.isAddress(value)) {
+        return { value, errors: helpers.error('ethAddr') };
+      }
 
-    return { value };
-  },
-}));
+      return { value };
+    },
+  }),
+  (joi) => ({
+    type: 'stringifiedArray',
+    base: joi.string(),
+    messages: {
+      ethAddr: '{{#label}} must be JSON stringified array',
+    },
+    validate(value: string, helpers: CustomHelpers) {
+      let arr: [];
+      try {
+        arr = JSON.parse(value);
+        if (!Array.isArray(arr)) {
+          throw new Error();
+        }
+      } catch (_) {
+        return { value, errors: helpers.error('stringifiedArray') };
+      }
+
+      return arr;
+    },
+  })
+);
 
 export const envVarsValidationSchema = Joi.object({
   NODE_ENV: Joi.string()
@@ -84,6 +107,7 @@ export const envVarsValidationSchema = Joi.object({
   JWT_REFRESH_TOKEN_EXPIRES_IN: Joi.string().required(), // TODO: implement validation of this flexible format
   JWT_ACCESS_TOKEN_NAME: Joi.string().required(),
   JWT_REFRESH_TOKEN_NAME: Joi.string().required(),
+  ALLOWED_ORIGINS: Joi.stringifiedArray(),
 
   UNIVERSAL_RESOLVER_URL: Joi.string().uri().required(),
 

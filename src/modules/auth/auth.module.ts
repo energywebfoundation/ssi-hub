@@ -22,6 +22,7 @@ import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
 import { NextFunction, Request, Response } from 'express';
 import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
+import { isURL } from 'class-validator';
 
 @Global()
 @Module({
@@ -55,6 +56,11 @@ export class AuthModule implements NestModule {
     private readonly configService: ConfigService
   ) {
     this.allowedOrigins = JSON.parse(this.configService.get('ALLOWED_ORIGINS'));
+    for (const origin of this.allowedOrigins) {
+      if (!isURL(origin)) {
+        throw new Error(`Origin ${origin} is not a valid URL`);
+      }
+    }
   }
 
   configure(consumer: MiddlewareConsumer) {
