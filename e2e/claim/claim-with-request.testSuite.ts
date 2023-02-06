@@ -149,7 +149,7 @@ export const claimWithRequestTestSuite = () => {
     roleService = app.get(RoleService);
     claimService = app.get(ClaimService);
     nats = app.get(NatsService);
-    allowedOrigins = JSON.parse(app.get(ConfigService).get('ALLOWED_ORIGINS'));
+    allowedOrigins = app.get(ConfigService).get('ALLOWED_ORIGINS').split(',');
   });
 
   beforeEach(async () => {

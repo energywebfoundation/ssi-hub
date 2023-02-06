@@ -27,12 +27,12 @@ const Joi = <ExtendedJoi>JoiBase.extend(
     type: 'stringifiedArray',
     base: joi.string(),
     messages: {
-      stringifiedArray: '{{#label}} must be JSON stringified array',
+      stringifiedArray: '{{#label}} must be comma separated values list',
     },
     validate(value: string, helpers: CustomHelpers) {
-      let arr: [];
+      let arr: string[];
       try {
-        arr = JSON.parse(value);
+        arr = value.split(',');
         if (!Array.isArray(arr)) {
           throw new Error();
         }

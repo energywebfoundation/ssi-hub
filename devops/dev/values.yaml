@@ -89,6 +89,7 @@ iam-cache-server-helm:
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
+    ALLOWED_ORIGINS: https://switchboard-dev.energyweb.org,https://gp4btc-ui-dev.energyweb.org/,https://staking-ui-dev.energyweb.org,https://stedin-dev.energyweb.org
     STATUS_LIST_DOMAIN: https://identitycache-dev.energyweb.org/v1
     CHAIN_REQUEST_ATTEMPTS: 5
 

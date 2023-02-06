@@ -75,7 +75,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, builtOptions);
   SwaggerModule.setup('api', app, document);
 
-  const allowedOrigins = JSON.parse(configService.get('ALLOWED_ORIGINS'));
+  const allowedOrigins = configService.get('ALLOWED_ORIGINS').split(',');
   for (const origin of allowedOrigins) {
     if (!isURL(origin)) {
       throw new Error(`Origin ${origin} is not a valid URL`);

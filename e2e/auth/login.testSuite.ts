@@ -18,9 +18,7 @@ export const authLoginTestSuite = () => {
 
       provider = new providers.JsonRpcProvider(process.env.ENS_URL);
       wallet = Wallet.createRandom().connect(provider);
-      allowedOrigins = JSON.parse(
-        app.get(ConfigService).get('ALLOWED_ORIGINS')
-      );
+      allowedOrigins = app.get(ConfigService).get('ALLOWED_ORIGINS').split(',');
     });
 
     it(`should throw 401 error when user not logged in`, () => {
