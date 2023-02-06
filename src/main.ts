@@ -75,8 +75,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, builtOptions);
   SwaggerModule.setup('api', app, document);
 
-  const allowedOrigins = JSON.parse(this.configService.get('ALLOWED_ORIGINS'));
-  for (const origin of this.allowedOrigins) {
+  const allowedOrigins = JSON.parse(configService.get('ALLOWED_ORIGINS'));
+  for (const origin of allowedOrigins) {
     if (!isURL(origin)) {
       throw new Error(`Origin ${origin} is not a valid URL`);
     }
@@ -85,7 +85,6 @@ async function bootstrap() {
   app.enableCors({
     credentials: true,
     origin: function (origin, callback) {
-      // const origin = req.headers['origin'];
       if (origin) {
         if (allowedOrigins.includes(origin)) {
           callback(undefined, origin);
