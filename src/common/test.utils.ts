@@ -25,23 +25,27 @@ export function appConfig(app: INestApplication) {
       throw new Error(`Origin ${origin} is not a valid URL`);
     }
   }
-
+  const restrictCorsOrigins = configService.get<boolean>(
+    'RESTRICT_CORS_ORIGINS'
+  );
   app.enableCors({
     credentials: true,
-    origin: function (origin, callback) {
-      if (origin) {
-        if (allowedOrigins.includes(origin)) {
-          callback(undefined, origin);
-        } else {
-          callback(
-            new UnauthorizedException(`Origin ${origin} is not allowed`),
-            false
-          );
+    origin: restrictCorsOrigins
+      ? function (origin, callback) {
+          if (origin) {
+            if (allowedOrigins.includes(origin)) {
+              callback(undefined, origin);
+            } else {
+              callback(
+                new UnauthorizedException(`Origin ${origin} is not allowed`),
+                false
+              );
+            }
+          } else {
+            callback(undefined, true);
+          }
         }
-      } else {
-        callback(undefined, true);
-      }
-    },
+      : true,
   });
 }
 

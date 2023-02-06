@@ -107,6 +107,7 @@ export const envVarsValidationSchema = Joi.object({
   JWT_REFRESH_TOKEN_EXPIRES_IN: Joi.string().required(), // TODO: implement validation of this flexible format
   JWT_ACCESS_TOKEN_NAME: Joi.string().required(),
   JWT_REFRESH_TOKEN_NAME: Joi.string().required(),
+  RESTRICT_CORS_ORIGINS: Joi.boolean().required(),
   ALLOWED_ORIGINS: Joi.stringifiedArray(),
 
   UNIVERSAL_RESOLVER_URL: Joi.string().uri().required(),
