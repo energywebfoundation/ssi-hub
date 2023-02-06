@@ -27,7 +27,7 @@ const Joi = <ExtendedJoi>JoiBase.extend(
     type: 'stringifiedArray',
     base: joi.string(),
     messages: {
-      ethAddr: '{{#label}} must be JSON stringified array',
+      stringifiedArray: '{{#label}} must be JSON stringified array',
     },
     validate(value: string, helpers: CustomHelpers) {
       let arr: [];
