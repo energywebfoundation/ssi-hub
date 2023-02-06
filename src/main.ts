@@ -4,13 +4,18 @@ loadEnvVars(); // this is required by the Auth decorator depending on process.en
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import compression from 'compression';
 import helmet from 'helmet';
 import { SentryService } from './modules/sentry/sentry.service';
 import * as SentryNode from '@sentry/node';
+import { isURL } from 'class-validator';
 
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
@@ -70,7 +75,31 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, builtOptions);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({ credentials: true, origin: true });
+  const allowedOrigins = JSON.parse(this.configService.get('ALLOWED_ORIGINS'));
+  for (const origin of this.allowedOrigins) {
+    if (!isURL(origin)) {
+      throw new Error(`Origin ${origin} is not a valid URL`);
+    }
+  }
+
+  app.enableCors({
+    credentials: true,
+    origin: function (origin, callback) {
+      // const origin = req.headers['origin'];
+      if (origin) {
+        if (allowedOrigins.includes(origin)) {
+          callback(undefined, origin);
+        } else {
+          callback(
+            new UnauthorizedException(`Origin ${origin} is not allowed`),
+            false
+          );
+        }
+      } else {
+        callback(undefined, true);
+      }
+    },
+  });
 
   app.use(SentryNode.Handlers.errorHandler());
   await app.listen(configService.get('NESTJS_PORT'));

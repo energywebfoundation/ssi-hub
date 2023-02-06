@@ -4,7 +4,6 @@ import {
   Module,
   NestModule,
   RequestMethod,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ApplicationService } from '../application/application.service';
 import { CookiesServices } from './cookies.service';
@@ -22,7 +21,6 @@ import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
 import { NextFunction, Request, Response } from 'express';
 import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
-import { isURL } from 'class-validator';
 
 @Global()
 @Module({
@@ -49,26 +47,10 @@ import { isURL } from 'class-validator';
   exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard],
 })
 export class AuthModule implements NestModule {
-  private allowedOrigins: string[];
-
-  constructor(
-    private readonly tokenService: TokenService,
-    private readonly configService: ConfigService
-  ) {
-    this.allowedOrigins = JSON.parse(this.configService.get('ALLOWED_ORIGINS'));
-    for (const origin of this.allowedOrigins) {
-      if (!isURL(origin)) {
-        throw new Error(`Origin ${origin} is not a valid URL`);
-      }
-    }
-  }
+  constructor(private readonly tokenService: TokenService) {}
 
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply((req: Request, res: Response, next: NextFunction) =>
-        this.checkAllowedOrigin(req, next)
-      )
-      .forRoutes({ path: '/*', method: RequestMethod.ALL })
       .apply((req: Request, res: Response, next: NextFunction) =>
         this.tokenService.checkAccessTokenOrigin(req, res, next)
       )
@@ -85,13 +67,5 @@ export class AuthModule implements NestModule {
         }
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
-  }
-
-  checkAllowedOrigin(req: Request, next: NextFunction) {
-    const origin = req.headers['origin'];
-    if (origin && !this.allowedOrigins.includes(origin)) {
-      throw new UnauthorizedException(`Origin ${origin} is not allowed`);
-    }
-    next();
   }
 }
