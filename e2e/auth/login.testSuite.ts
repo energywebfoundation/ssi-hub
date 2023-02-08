@@ -1,9 +1,9 @@
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 import { Wallet, providers } from 'ethers';
+import { ConfigService } from '@nestjs/config';
 import { app } from '../app.e2e.spec';
 import { getIdentityToken } from '../utils';
-import { ConfigService } from '@nestjs/config';
 
 export const authLoginTestSuite = () => {
   describe('Login (version: 1)', () => {
@@ -30,17 +30,21 @@ export const authLoginTestSuite = () => {
         });
     });
 
-    describe('Request without origin', () => {
-      it(`should authorize, if origin matches origin of token`, async () => {
+    describe('Authenticate without specifying origin', () => {
+      let loginResponse;
+
+      beforeEach(async () => {
         const identityToken = await getIdentityToken(provider, wallet);
 
-        const loginResponse = await request(app.getHttpServer())
+        loginResponse = await request(app.getHttpServer())
           .post('/v1/login')
           .send({
             identityToken,
           })
           .expect(201);
+      });
 
+      it(`should authorize, if request has no origin`, async () => {
         expect(loginResponse.headers['set-cookie']).toHaveLength(2);
         expect(loginResponse.headers['set-cookie']).toEqual(
           expect.arrayContaining([
@@ -64,16 +68,7 @@ export const authLoginTestSuite = () => {
           .expect(200);
       });
 
-      it(`should not authorize, if origin does not matches origin of token`, async () => {
-        const identityToken = await getIdentityToken(provider, wallet);
-
-        const loginResponse = await request(app.getHttpServer())
-          .post('/v1/login')
-          .send({
-            identityToken,
-          })
-          .expect(201);
-
+      it(`should not authorize, if request has origin`, async () => {
         expect(loginResponse.headers['set-cookie']).toHaveLength(2);
         expect(loginResponse.headers['set-cookie']).toEqual(
           expect.arrayContaining([
@@ -104,69 +99,111 @@ export const authLoginTestSuite = () => {
       });
     });
 
-    describe('Request with origin', () => {
-      it('should not authorize user if request origin does not matches origin of token', async () => {
-        const identityToken = await getIdentityToken(provider, wallet);
+    describe('Authenticate with specifying origin', () => {
+      describe('Request origin is restricted', () => {
+        it('should authenticate allowed origin', async () => {
+          const identityToken = await getIdentityToken(provider, wallet);
+          await request(app.getHttpServer())
+            .post('/v1/login')
+            .set('origin', allowedOrigins[0])
+            .send({
+              identityToken,
+            })
+            .expect(201);
+        });
 
-        const loginResponse = await request(app.getHttpServer())
-          .post('/v1/login')
-          .set('Origin', allowedOrigins[0])
-          .send({
-            identityToken,
-          })
-          .expect(201);
+        it('should not authenticate not allowed origin', async () => {
+          const identityToken = await getIdentityToken(provider, wallet);
+          await request(app.getHttpServer())
+            .post('/v1/login')
+            .set('origin', notAllowedOrigin)
+            .send({
+              identityToken,
+            })
+            .expect(401)
+            .expect(function (res) {
+              expect(res.text).toContain(
+                `Origin ${notAllowedOrigin} is not allowed`
+              );
+            });
+        });
 
-        return request(app.getHttpServer())
-          .get('/v1/search/test')
-          .set('Origin', allowedOrigins[1])
-          .set('Cookie', [
-            loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
-            loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
-          ])
-          .expect(401)
-          .expect(function (res) {
-            expect(res.text).toContain(
-              `Token origin ${allowedOrigins[0]} does not matches request origin ${allowedOrigins[1]}`
-            );
-          });
+        it('should not authorize user if request does not matches authentication token', async () => {
+          const identityToken = await getIdentityToken(provider, wallet);
+
+          const loginResponse = await request(app.getHttpServer())
+            .post('/v1/login')
+            .set('Origin', allowedOrigins[0])
+            .send({
+              identityToken,
+            })
+            .expect(201);
+
+          return request(app.getHttpServer())
+            .get('/v1/search/test')
+            .set('Origin', allowedOrigins[1])
+            .set('Cookie', [
+              loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
+              loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
+            ])
+            .expect(401)
+            .expect(function (res) {
+              expect(res.text).toContain(
+                `Token origin ${allowedOrigins[0]} does not matches request origin ${allowedOrigins[1]}`
+              );
+            });
+        });
       });
 
-      it('should not login from not allowed origin', async () => {
-        const identityToken = await getIdentityToken(provider, wallet);
-        await request(app.getHttpServer())
-          .post('/v1/login')
-          .set('origin', notAllowedOrigin)
-          .send({
-            identityToken,
-          })
-          .expect(401)
-          .expect(function (res) {
-            expect(res.text).toContain(
-              `Origin ${notAllowedOrigin} is not allowed`
-            );
-          });
+      // this should be ran with RESTRICT_CORS_ORIGINS = true
+      describe.skip('Request origin is reflected', () => {
+        it('should authenticate not allowed origin', async () => {
+          const identityToken = await getIdentityToken(provider, wallet);
+          await request(app.getHttpServer())
+            .post('/v1/login')
+            .set('origin', notAllowedOrigin)
+            .send({
+              identityToken,
+            })
+            .expect(201);
+        });
+
+        it('should not authorize user if request does not matches authentication token', async () => {
+          const identityToken = await getIdentityToken(provider, wallet);
+
+          const loginResponse = await request(app.getHttpServer())
+            .post('/v1/login')
+            .set('Origin', notAllowedOrigin)
+            .send({
+              identityToken,
+            })
+            .expect(201);
+
+          return request(app.getHttpServer())
+            .get('/v1/search/test')
+            .set('Origin', allowedOrigins[1])
+            .set('Cookie', [
+              loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
+              loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
+            ])
+            .expect(401)
+            .expect(function (res) {
+              expect(res.text).toContain(
+                `Token origin ${notAllowedOrigin} does not matches request origin ${allowedOrigins[1]}`
+              );
+            });
+        });
       });
 
-      it('should login from allowed origin', async () => {
-        const identityToken = await getIdentityToken(provider, wallet);
-        await request(app.getHttpServer())
-          .post('/v1/login')
-          .set('origin', allowedOrigins[0])
-          .send({
-            identityToken,
-          })
-          .expect(201);
+      it('passport-did-auth should be able to login', async () => {
+        await waitForExpect(() => {
+          expect(consoleLogSpy).toHaveBeenCalledWith(
+            expect.stringContaining(
+              'DID Login Strategy is now logged into cache server'
+            )
+          );
+        }, 400000);
       });
-    });
-
-    it('passport-did-auth should be able to login', async () => {
-      await waitForExpect(() => {
-        expect(consoleLogSpy).toHaveBeenCalledWith(
-          expect.stringContaining(
-            'DID Login Strategy is now logged into cache server'
-          )
-        );
-      }, 400000);
     });
   });
 };
