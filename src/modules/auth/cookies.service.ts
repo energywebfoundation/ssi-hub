@@ -3,7 +3,7 @@ import { CookieOptions } from 'express';
 
 @Injectable()
 export class CookiesServices {
-  getCookiesOptionBasedOnUserAgent(userAgent: string) {
+  getCookiesOption() {
     const cookiesOptions: CookieOptions = {
       httpOnly: true,
       sameSite: 'none',

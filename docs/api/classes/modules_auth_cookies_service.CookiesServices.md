@@ -10,7 +10,7 @@
 
 ### Methods
 
-- [getCookiesOptionBasedOnUserAgent](modules_auth_cookies_service.CookiesServices.md#getcookiesoptionbasedonuseragent)
+- [getCookiesOption](modules_auth_cookies_service.CookiesServices.md#getcookiesoption)
 
 ## Constructors
 
@@ -20,15 +20,9 @@
 
 ## Methods
 
-### getCookiesOptionBasedOnUserAgent
+### getCookiesOption
 
-▸ **getCookiesOptionBasedOnUserAgent**(`userAgent`): `CookieOptions`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `userAgent` | `string` |
+▸ **getCookiesOption**(): `CookieOptions`
 
 #### Returns
 
