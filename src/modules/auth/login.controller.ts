@@ -52,10 +52,7 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions =
-      this.cookiesServices.getCookiesOptionBasedOnUserAgent(
-        req.headers['user-agent']
-      );
+    const cookiesOptions = this.cookiesServices.getCookiesOption();
 
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
@@ -104,10 +101,7 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions =
-      this.cookiesServices.getCookiesOptionBasedOnUserAgent(
-        req.headers['user-agent']
-      );
+    const cookiesOptions = this.cookiesServices.getCookiesOption();
 
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({
