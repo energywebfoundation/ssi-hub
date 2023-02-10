@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.12.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.11.1...v2.12.0) (2023-02-10)
+
+
+### Features
+
+* add script to clear assets data db ([e3867d9](https://github.com/energywebfoundation/ssi-hub/commit/e3867d9a528e402b3b6d57796e8824bfe20b7357))
+* adding error log messages ([#552](https://github.com/energywebfoundation/ssi-hub/issues/552)) ([9e653ee](https://github.com/energywebfoundation/ssi-hub/commit/9e653eeb14f1b0ce8d63a1c50a90eea548294ca7))
+* configuration validation ([#536](https://github.com/energywebfoundation/ssi-hub/issues/536)) ([e8526f0](https://github.com/energywebfoundation/ssi-hub/commit/e8526f0165b20c4a12fcba21ddfc20c5c766ac07))
+* **did:** pin cached claims ([37ce4d1](https://github.com/energywebfoundation/ssi-hub/commit/37ce4d1c0f3019ba7ad8ba28b0d54ab2f141b780))
+* removing hardcoded keys pair from the docker image ([#530](https://github.com/energywebfoundation/ssi-hub/issues/530)) ([9b92160](https://github.com/energywebfoundation/ssi-hub/commit/9b92160b86b4083ded27e16c04402749c244ba6c))
+* **role.dto:** add optional schema prop ([#554](https://github.com/energywebfoundation/ssi-hub/issues/554)) ([596c3bd](https://github.com/energywebfoundation/ssi-hub/commit/596c3bd0d1338911b4935b69e5a2ac6d23f4eec9))
+* switch ingress class ([ed147da](https://github.com/energywebfoundation/ssi-hub/commit/ed147da0609f200286c83b7dec249579918252b0))
+
+
+### Bug Fixes
+
+* enable proxy for TLS certs ([b5559d7](https://github.com/energywebfoundation/ssi-hub/commit/b5559d7de871bb9cbdaf0304f66a4f9c96b554b4))
+* fetch cookies options without useragent ([48d69fc](https://github.com/energywebfoundation/ssi-hub/commit/48d69fc4cefefdebb47c899f1ebd9132ab8c577b))
+* fixing /auth/status endpoint swagger definition not having authorisation available ([#541](https://github.com/energywebfoundation/ssi-hub/issues/541)) ([c32e794](https://github.com/energywebfoundation/ssi-hub/commit/c32e7945129dcb18e9e0b166dd3ea3ff5be4314c))
+* fixing incorrect handling of env vars  ([#549](https://github.com/energywebfoundation/ssi-hub/issues/549)) ([ded5e0e](https://github.com/energywebfoundation/ssi-hub/commit/ded5e0ea19e8bed04223e757fca52771b0df5ec2))
+* ignore builds ([5195ff9](https://github.com/energywebfoundation/ssi-hub/commit/5195ff9223498bdc636b487760d1460175f5948d))
+* ignore paths ([30767ec](https://github.com/energywebfoundation/ssi-hub/commit/30767ec928a5c5a5284e8d1266189654bbc0b862))
+* ignore paths ([f3b4a2c](https://github.com/energywebfoundation/ssi-hub/commit/f3b4a2c9fe829e884a60e8e27717ee7106d53964))
+* ingress ([9ed57eb](https://github.com/energywebfoundation/ssi-hub/commit/9ed57eb6ca3344260c81039683c43fdab2e88671))
+* **ipfs:** configure ipfs ([ebc77dc](https://github.com/energywebfoundation/ssi-hub/commit/ebc77dc26ec16215ff5571bcb99ab2bd8051323d))
+* remove chrome specific cookies update ([dd82e8f](https://github.com/energywebfoundation/ssi-hub/commit/dd82e8f84b4880560da2a3b267db79e0ad2c2745))
+* **role.dto:** schema is object, not date ([#559](https://github.com/energywebfoundation/ssi-hub/issues/559)) ([50724d4](https://github.com/energywebfoundation/ssi-hub/commit/50724d40e38a99a5d590977d7cc179dab97b6f08))
+* switch to edge certs ([de2dfa3](https://github.com/energywebfoundation/ssi-hub/commit/de2dfa3e1a29473fef230d9a4972f41b19f6f45d))
+* update script ([5855002](https://github.com/energywebfoundation/ssi-hub/commit/5855002501021f4c8d9de7fab0014577460ffccd))
+
 ### [2.11.1](https://github.com/energywebfoundation/ssi-hub/compare/v2.11.0...v2.11.1) (2022-11-16)
 
 
