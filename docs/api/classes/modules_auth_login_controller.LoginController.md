@@ -27,7 +27,6 @@
 | Name | Type |
 | :------ | :------ |
 | `tokenService` | [`TokenService`](modules_auth_token_service.TokenService.md) |
-| `cookiesServices` | [`CookiesServices`](modules_auth_cookies_service.CookiesServices.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 | `redis` | `RedisClientType`<{}, `Record`<`string`, `never`\>, `Record`<`string`, `never`\>\> |

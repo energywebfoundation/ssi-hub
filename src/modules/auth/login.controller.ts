@@ -27,9 +27,9 @@ import { SiweReqPayloadDTO } from './siwe.dto';
 @ApiTags('Auth')
 @Controller({ version: '1' })
 export class LoginController {
+  private cookiesServices = new CookiesServices();
   constructor(
     private tokenService: TokenService,
-    private cookiesServices: CookiesServices,
     private configService: ConfigService,
     private roleService: RoleService,
     @Inject('REDIS_CLIENT') private redis: RedisClientType
