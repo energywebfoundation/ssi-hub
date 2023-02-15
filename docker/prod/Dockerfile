@@ -3,21 +3,16 @@ ARG IMAGE=node:18-alpine
 FROM $IMAGE as build
 
 ARG SENTRY_RELEASE
-ARG SENTRY_AUTH_TOKEN
-ARG SENTRY_COMMIT
 
 WORKDIR /app
 COPY . .
 
 RUN chmod +x ./docker/node-modules-clean.sh
-RUN chmod +x ./sentry-upload.sh
 
 RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
-  curl -sL https://sentry.io/get-cli/ | bash && \
   npm config set unsafe-perm true && \
   npm ci && \
   npm run build && \
-  SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_COMMIT=$SENTRY_COMMIT ./sentry-upload.sh && \
   rm -rf node_modules && \
   npm ci --production && \
   ./docker/node-modules-clean.sh
@@ -38,4 +33,3 @@ RUN chown -R node:node /app/logs
 USER node
 
 ENV NODE_ENV=production
-
