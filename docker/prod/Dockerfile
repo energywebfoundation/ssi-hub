@@ -10,7 +10,6 @@ COPY . .
 RUN chmod +x ./docker/node-modules-clean.sh
 
 RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
-  npm config set unsafe-perm true && \
   npm ci && \
   npm run build && \
   rm -rf node_modules && \
