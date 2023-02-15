@@ -72,8 +72,9 @@ jobs:
           BUILD_ID: ${{needs.unique_id.outputs.unique_id}}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build --build-arg SENTRY_COMMIT="$GITHUB_SHA" --build-arg SENTRY_RELEASE="${{needs.unique_id.outputs.unique_id}}" --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} -t $ECR_REGISTRY/ics-api:$BUILD_ID -f docker/prod/Dockerfile .
+          docker build --build-arg SENTRY_RELEASE="${{needs.unique_id.outputs.unique_id}}" -t $ECR_REGISTRY/ics-api:$BUILD_ID -f docker/prod/Dockerfile .
           docker push $ECR_REGISTRY/ics-api:$BUILD_ID
+          docker build --build-arg PUBLIC_IMAGE=$ECR_REGISTRY/ics-api:$BUILD_ID --build-arg SENTRY_COMMIT="$GITHUB_SHA" SENTRY_RELEASE="${{needs.unique_id.outputs.unique_id}}" --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} -f docker/prod/ew-deploy.Dockerfile .
       - name: Logout of Amazon ECR
         if: always()
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
