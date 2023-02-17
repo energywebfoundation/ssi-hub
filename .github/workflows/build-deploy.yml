@@ -52,7 +52,7 @@ jobs:
                 echo "PRERELEASE=true" >> $GITHUB_OUTPUT
                 echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_OUTPUT
                 echo "TAG_DRY_RUN=true" >> $GITHUB_OUTPUT
-                echo "PUSH_DOCKER=false" >> $GITHUB_OUTPUT
+                echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
               elif [ "${{ github.ref }}" = "refs/heads/master" ]; then
                 echo "ENVIRONMENT=staging" >> $GITHUB_OUTPUT
                 echo "PRERELEASE=true" >> $GITHUB_OUTPUT
