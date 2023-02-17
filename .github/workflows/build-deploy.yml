@@ -151,7 +151,22 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.tags.outputs.TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
-          file: ./docker/Dockerfile
+          file: ./docker/prod/Dockerfile
+          build-args: |
+            SENTRY_RELEASE="${{ needs.configure.outputs.IMAGE_TAG }}"
+          
+     # Sentry upload is done via a docker build in order to have access to the app files in the image
+     - name: create Sentry release
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          file ./docker/sentry-upload/Dockerfile
+          build-args: |
+            PUBLIC_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.configure.outputs.IMAGE_TAG }}
+            SENTRY_RELEASE="${{ needs.configure.outputs.IMAGE_TAG }}"
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_COMMIT="$GITHUB_SHA"
 
       - name: ArgoCD login
         uses: clowdhaus/argo-cd-action/@v1.12.1
