@@ -5,6 +5,6 @@ if [ -z "$SENTRY_RELEASE" ]
 else 
   sentry-cli releases new "$SENTRY_RELEASE"
   sentry-cli releases files "$SENTRY_RELEASE" upload-sourcemaps ./dist --url-prefix '~/dist'
-  sentry-cli releases set-commits "$SENTRY_RELEASE" --auto
+  sentry-cli releases set-commits "$SENTRY_RELEASE" --commit $SENTRY_COMMIT
   sentry-cli releases finalize "$SENTRY_RELEASE"
 fi
