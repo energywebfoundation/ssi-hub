@@ -166,7 +166,9 @@ jobs:
             PUBLIC_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.configure.outputs.IMAGE_TAG }}
             SENTRY_RELEASE="${{ needs.configure.outputs.IMAGE_TAG }}"
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-            SENTRY_COMMIT="${{ github.sha }}"
+            SENTRY_ORG={{ TODO }}
+            SENTRY_PROJ={{ TODO }}
+            SENTRY_COMMIT="${{ github.repository }}/${{ github.sha }}"
 
       - name: ArgoCD login
         uses: clowdhaus/argo-cd-action/@v1.12.1
