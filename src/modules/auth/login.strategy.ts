@@ -6,6 +6,7 @@ import { verifyCredential } from 'didkit-wasm-node';
 import { RoleIssuerResolver } from '../claim/resolvers/issuer.resolver';
 import { RoleRevokerResolver } from '../claim/resolvers/revoker.resolver';
 import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
+import { LoginStrategyOptions } from 'passport-did-auth/dist/lib/LoginStrategy';
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
@@ -16,16 +17,17 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
     revokerResolver: RoleRevokerResolver,
     credentialResolver: RoleCredentialResolver
   ) {
+    const loginStrategyOptions: LoginStrategyOptions = {
+      name: 'login',
+      rpcUrl: configService.get<string>('ENS_URL'),
+      cacheServerUrl: configService.get<string>('STRATEGY_CACHE_SERVER'),
+      privateKey: configService.get<string>('STRATEGY_PRIVATE_KEY'),
+      didContractAddress: configService.get<string>('DID_REGISTRY_ADDRESS'),
+      ensRegistryAddress: configService.get<string>('ENS_REGISTRY_ADDRESS'),
+      ipfsUrl: ipfsConfig,
+    };
     const loginStrategyParams: ConstructorParameters<typeof LoginStrategy> = [
-      {
-        name: 'login',
-        rpcUrl: configService.get<string>('ENS_URL'),
-        cacheServerUrl: configService.get<string>('STRATEGY_CACHE_SERVER'),
-        privateKey: configService.get<string>('STRATEGY_PRIVATE_KEY'),
-        didContractAddress: configService.get<string>('DID_REGISTRY_ADDRESS'),
-        ensRegistryAddress: configService.get<string>('ENS_REGISTRY_ADDRESS'),
-        ipfsUrl: ipfsConfig,
-      },
+      loginStrategyOptions,
       issuerResolver,
       revokerResolver,
       credentialResolver,
@@ -35,7 +37,7 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
       configService.get<string>('STRATEGY_NUM_BLOCKS_BACK')
     );
     if (numberOfBlocksBack) {
-      loginStrategyParams[0].numberOfBlocksBack = numberOfBlocksBack;
+      loginStrategyOptions.numberOfBlocksBack = numberOfBlocksBack;
     }
     super(...loginStrategyParams);
   }
