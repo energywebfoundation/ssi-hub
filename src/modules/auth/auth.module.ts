@@ -20,6 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
 import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
+import { ClaimModule } from '../claim/claim.module';
 
 @Global()
 @Module({
@@ -29,6 +30,7 @@ import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
       useFactory: getJWTConfig,
       inject: [ConfigService],
     }),
+    ClaimModule,
   ],
 
   controllers: [LoginController],
