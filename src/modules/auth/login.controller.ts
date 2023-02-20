@@ -1,6 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
+  Inject,
   Post,
   Query,
   Req,
@@ -12,10 +14,14 @@ import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import ms from 'ms';
+import { RedisClientType } from 'redis';
+import { v4 as uuid } from 'uuid';
+import parseDuration from 'parse-duration';
 import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
 import { CookiesServices } from './cookies.service';
 import { RoleService } from '../role/role.service';
+import { VerifySiweDto } from './siwe.dto';
 
 @ApiTags('Auth')
 @Controller({ version: '1' })
@@ -24,7 +30,8 @@ export class LoginController {
     private tokenService: TokenService,
     private cookiesServices: CookiesServices,
     private configService: ConfigService,
-    private roleService: RoleService
+    private roleService: RoleService,
+    @Inject('REDIS_CLIENT') private redis: RedisClientType
   ) {}
 
   @UseGuards(LoginGuard)
@@ -74,6 +81,43 @@ export class LoginController {
     );
 
     res.send({ token, refreshToken });
+  }
+
+  @Post('login/siwe/initiate')
+  async initiateSiweLogin(@Res() res: Response) {
+    const nonce = uuid();
+    const expire = this.configService.get<string>(
+      'SIWE_NONCE_EXPIRES_IN'
+    );
+    const expireInSec = parseDuration(expire) / 1000;
+    await this.redis.set(nonce, 'true', { EX: expireInSec });
+    res.send({ nonce });
+  }
+
+  @UseGuards(LoginGuard)
+  @ApiBody({ type: VerifySiweDto })
+  @Post('login/siwe/verify')
+  async loginSiwe(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: VerifySiweDto
+  ) {
+    const { nonce } = body.message;
+
+    if (!(await this.redis.exists(nonce))) {
+      throw new UnauthorizedException(
+        'Authentication with SIWE was not initiated'
+      );
+    }
+    if ((await this.redis.get(nonce)) === 'false') {
+      throw new UnauthorizedException(
+        'Authentication with SIWE has completed already'
+      );
+    }
+
+    await this.redis.set(nonce, 'false');
+
+    await this.login(req, res);
   }
 
   @ApiQuery({ name: 'refresh_token', required: false })

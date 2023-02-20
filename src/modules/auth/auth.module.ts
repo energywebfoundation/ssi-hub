@@ -65,7 +65,9 @@ export class AuthModule implements NestModule {
         {
           path: `/v1/${STATUS_LIST_MODULE_PATH}/:credentialId`,
           method: RequestMethod.GET,
-        }
+        },
+        { path: '/v1/login/siwe/initiate', method: RequestMethod.POST },
+        { path: '/v1/login/siwe/verify', method: RequestMethod.POST }
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }

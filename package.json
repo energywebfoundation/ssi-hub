@@ -115,6 +115,7 @@
     "redis": "4.5.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.3.0",
+    "siwe": "^1.1.6",
     "swagger-ui-express": "^4.1.4",
     "typechain": "^7.0.1",
     "useragent": "^2.3.0",
