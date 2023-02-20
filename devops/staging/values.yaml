@@ -6,7 +6,7 @@ iam-cache-server-helm:
   replicaCount: 3
 
   image:
-    repository: "887755037386.dkr.ecr.us-west-2.amazonaws.com/ics-api"
+    repository: "ghcr.io/energywebfoundation/ssi-hub"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
