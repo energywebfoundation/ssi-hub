@@ -22,15 +22,6 @@ jobs:
         with:
           access_token: ${{ github.token }}
           
-  unique_id:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate unique id
-        id: unique_id
-        run: echo "::set-output name=id::$(uuidgen)"
-    outputs:
-      unique_id: ${{ steps.unique_id.outputs.id }}
-      
   configure:
     name: Configure variables
     runs-on: ubuntu-latest
@@ -189,5 +180,5 @@ jobs:
         id: argocd_image_helm_tag_overwrite
         with:
           command: app set iam-cache-server
-          options: -p iam-cache-server-helm.image.tag=${{needs.unique_id.outputs.unique_id}} -p iam-cache-server-helm.image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
+          options: -p iam-cache-server-helm.image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p iam-cache-server-helm.image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
           
