@@ -15,13 +15,13 @@ import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import ms from 'ms';
 import { RedisClientType } from 'redis';
-import { v4 as uuid } from 'uuid';
+import { SiweMessage, generateNonce } from 'siwe';
 import parseDuration from 'parse-duration';
 import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
 import { CookiesServices } from './cookies.service';
 import { RoleService } from '../role/role.service';
-import { VerifySiweDto } from './siwe.dto';
+import { SiweReqPayload } from './siwe.dto';
 
 @ApiTags('Auth')
 @Controller({ version: '1' })
@@ -85,30 +85,34 @@ export class LoginController {
 
   @Post('login/siwe/initiate')
   async initiateSiweLogin(@Res() res: Response) {
-    const nonce = uuid();
-    const expire = this.configService.get<string>(
-      'SIWE_NONCE_EXPIRES_IN'
-    );
+    const nonce = generateNonce();
+    const expire = this.configService.get<string>('SIWE_NONCE_EXPIRES_IN');
     const expireInSec = parseDuration(expire) / 1000;
     await this.redis.set(nonce, 'true', { EX: expireInSec });
     res.send({ nonce });
   }
 
   @UseGuards(LoginGuard)
-  @ApiBody({ type: VerifySiweDto })
+  @ApiBody({ type: SiweReqPayload })
   @Post('login/siwe/verify')
   async loginSiwe(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() body: VerifySiweDto
+    @Body({
+      transform: ({ message }) => ({
+        message: new SiweMessage(message),
+      }),
+    })
+    { message }: SiweReqPayload
   ) {
-    const { nonce } = body.message;
+    const { nonce } = message;
 
     if (!(await this.redis.exists(nonce))) {
       throw new UnauthorizedException(
         'Authentication with SIWE was not initiated'
       );
     }
+
     if ((await this.redis.get(nonce)) === 'false') {
       throw new UnauthorizedException(
         'Authentication with SIWE has completed already'
