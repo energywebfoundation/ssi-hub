@@ -20,14 +20,12 @@ import { SiweMessage, generateNonce } from 'siwe';
 import parseDuration from 'parse-duration';
 import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
-import { CookiesServices } from './cookies.service';
 import { RoleService } from '../role/role.service';
 import { SiweReqPayloadDTO } from './siwe.dto';
 
 @ApiTags('Auth')
 @Controller({ version: '1' })
 export class LoginController {
-  private cookiesServices = new CookiesServices();
   constructor(
     private tokenService: TokenService,
     private configService: ConfigService,
@@ -60,7 +58,6 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions = this.cookiesServices.getCookiesOption();
 
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
@@ -72,13 +69,21 @@ export class LoginController {
     res.cookie(
       this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
       token,
-      cookiesOptions
+      {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      }
     );
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
-      cookiesOptions
+      {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      }
     );
 
     res.send({ token, refreshToken });
@@ -158,8 +163,6 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions = this.cookiesServices.getCookiesOption();
-
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({
         did: userDid,
@@ -175,14 +178,20 @@ export class LoginController {
     res.cookie(
       this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
       token,
-      cookiesOptions
+      {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      }
     );
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
       {
-        ...cookiesOptions,
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
         expires: new Date(
           Date.now() +
             ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'))
