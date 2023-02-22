@@ -116,9 +116,7 @@ export class LoginController {
 
     let isAuthenticating: string;
     try {
-      isAuthenticating = await this.redis.set(nonce, 'false', {
-        GET: true,
-      });
+      isAuthenticating = await this.redis.getSet(nonce, 'false');
     } catch (e) {
       throw new InternalServerErrorException(
         'SIWE authentication nonce is not string'
