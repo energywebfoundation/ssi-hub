@@ -117,5 +117,27 @@ export const authLoginTestSuite = () => {
         ])
         .expect(200);
     });
+
+    it('same nonce can not be used for two logins', async () => {
+      const { text } = await request(app.getHttpServer())
+        .post('/v1/login/siwe/initiate')
+        .expect(201);
+      const nonce = JSON.parse(text).nonce;
+      const { message, signature } = await signSiweMessage(nonce);
+
+      const loginResponses = await Promise.all([
+        request(app.getHttpServer()).post('/v1/login/siwe/verify').send({
+          message,
+          signature,
+        }),
+        request(app.getHttpServer()).post('/v1/login/siwe/verify').send({
+          message,
+          signature,
+        }),
+      ]);
+
+      expect(loginResponses.filter((r) => r.status === 201).length).toBe(1);
+      expect(loginResponses.filter((r) => r.status === 401).length).toBe(1);
+    });
   });
 };
