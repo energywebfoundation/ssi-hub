@@ -71,11 +71,10 @@ export const authLoginTestSuite = () => {
       const message = new SiweMessage({
         domain: 'localhost',
         address: wallet.address,
-        uri: 'localhost:3000',
+        uri: 'http://localhost:3000',
         version: '1',
         chainId: (await wallet.provider.getNetwork()).chainId,
         nonce,
-        issuedAt: Date.now().toLocaleString(),
       });
       const signature = await wallet.signMessage(message.prepareMessage());
       return { message, signature };
@@ -94,7 +93,7 @@ export const authLoginTestSuite = () => {
           message,
           signature,
         })
-        .expect(200);
+        .expect(201);
 
       expect(loginResponse.headers['set-cookie']).toHaveLength(2);
       expect(loginResponse.headers['set-cookie']).toEqual(

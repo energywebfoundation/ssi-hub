@@ -135,8 +135,6 @@ export class LoginController {
         'SIWE authentication nonce is not string'
       );
     }
-
-    await this.login(req, res);
   }
 
   @ApiQuery({ name: 'refresh_token', required: false })
