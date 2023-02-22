@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Inject,
+  InternalServerErrorException,
   Post,
   Query,
   Req,
@@ -113,13 +114,27 @@ export class LoginController {
       );
     }
 
-    if ((await this.redis.get(nonce)) === 'false') {
-      throw new UnauthorizedException(
-        'Authentication with SIWE has completed already'
+    try {
+      const isAuthenticating = await this.redis.set(nonce, 'false', {
+        GET: true,
+      });
+      // If authentication was initiated and not yet completed
+      if (isAuthenticating === 'true') {
+        return await this.login(req, res);
+      } else if (isAuthenticating === 'false') {
+        throw new UnauthorizedException(
+          'Authentication with SIWE has completed already'
+        );
+      } else {
+        throw new InternalServerErrorException(
+          'SIWE authentication nonce is not boolean string'
+        );
+      }
+    } catch (e) {
+      throw new InternalServerErrorException(
+        'SIWE authentication nonce is not string'
       );
     }
-
-    await this.redis.set(nonce, 'false');
 
     await this.login(req, res);
   }
