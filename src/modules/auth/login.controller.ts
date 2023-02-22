@@ -114,25 +114,27 @@ export class LoginController {
       );
     }
 
+    let isAuthenticating: string;
     try {
-      const isAuthenticating = await this.redis.set(nonce, 'false', {
+      isAuthenticating = await this.redis.set(nonce, 'false', {
         GET: true,
       });
-      // If authentication was initiated and not yet completed
-      if (isAuthenticating === 'true') {
-        return await this.login(req, res);
-      } else if (isAuthenticating === 'false') {
-        throw new UnauthorizedException(
-          'Authentication with SIWE has completed already'
-        );
-      } else {
-        throw new InternalServerErrorException(
-          'SIWE authentication nonce is not boolean string'
-        );
-      }
     } catch (e) {
       throw new InternalServerErrorException(
         'SIWE authentication nonce is not string'
+      );
+    }
+
+    // If authentication was initiated and not yet completed
+    if (isAuthenticating === 'true') {
+      return this.login(req, res);
+    } else if (isAuthenticating === 'false') {
+      throw new UnauthorizedException(
+        'Authentication with SIWE completed already'
+      );
+    } else {
+      throw new InternalServerErrorException(
+        'SIWE authentication nonce is not boolean string'
       );
     }
   }
