@@ -81,6 +81,10 @@ jobs:
           path: |
             node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: validate lockfile
+        run: npx package-lock-utd
+
       - if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         name: npm ci
         run: npm ci
