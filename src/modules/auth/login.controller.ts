@@ -26,6 +26,8 @@ import { SiweReqPayloadDTO } from './siwe.dto';
 @ApiTags('Auth')
 @Controller({ version: '1' })
 export class LoginController {
+  private readonly httpCookieVal = true;
+
   constructor(
     private tokenService: TokenService,
     private configService: ConfigService,
@@ -70,7 +72,7 @@ export class LoginController {
       this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
       token,
       {
-        httpOnly: true,
+        httpOnly: this.httpCookieVal,
         sameSite: 'none',
         secure: true,
       }
@@ -80,7 +82,7 @@ export class LoginController {
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
       {
-        httpOnly: true,
+        httpOnly: this.httpCookieVal,
         sameSite: 'none',
         secure: true,
       }
@@ -179,7 +181,7 @@ export class LoginController {
       this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
       token,
       {
-        httpOnly: true,
+        httpOnly: this.httpCookieVal,
         sameSite: 'none',
         secure: true,
       }
@@ -189,7 +191,7 @@ export class LoginController {
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
       {
-        httpOnly: true,
+        httpOnly: this.httpCookieVal,
         sameSite: 'none',
         secure: true,
         expires: new Date(
