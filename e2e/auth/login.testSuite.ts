@@ -75,8 +75,8 @@ export const authLoginTestSuite = () => {
         version: '1',
         chainId: (await wallet.provider.getNetwork()).chainId,
         nonce,
-      });
-      const signature = await wallet.signMessage(message.prepareMessage());
+      }).prepareMessage();
+      const signature = await wallet.signMessage(message);
       return { message, signature };
     };
 
