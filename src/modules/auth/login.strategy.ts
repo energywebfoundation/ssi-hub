@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { verifyCredential } from 'didkit-wasm-node';
+import { URL } from 'url';
 import { RoleIssuerResolver } from '../claim/resolvers/issuer.resolver';
 import { RoleRevokerResolver } from '../claim/resolvers/revoker.resolver';
 import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
@@ -17,6 +18,10 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
     revokerResolver: RoleRevokerResolver,
     credentialResolver: RoleCredentialResolver
   ) {
+    const siweMessageUri = new URL(
+      '/v1/login/siwe/verify',
+      new URL(configService.get<string>('STRATEGY_CACHE_SERVER')).origin
+    ).href;
     const loginStrategyOptions: LoginStrategyOptions = {
       name: 'login',
       rpcUrl: configService.get<string>('ENS_URL'),
@@ -25,6 +30,10 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
       didContractAddress: configService.get<string>('DID_REGISTRY_ADDRESS'),
       ensRegistryAddress: configService.get<string>('ENS_REGISTRY_ADDRESS'),
       ipfsUrl: ipfsConfig,
+      siweMessageUri,
+      // siweMessageUri: `${configService.get<string>(
+      //   'STRATEGY_CACHE_SERVER'
+      // )}/login/siwe/verify`,
     };
     const loginStrategyParams: ConstructorParameters<typeof LoginStrategy> = [
       loginStrategyOptions,
