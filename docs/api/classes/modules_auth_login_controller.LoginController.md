@@ -20,7 +20,7 @@
 
 ### constructor
 
-• **new LoginController**(`tokenService`, `cookiesServices`, `configService`, `roleService`, `redis`)
+• **new LoginController**(`tokenService`, `configService`, `roleService`, `redis`)
 
 #### Parameters
 
@@ -76,7 +76,7 @@ ___
 | :------ | :------ |
 | `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
 | `res` | `Response`<`any`, `Record`<`string`, `any`\>\> |
-| `__namedParameters` | [`SiweReqPayload`](modules_auth_siwe_dto.SiweReqPayload.md) |
+| `__namedParameters` | [`SiweReqPayloadDTO`](modules_auth_siwe_dto.SiweReqPayloadDTO.md) |
 
 #### Returns
 

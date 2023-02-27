@@ -6,7 +6,6 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ApplicationService } from '../application/application.service';
-import { CookiesServices } from './cookies.service';
 import { JwtAuthGuard } from './jwt.guard';
 import { LoginController } from './login.controller';
 import { LoginGuard } from './login.guard';
@@ -35,7 +34,6 @@ import { ClaimModule } from '../claim/claim.module';
 
   controllers: [LoginController],
   providers: [
-    CookiesServices,
     ApplicationService,
     LoginGuard,
     JwtAuthGuard,

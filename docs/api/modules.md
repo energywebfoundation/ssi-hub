@@ -45,7 +45,6 @@
 - [modules/auth/auth.decorator](modules/modules_auth_auth_decorator.md)
 - [modules/auth/auth.dto](modules/modules_auth_auth_dto.md)
 - [modules/auth/auth.module](modules/modules_auth_auth_module.md)
-- [modules/auth/cookies.service](modules/modules_auth_cookies_service.md)
 - [modules/auth/jwt.gql.guard](modules/modules_auth_jwt_gql_guard.md)
 - [modules/auth/jwt.guard](modules/modules_auth_jwt_guard.md)
 - [modules/auth/jwt.strategy](modules/modules_auth_jwt_strategy.md)
