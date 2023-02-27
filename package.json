@@ -3,6 +3,9 @@
   "version": "2.11.1",
   "description": "",
   "author": "",
+  "engines": {
+    "npm": "7"
+  },
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
