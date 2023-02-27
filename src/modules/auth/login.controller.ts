@@ -22,7 +22,7 @@ import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
 import { CookiesServices } from './cookies.service';
 import { RoleService } from '../role/role.service';
-import { SiweReqPayload } from './siwe.dto';
+import { SiweReqPayloadDTO } from './siwe.dto';
 
 @ApiTags('Auth')
 @Controller({ version: '1' })
@@ -94,19 +94,15 @@ export class LoginController {
   }
 
   @UseGuards(LoginGuard)
-  @ApiBody({ type: SiweReqPayload })
+  @ApiBody({ type: SiweReqPayloadDTO })
   @Post('login/siwe/verify')
   async loginSiwe(
     @Req() req: Request,
     @Res() res: Response,
-    @Body({
-      transform: ({ message }) => ({
-        message: new SiweMessage(message),
-      }),
-    })
-    { message }: SiweReqPayload
+    @Body()
+    { message }: SiweReqPayloadDTO
   ) {
-    const { nonce } = message;
+    const { nonce } = new SiweMessage(message);
 
     if (!(await this.redis.exists(nonce))) {
       throw new UnauthorizedException(

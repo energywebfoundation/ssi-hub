@@ -1,7 +1,9 @@
-import { SiweMessage } from 'siwe';
+import { IsString } from 'class-validator';
 
-export class SiweReqPayload {
-  message: SiweMessage;
+export class SiweReqPayloadDTO {
+  @IsString()
+  message: string;
 
+  @IsString()
   signature: string;
 }
