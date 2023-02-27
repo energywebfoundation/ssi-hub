@@ -26,7 +26,10 @@ import { SiweReqPayloadDTO } from './siwe.dto';
 @ApiTags('Auth')
 @Controller({ version: '1' })
 export class LoginController {
-  private readonly httpCookieVal = true;
+  // Using "private readonly" class members so that automated scan can be certain that cookie options are set appropriately
+  private readonly cookieIsHttpOnly = true;
+  private readonly cookieIsSecure = true;
+  private readonly cookieSameSite = 'none';
 
   constructor(
     private tokenService: TokenService,
@@ -60,7 +63,6 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
       this.tokenService.generateRefreshToken({
@@ -68,23 +70,19 @@ export class LoginController {
       }),
     ]);
 
-    res.cookie(
-      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
-      token,
-      {
-        httpOnly: this.httpCookieVal,
-        sameSite: 'none',
-        secure: true,
-      }
-    );
+    res.cookie(this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'), token, {
+      httpOnly: this.cookieIsHttpOnly,
+      sameSite: this.cookieSameSite,
+      secure: this.cookieIsSecure,
+    });
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
       {
-        httpOnly: this.httpCookieVal,
-        sameSite: 'none',
-        secure: true,
+        httpOnly: this.cookieIsHttpOnly,
+        sameSite: this.cookieSameSite,
+        secure: this.cookieIsSecure,
       }
     );
 
@@ -177,23 +175,19 @@ export class LoginController {
       this.tokenService.invalidateRefreshToken(tokenId),
     ]);
 
-    res.cookie(
-      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
-      token,
-      {
-        httpOnly: this.httpCookieVal,
-        sameSite: 'none',
-        secure: true,
-      }
-    );
+    res.cookie(this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'), token, {
+      httpOnly: this.cookieIsHttpOnly,
+      sameSite: this.cookieSameSite,
+      secure: this.cookieIsSecure,
+    });
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
       {
-        httpOnly: this.httpCookieVal,
-        sameSite: 'none',
-        secure: true,
+        httpOnly: this.cookieIsHttpOnly,
+        sameSite: this.cookieSameSite,
+        secure: this.cookieIsSecure,
         expires: new Date(
           Date.now() +
             ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'))
