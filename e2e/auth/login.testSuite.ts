@@ -139,5 +139,21 @@ export const authLoginTestSuite = () => {
       expect(loginResponses.filter((r) => r.status === 201).length).toBe(1);
       expect(loginResponses.filter((r) => r.status === 401).length).toBe(1);
     });
+
+    it('should not verify unprepared message', async () => {
+      const { text } = await request(app.getHttpServer())
+        .post('/v1/login/siwe/initiate')
+        .expect(201);
+      const nonce = JSON.parse(text).nonce;
+      const { message, signature } = await signSiweMessage(nonce);
+
+      await request(app.getHttpServer())
+        .post('/v1/login/siwe/verify')
+        .send({
+          message: new SiweMessage(message),
+          signature,
+        })
+        .expect(400);
+    });
   });
 };
