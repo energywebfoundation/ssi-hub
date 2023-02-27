@@ -5,6 +5,7 @@ import { app } from '../app.e2e.spec';
 import { getIdentityToken } from '../utils';
 import { SiweMessage } from 'siwe';
 import { ConfigService } from '@nestjs/config';
+import { URL } from 'url';
 
 export const authLoginTestSuite = () => {
   let consoleLogSpy: jest.SpyInstance;
@@ -69,12 +70,16 @@ export const authLoginTestSuite = () => {
 
   describe('Login with SIWE', () => {
     const signSiweMessage = async (nonce: string) => {
+      const uri = new URL(
+        '/v1/login/siwe/verify',
+        new URL(
+          app.get(ConfigService).get<string>('STRATEGY_CACHE_SERVER')
+        ).origin
+      ).href;
       const message = new SiweMessage({
         domain: 'localhost',
         address: wallet.address,
-        uri: `${app
-          .get(ConfigService)
-          .get<string>('STRATEGY_CACHE_SERVER')}/login/siwe/verify`,
+        uri,
         version: '1',
         chainId: (await wallet.provider.getNetwork()).chainId,
         nonce,

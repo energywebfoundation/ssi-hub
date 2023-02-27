@@ -31,9 +31,6 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
       ensRegistryAddress: configService.get<string>('ENS_REGISTRY_ADDRESS'),
       ipfsUrl: ipfsConfig,
       siweMessageUri,
-      // siweMessageUri: `${configService.get<string>(
-      //   'STRATEGY_CACHE_SERVER'
-      // )}/login/siwe/verify`,
     };
     const loginStrategyParams: ConstructorParameters<typeof LoginStrategy> = [
       loginStrategyOptions,
