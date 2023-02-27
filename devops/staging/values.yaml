@@ -117,6 +117,8 @@ iam-cache-server-helm:
     STRATEGY_NUM_BLOCKS_BACK: 10
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
+    RESTRICT_CORS_ORIGINS: true
+    ALLOWED_ORIGINS: https://gp4btc-ui-stg.energyweb.org/,https://gp4btc-explorer-stg.energyweb.org/
     SIWE_NONCE_EXPIRES_IN: 1m
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
