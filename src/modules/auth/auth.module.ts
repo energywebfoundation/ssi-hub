@@ -21,6 +21,7 @@ import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
 import { NextFunction, Request, Response } from 'express';
 import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
+import { ClaimModule } from '../claim/claim.module';
 
 @Global()
 @Module({
@@ -30,6 +31,7 @@ import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
       useFactory: getJWTConfig,
       inject: [ConfigService],
     }),
+    ClaimModule,
   ],
 
   controllers: [LoginController],
@@ -64,7 +66,9 @@ export class AuthModule implements NestModule {
         {
           path: `/v1/${STATUS_LIST_MODULE_PATH}/:credentialId`,
           method: RequestMethod.GET,
-        }
+        },
+        { path: '/v1/login/siwe/initiate', method: RequestMethod.POST },
+        { path: '/v1/login/siwe/verify', method: RequestMethod.POST }
       )
       .forRoutes({ path: '/*', method: RequestMethod.ALL });
   }

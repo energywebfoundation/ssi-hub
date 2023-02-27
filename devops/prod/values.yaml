@@ -2,7 +2,7 @@ iam-cache-server-helm:
   replicaCount: 3
 
   image:
-    repository: "984870885661.dkr.ecr.us-west-2.amazonaws.com/ics-api"
+    repository: "ghcr.io/energywebfoundation/ssi-hub"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
@@ -114,6 +114,7 @@ iam-cache-server-helm:
     STRATEGY_NUM_BLOCKS_BACK: 10
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
+    SIWE_NONCE_EXPIRES_IN: 1m
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache.energyweb.org/v1

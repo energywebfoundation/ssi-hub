@@ -18,14 +18,14 @@
 
 ### constructor
 
-• **new RefreshTokenRepository**(`configService`, `logger`)
+• **new RefreshTokenRepository**(`configService`, `client`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
-| `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
+| `client` | `RedisClientType`<{}, `Record`<`string`, `never`\>, `Record`<`string`, `never`\>\> |
 
 ## Methods
 

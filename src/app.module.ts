@@ -29,6 +29,7 @@ import { StatusListModule } from './modules/status-list/status-list.module';
 import { IPFSModule } from './modules/ipfs/ipfs.module';
 import { ValidationOptions } from 'joi';
 import { envVarsValidationSchema as validationSchema } from './env-vars-validation-schema';
+import { RedisModule } from './modules/redis/redis.module';
 
 const validationOptions: ValidationOptions = {
   stripUnknown: true,
@@ -96,6 +97,7 @@ try {
     HealthCheckModule,
     StatusListModule,
     IPFSModule,
+    RedisModule,
   ],
   providers: [JSONObjectScalar],
 })
