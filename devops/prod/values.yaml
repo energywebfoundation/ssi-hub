@@ -117,6 +117,8 @@ iam-cache-server-helm:
     SIWE_NONCE_EXPIRES_IN: 1m
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
+    RESTRICT_CORS_ORIGINS: false
+    ALLOWED_ORIGINS: https://switchboard.energyweb.org,https://consortia-stake-ewt.io,https://green.stake-ewt.io,https://greenpool.stake-ewt.io,https://crowdfund4solar.com
     STATUS_LIST_DOMAIN: https://identitycache.energyweb.org/v1
     CHAIN_REQUEST_ATTEMPTS: 5
 

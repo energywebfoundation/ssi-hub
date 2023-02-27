@@ -34,6 +34,8 @@ env:
   SIWE_NONCE_EXPIRES_IN: 1m
   JWT_ACCESS_TOKEN_NAME: ${{secrets.JWT_ACCESS_TOKEN_NAME}}
   JWT_REFRESH_TOKEN_NAME: ${{secrets.JWT_REFRESH_TOKEN_NAME}}
+  RESTRICT_CORS_ORIGINS: true
+  ALLOWED_ORIGINS: https://switchboard-dev.energyweb.org,https://gp4btc-ui-dev.energyweb.org/,https://staking-ui-dev.energyweb.org,https://stedin-dev.energyweb.org
   UNIVERSAL_RESOLVER_URL: ${{secrets.UNIVERSAL_RESOLVER_URL}}
   ROOT_DOMAIN: iam.ewc
   DID_SYNC_ENABLED: false

@@ -18,6 +18,7 @@ import { GqlAuthGuard } from './jwt.gql.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
+import { NextFunction, Request, Response } from 'express';
 import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
 import { ClaimModule } from '../claim/claim.module';
 
@@ -50,8 +51,8 @@ export class AuthModule implements NestModule {
 
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply((req, res, next) =>
-        this.tokenService.handleOriginCheck(req, res, next)
+      .apply((req: Request, res: Response, next: NextFunction) =>
+        this.tokenService.checkAccessTokenOrigin(req, res, next)
       )
       .exclude(
         { path: '/v1/login', method: RequestMethod.ALL },

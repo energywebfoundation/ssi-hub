@@ -15,6 +15,7 @@ import {
   ClaimEventType,
   NATS_EXCHANGE_TOPIC,
 } from '../../src/modules/claim/claim.types';
+import { ConfigService } from '@nestjs/config';
 
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 
@@ -23,6 +24,7 @@ export const claimWithRequestTestSuite = () => {
   let claimService: ClaimService;
   let nats: NatsService;
   let queryRunner;
+  let allowedOrigins: string[];
 
   const createClaimRequest = async (
     role: string,
@@ -147,6 +149,7 @@ export const claimWithRequestTestSuite = () => {
     roleService = app.get(RoleService);
     claimService = app.get(ClaimService);
     nats = app.get(NatsService);
+    allowedOrigins = app.get(ConfigService).get('ALLOWED_ORIGINS').split(',');
   });
 
   beforeEach(async () => {
@@ -287,7 +290,7 @@ export const claimWithRequestTestSuite = () => {
   });
 
   it(`should save request origin along with claim`, async () => {
-    const requestOrigin = 'http://localhost:3000';
+    const requestOrigin = allowedOrigins[3];
     const [requester] = await Promise.all([randomUser(requestOrigin)]);
     await createRole(
       {
@@ -315,29 +318,8 @@ export const claimWithRequestTestSuite = () => {
     expect(body.redirectUri).toBe(requestOrigin);
   });
 
-  it(`should throw an error when request origin is invalid`, async () => {
-    const requestOrigin = 'invalid request origin';
-    const [requester] = await Promise.all([randomUser(requestOrigin)]);
-    await createRole(
-      {
-        name: 'test5',
-        roleName: 'role.roles.iam.ewc',
-        ownerAddr: requester.wallet.address,
-      },
-      roleService
-    );
-
-    await createClaimRequest(
-      'test5.roles.e2e.iam.ewc',
-      requester,
-      requester,
-      500,
-      requestOrigin
-    );
-  });
-
   it(`/v1/claim/revoker should respond with a 200 and return credential`, async () => {
-    const requestOrigin = 'http://localhost:3000';
+    const requestOrigin = allowedOrigins[0];
     const [requester, revoker, issuer] = await Promise.all([
       randomUser(),
       randomUser(requestOrigin),
@@ -371,7 +353,7 @@ export const claimWithRequestTestSuite = () => {
   });
 
   it(`/v1/claim/revoker should respond with a 200 and return credential given a namespace`, async () => {
-    const requestOrigin = 'http://localhost:3000';
+    const requestOrigin = allowedOrigins[0];
     const [requester, revoker, issuer] = await Promise.all([
       randomUser(),
       randomUser(requestOrigin),

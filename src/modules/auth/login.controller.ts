@@ -151,8 +151,10 @@ export class LoginController {
       refresh_token;
 
     if (!refreshTokenString) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Refresh token was not set');
     }
+
+    this.tokenService.matchOriginAgainstRequest(refreshTokenString, req);
 
     const { userDid, tokenId } =
       (await this.tokenService.verifyRefreshToken(refreshTokenString)) || {};

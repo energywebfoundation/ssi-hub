@@ -11,6 +11,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import { SentryService } from './modules/sentry/sentry.service';
 import * as SentryNode from '@sentry/node';
+import { corsConfig } from './common/cors.config';
 
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
@@ -70,7 +71,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, builtOptions);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({ credentials: true, origin: true });
+  corsConfig(app);
 
   app.use(SentryNode.Handlers.errorHandler());
   await app.listen(configService.get('NESTJS_PORT'));
