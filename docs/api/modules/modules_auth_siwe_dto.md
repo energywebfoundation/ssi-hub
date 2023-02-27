@@ -4,4 +4,4 @@
 
 ### Classes
 
-- [SiweReqPayload](../classes/modules_auth_siwe_dto.SiweReqPayload.md)
+- [SiweReqPayloadDTO](../classes/modules_auth_siwe_dto.SiweReqPayloadDTO.md)

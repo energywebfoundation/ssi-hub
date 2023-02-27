@@ -20,16 +20,19 @@ import { SiweMessage, generateNonce } from 'siwe';
 import parseDuration from 'parse-duration';
 import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
-import { CookiesServices } from './cookies.service';
 import { RoleService } from '../role/role.service';
 import { SiweReqPayloadDTO } from './siwe.dto';
 
 @ApiTags('Auth')
 @Controller({ version: '1' })
 export class LoginController {
+  // Using "private readonly" class members so that automated scan can be certain that cookie options are set appropriately
+  private readonly cookieIsHttpOnly = true;
+  private readonly cookieIsSecure = true;
+  private readonly cookieSameSite = 'none';
+
   constructor(
     private tokenService: TokenService,
-    private cookiesServices: CookiesServices,
     private configService: ConfigService,
     private roleService: RoleService,
     @Inject('REDIS_CLIENT') private redis: RedisClientType
@@ -60,8 +63,6 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions = this.cookiesServices.getCookiesOption();
-
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
       this.tokenService.generateRefreshToken({
@@ -69,16 +70,20 @@ export class LoginController {
       }),
     ]);
 
-    res.cookie(
-      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
-      token,
-      cookiesOptions
-    );
+    res.cookie(this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'), token, {
+      httpOnly: this.cookieIsHttpOnly,
+      sameSite: this.cookieSameSite,
+      secure: this.cookieIsSecure,
+    });
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
-      cookiesOptions
+      {
+        httpOnly: this.cookieIsHttpOnly,
+        sameSite: this.cookieSameSite,
+        secure: this.cookieIsSecure,
+      }
     );
 
     res.send({ token, refreshToken });
@@ -158,8 +163,6 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions = this.cookiesServices.getCookiesOption();
-
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({
         did: userDid,
@@ -172,17 +175,19 @@ export class LoginController {
       this.tokenService.invalidateRefreshToken(tokenId),
     ]);
 
-    res.cookie(
-      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
-      token,
-      cookiesOptions
-    );
+    res.cookie(this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'), token, {
+      httpOnly: this.cookieIsHttpOnly,
+      sameSite: this.cookieSameSite,
+      secure: this.cookieIsSecure,
+    });
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
       {
-        ...cookiesOptions,
+        httpOnly: this.cookieIsHttpOnly,
+        sameSite: this.cookieSameSite,
+        secure: this.cookieIsSecure,
         expires: new Date(
           Date.now() +
             ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'))

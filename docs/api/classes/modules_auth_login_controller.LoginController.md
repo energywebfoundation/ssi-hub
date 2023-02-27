@@ -20,14 +20,13 @@
 
 ### constructor
 
-• **new LoginController**(`tokenService`, `cookiesServices`, `configService`, `roleService`, `redis`)
+• **new LoginController**(`tokenService`, `configService`, `roleService`, `redis`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `tokenService` | [`TokenService`](modules_auth_token_service.TokenService.md) |
-| `cookiesServices` | [`CookiesServices`](modules_auth_cookies_service.CookiesServices.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
 | `redis` | `RedisClientType`<{}, `Record`<`string`, `never`\>, `Record`<`string`, `never`\>\> |
@@ -77,7 +76,7 @@ ___
 | :------ | :------ |
 | `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
 | `res` | `Response`<`any`, `Record`<`string`, `any`\>\> |
-| `__namedParameters` | [`SiweReqPayload`](modules_auth_siwe_dto.SiweReqPayload.md) |
+| `__namedParameters` | [`SiweReqPayloadDTO`](modules_auth_siwe_dto.SiweReqPayloadDTO.md) |
 
 #### Returns
 
