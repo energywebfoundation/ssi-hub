@@ -80,7 +80,6 @@ export class AuthModule implements NestModule {
               'Authentication at this endpoint is disabled. Other authentication protocols may be available'
             );
         }
-        next();
       })
       .forRoutes({ path: '/v1/login', method: RequestMethod.ALL });
   }
