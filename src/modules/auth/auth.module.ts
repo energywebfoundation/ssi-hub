@@ -74,13 +74,16 @@ export class AuthModule implements NestModule {
       .forRoutes({ path: '/*', method: RequestMethod.ALL })
       .apply((_req: Request, res: Response, next: NextFunction) => {
         if (!this.configService.get('BLOCKNUM_AUTH_ENABLED')) {
-          res
-            .status(404)
-            .send(
-              'Authentication at this endpoint is disabled. Other authentication protocols may be available'
-            );
+          res.status(404).send({
+            code: 404,
+            error: 'Not Found',
+            message:
+              'Authentication at this endpoint is disabled. Other authentication protocols may be available',
+          });
+        } else {
+          next();
         }
       })
-      .forRoutes({ path: '/v1/login', method: RequestMethod.ALL });
+      .forRoutes({ path: '/v1/login', method: RequestMethod.POST });
   }
 }
