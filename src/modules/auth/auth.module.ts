@@ -47,7 +47,10 @@ import { ClaimModule } from '../claim/claim.module';
   exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard],
 })
 export class AuthModule implements NestModule {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor(
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService
+  ) {}
 
   configure(consumer: MiddlewareConsumer) {
     consumer
@@ -68,6 +71,19 @@ export class AuthModule implements NestModule {
         { path: '/v1/login/siwe/initiate', method: RequestMethod.POST },
         { path: '/v1/login/siwe/verify', method: RequestMethod.POST }
       )
-      .forRoutes({ path: '/*', method: RequestMethod.ALL });
+      .forRoutes({ path: '/*', method: RequestMethod.ALL })
+      .apply((_req: Request, res: Response, next: NextFunction) => {
+        if (!this.configService.get('BLOCKNUM_AUTH_ENABLED')) {
+          res.status(404).send({
+            code: 404,
+            error: 'Not Found',
+            message:
+              'Authentication at this endpoint is disabled. Other authentication protocols may be available',
+          });
+        } else {
+          next();
+        }
+      })
+      .forRoutes({ path: '/v1/login', method: RequestMethod.POST });
   }
 }

@@ -111,6 +111,7 @@ iam-cache-server-helm:
     JWT_PRIVATE_KEY_PATH: /keys/private.pem
     JWT_PUBLIC_KEY_PATH: /keys/public.pem
     STRATEGY_CACHE_SERVER: https://identitycache.energyweb.org/v1
+    BLOCKNUM_AUTH_ENABLED: true
     STRATEGY_NUM_BLOCKS_BACK: 10
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
