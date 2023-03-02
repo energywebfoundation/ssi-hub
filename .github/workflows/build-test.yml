@@ -59,6 +59,14 @@ env:
   NATS_ENVIRONMENT_NAME: dev
 
 jobs:
+  cancel-previous:
+      name: 'Cancel Previous'
+      runs-on: ubuntu-latest
+      timeout-minutes: 3
+      steps:
+        - uses: styfle/cancel-workflow-action@0.11.0
+          with:
+            access_token: ${{ github.token }}
   install:
     name: Install dependencies
     runs-on: ubuntu-latest
