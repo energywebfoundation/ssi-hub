@@ -218,7 +218,11 @@ export const authLoginTestSuite = () => {
   });
 
   describe('Login with SIWE', () => {
-    const signSiweMessage = async (nonce: string) => {
+    const origin = 'https://switchboard-dev.energyweb.org';
+    const signSiweMessage = async (nonce: string, domain?: string) => {
+      if (!domain) {
+        domain = new URL(origin).hostname;
+      }
       const uri = new URL(
         '/v1/login/siwe/verify',
         new URL(
@@ -226,7 +230,7 @@ export const authLoginTestSuite = () => {
         ).origin
       ).href;
       const message = new SiweMessage({
-        domain: 'localhost',
+        domain,
         address: wallet.address,
         uri,
         version: '1',
@@ -237,80 +241,160 @@ export const authLoginTestSuite = () => {
       return { message, signature };
     };
 
-    it('should be able to login', async () => {
-      const { text } = await request(app.getHttpServer())
-        .post('/v1/login/siwe/initiate')
-        .expect(201);
-      const nonce = JSON.parse(text).nonce;
-      const { message, signature } = await signSiweMessage(nonce);
+    describe('POST /login/siwe/verify', () => {
+      let message: string;
+      let signature: string;
+      let loginResponse: request.Response;
 
-      const loginResponse = await request(app.getHttpServer())
-        .post('/v1/login/siwe/verify')
-        .send({
-          message,
-          signature,
-        })
-        .expect(201);
+      describe('when SIWE message is valid', () => {
+        describe('when login origin is set', () => {
+          beforeAll(async () => {
+            const { text } = await request(app.getHttpServer())
+              .post('/v1/login/siwe/initiate')
+              .expect(201);
+            const nonce = JSON.parse(text).nonce;
+            ({ message, signature } = await signSiweMessage(nonce));
+            loginResponse = await request(app.getHttpServer())
+              .post('/v1/login/siwe/verify')
+              .send({
+                message,
+                signature,
+              })
+              .set('Origin', origin);
+          });
 
-      expect(loginResponse.headers['set-cookie']).toHaveLength(2);
-      expect(loginResponse.headers['set-cookie']).toEqual(
-        expect.arrayContaining([
-          expect.stringMatching(
-            /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/
-          ),
-        ])
-      );
-      expect(loginResponse.headers['set-cookie'][0]).toContain(
-        loginResponse.body.token
-      );
-      expect(loginResponse.headers['set-cookie'][1]).toContain(
-        loginResponse.body.refreshToken
-      );
-      return request(app.getHttpServer())
-        .get('/v1/search/test')
-        .set('Cookie', [
-          loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
-          loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
-        ])
-        .expect(200);
-    });
+          it('login response should contain access and refresh tokens', () => {
+            expect(loginResponse.status).toBe(201);
 
-    it('same nonce can not be used for two logins', async () => {
-      const { text } = await request(app.getHttpServer())
-        .post('/v1/login/siwe/initiate')
-        .expect(201);
-      const nonce = JSON.parse(text).nonce;
-      const { message, signature } = await signSiweMessage(nonce);
+            expect(loginResponse.headers['set-cookie']).toHaveLength(2);
+            expect(loginResponse.headers['set-cookie']).toEqual(
+              expect.arrayContaining([
+                expect.stringMatching(
+                  /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/
+                ),
+              ])
+            );
+            expect(loginResponse.headers['set-cookie'][0]).toContain(
+              loginResponse.body.token
+            );
+            expect(loginResponse.headers['set-cookie'][1]).toContain(
+              loginResponse.body.refreshToken
+            );
+          });
 
-      const loginResponses = await Promise.all([
-        request(app.getHttpServer()).post('/v1/login/siwe/verify').send({
-          message,
-          signature,
-        }),
-        request(app.getHttpServer()).post('/v1/login/siwe/verify').send({
-          message,
-          signature,
-        }),
-      ]);
+          it.todo(
+            'should not be authorized when request origin is not specified'
+          );
 
-      expect(loginResponses.filter((r) => r.status === 201).length).toBe(1);
-      expect(loginResponses.filter((r) => r.status === 401).length).toBe(1);
-    });
+          it('should be authorized when request origin matches origin of access token', async () => {
+            return request(app.getHttpServer())
+              .get('/v1/search/test')
+              .set('Cookie', [
+                loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
+                loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
+              ])
+              .set('Origin', origin)
+              .expect(200);
+          });
 
-    it('should not verify unprepared message', async () => {
-      const { text } = await request(app.getHttpServer())
-        .post('/v1/login/siwe/initiate')
-        .expect(201);
-      const nonce = JSON.parse(text).nonce;
-      const { message, signature } = await signSiweMessage(nonce);
+          it('should not be authorized when request origin does not matches origin of access token', async () => {
+            return request(app.getHttpServer())
+              .get('/v1/search/test')
+              .set('Cookie', [
+                loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
+                loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
+              ])
+              .set('Origin', 'https://gp4btc-dev.energyweb.org')
+              .expect(401);
+          });
 
-      await request(app.getHttpServer())
-        .post('/v1/login/siwe/verify')
-        .send({
-          message: new SiweMessage(message),
-          signature,
-        })
-        .expect(400);
+          it('should not login again with the same nonce', async () => {
+            await request(app.getHttpServer())
+              .post('/v1/login/siwe/verify')
+              .send({
+                message,
+                signature,
+              })
+              .expect(401);
+          });
+        });
+
+        describe('when login origin is not set', () => {
+          beforeAll(async () => {
+            const { text } = await request(app.getHttpServer())
+              .post('/v1/login/siwe/initiate')
+              .expect(201);
+            const nonce = JSON.parse(text).nonce;
+            ({ message, signature } = await signSiweMessage(nonce));
+            loginResponse = await request(app.getHttpServer())
+              .post('/v1/login/siwe/verify')
+              .send({
+                message,
+                signature,
+              });
+          });
+
+          it('login response should contain access and refresh tokens', () => {
+            expect(loginResponse.status).toBe(201);
+
+            expect(loginResponse.headers['set-cookie']).toHaveLength(2);
+            expect(loginResponse.headers['set-cookie']).toEqual(
+              expect.arrayContaining([
+                expect.stringMatching(
+                  /(?:token|refreshToken)=.+\..+\..+; Path=\/; HttpOnly; Secure; SameSite=None/
+                ),
+              ])
+            );
+            expect(loginResponse.headers['set-cookie'][0]).toContain(
+              loginResponse.body.token
+            );
+            expect(loginResponse.headers['set-cookie'][1]).toContain(
+              loginResponse.body.refreshToken
+            );
+          });
+
+          it('should be authorized when request origin is not specified', async () => {
+            return request(app.getHttpServer())
+              .get('/v1/search/test')
+              .set('Cookie', [
+                loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
+                loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
+              ])
+              .expect(200);
+          });
+
+          it('should not be authorized when request origin is specified', async () => {
+            return request(app.getHttpServer())
+              .get('/v1/search/test')
+              .set('Cookie', [
+                loginResponse.headers['set-cookie'][0].split(';')[0] + ';',
+                loginResponse.headers['set-cookie'][1].split(';')[0] + ';',
+              ])
+              .set('Origin', origin)
+              .expect(401);
+          });
+        });
+      });
+
+      describe('when SIWE message is invalid', () => {
+        beforeAll(async () => {
+          const { text } = await request(app.getHttpServer())
+            .post('/v1/login/siwe/initiate')
+            .expect(201);
+          const nonce = JSON.parse(text).nonce;
+          ({ message, signature } = await signSiweMessage(nonce));
+        });
+
+        it('should not verify unprepared message', async () => {
+          await request(app.getHttpServer())
+            .post('/v1/login/siwe/verify')
+            .send({
+              message: new SiweMessage(message),
+              signature,
+            })
+            .expect(400);
+        });
+      });
     });
   });
 };

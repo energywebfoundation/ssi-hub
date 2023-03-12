@@ -104,7 +104,11 @@ export class TokenService {
     }
 
     const decodedToken = jwt.decode(token) as TokenPayload;
-    this.matchOriginAgainstRequest(decodedToken?.origin, req);
+    if (!this.isLoginOriginMatchesRequestOrigin(decodedToken?.origin, req)) {
+      throw new UnauthorizedException(
+        `Token origin ${decodedToken?.origin} does not matches request origin ${req.headers['origin']}`
+      );
+    }
 
     next();
   }
@@ -114,18 +118,14 @@ export class TokenService {
    * @param origin Origin specified for token
    * @param req Http request object being authenticated with token
    */
-  matchOriginAgainstRequest(origin: string, req: Request) {
+  isLoginOriginMatchesRequestOrigin(origin: string, req: Request): boolean {
     const isBrowserRequestFromAuthenticatedOrigin =
       origin === req.headers['origin'];
     const isServerRequestOrGETFromSameDomain =
       req.headers['origin'] === undefined;
-    if (
-      !isBrowserRequestFromAuthenticatedOrigin &&
-      !isServerRequestOrGETFromSameDomain
-    ) {
-      throw new UnauthorizedException(
-        `Token origin ${origin} does not matches request origin ${req.headers['origin']}`
-      );
-    }
+    return (
+      isBrowserRequestFromAuthenticatedOrigin ||
+      isServerRequestOrGETFromSameDomain
+    );
   }
 }
