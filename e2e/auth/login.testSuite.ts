@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { app } from '../app.e2e.spec';
 import { getIdentityToken } from '../utils';
 import { SiweMessage } from 'siwe';
-import { URL } from 'url';
+import { loginWithSiwe, origin, signSiweMessage } from './utils';
 
 export const authLoginTestSuite = () => {
   let consoleLogSpy: jest.SpyInstance;
@@ -41,7 +41,7 @@ export const authLoginTestSuite = () => {
     });
 
     describe('Authenticate without specifying origin', () => {
-      let loginResponse;
+      let loginResponse: request.Response;
 
       beforeEach(async () => {
         const identityToken = await getIdentityToken(provider, wallet);
@@ -218,29 +218,6 @@ export const authLoginTestSuite = () => {
   });
 
   describe('Login with SIWE', () => {
-    const origin = 'https://switchboard-dev.energyweb.org';
-    const signSiweMessage = async (nonce: string, domain?: string) => {
-      if (!domain) {
-        domain = new URL(origin).hostname;
-      }
-      const uri = new URL(
-        '/v1/login/siwe/verify',
-        new URL(
-          app.get(ConfigService).get<string>('STRATEGY_CACHE_SERVER')
-        ).origin
-      ).href;
-      const message = new SiweMessage({
-        domain,
-        address: wallet.address,
-        uri,
-        version: '1',
-        chainId: (await wallet.provider.getNetwork()).chainId,
-        nonce,
-      }).prepareMessage();
-      const signature = await wallet.signMessage(message);
-      return { message, signature };
-    };
-
     describe('POST /login/siwe/verify', () => {
       let message: string;
       let signature: string;
@@ -249,18 +226,7 @@ export const authLoginTestSuite = () => {
       describe('when SIWE message is valid', () => {
         describe('when login origin is set', () => {
           beforeAll(async () => {
-            const { text } = await request(app.getHttpServer())
-              .post('/v1/login/siwe/initiate')
-              .expect(201);
-            const nonce = JSON.parse(text).nonce;
-            ({ message, signature } = await signSiweMessage(nonce));
-            loginResponse = await request(app.getHttpServer())
-              .post('/v1/login/siwe/verify')
-              .send({
-                message,
-                signature,
-              })
-              .set('Origin', origin);
+            ({ loginResponse } = await loginWithSiwe(wallet, origin));
           });
 
           it('login response should contain access and refresh tokens', () => {
@@ -321,17 +287,9 @@ export const authLoginTestSuite = () => {
 
         describe('when login origin is not set', () => {
           beforeAll(async () => {
-            const { text } = await request(app.getHttpServer())
-              .post('/v1/login/siwe/initiate')
-              .expect(201);
-            const nonce = JSON.parse(text).nonce;
-            ({ message, signature } = await signSiweMessage(nonce));
-            loginResponse = await request(app.getHttpServer())
-              .post('/v1/login/siwe/verify')
-              .send({
-                message,
-                signature,
-              });
+            ({ loginResponse, signature, message } = await loginWithSiwe(
+              wallet
+            ));
           });
 
           it('login response should contain access and refresh tokens', () => {
@@ -382,7 +340,7 @@ export const authLoginTestSuite = () => {
             .post('/v1/login/siwe/initiate')
             .expect(201);
           const nonce = JSON.parse(text).nonce;
-          ({ message, signature } = await signSiweMessage(nonce));
+          ({ message, signature } = await signSiweMessage(wallet, nonce));
         });
 
         it('should not verify unprepared message', async () => {

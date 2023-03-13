@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Wallet, providers } from 'ethers';
 import { app } from '../app.e2e.spec';
-import { getIdentityToken } from '../utils';
+import { loginWithSiwe } from './utils';
 
-export const authStatusBlockNumTestSuite = () => {
-  describe('Auth status when login with block number', () => {
+export const authStatusSiweTestSuite = () => {
+  describe('Auth status when login with Siwe', () => {
     let provider: providers.Provider;
     let wallet: Wallet;
 
@@ -31,15 +31,8 @@ export const authStatusBlockNumTestSuite = () => {
 
       describe('when login origin is set', () => {
         beforeAll(async () => {
-          const identityToken = await getIdentityToken(provider, wallet);
-
-          loginResponse = await request(app.getHttpServer())
-            .post('/v1/login')
-            .set('Origin', origin)
-            .send({
-              identityToken,
-            })
-            .expect(201);
+          ({ loginResponse } = await loginWithSiwe(wallet, origin));
+          expect(loginResponse.status).toBe(201);
         });
 
         describe('when request origin is set', () => {
@@ -106,14 +99,8 @@ export const authStatusBlockNumTestSuite = () => {
 
       describe('when login origin is not set', () => {
         beforeAll(async () => {
-          const identityToken = await getIdentityToken(provider, wallet);
-
-          loginResponse = await request(app.getHttpServer())
-            .post('/v1/login')
-            .send({
-              identityToken,
-            })
-            .expect(201);
+          ({ loginResponse } = await loginWithSiwe(wallet));
+          expect(loginResponse.status).toBe(201);
         });
 
         describe('when request origin is set', () => {
