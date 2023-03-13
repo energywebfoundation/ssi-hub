@@ -161,7 +161,7 @@ export class LoginController {
       )
     ) {
       throw new UnauthorizedException(
-        `Token origin ${refreshTokenString} does not matches request origin ${req.headers['origin']}`
+        `Token origin ${refreshTokenString} does not match request origin ${req.headers['origin']}`
       );
     }
 
