@@ -19,7 +19,7 @@ export const authLoginTestSuite = () => {
     wallet = Wallet.createRandom().connect(provider);
   });
 
-  describe('Login (version: 1)', () => {
+  describe('Login with block number', () => {
     let provider: providers.Provider;
     let wallet: Wallet;
     let allowedOrigins: string[];
@@ -54,7 +54,7 @@ export const authLoginTestSuite = () => {
           .expect(201);
       });
 
-      it(`should authorize, if request has no origin`, async () => {
+      it(`if request has no origin then /search/text should respond with 200 status code`, async () => {
         expect(loginResponse.headers['set-cookie']).toHaveLength(2);
         expect(loginResponse.headers['set-cookie']).toEqual(
           expect.arrayContaining([
@@ -78,7 +78,7 @@ export const authLoginTestSuite = () => {
           .expect(200);
       });
 
-      it(`should not authorize, if request has origin`, async () => {
+      it(`if request has origin then /search/text should respond with 401 status code`, async () => {
         expect(loginResponse.headers['set-cookie']).toHaveLength(2);
         expect(loginResponse.headers['set-cookie']).toEqual(
           expect.arrayContaining([
@@ -111,7 +111,7 @@ export const authLoginTestSuite = () => {
 
     describe('Authenticate with specifying origin', () => {
       describe('Request origin is restricted', () => {
-        it('should authenticate allowed origin', async () => {
+        it('if origin is allowed then /login should respond with 201 status code', async () => {
           const identityToken = await getIdentityToken(provider, wallet);
           await request(app.getHttpServer())
             .post('/v1/login')
@@ -122,7 +122,7 @@ export const authLoginTestSuite = () => {
             .expect(201);
         });
 
-        it('should not authenticate not allowed origin', async () => {
+        it('if origin is not allowed then /login should respond with 401 status code', async () => {
           const identityToken = await getIdentityToken(provider, wallet);
           await request(app.getHttpServer())
             .post('/v1/login')
@@ -138,7 +138,7 @@ export const authLoginTestSuite = () => {
             });
         });
 
-        it('should not authorize user if request does not matches authentication token', async () => {
+        it('if request origin does not match access token origin then /search/text should respond with 401 status code', async () => {
           const identityToken = await getIdentityToken(provider, wallet);
 
           const loginResponse = await request(app.getHttpServer())
@@ -249,10 +249,10 @@ export const authLoginTestSuite = () => {
           });
 
           it.todo(
-            'should not be authorized when request origin is not specified'
+            'if request origin is not specified then /search/text should return 401 status code'
           );
 
-          it('should be authorized when request origin matches origin of access token', async () => {
+          it('if request origin matches origin of access token then /search/text should respond with 200 status code', async () => {
             return request(app.getHttpServer())
               .get('/v1/search/test')
               .set('Cookie', [
@@ -263,7 +263,7 @@ export const authLoginTestSuite = () => {
               .expect(200);
           });
 
-          it('should not be authorized when request origin does not matches origin of access token', async () => {
+          it('if request origin does not match origin of access token then /search/text should respond with 401 status code', async () => {
             return request(app.getHttpServer())
               .get('/v1/search/test')
               .set('Cookie', [
@@ -274,7 +274,7 @@ export const authLoginTestSuite = () => {
               .expect(401);
           });
 
-          it('should not login again with the same nonce', async () => {
+          it('POST on /login/siwe/verify with the same nonce should respond with 401 status code', async () => {
             await request(app.getHttpServer())
               .post('/v1/login/siwe/verify')
               .send({
@@ -311,7 +311,7 @@ export const authLoginTestSuite = () => {
             );
           });
 
-          it('should be authorized when request origin is not specified', async () => {
+          it('if request origin is not specified then /search/text should respond with 200 status code', async () => {
             return request(app.getHttpServer())
               .get('/v1/search/test')
               .set('Cookie', [
@@ -321,7 +321,7 @@ export const authLoginTestSuite = () => {
               .expect(200);
           });
 
-          it('should not be authorized when request origin is specified', async () => {
+          it('if request origin is specified then /search/text should respond with 401 status code', async () => {
             return request(app.getHttpServer())
               .get('/v1/search/test')
               .set('Cookie', [
@@ -343,7 +343,7 @@ export const authLoginTestSuite = () => {
           ({ message, signature } = await signSiweMessage(wallet, nonce));
         });
 
-        it('should not verify unprepared message', async () => {
+        it('if SIWE message is not prepared then /login/siwe/verify should respond with 400 status code', async () => {
           await request(app.getHttpServer())
             .post('/v1/login/siwe/verify')
             .send({
