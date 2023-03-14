@@ -154,7 +154,16 @@ export class LoginController {
       throw new UnauthorizedException('Refresh token was not set');
     }
 
-    this.tokenService.matchOriginAgainstRequest(refreshTokenString, req);
+    if (
+      !this.tokenService.isLoginOriginMatchesRequestOrigin(
+        refreshTokenString,
+        req
+      )
+    ) {
+      throw new UnauthorizedException(
+        `Token origin ${refreshTokenString} does not match request origin ${req.headers['origin']}`
+      );
+    }
 
     const { userDid, tokenId } =
       (await this.tokenService.verifyRefreshToken(refreshTokenString)) || {};
@@ -217,6 +226,15 @@ export class LoginController {
       const tokenData = await this.tokenService.verifyAccessToken(
         accessTokenString
       );
+
+      if (
+        !this.tokenService.isLoginOriginMatchesRequestOrigin(
+          tokenData?.origin,
+          req
+        )
+      ) {
+        throw new Error();
+      }
 
       return {
         user: tokenData?.did || null,
