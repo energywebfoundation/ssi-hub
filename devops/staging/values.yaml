@@ -119,7 +119,7 @@ iam-cache-server-helm:
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
     RESTRICT_CORS_ORIGINS: true
-    ALLOWED_ORIGINS: https://identitycache-gp4btc-staging.energyweb.org,https://switchboard-staging.energyweb.org
+    ALLOWED_ORIGINS: https://identitycache-staging.energyweb.org,https://switchboard-staging.energyweb.org
     SIWE_NONCE_EXPIRES_IN: 1m
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
