@@ -184,7 +184,7 @@ export class EnsService implements OnModuleDestroy {
     // Register event handler for domain definition updates
     this.domainNotifier.on('DomainUpdated', async (node) => {
       const namespace = await this.domainReader.readName(node);
-      this.logger.debug(`### Updating domain for namespace ${namehash}`);
+      this.logger.debug(`### Updating domain for namespace ${namespace}`);
       if (!namespace) {
         this.logger.debug(`### Updating domain - no namespace found`);
         return;
