@@ -375,7 +375,7 @@ export class RoleService {
       );
       return;
     }
-
+    this.logger.debug(`### Updating DTO for namespace ${namespace}`);
     this.update(dto);
   }
 }
