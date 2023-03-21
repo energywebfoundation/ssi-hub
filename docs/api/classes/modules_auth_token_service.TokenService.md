@@ -14,7 +14,7 @@
 - [generateAccessToken](modules_auth_token_service.TokenService.md#generateaccesstoken)
 - [generateRefreshToken](modules_auth_token_service.TokenService.md#generaterefreshtoken)
 - [invalidateRefreshToken](modules_auth_token_service.TokenService.md#invalidaterefreshtoken)
-- [matchOriginAgainstRequest](modules_auth_token_service.TokenService.md#matchoriginagainstrequest)
+- [isLoginOriginMatchesRequestOrigin](modules_auth_token_service.TokenService.md#isloginoriginmatchesrequestorigin)
 - [verifyAccessToken](modules_auth_token_service.TokenService.md#verifyaccesstoken)
 - [verifyRefreshToken](modules_auth_token_service.TokenService.md#verifyrefreshtoken)
 
@@ -114,9 +114,9 @@ ___
 
 ___
 
-### matchOriginAgainstRequest
+### isLoginOriginMatchesRequestOrigin
 
-▸ **matchOriginAgainstRequest**(`origin`, `req`): `void`
+▸ **isLoginOriginMatchesRequestOrigin**(`origin`, `req`): `boolean`
 
 Checks that `origin` of token corresponds to origin of request
 
@@ -129,7 +129,7 @@ Checks that `origin` of token corresponds to origin of request
 
 #### Returns
 
-`void`
+`boolean`
 
 ___
 
