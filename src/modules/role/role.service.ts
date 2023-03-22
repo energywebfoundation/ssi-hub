@@ -337,8 +337,8 @@ export class RoleService {
   }) {
     let dto: RoleDTO;
     this.logger.debug(
-      `Syncing role ${namespace} with credential data: ${JSON.stringify(
-        metadata
+      `Syncing role ${namespace} with issuer fields: ${JSON.stringify(
+        metadata.issuerFields
       )}`
     );
 
