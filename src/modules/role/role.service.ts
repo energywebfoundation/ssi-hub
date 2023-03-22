@@ -318,7 +318,6 @@ export class RoleService {
     }
     return null;
   }
-
   public async handleRoleSyncWithEns({
     owner,
     namespace,
@@ -337,6 +336,11 @@ export class RoleService {
     namehash: string;
   }) {
     let dto: RoleDTO;
+    this.logger.debug(
+      `Syncing role ${namespace} with issuer fields: ${JSON.stringify(
+        metadata.issuerFields
+      )}`
+    );
 
     try {
       dto = await RoleDTO.create({
@@ -360,7 +364,9 @@ export class RoleService {
       );
       return;
     }
-    this.logger.debug(`### Updating DTO for namespace ${namespace}`);
+    this.logger.debug(
+      `Updating DTO for namespace ${namespace}, DTO: ${JSON.stringify(dto)}`
+    );
     this.update(dto);
   }
 }
