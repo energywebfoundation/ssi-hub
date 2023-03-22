@@ -365,7 +365,7 @@ export class RoleService {
       return;
     }
     this.logger.debug(
-      `### Updating DTO for namespace ${namespace}, DTO: ${JSON.stringify(dto)}`
+      `Updating DTO for namespace ${namespace}, DTO: ${JSON.stringify(dto)}`
     );
     this.update(dto);
   }
