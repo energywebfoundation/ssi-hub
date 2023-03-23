@@ -179,11 +179,13 @@ export class EnsService implements OnModuleDestroy {
     this.ensRegistry.on('Transfer', async (node, owner) => {
       this.eventHandler({ hash: node, owner });
     });
-
     // Register event handler for domain definition updates
     this.domainNotifier.on('DomainUpdated', async (node) => {
       const namespace = await this.domainReader.readName(node);
-      if (!namespace) return;
+      if (!namespace) {
+        this.logger.debug(`### Updating domain - no namespace found`);
+        return;
+      }
       await this.eventHandler({ hash: node });
     });
   }
