@@ -118,7 +118,7 @@
     "rxjs": "^7.3.0",
     "siwe": "^1.1.6",
     "swagger-ui-express": "^4.1.4",
-    "typechain": "^7.0.1",
+    "typechain": "^8.1.1",
     "typeorm": "^0.3.6",
     "useragent": "^2.3.0",
     "uuid": "^9.0.0",
