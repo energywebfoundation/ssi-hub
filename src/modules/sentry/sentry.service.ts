@@ -14,7 +14,6 @@ import { Application } from 'express';
 import * as Sentry from '@sentry/node';
 import { RewriteFrames } from '@sentry/integrations';
 import * as SentryTracing from '@sentry/tracing';
-import { Client, Options } from '@sentry/types';
 
 @Injectable()
 export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
@@ -121,11 +120,7 @@ export class SentryService implements OnModuleDestroy, OnApplicationShutdown {
               return;
             }
 
-            (
-              Sentry.getCurrentHub().getClient<
-                Client<Options>
-              >() as Client<Options>
-            ).captureException(err);
+            Sentry.getCurrentHub().getClient().captureException(err);
           },
         }),
         new Sentry.Integrations.OnUnhandledRejection({ mode: 'warn' }),
