@@ -98,7 +98,7 @@
     "didStoreInfura": "npm:@ew-did-registry/did-ipfs-store@0.7.1-alpha.795.0",
     "dotenv": "^16.0.3",
     "ethers": "5.7.2",
-    "graphql": "^15.5.1",
+    "graphql": "^16.6.0",
     "graphql-fields": "^2.0.3",
     "graphql-tools": "^8.0.0",
     "helmet": "^6.0.1",
