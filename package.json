@@ -96,7 +96,7 @@
     "didkit-wasm-node": "^0.1.6",
     "didStoreCluster": "npm:@ew-did-registry/did-ipfs-store@0.8.1-alpha.983.0",
     "didStoreInfura": "npm:@ew-did-registry/did-ipfs-store@0.7.1-alpha.795.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^16.0.3",
     "ethers": "5.7.2",
     "graphql": "^15.5.1",
     "graphql-fields": "^2.0.3",
