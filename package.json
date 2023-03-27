@@ -101,7 +101,6 @@
     "graphql": "^15.5.1",
     "graphql-fields": "^2.0.3",
     "graphql-tools": "^8.0.0",
-    "grpc": "^1.24.6",
     "helmet": "^4.4.1",
     "lodash.chunk": "^4.2.0",
     "ms": "^2.1.3",
