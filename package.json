@@ -121,7 +121,7 @@
     "typechain": "^7.0.1",
     "typeorm": "^0.3.6",
     "useragent": "^2.3.0",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "wait-for-expect": "^3.0.2",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"
