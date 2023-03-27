@@ -32,13 +32,13 @@
 
 ### apps
 
-▸ **apps**(`__namedParameters`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
+▸ **apps**(`«destructured»`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`Organization`](modules_organization_organization_entity.Organization.md) |
+| `«destructured»` | [`Organization`](modules_organization_organization_entity.Organization.md) |
 
 #### Returns
 
@@ -80,13 +80,13 @@ ___
 
 ### roles
 
-▸ **roles**(`__namedParameters`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+▸ **roles**(`«destructured»`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`Organization`](modules_organization_organization_entity.Organization.md) |
+| `«destructured»` | [`Organization`](modules_organization_organization_entity.Organization.md) |
 
 #### Returns
 
@@ -96,13 +96,13 @@ ___
 
 ### subOrgs
 
-▸ **subOrgs**(`__namedParameters`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
+▸ **subOrgs**(`«destructured»`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`Organization`](modules_organization_organization_entity.Organization.md) |
+| `«destructured»` | [`Organization`](modules_organization_organization_entity.Organization.md) |
 
 #### Returns
 

@@ -18,7 +18,7 @@
 
 ### constructor
 
-• **new LoginGuard**(...`args`)
+• **new LoginGuard**(`...args`)
 
 #### Parameters
 

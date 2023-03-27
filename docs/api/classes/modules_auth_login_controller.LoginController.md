@@ -68,7 +68,7 @@ ___
 
 ### loginSiwe
 
-▸ **loginSiwe**(`req`, `res`, `__namedParameters`): `Promise`<`void`\>
+▸ **loginSiwe**(`req`, `res`, `«destructured»`): `Promise`<`void`\>
 
 #### Parameters
 
@@ -76,7 +76,7 @@ ___
 | :------ | :------ |
 | `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
 | `res` | `Response`<`any`, `Record`<`string`, `any`\>\> |
-| `__namedParameters` | [`SiweReqPayloadDTO`](modules_auth_siwe_dto.SiweReqPayloadDTO.md) |
+| `«destructured»` | [`SiweReqPayloadDTO`](modules_auth_siwe_dto.SiweReqPayloadDTO.md) |
 
 #### Returns
 

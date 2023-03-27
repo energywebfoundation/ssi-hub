@@ -10,9 +10,9 @@
 
 ### UrlDecoded
 
-▸ **UrlDecoded**(...`dataOrPipes`): `ParameterDecorator`
+▸ **UrlDecoded**(`...dataOrPipes`): `ParameterDecorator`
 
-Defines HTTP route param decorator
+Decodes URL encoded "originalUrl"
 
 #### Parameters
 

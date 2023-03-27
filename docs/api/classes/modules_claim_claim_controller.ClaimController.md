@@ -188,13 +188,13 @@ ___
 
 ### getBySubjects
 
-▸ **getBySubjects**(`__namedParameters`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getBySubjects**(`«destructured»`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
+| `«destructured»` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
@@ -241,13 +241,13 @@ ___
 
 ### getIssuedClaimsBySubjects
 
-▸ **getIssuedClaimsBySubjects**(`__namedParameters`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
+▸ **getIssuedClaimsBySubjects**(`«destructured»`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
+| `«destructured»` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
 
 #### Returns
 

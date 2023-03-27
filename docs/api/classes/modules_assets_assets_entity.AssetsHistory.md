@@ -111,7 +111,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `data` | `Omit`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md), ``"id"``\> & { `asset`: [`Asset`](modules_assets_assets_entity.Asset.md)  } & `Omit`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md), ``"id"``\> & { `assetId`: `string`  } |
+| `data` | `Object` |
 
 #### Returns
 
