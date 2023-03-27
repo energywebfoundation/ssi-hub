@@ -108,7 +108,7 @@ describe('ClaimRequestDTO', () => {
           children: [],
           constraints: {
             isEnum:
-              'each value in registrationTypes must be a valid enum value',
+              'each value in registrationTypes must be one of the following values: RegistrationTypes::OffChain, RegistrationTypes::OnChain',
           },
           property: 'registrationTypes',
           target: { ...claimRequest },

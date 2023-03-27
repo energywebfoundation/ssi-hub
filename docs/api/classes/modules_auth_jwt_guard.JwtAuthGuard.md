@@ -18,7 +18,7 @@
 
 ### constructor
 
-• **new JwtAuthGuard**(...`args`)
+• **new JwtAuthGuard**(`...args`)
 
 #### Parameters
 

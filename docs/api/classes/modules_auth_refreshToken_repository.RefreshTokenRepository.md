@@ -31,14 +31,14 @@
 
 ### createRefreshToken
 
-▸ **createRefreshToken**(`__namedParameters`): `Promise`<`Record`<`string`, `any`\>\>
+▸ **createRefreshToken**(`«destructured»`): `Promise`<`Record`<`string`, `any`\>\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.userDid` | `string` |
+| `«destructured»` | `Object` |
+| › `userDid` | `string` |
 
 #### Returns
 

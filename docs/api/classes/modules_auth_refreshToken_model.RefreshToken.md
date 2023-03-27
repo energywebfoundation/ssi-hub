@@ -18,14 +18,14 @@
 
 ### constructor
 
-• **new RefreshToken**(`__namedParameters`)
+• **new RefreshToken**(`«destructured»`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.userDid` | `string` |
+| `«destructured»` | `Object` |
+| › `userDid` | `string` |
 
 ## Properties
 
