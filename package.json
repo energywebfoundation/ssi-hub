@@ -4,6 +4,7 @@
   "description": "",
   "author": "",
   "engines": {
+    "node": ">=16.19",
     "npm": "8"
   },
   "private": true,
