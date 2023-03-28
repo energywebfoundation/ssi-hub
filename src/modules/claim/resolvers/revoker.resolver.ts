@@ -13,8 +13,11 @@ export class RoleRevokerResolver implements RevokerResolver {
 
     const definition = role.definition;
 
-    return 'revoker' in definition
-      ? definition.revoker
-      : { ...definition.issuer, revokerType: definition.issuer.issuerType };
+    return (
+      definition.revoker || {
+        ...definition.issuer,
+        revokerType: definition.issuer.issuerType,
+      }
+    );
   }
 }
