@@ -3,7 +3,6 @@ loadEnvVars(); // this is required by the Auth decorator depending on process.en
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +11,7 @@ import helmet from 'helmet';
 import { SentryService } from './modules/sentry/sentry.service';
 import * as SentryNode from '@sentry/node';
 import { corsConfig } from './common/cors.config';
+import { setupSwagger } from './setup-swagger.function';
 
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
@@ -57,19 +57,7 @@ async function bootstrap() {
   // add compression for the API responses
   app.use(compression());
 
-  const options = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('Cache Server API documentation')
-    .setVersion('1.0');
-
-  if (process.env.ENABLE_AUTH === 'true') {
-    options.addBearerAuth();
-  }
-
-  const builtOptions = options.build();
-
-  const document = SwaggerModule.createDocument(app, builtOptions);
-  SwaggerModule.setup('api', app, document);
+  setupSwagger(app, configService);
 
   corsConfig(app);
 

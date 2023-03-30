@@ -154,3 +154,4 @@
 - [modules/status-list/status-list.module](modules/modules_status_list_status_list_module.md)
 - [modules/status-list/status-list.service](modules/modules_status_list_status_list_service.md)
 - [scripts/migrate](modules/scripts_migrate.md)
+- [setup-swagger.function](modules/setup_swagger_function.md)
