@@ -145,7 +145,7 @@ jobs:
           file: ./docker/prod/Dockerfile
           build-args: |
             SENTRY_RELEASE="${{ needs.configure.outputs.IMAGE_TAG }}"
-            GIT_SHA="${{ github.sha }}}"
+            GIT_SHA=${{ github.sha }}}
 
       # Sentry upload is done via a docker build in order to have access to the app files in the image
       - name: create Sentry release
