@@ -31,6 +31,7 @@ RUN chown -R node:node /app/logs
 
 ARG GIT_SHA
 RUN echo "{\"timestamp\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\", \"gitSha\": \"$GIT_SHA\"}" > /app/build.json
+COPY package.json /app
 
 USER node
 
