@@ -6,7 +6,7 @@ export function corsConfig(app: INestApplication) {
   const configService = app.get(ConfigService);
   const allowedOrigins = configService.get('ALLOWED_ORIGINS').split(',');
   for (const origin of allowedOrigins) {
-    if (!isURL(origin)) {
+    if (!isURL(origin, { require_tld: false })) {
       throw new Error(`Origin ${origin} is not a valid URL`);
     }
   }
