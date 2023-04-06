@@ -84,9 +84,6 @@ export class DIDService implements OnModuleInit {
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
-
-    // Added as urgent fix for AEMO. to be removed/improved
-    this.syncDocuments();
   }
 
   async onModuleInit() {
