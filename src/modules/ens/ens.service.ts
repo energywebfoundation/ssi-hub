@@ -124,7 +124,6 @@ export class EnsService implements OnModuleDestroy {
       );
       this.schedulerRegistry.addInterval('ENS Sync', interval);
       this.InitEventListeners();
-      this.syncENS();
     }
   }
 
