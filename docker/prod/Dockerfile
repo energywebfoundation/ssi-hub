@@ -14,7 +14,6 @@ RUN chmod +x ./sentry-upload.sh
 
 RUN apk add --no-cache curl git py-pip make g++ openssl bash && \
   curl -sL https://sentry.io/get-cli/ | bash && \
-  npm config set unsafe-perm true && \
   npm ci && \
   npm run build && \
   SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_COMMIT=$SENTRY_COMMIT ./sentry-upload.sh && \
