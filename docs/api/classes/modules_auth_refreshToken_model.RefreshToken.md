@@ -11,6 +11,7 @@
 ### Properties
 
 - [isRevoked](modules_auth_refreshToken_model.RefreshToken.md#isrevoked)
+- [origin](modules_auth_refreshToken_model.RefreshToken.md#origin)
 - [tokenId](modules_auth_refreshToken_model.RefreshToken.md#tokenid)
 - [userDid](modules_auth_refreshToken_model.RefreshToken.md#userdid)
 
@@ -25,6 +26,7 @@
 | Name | Type |
 | :------ | :------ |
 | `«destructured»` | `Object` |
+| › `origin` | `string` |
 | › `userDid` | `string` |
 
 ## Properties
@@ -32,6 +34,12 @@
 ### isRevoked
 
 • **isRevoked**: `boolean` = `false`
+
+___
+
+### origin
+
+• **origin**: `string`
 
 ___
 

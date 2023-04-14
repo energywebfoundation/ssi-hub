@@ -17,10 +17,13 @@ export const authRefreshTokenTestSuite = () => {
       const tokenService = app.get(TokenService);
       return tokenService.generateRefreshToken({
         userDid: `did:ethr:volta:${userAddress}`,
+        origin: 'http://localhost:3000',
       });
     };
 
-    const manualBeforeEach = async (refreshTokenResponse: request.Response) => {
+    const expectTokensAreRefreshed = async (
+      refreshTokenResponse: request.Response
+    ) => {
       expect(refreshTokenResponse.headers['set-cookie']).toHaveLength(2);
       expect(refreshTokenResponse.headers['set-cookie']).toEqual(
         expect.arrayContaining([
@@ -50,7 +53,7 @@ export const authRefreshTokenTestSuite = () => {
       const refreshTokenResponse = await request(app.getHttpServer())
         .get(`/v1/refresh_token?refresh_token=${refreshToken}`)
         .expect(200);
-      return manualBeforeEach(refreshTokenResponse);
+      return expectTokensAreRefreshed(refreshTokenResponse);
     });
 
     it(`should refresh token (using cookies)`, async () => {
@@ -59,7 +62,7 @@ export const authRefreshTokenTestSuite = () => {
         .get(`/v1/refresh_token`)
         .set('Cookie', [`refreshToken=${refreshToken}`])
         .expect(200);
-      return manualBeforeEach(refreshTokenResponse);
+      return expectTokensAreRefreshed(refreshTokenResponse);
     });
 
     it('expired refresh token should be deleted', async () => {
@@ -82,6 +85,14 @@ export const authRefreshTokenTestSuite = () => {
       jest.runAllTimers();
       jest.useRealTimers();
       return expect(expiredRefreshToken).resolves.toBeNull;
+    });
+
+    it('should not refresh tokens if refresh token does not match request origin', async () => {
+      const refreshToken = await getRefreshToken();
+      await request(app.getHttpServer())
+        .get(`/v1/refresh_token?refresh_token=${refreshToken}`)
+        .set('Origin', 'http://remotehost')
+        .expect(401);
     });
   });
 };

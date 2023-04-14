@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RefreshToken } from './refreshToken.model';
 import { RedisClientType } from 'redis';
 import { ConfigService } from '@nestjs/config';
-import { classToPlain } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import parseDuration from 'parse-duration';
 
 @Injectable()
@@ -12,8 +12,14 @@ export class RefreshTokenRepository {
     @Inject('REDIS_CLIENT') private client: RedisClientType
   ) {}
 
-  public async createRefreshToken({ userDid }: { userDid: string }) {
-    const refreshToken = classToPlain(new RefreshToken({ userDid }));
+  public async createRefreshToken({
+    userDid,
+    origin,
+  }: {
+    userDid: string;
+    origin: string;
+  }) {
+    const refreshToken = instanceToPlain(new RefreshToken({ userDid, origin }));
     const expire = this.configService.get<string>(
       'JWT_REFRESH_TOKEN_EXPIRES_IN'
     );
