@@ -4,7 +4,9 @@ export class RefreshToken {
   tokenId: string = uuid();
   isRevoked = false;
   userDid: string;
-  constructor({ userDid }: { userDid: string }) {
+  origin: string;
+  constructor({ userDid, origin }: { userDid: string; origin: string }) {
     this.userDid = userDid;
+    this.origin = origin;
   }
 }

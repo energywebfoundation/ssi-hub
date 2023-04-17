@@ -23,9 +23,16 @@ export class TokenService {
     return this.jwtService.signAsync(data);
   }
 
-  async generateRefreshToken({ userDid }: { userDid: string }) {
+  async generateRefreshToken({
+    userDid,
+    origin,
+  }: {
+    userDid: string;
+    origin: string;
+  }) {
     const refreshToken = await this.refreshTokenRepository.createRefreshToken({
       userDid,
+      origin,
     });
 
     return this.jwtService.signAsync(refreshToken, {

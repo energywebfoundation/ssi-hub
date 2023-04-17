@@ -90,6 +90,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `«destructured»` | `Object` |
+| › `origin` | `string` |
 | › `userDid` | `string` |
 
 #### Returns

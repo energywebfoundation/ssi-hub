@@ -67,6 +67,7 @@ export class LoginController {
       this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
       this.tokenService.generateRefreshToken({
         userDid: did,
+        origin,
       }),
     ]);
 
@@ -154,19 +155,19 @@ export class LoginController {
       throw new UnauthorizedException('Refresh token was not set');
     }
 
+    const {
+      userDid,
+      tokenId,
+      origin: tokenOrigin,
+    } = (await this.tokenService.verifyRefreshToken(refreshTokenString)) || {};
+
     if (
-      !this.tokenService.isLoginOriginMatchesRequestOrigin(
-        refreshTokenString,
-        req
-      )
+      !this.tokenService.isLoginOriginMatchesRequestOrigin(tokenOrigin, req)
     ) {
       throw new UnauthorizedException(
         `Token origin ${refreshTokenString} does not match request origin ${req.headers['origin']}`
       );
     }
-
-    const { userDid, tokenId } =
-      (await this.tokenService.verifyRefreshToken(refreshTokenString)) || {};
 
     const verifiedRoles = await this.roleService.verifyUserRoles(userDid);
 
@@ -182,6 +183,7 @@ export class LoginController {
       }),
       this.tokenService.generateRefreshToken({
         userDid,
+        origin,
       }),
       this.tokenService.invalidateRefreshToken(tokenId),
     ]);
