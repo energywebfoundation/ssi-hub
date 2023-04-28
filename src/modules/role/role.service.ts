@@ -139,8 +139,14 @@ export class RoleService {
     if (!role) return this.create(data);
 
     if (data.appNamespace) {
+      this.logger.debug(
+        `Updating role ${data.name} defined under ${data.appNamespace} application`
+      );
       const app = await this.appService.getByNamespace(data.appNamespace);
       if (!app) {
+        this.logger.warn(
+          `Can not update role ${data.name}: parent application ${data.appNamespace} is not cached`
+        );
         return;
       }
       const updatedRole = Role.create({
@@ -162,6 +168,9 @@ export class RoleService {
       });
       return this.roleRepository.save(updatedRole);
     }
+    this.logger.warn(
+      `Can not update role ${data.name}: parent domain is not specified`
+    );
   }
 
   /**
