@@ -325,12 +325,12 @@ export class EnsService implements OnModuleDestroy {
       const chunks = chunk(namespaces, 10);
 
       for (const part of chunks) {
-        await Promise.allSettled(
-          part.map((item: string) => {
-            const hash = namehash(item);
-            return this.eventHandler({ hash });
-          })
-        );
+        this.logger.info('ENS chunk' + part);
+        for (const item of part) {
+          this.logger.info('ENS chunk item' + item);
+          const hash = namehash(item);
+          await this.eventHandler({ hash });
+        }
       }
     } catch (err) {
       this.logger.error(err);

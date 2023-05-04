@@ -221,6 +221,6 @@ export class OrganizationService {
       return;
     }
 
-    this.update(dto);
+    await this.update(dto);
   }
 }
