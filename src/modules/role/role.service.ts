@@ -361,6 +361,6 @@ export class RoleService {
       return;
     }
 
-    this.update(dto);
+    await this.update(dto);
   }
 }
