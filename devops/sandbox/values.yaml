@@ -100,6 +100,7 @@ iam-cache-server-helm:
     CHAIN_REQUEST_ATTEMPTS: 5
     TYPEORM_LOGGING: error,warn
     TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics

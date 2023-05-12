@@ -126,6 +126,7 @@ iam-cache-server-helm:
     STATUS_LIST_DOMAIN: https://identitycache-staging.energyweb.org/v1
     TYPEORM_LOGGING: error,warn
     TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics
