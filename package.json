@@ -51,6 +51,7 @@
     "release": "standard-version"
   },
   "dependencies": {
+    "@cjs-exporter/p-map": "5.5.0",
     "@energyweb/credential-governance": "^2.2.1-alpha.315.0",
     "@energyweb/vc-verification": "^2.2.1-alpha.315.0",
     "@ensdomains/ens": "^0.4.5",
@@ -129,7 +130,6 @@
     "winston-daily-rotate-file": "^4.5.0"
   },
   "devDependencies": {
-    "@cjs-exporter/p-map": "5.5.0",
     "@commitlint/cli": "^13.2.0",
     "@commitlint/config-conventional": "^13.2.0",
     "@energyweb/eslint-config": "^0.1.0",
