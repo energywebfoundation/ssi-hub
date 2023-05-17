@@ -7,7 +7,6 @@ import { RoleController } from './role.controller';
 import { Role } from './role.entity';
 import { RoleResolver } from './role.resolver';
 import { RoleService } from './role.service';
-import { RoleSubscriber } from './role.subscriber';
 
 @Module({
   imports: [
@@ -17,7 +16,7 @@ import { RoleSubscriber } from './role.subscriber';
     OrganizationModule,
   ],
   controllers: [RoleController],
-  providers: [RoleService, RoleResolver, RoleSubscriber],
+  providers: [RoleService, RoleResolver],
   exports: [RoleService, TypeOrmModule, ApplicationModule, OrganizationModule],
 })
 export class RoleModule {}
