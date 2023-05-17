@@ -124,6 +124,8 @@ iam-cache-server-helm:
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache-staging.energyweb.org/v1
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
 
   opsValues:
     DB_NAME: ics
