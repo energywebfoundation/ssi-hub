@@ -107,7 +107,7 @@ iam-cache-server-helm:
     DID_SYNC_ENABLED: true
     DID_SYNC_MODE_FULL: true
     ENS_SYNC_INTERVAL_IN_HOURS: 11
-    ENS_SYNC_ENABLED: true
+    ENS_SYNC_ENABLED: false
     ENABLE_AUTH: true
     JWT_PRIVATE_KEY: /app/private.pem
     JWT_PUBLIC_KEY: /app/public.pem
