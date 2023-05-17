@@ -98,6 +98,8 @@ iam-cache-server-helm:
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache-sandbox.energyweb.org/v1
     CHAIN_REQUEST_ATTEMPTS: 5
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
 
   opsValues:
     DB_NAME: ics

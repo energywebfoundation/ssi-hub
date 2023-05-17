@@ -58,6 +58,12 @@ export const envVarsValidationSchema = Joi.object({
   DB_USERNAME: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
 
+  TYPEORM_LOGGING: Joi.optional().default('error,warn'),
+  TYPEORM_LOGGER: Joi.string()
+    .valid('file', 'debug', 'advanced-console', 'simple-console', 'debug')
+    .optional()
+    .default('file'),
+
   REDIS_PASSWORD: Joi.string().optional(),
   REDIS_PORT: Joi.number().port().required(),
   REDIS_HOST: Joi.string().hostname().required(),
