@@ -48,7 +48,8 @@
     "migration:create": "docker-compose run --rm app ./node_modules/.bin/typeorm migration:create -n",
     "migration:test": "NODE_ENV=test ts-node ./node_modules/typeorm/cli.js migration:run -d src/db/cli.ts",
     "typeorm:cli": "ts-node ./node_modules/typeorm/cli.js",
-    "release": "standard-version"
+    "release": "standard-version",
+    "purge:extraneous-claims": "node dist/scripts/purge-extraneous-claims.js"
   },
   "dependencies": {
     "@energyweb/credential-governance": "^2.2.1-alpha.316.0",
