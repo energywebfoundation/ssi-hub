@@ -57,6 +57,7 @@ env:
   ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
   STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
   NATS_ENVIRONMENT_NAME: dev
+  DISABLE_GET_DIDS_BY_ROLE: true
 
 jobs:
   cancel-previous:

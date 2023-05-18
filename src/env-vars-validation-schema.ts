@@ -125,4 +125,6 @@ export const envVarsValidationSchema = Joi.object({
   SENTRY_RELEASE: Joi.string().allow(''),
 
   STATUS_LIST_DOMAIN: Joi.string().uri().required(),
+
+  DISABLE_GET_DIDS_BY_ROLE: Joi.bool().default(false),
 });

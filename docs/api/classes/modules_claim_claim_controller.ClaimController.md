@@ -32,7 +32,7 @@
 
 ### constructor
 
-• **new ClaimController**(`claimService`, `claimIssuanceService`, `didService`, `assetsService`, `logger`, `nats`)
+• **new ClaimController**(`claimService`, `claimIssuanceService`, `didService`, `assetsService`, `logger`, `nats`, `configService`)
 
 #### Parameters
 
@@ -44,6 +44,7 @@
 | `assetsService` | [`AssetsService`](modules_assets_assets_service.AssetsService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `nats` | [`NatsService`](modules_nats_nats_service.NatsService.md) |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 
 ## Methods
 
