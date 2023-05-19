@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.12.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.11.1...v2.12.0) (2023-05-19)
+
+
+### Features
+
+* add script to clear assets data db ([e3867d9](https://github.com/energywebfoundation/ssi-hub/commit/e3867d9a528e402b3b6d57796e8824bfe20b7357))
+* adding error log messages ([#552](https://github.com/energywebfoundation/ssi-hub/issues/552)) ([9e653ee](https://github.com/energywebfoundation/ssi-hub/commit/9e653eeb14f1b0ce8d63a1c50a90eea548294ca7))
+* authenticate with siwe ([1da80b5](https://github.com/energywebfoundation/ssi-hub/commit/1da80b511eebecba7f5f5476feef68c00d54b43f))
+* check allowed origins ([6f2adfe](https://github.com/energywebfoundation/ssi-hub/commit/6f2adfee1d3630288e2a2374cd8a9f476a27be26))
+* configuration validation ([#536](https://github.com/energywebfoundation/ssi-hub/issues/536)) ([e8526f0](https://github.com/energywebfoundation/ssi-hub/commit/e8526f0165b20c4a12fcba21ddfc20c5c766ac07))
+* **did:** pin cached claims ([37ce4d1](https://github.com/energywebfoundation/ssi-hub/commit/37ce4d1c0f3019ba7ad8ba28b0d54ab2f141b780))
+* git sha in dockerimage ([#622](https://github.com/energywebfoundation/ssi-hub/issues/622)) ([7f6eba3](https://github.com/energywebfoundation/ssi-hub/commit/7f6eba3e9f0b1c1ae2b0229f7815ab1c3d1ca43d))
+* option to disable block number authentication ([4e18309](https://github.com/energywebfoundation/ssi-hub/commit/4e1830979bfecf5101af73f4a5ba8a09742003f4))
+* removing hardcoded keys pair from the docker image ([#530](https://github.com/energywebfoundation/ssi-hub/issues/530)) ([9b92160](https://github.com/energywebfoundation/ssi-hub/commit/9b92160b86b4083ded27e16c04402749c244ba6c))
+* **role.dto:** add optional schema prop ([#554](https://github.com/energywebfoundation/ssi-hub/issues/554)) ([596c3bd](https://github.com/energywebfoundation/ssi-hub/commit/596c3bd0d1338911b4935b69e5a2ac6d23f4eec9))
+* set siwe uri for ssi-hub login strategy ([7e01cd0](https://github.com/energywebfoundation/ssi-hub/commit/7e01cd03dd96ae1ea84cc89e7f50b39dea9c6d06))
+* switch ingress class ([ed147da](https://github.com/energywebfoundation/ssi-hub/commit/ed147da0609f200286c83b7dec249579918252b0))
+* validate allowed origings ([494672d](https://github.com/energywebfoundation/ssi-hub/commit/494672dea77a4472a3eede61b6adec3a5f4f892b))
+
+
+### Bug Fixes
+
+* authenticate only if nonce is true ([afee347](https://github.com/energywebfoundation/ssi-hub/commit/afee347c973946ae2cb657a4d41f237344ea33a0))
+* **CD:** fixing non-parseable `build.json` file ([#623](https://github.com/energywebfoundation/ssi-hub/issues/623)) ([340f022](https://github.com/energywebfoundation/ssi-hub/commit/340f022c44b6178b547fb650b545cd378e1818d5))
+* **CD:** fixing non-parseable `build.json` file ([#624](https://github.com/energywebfoundation/ssi-hub/issues/624)) ([c2b949e](https://github.com/energywebfoundation/ssi-hub/commit/c2b949ee46532ea59665d694f134df23b1721051))
+* check refresh token origin ([60064d3](https://github.com/energywebfoundation/ssi-hub/commit/60064d3268d2026d5da821f1a99108d2bac99ad8))
+* check refresh token origin ([1c503c9](https://github.com/energywebfoundation/ssi-hub/commit/1c503c941f6d2dad4a0659a9b1064844ea404cfa))
+* construct siwe uri from ssi-hub url ([5431fd8](https://github.com/energywebfoundation/ssi-hub/commit/5431fd8318388b7c029000175fd13d580b904fd7))
+* do not replace siwe nonce errors ([dab4179](https://github.com/energywebfoundation/ssi-hub/commit/dab4179e6c8de69063ead075e70685550b8c33bd))
+* enable proxy for TLS certs ([b5559d7](https://github.com/energywebfoundation/ssi-hub/commit/b5559d7de871bb9cbdaf0304f66a4f9c96b554b4))
+* fetch cookies options without useragent ([48d69fc](https://github.com/energywebfoundation/ssi-hub/commit/48d69fc4cefefdebb47c899f1ebd9132ab8c577b))
+* fixing /auth/status endpoint swagger definition not having authorisation available ([#541](https://github.com/energywebfoundation/ssi-hub/issues/541)) ([c32e794](https://github.com/energywebfoundation/ssi-hub/commit/c32e7945129dcb18e9e0b166dd3ea3ff5be4314c))
+* fixing docker image failing with `Error: Cannot find module 'jsonwebtoken'` ([#620](https://github.com/energywebfoundation/ssi-hub/issues/620)) ([29942bf](https://github.com/energywebfoundation/ssi-hub/commit/29942bf8d0f3db126cf59490af61c2cf87010823))
+* fixing incorrect handling of env vars  ([#549](https://github.com/energywebfoundation/ssi-hub/issues/549)) ([ded5e0e](https://github.com/energywebfoundation/ssi-hub/commit/ded5e0ea19e8bed04223e757fca52771b0df5ec2))
+* fixing lockfile issue ([#594](https://github.com/energywebfoundation/ssi-hub/issues/594)) ([18152d3](https://github.com/energywebfoundation/ssi-hub/commit/18152d3a5cea853edb5b5405dcb51687342e4d7b))
+* ignore builds ([5195ff9](https://github.com/energywebfoundation/ssi-hub/commit/5195ff9223498bdc636b487760d1460175f5948d))
+* ignore paths ([30767ec](https://github.com/energywebfoundation/ssi-hub/commit/30767ec928a5c5a5284e8d1266189654bbc0b862))
+* ignore paths ([f3b4a2c](https://github.com/energywebfoundation/ssi-hub/commit/f3b4a2c9fe829e884a60e8e27717ee7106d53964))
+* ingress ([9ed57eb](https://github.com/energywebfoundation/ssi-hub/commit/9ed57eb6ca3344260c81039683c43fdab2e88671))
+* **ipfs:** configure ipfs ([ebc77dc](https://github.com/energywebfoundation/ssi-hub/commit/ebc77dc26ec16215ff5571bcb99ab2bd8051323d))
+* remove chrome specific cookies update ([dd82e8f](https://github.com/energywebfoundation/ssi-hub/commit/dd82e8f84b4880560da2a3b267db79e0ad2c2745))
+* remove unreachable login ([813ddbd](https://github.com/energywebfoundation/ssi-hub/commit/813ddbd6557f9ad32b8e43e645862360603c293f))
+* return from middleware after 404 in auth ([64328ab](https://github.com/energywebfoundation/ssi-hub/commit/64328ab178f0470eea2602c7a919c83b7ad798df))
+* return from middlware after return 404 ([d67d7a7](https://github.com/energywebfoundation/ssi-hub/commit/d67d7a7db74a767aefc3bee155ebc31811e24970))
+* **role.dto:** schema is object, not date ([#559](https://github.com/energywebfoundation/ssi-hub/issues/559)) ([50724d4](https://github.com/energywebfoundation/ssi-hub/commit/50724d40e38a99a5d590977d7cc179dab97b6f08))
+* stringified array message code ([fd760aa](https://github.com/energywebfoundation/ssi-hub/commit/fd760aa711b32ce9b24b8b5175447985e197c3c8))
+* switch to edge certs ([de2dfa3](https://github.com/energywebfoundation/ssi-hub/commit/de2dfa3e1a29473fef230d9a4972f41b19f6f45d))
+* type of siwe message dto ([b024b4f](https://github.com/energywebfoundation/ssi-hub/commit/b024b4f196bbbaff3b22b017d032576b59d3589f))
+* update script ([5855002](https://github.com/energywebfoundation/ssi-hub/commit/5855002501021f4c8d9de7fab0014577460ffccd))
+* use correct variable in log ([#613](https://github.com/energywebfoundation/ssi-hub/issues/613)) ([6ad284a](https://github.com/energywebfoundation/ssi-hub/commit/6ad284ac45f2c8b588bc53fc67827542a73abdea))
+
 ### [2.11.1](https://github.com/energywebfoundation/ssi-hub/compare/v2.11.0...v2.11.1) (2022-11-16)
 
 
