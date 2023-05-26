@@ -12,6 +12,7 @@ import { SentryService } from './modules/sentry/sentry.service';
 import * as SentryNode from '@sentry/node';
 import { corsConfig } from './common/cors.config';
 import { setupSwagger } from './setup-swagger.function';
+import { NotFoundExceptionFilter } from './common/not-found-exception-filter';
 
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
@@ -42,6 +43,7 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new NotFoundExceptionFilter());
 
   // add security middleware
   app.use(
