@@ -12,6 +12,7 @@
 - [common/constants](modules/common_constants.md)
 - [common/cors.config](modules/common_cors_config.md)
 - [common/json.scalar](modules/common_json_scalar.md)
+- [common/not-found-exception-filter](modules/common_not_found_exception_filter.md)
 - [common/provider](modules/common_provider.md)
 - [common/test.utils](modules/common_test_utils.md)
 - [common/url-decode.decorator](modules/common_url_decode_decorator.md)
