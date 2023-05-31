@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.12.1](https://github.com/energywebfoundation/ssi-hub/compare/v2.12.0...v2.12.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* content injection for not found ([a8bd59a](https://github.com/energywebfoundation/ssi-hub/commit/a8bd59abc0f60a23df44db292ceb036696456e1e))
+
 ## [2.12.0](https://github.com/energywebfoundation/ssi-hub/compare/v2.11.1...v2.12.0) (2023-05-19)
 
 
