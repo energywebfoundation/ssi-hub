@@ -2,7 +2,7 @@ iam-cache-server-helm:
   replicaCount: 1
 
   image:
-    repository: "124847487737.dkr.ecr.us-west-2.amazonaws.com/ics-api"
+    repository: "ghcr.io/energywebfoundation/ssi-hub"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -20,7 +20,7 @@ iam-cache-server-helm:
   securityContext: { }
 
   service:
-    type: NodePort
+    type: ClusterIP
     port: 3000
 
   ingress:
@@ -53,6 +53,8 @@ iam-cache-server-helm:
   config:
     secretRefName: ics-secrets
     configRefName: ics-cm
+    jwtKeysSecretName: jwt-keys
+    jwtKeysMountPath: "/keys"
 
   sealedSecret:
     enabled: true
@@ -74,7 +76,7 @@ iam-cache-server-helm:
     DOMAIN_NOTIFIER_ADDRESS: 0xeea658026d6CDede4380D3aD030beAC911758A93
     RESOLVER_V1_ADDRESS: 0xf5EA22c1F799d425356c2aab2004200Ab4490D2b
     RESOLVER_V2_ADDRESS: 0xcf72f16Ab886776232bea2fcf3689761a0b74EfE
-    ASSETS_MANAGER_ADDRESS: 0x84d0c7284A869213CB047595d34d6044d9a7E14A
+    ASSETS_MANAGER_ADDRESS: 0x524563FeA0c9b54B337F0bAc366A9f541d26b3ea
     ASSETS_SYNC_INTERVAL_IN_HOURS: 10
     ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: 21
     ASSETS_SYNC_ENABLED: false
@@ -84,16 +86,21 @@ iam-cache-server-helm:
     ENS_SYNC_INTERVAL_IN_HOURS: 11
     ENS_SYNC_ENABLED: true
     ENABLE_AUTH: true
-    JWT_PRIVATE_KEY: /app/private.pem
-    JWT_PUBLIC_KEY: /app/public.pem
+    JWT_PRIVATE_KEY_PATH: /keys/private.pem
+    JWT_PUBLIC_KEY_PATH: /keys/public.pem
     STRATEGY_CACHE_SERVER: https://identitycache-sandbox.energyweb.org/v1
+    BLOCKNUM_AUTH_ENABLED: false
     STRATEGY_NUM_BLOCKS_BACK: 10
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
+    SIWE_NONCE_EXPIRES_IN: 1m
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache-sandbox.energyweb.org/v1
     CHAIN_REQUEST_ATTEMPTS: 5
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics
@@ -113,12 +120,12 @@ iam-cache-server-helm:
   resources:
     limits:
       cpu: 750m
-      memory: 1Gi
+      memory: 1700Mi
     requests:
       cpu: 500m
       # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
       # We anticipate memory usage to decrease once node v18 is used
-      memory: 900Mi
+      memory: 1500Mi
 
   autoscaling:
     enabled: false

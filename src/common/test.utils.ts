@@ -5,6 +5,7 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { corsConfig } from './cors.config';
 
 export function appConfig(app: INestApplication) {
   app.enableVersioning({
@@ -14,6 +15,8 @@ export function appConfig(app: INestApplication) {
   // add cookie parser to read jwt token cookie
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
+
+  corsConfig(app);
 }
 
 export const MockJWTAuthGuard = {

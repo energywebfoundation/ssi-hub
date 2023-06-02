@@ -2,6 +2,8 @@ import {
   IDIDDocument,
   RegistrySettings,
   PubKeyType,
+  DIDAttribute,
+  IUpdateData,
 } from '@ew-did-registry/did-resolver-interface';
 import { EwSigner, Operator } from '@ew-did-registry/did-ethr-resolver';
 import { Methods, Chain } from '@ew-did-registry/did';
@@ -40,6 +42,7 @@ export const didModuleTestSuite = () => {
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await queryRunner.rollbackTransaction();
     await queryRunner.release();
   });
@@ -62,7 +65,7 @@ export const didModuleTestSuite = () => {
     expectNewDoc(doc);
   });
 
-  it('should update cached document', async () => {
+  it('should update public keys of cached document', async () => {
     const identity = Wallet.createRandom().connect(provider);
     await faucet.sendTransaction({
       to: identity.address,
@@ -92,6 +95,45 @@ export const didModuleTestSuite = () => {
     await incrementalRefreshCachedDocument.mock.results[0].value;
     const doc = await service.getById(did);
     expect(doc.publicKey.length).toBe(1);
+  });
+
+  it('should update service endpoints of cached document', async () => {
+    const identity = Wallet.createRandom().connect(provider);
+    await faucet.sendTransaction({
+      to: identity.address,
+      value: parseEther('1'),
+    });
+    const did = `did:${Methods.Erc1056}:${Chain.VOLTA}:${identity.address}`;
+    let doc = await service.getById(did); // add to cache
+    expect(doc.service.length).toEqual(0);
+
+    const incrementalRefreshCachedDocument = jest.spyOn(
+      service,
+      'incrementalRefreshCachedDocument'
+    );
+    const operator = new Operator(
+      EwSigner.fromEthersSigner(identity, identity.publicKey),
+      registrySettings
+    );
+    const didDocument = new DIDDocumentFull(did, operator);
+    const attribute = DIDAttribute.ServicePoint;
+    const endpoint = 'https://test.algo.com';
+    const serviceId = 'UserClaimURL1';
+    const updateData: IUpdateData = {
+      type: attribute,
+      value: {
+        id: `${did}#service-${serviceId}`,
+        type: 'ClaimStore',
+        serviceEndpoint: endpoint,
+      },
+    };
+    await didDocument.update(attribute, updateData);
+    await waitForExpect(() =>
+      expect(incrementalRefreshCachedDocument).toHaveBeenNthCalledWith(1, did)
+    );
+    await incrementalRefreshCachedDocument.mock.results[0].value;
+    doc = await service.getById(did);
+    expect(doc.service.length).toBe(1);
   });
 
   function expectNewDoc({

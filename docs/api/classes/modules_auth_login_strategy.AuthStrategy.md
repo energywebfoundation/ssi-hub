@@ -18,7 +18,7 @@
 
 ### constructor
 
-• **new AuthStrategy**(`configService`, `ipfsConfig`)
+• **new AuthStrategy**(`configService`, `ipfsConfig`, `issuerResolver`, `revokerResolver`, `credentialResolver`)
 
 #### Parameters
 
@@ -26,6 +26,9 @@
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `ipfsConfig` | `any` |
+| `issuerResolver` | [`RoleIssuerResolver`](modules_claim_resolvers_issuer_resolver.RoleIssuerResolver.md) |
+| `revokerResolver` | [`RoleRevokerResolver`](modules_claim_resolvers_revoker_resolver.RoleRevokerResolver.md) |
+| `credentialResolver` | [`RoleCredentialResolver`](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md) |
 
 #### Overrides
 

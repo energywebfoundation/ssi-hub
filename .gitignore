@@ -12,6 +12,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 *-audit.json
+ormlogs.log
 
 # OS
 .DS_Store
@@ -41,6 +42,5 @@ lerna-debug.log*
 # Using either dev or prod docker-compose file
 docker-compose.yml
 db_dumps
-ormconfig.json
 private.pem
 public.pem

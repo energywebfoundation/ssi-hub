@@ -26,7 +26,7 @@ import {
   DidEventNames,
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
-import { DidStore } from '@ew-did-registry/did-ipfs-store';
+import { DidStore as DidStoreInfura } from 'didStoreInfura';
 import {
   documentFromLogs,
   Resolver,
@@ -59,7 +59,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly didStore: DidStore
+    private readonly didStore: DidStoreInfura
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -74,15 +74,13 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     );
 
     // Using setInterval so that interval can be set dynamically from config
-    const didDocSyncInterval = this.config.get<string>(
+    const didDocSyncInterval = this.config.get<number>(
       'DIDDOC_SYNC_INTERVAL_IN_HOURS'
     );
-    const DID_SYNC_ENABLED =
-      this.config.get<string>('DID_SYNC_ENABLED') !== 'false';
-    if (didDocSyncInterval && DID_SYNC_ENABLED) {
+    if (didDocSyncInterval && this.config.get<boolean>('DID_SYNC_ENABLED')) {
       const interval = setInterval(
         () => this.syncDocuments(),
-        parseInt(didDocSyncInterval) * 3600000
+        didDocSyncInterval * 3600000
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
@@ -430,7 +428,10 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         const cachedService = cachedServices.find(
           (claim) => claim.serviceEndpoint === serviceEndpoint
         );
-        if (cachedService) return cachedService;
+
+        if (cachedService) {
+          return cachedService;
+        }
 
         if (!IPFSService.isCID(serviceEndpoint)) {
           return { serviceEndpoint, ...rest };

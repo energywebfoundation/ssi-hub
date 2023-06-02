@@ -22,7 +22,7 @@
 
 ### constructor
 
-• **new GqlAuthGuard**(...`args`)
+• **new GqlAuthGuard**(`...args`)
 
 #### Parameters
 

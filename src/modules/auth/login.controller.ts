@@ -1,6 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
+  Inject,
+  InternalServerErrorException,
   Post,
   Query,
   Req,
@@ -9,22 +12,30 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import ms from 'ms';
+import { RedisClientType } from 'redis';
+import { SiweMessage, generateNonce } from 'siwe';
+import parseDuration from 'parse-duration';
 import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
-import { CookiesServices } from './cookies.service';
 import { RoleService } from '../role/role.service';
+import { SiweReqPayloadDTO } from './siwe.dto';
 
 @ApiTags('Auth')
 @Controller({ version: '1' })
 export class LoginController {
+  // Using "private readonly" class members so that automated scan can be certain that cookie options are set appropriately
+  private readonly cookieIsHttpOnly = true;
+  private readonly cookieIsSecure = true;
+  private readonly cookieSameSite = 'none';
+
   constructor(
     private tokenService: TokenService,
-    private cookiesServices: CookiesServices,
     private configService: ConfigService,
-    private roleService: RoleService
+    private roleService: RoleService,
+    @Inject('REDIS_CLIENT') private redis: RedisClientType
   ) {}
 
   @UseGuards(LoginGuard)
@@ -52,31 +63,80 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const cookiesOptions =
-      this.cookiesServices.getCookiesOptionBasedOnUserAgent(
-        req.headers['user-agent']
-      );
-
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({ did, verifiedRoles, origin }),
       this.tokenService.generateRefreshToken({
         userDid: did,
+        origin,
       }),
     ]);
 
-    res.cookie(
-      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
-      token,
-      cookiesOptions
-    );
+    res.cookie(this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'), token, {
+      httpOnly: this.cookieIsHttpOnly,
+      sameSite: this.cookieSameSite,
+      secure: this.cookieIsSecure,
+    });
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
-      cookiesOptions
+      {
+        httpOnly: this.cookieIsHttpOnly,
+        sameSite: this.cookieSameSite,
+        secure: this.cookieIsSecure,
+      }
     );
 
     res.send({ token, refreshToken });
+  }
+
+  @Post('login/siwe/initiate')
+  async initiateSiweLogin(@Res() res: Response) {
+    const nonce = generateNonce();
+    const expire = this.configService.get<string>('SIWE_NONCE_EXPIRES_IN');
+    const expireInSec = parseDuration(expire) / 1000;
+    await this.redis.set(nonce, 'true', { EX: expireInSec });
+    res.send({ nonce });
+  }
+
+  @UseGuards(LoginGuard)
+  @ApiBody({ type: SiweReqPayloadDTO })
+  @Post('login/siwe/verify')
+  async loginSiwe(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body()
+    { message }: SiweReqPayloadDTO
+  ) {
+    const { nonce } = new SiweMessage(message);
+
+    if (!(await this.redis.exists(nonce))) {
+      throw new UnauthorizedException(
+        'Authentication with SIWE was not initiated'
+      );
+    }
+
+    let isAuthenticating: string;
+    try {
+      isAuthenticating = await this.redis.getSet(nonce, 'false');
+    } catch (e) {
+      throw new InternalServerErrorException(
+        'SIWE authentication nonce is not string'
+      );
+    }
+
+    // If authentication was initiated and not yet completed
+    if (isAuthenticating === 'true') {
+      return this.login(req, res);
+    } else if (isAuthenticating === 'false') {
+      throw new UnauthorizedException(
+        'Authentication with SIWE completed already'
+      );
+    } else {
+      throw new InternalServerErrorException(
+        'SIWE authentication nonce is not boolean string'
+      );
+    }
   }
 
   @ApiQuery({ name: 'refresh_token', required: false })
@@ -92,22 +152,28 @@ export class LoginController {
       refresh_token;
 
     if (!refreshTokenString) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Refresh token was not set');
     }
 
-    const { userDid, tokenId } =
-      (await this.tokenService.verifyRefreshToken(refreshTokenString)) || {};
+    const {
+      userDid,
+      tokenId,
+      origin: tokenOrigin,
+    } = (await this.tokenService.verifyRefreshToken(refreshTokenString)) || {};
+
+    if (
+      !this.tokenService.isLoginOriginMatchesRequestOrigin(tokenOrigin, req)
+    ) {
+      throw new UnauthorizedException(
+        `Token origin ${refreshTokenString} does not match request origin ${req.headers['origin']}`
+      );
+    }
 
     const verifiedRoles = await this.roleService.verifyUserRoles(userDid);
 
     if (!tokenId || !userDid) {
       throw new UnauthorizedException();
     }
-
-    const cookiesOptions =
-      this.cookiesServices.getCookiesOptionBasedOnUserAgent(
-        req.headers['user-agent']
-      );
 
     const [token, refreshToken] = await Promise.all([
       this.tokenService.generateAccessToken({
@@ -117,21 +183,24 @@ export class LoginController {
       }),
       this.tokenService.generateRefreshToken({
         userDid,
+        origin,
       }),
       this.tokenService.invalidateRefreshToken(tokenId),
     ]);
 
-    res.cookie(
-      this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'),
-      token,
-      cookiesOptions
-    );
+    res.cookie(this.configService.get<string>('JWT_ACCESS_TOKEN_NAME'), token, {
+      httpOnly: this.cookieIsHttpOnly,
+      sameSite: this.cookieSameSite,
+      secure: this.cookieIsSecure,
+    });
 
     res.cookie(
       this.configService.get<string>('JWT_REFRESH_TOKEN_NAME'),
       refreshToken,
       {
-        ...cookiesOptions,
+        httpOnly: this.cookieIsHttpOnly,
+        sameSite: this.cookieSameSite,
+        secure: this.cookieIsSecure,
         expires: new Date(
           Date.now() +
             ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'))
@@ -143,6 +212,7 @@ export class LoginController {
   }
 
   @Get('auth/status')
+  @ApiBearerAuth()
   async status(@Req() req: Request) {
     const accessTokenString =
       req.headers['authorization']?.replace('Bearer ', '') ||
@@ -158,6 +228,15 @@ export class LoginController {
       const tokenData = await this.tokenService.verifyAccessToken(
         accessTokenString
       );
+
+      if (
+        !this.tokenService.isLoginOriginMatchesRequestOrigin(
+          tokenData?.origin,
+          req
+        )
+      ) {
+        throw new Error();
+      }
 
       return {
         user: tokenData?.did || null,

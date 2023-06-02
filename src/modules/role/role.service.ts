@@ -136,11 +136,21 @@ export class RoleService {
         namespace: data.namespace,
       },
     });
-    if (!role) return this.create(data);
+    if (!role) {
+      this.logger.warn(`Updating role ${data.namespace}: role is not cached`);
+      this.logger.warn(`Caching role ${data.namespace}`);
+      return this.create(data);
+    }
 
     if (data.appNamespace) {
+      this.logger.debug(
+        `Updating role ${data.name} defined under ${data.appNamespace} application`
+      );
       const app = await this.appService.getByNamespace(data.appNamespace);
       if (!app) {
+        this.logger.warn(
+          `Can not update role ${data.name}: parent application ${data.appNamespace} is not cached`
+        );
         return;
       }
       const updatedRole = Role.create({
@@ -151,8 +161,14 @@ export class RoleService {
       return this.roleRepository.save(updatedRole);
     }
     if (data.orgNamespace) {
+      this.logger.debug(
+        `Updating role ${data.name} defined under ${data.orgNamespace} organization`
+      );
       const org = await this.orgService.getByNamespace(data.orgNamespace);
       if (!org) {
+        this.logger.warn(
+          `Can not update role ${data.namespace}: parent organization ${data.orgNamespace} is not cached`
+        );
         return;
       }
       const updatedRole = Role.create({
@@ -162,6 +178,9 @@ export class RoleService {
       });
       return this.roleRepository.save(updatedRole);
     }
+    this.logger.warn(
+      `Can not update role ${data.name}: parent domain is not specified`
+    );
   }
 
   /**
@@ -318,7 +337,6 @@ export class RoleService {
     }
     return null;
   }
-
   public async handleRoleSyncWithEns({
     owner,
     namespace,
@@ -337,6 +355,11 @@ export class RoleService {
     namehash: string;
   }) {
     let dto: RoleDTO;
+    this.logger.debug(
+      `Syncing role ${namespace} with issuer fields: ${JSON.stringify(
+        metadata.issuerFields
+      )}`
+    );
 
     try {
       dto = await RoleDTO.create({
@@ -360,7 +383,9 @@ export class RoleService {
       );
       return;
     }
-
+    this.logger.debug(
+      `Updating DTO for namespace ${namespace}, DTO: ${JSON.stringify(dto)}`
+    );
     this.update(dto);
   }
 }

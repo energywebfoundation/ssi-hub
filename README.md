@@ -11,15 +11,26 @@ This repository was formerly refered to as the `iam-cache-server`.
 
 ## Prepare
 
+### Development
+
 ```bash
-# development
 $ git checkout develop
 $ cp .env.dev .env
 $ cp docker-compose.dev.yml docker-compose.yml
 ```
 
+Set the following values in your `.env`:
+
+```text
+ENS_URL=<PUT_YOUR_VALUE_HERE>
+IPFS_CLIENT_HOST=<PUT_YOUR_VALUE_HERE>
+IPFS_CLIENT_PORT=<PUT_YOUR_VALUE_HERE>
+IPFS_CLIENT_PROJECT_ID=<PUT_YOUR_VALUE_HERE>
+IPFS_CLIENT_PROJECT_SECRET=<PUT_YOUR_VALUE_HERE>
+```
+
+### Production
 ```bash
-# production mode
 $ git checkout master
 $ cp .env.dist .env
 $ cp docker-compose.prod.yml docker-compose.yml
@@ -30,18 +41,31 @@ In `production` empty values need to be populated in `.env` file, while `develop
 
 ```bash
 $ npm install
-$ npm run docker:build
+```
+
+On Apple Silicon (M1)  `TARGET_ARCH=amd64` may be required for dependencies to be build. So
+execute `TARGET_ARCH=amd64 npm install` or set `export TARGET_ARCH=amd64` in your shell.
+
+## Generating the keys pair
+```bash
 $ npm run generate:jwtkeys
+```
+
+## Generating types for contracts
+```bash
+$ npm run build:contracts
 ```
 
 ## Running the app
 
-
+### development
 ```bash
-# development
-$ npm run docker:watch
+$ docker-compose up -d
+$ npm run start:dev
+```
 
-# production mode
+### production
+```bash
 $ npm run docker:start
 ```
 
@@ -64,6 +88,8 @@ secure: false,
 In this way, an app hosted on `localhost` (assuming the cache-server is also served on localhost) will store the authentication cookies even if the requests aren't sent over a secure connection.
 
 ## Test
+
+Make sure `ENABLE_AUTH=true` is set as it is required for tests passing.
 
 ```bash
 # unit tests

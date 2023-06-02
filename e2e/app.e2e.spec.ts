@@ -5,7 +5,6 @@ import { INestApplication } from '@nestjs/common';
 import { ethers, network } from 'hardhat';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { appConfig } from '../src/common/test.utils';
-import { AppModule } from '../src/app.module';
 import { authTestSuite } from './auth';
 import { claimTestSuite } from './claim';
 import { statusList2021TestSuite } from './status-list';
@@ -17,7 +16,7 @@ import { Provider } from '../src/common/provider';
 
 export let app: INestApplication;
 
-jest.setTimeout(20000000);
+jest.setTimeout(600_000);
 describe('iam-cache-server E2E tests', () => {
   const provider = ethers.provider;
   const deployer = provider.getSigner(0);
@@ -37,7 +36,12 @@ describe('iam-cache-server E2E tests', () => {
 
     didRegistry = await loadFixture(deployDidRegistry);
     process.env.DID_REGISTRY_ADDRESS = didRegistry.address;
+    process.env.IPFS_CLUSTER_ROOT = 'http://localhost:8080';
+    process.env.IPFS_CLUSTER_USER = 'not-required-locally';
+    process.env.IPFS_CLUSTER_PASSWORD = 'not-required-locally';
 
+    // have to import dynamically to have opportunity to deploy DID registry before environment configuration validation
+    const { AppModule } = await import('../src/app.module');
     const testingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
