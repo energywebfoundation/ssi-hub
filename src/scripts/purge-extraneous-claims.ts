@@ -21,10 +21,10 @@ import { RoleClaim } from '../modules/claim/entities/roleClaim.entity';
   const claims = await claimsRepository.find();
   for (const claim of claims) {
     if (
-      claim.vp.verifiableCredential.some(
+      !claim?.vp?.verifiableCredential.some(
         (vc) =>
           vc.credentialStatus &&
-          !vc.credentialStatus.statusListCredential.startsWith(
+          vc.credentialStatus.statusListCredential.startsWith(
             STATUS_LIST_DOMAIN
           )
       )
