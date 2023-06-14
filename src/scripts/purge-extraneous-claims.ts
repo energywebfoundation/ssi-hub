@@ -6,6 +6,10 @@ import { inspect } from 'util';
 import { RoleClaim } from '../modules/claim/entities/roleClaim.entity';
 import { DataSource } from 'typeorm';
 
+const STAGING_NAMESPACE_PATTERN = '.apps.staging.gp4btc.';
+const PROD_NAMESPACE_PATTERN = '.apps.gp4btc.';
+const DEV_NAMESPACE_PATTERN = '.apps.dev.gp4btc.';
+
 (async function () {
   const dataSource = new DataSource({
     type: 'postgres',
@@ -20,29 +24,22 @@ import { DataSource } from 'typeorm';
 
   const claimsRepository = dataSource.getRepository(RoleClaim);
 
-  const STATUS_LIST_DOMAIN = process.env.STATUS_LIST_DOMAIN;
-  process.stdout.write(
-    `> removing claims with status domain different from ${STATUS_LIST_DOMAIN}\n`
-  );
-
   let count = 0;
   const claims = await claimsRepository.find();
   for (const claim of claims) {
-    if (
-      !claim?.vp?.verifiableCredential.some(
-        (vc) =>
-          vc.credentialStatus &&
-          vc.credentialStatus.statusListCredential.startsWith(
-            STATUS_LIST_DOMAIN
-          )
-      )
-    ) {
+    const isNamespaceCorrespondToEnv =
+      claim.namespace.match(DEV_NAMESPACE_PATTERN) ||
+      claim.namespace.match(STAGING_NAMESPACE_PATTERN) ||
+      claim.namespace.match(PROD_NAMESPACE_PATTERN);
+    if (!isNamespaceCorrespondToEnv) {
       process.stdout.write(
         `> removing ${inspect(
           {
             id: claim.id,
             namespace: claim.namespace,
             subject: claim.subject,
+            status:
+              claim.vp && claim.vp.verifiableCredential[0].credentialStatus,
           },
           { depth: 2, colors: true }
         )}\n`
