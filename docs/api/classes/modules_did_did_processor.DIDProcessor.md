@@ -10,7 +10,10 @@
 
 ### Methods
 
+- [onActive](modules_did_did_processor.DIDProcessor.md#onactive)
 - [onError](modules_did_did_processor.DIDProcessor.md#onerror)
+- [onFailed](modules_did_did_processor.DIDProcessor.md#onfailed)
+- [onStalled](modules_did_did_processor.DIDProcessor.md#onstalled)
 - [processDIDDocumentAddition](modules_did_did_processor.DIDProcessor.md#processdiddocumentaddition)
 - [processDIDDocumentRefresh](modules_did_did_processor.DIDProcessor.md#processdiddocumentrefresh)
 
@@ -18,7 +21,7 @@
 
 ### constructor
 
-• **new DIDProcessor**(`didService`, `logger`, `configService`, `didInfura`)
+• **new DIDProcessor**(`didService`, `logger`, `configService`, `queue`, `pinQueue`)
 
 #### Parameters
 
@@ -27,9 +30,26 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
-| `didInfura` | `DidStore` |
+| `queue` | `Queue`<`any`\> |
+| `pinQueue` | `Queue`<`any`\> |
 
 ## Methods
+
+### onActive
+
+▸ **onActive**(`jobId`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `jobId` | `number` |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
 
 ### onError
 
@@ -44,6 +64,38 @@
 #### Returns
 
 `void`
+
+___
+
+### onFailed
+
+▸ **onFailed**(`jobId`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `jobId` | `number` |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
+
+### onStalled
+
+▸ **onStalled**(`jobId`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `jobId` | `number` |
+
+#### Returns
+
+`Promise`<`void`\>
 
 ___
 

@@ -8,8 +8,11 @@
 
 ### Variables
 
-- [ADD\_DID\_DOC\_QUEUE\_NAME](modules_did_did_types.md#add_did_doc_queue_name)
-- [UPDATE\_DID\_DOC\_QUEUE\_NAME](modules_did_did_types.md#update_did_doc_queue_name)
+- [ADD\_DID\_DOC\_JOB\_NAME](modules_did_did_types.md#add_did_doc_job_name)
+- [PIN\_CLAIM\_JOB\_NAME](modules_did_did_types.md#pin_claim_job_name)
+- [PIN\_CLAIM\_QUEUE\_NAME](modules_did_did_types.md#pin_claim_queue_name)
+- [UPDATE\_DID\_DOC\_JOB\_NAME](modules_did_did_types.md#update_did_doc_job_name)
+- [UPDATE\_DOCUMENT\_QUEUE\_NAME](modules_did_did_types.md#update_document_queue_name)
 - [didPattern](modules_did_did_types.md#didpattern)
 
 ### Functions
@@ -18,15 +21,33 @@
 
 ## Variables
 
-### ADD\_DID\_DOC\_QUEUE\_NAME
+### ADD\_DID\_DOC\_JOB\_NAME
 
-• `Const` **ADD\_DID\_DOC\_QUEUE\_NAME**: ``"addDIDDocument"``
+• `Const` **ADD\_DID\_DOC\_JOB\_NAME**: ``"adding"``
 
 ___
 
-### UPDATE\_DID\_DOC\_QUEUE\_NAME
+### PIN\_CLAIM\_JOB\_NAME
 
-• `Const` **UPDATE\_DID\_DOC\_QUEUE\_NAME**: ``"refreshDIDDocument"``
+• `Const` **PIN\_CLAIM\_JOB\_NAME**: ``"pinning"``
+
+___
+
+### PIN\_CLAIM\_QUEUE\_NAME
+
+• `Const` **PIN\_CLAIM\_QUEUE\_NAME**: ``"pinClaimQueue"``
+
+___
+
+### UPDATE\_DID\_DOC\_JOB\_NAME
+
+• `Const` **UPDATE\_DID\_DOC\_JOB\_NAME**: ``"refreshing"``
+
+___
+
+### UPDATE\_DOCUMENT\_QUEUE\_NAME
+
+• `Const` **UPDATE\_DOCUMENT\_QUEUE\_NAME**: ``"updateDocumentQueue"``
 
 ___
 

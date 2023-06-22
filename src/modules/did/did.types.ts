@@ -107,5 +107,9 @@ export class DID {
 export const getDIDFromAddress = (address: string) =>
   `did:ethr:${process.env.CHAIN_NAME}:${address}`;
 
-export const ADD_DID_DOC_QUEUE_NAME = 'addDIDDocument';
-export const UPDATE_DID_DOC_QUEUE_NAME = 'refreshDIDDocument';
+export const ADD_DID_DOC_JOB_NAME = 'adding';
+export const UPDATE_DID_DOC_JOB_NAME = 'refreshing';
+export const UPDATE_DOCUMENT_QUEUE_NAME = 'updateDocumentQueue';
+
+export const PIN_CLAIM_JOB_NAME = 'pinning';
+export const PIN_CLAIM_QUEUE_NAME = 'pinClaimQueue';
