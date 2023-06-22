@@ -1,9 +1,9 @@
 import {
   InjectQueue,
-  OnGlobalQueueActive,
-  OnGlobalQueueError,
-  OnGlobalQueueFailed,
-  OnGlobalQueueStalled,
+  OnQueueActive,
+  OnQueueError,
+  OnQueueFailed,
+  OnQueueStalled,
   Process,
   Processor,
 } from '@nestjs/bull';
@@ -26,34 +26,29 @@ export class DIDProcessor {
     private readonly didService: DIDService,
     private readonly logger: Logger,
     private readonly configService: ConfigService,
-    @InjectQueue(UPDATE_DOCUMENT_QUEUE_NAME)
-    private queue: Queue,
     @InjectQueue(PIN_CLAIM_QUEUE_NAME)
     private pinQueue: Queue
   ) {
     this.logger.setContext(DIDProcessor.name);
   }
 
-  @OnGlobalQueueError()
+  @OnQueueError()
   onError(error: Error) {
     this.logger.error(error);
   }
 
-  @OnGlobalQueueActive()
-  async onActive(jobId: number) {
-    const job = await this.queue.getJob(jobId);
+  @OnQueueActive()
+  onActive(job: Job) {
     this.logger.debug(`Starting ${job.name} document ${job.data}`);
   }
 
-  @OnGlobalQueueStalled()
-  async onStalled(jobId: number) {
-    const job = await this.queue.getJob(jobId);
+  @OnQueueStalled()
+  onStalled(job: Job) {
     this.logger.debug(`Stalled ${job.name} document ${job.data}`);
   }
 
-  @OnGlobalQueueFailed()
-  async onFailed(jobId: number) {
-    const job = await this.queue.getJob(jobId);
+  @OnQueueFailed()
+  onFailed(job: Job) {
     this.logger.debug(`Failed ${job.name} document ${job.data}`);
   }
 

@@ -21,7 +21,7 @@
 
 ### constructor
 
-• **new DIDProcessor**(`didService`, `logger`, `configService`, `queue`, `pinQueue`)
+• **new DIDProcessor**(`didService`, `logger`, `configService`, `pinQueue`)
 
 #### Parameters
 
@@ -30,24 +30,23 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
-| `queue` | `Queue`<`any`\> |
 | `pinQueue` | `Queue`<`any`\> |
 
 ## Methods
 
 ### onActive
 
-▸ **onActive**(`jobId`): `Promise`<`void`\>
+▸ **onActive**(`job`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `jobId` | `number` |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`void`
 
 ___
 
@@ -69,33 +68,33 @@ ___
 
 ### onFailed
 
-▸ **onFailed**(`jobId`): `Promise`<`void`\>
+▸ **onFailed**(`job`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `jobId` | `number` |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`void`
 
 ___
 
 ### onStalled
 
-▸ **onStalled**(`jobId`): `Promise`<`void`\>
+▸ **onStalled**(`job`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `jobId` | `number` |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`void`
 
 ___
 

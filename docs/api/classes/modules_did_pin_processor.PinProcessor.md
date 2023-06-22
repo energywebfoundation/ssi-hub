@@ -20,7 +20,7 @@
 
 ### constructor
 
-• **new PinProcessor**(`logger`, `configService`, `didInfura`, `queue`)
+• **new PinProcessor**(`logger`, `configService`, `didInfura`)
 
 #### Parameters
 
@@ -29,23 +29,22 @@
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `didInfura` | `DidStore` |
-| `queue` | `Queue`<`any`\> |
 
 ## Methods
 
 ### onActive
 
-▸ **onActive**(`jobId`): `Promise`<`void`\>
+▸ **onActive**(`job`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `jobId` | `number` |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`void`
 
 ___
 
@@ -67,33 +66,33 @@ ___
 
 ### onFailed
 
-▸ **onFailed**(`jobId`): `Promise`<`void`\>
+▸ **onFailed**(`job`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `jobId` | `number` |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`void`
 
 ___
 
 ### onStalled
 
-▸ **onStalled**(`jobId`): `Promise`<`void`\>
+▸ **onStalled**(`job`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `jobId` | `number` |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 
-`Promise`<`void`\>
+`void`
 
 ___
 
