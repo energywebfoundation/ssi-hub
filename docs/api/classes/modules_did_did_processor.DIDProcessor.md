@@ -10,7 +10,10 @@
 
 ### Methods
 
+- [onActive](modules_did_did_processor.DIDProcessor.md#onactive)
 - [onError](modules_did_did_processor.DIDProcessor.md#onerror)
+- [onFailed](modules_did_did_processor.DIDProcessor.md#onfailed)
+- [onStalled](modules_did_did_processor.DIDProcessor.md#onstalled)
 - [processDIDDocumentAddition](modules_did_did_processor.DIDProcessor.md#processdiddocumentaddition)
 - [processDIDDocumentRefresh](modules_did_did_processor.DIDProcessor.md#processdiddocumentrefresh)
 
@@ -18,7 +21,7 @@
 
 ### constructor
 
-• **new DIDProcessor**(`didService`, `logger`, `configService`, `didInfura`)
+• **new DIDProcessor**(`didService`, `logger`, `configService`, `pinQueue`)
 
 #### Parameters
 
@@ -27,9 +30,25 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
-| `didInfura` | `DidStore` |
+| `pinQueue` | `Queue`<`any`\> |
 
 ## Methods
+
+### onActive
+
+▸ **onActive**(`job`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `job` | `Job`<`any`\> |
+
+#### Returns
+
+`void`
+
+___
 
 ### onError
 
@@ -40,6 +59,38 @@
 | Name | Type |
 | :------ | :------ |
 | `error` | `Error` |
+
+#### Returns
+
+`void`
+
+___
+
+### onFailed
+
+▸ **onFailed**(`job`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `job` | `Job`<`any`\> |
+
+#### Returns
+
+`void`
+
+___
+
+### onStalled
+
+▸ **onStalled**(`job`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 
