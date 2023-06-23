@@ -17,6 +17,7 @@ import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+import { PIN_CLAIM_QUEUE_NAME, UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
 
 const { formatBytes32String } = utils;
 
@@ -95,7 +96,14 @@ describe('DidDocumentService', () => {
         { provide: SchedulerRegistry, useValue: MockObject },
         { provide: HttpService, useValue: MockObject },
         { provide: Logger, useValue: MockLogger },
-        { provide: getQueueToken('dids'), useFactory: queueMockFactory },
+        {
+          provide: getQueueToken(UPDATE_DOCUMENT_QUEUE_NAME),
+          useFactory: queueMockFactory,
+        },
+        {
+          provide: getQueueToken(PIN_CLAIM_QUEUE_NAME),
+          useFactory: queueMockFactory,
+        },
         {
           provide: getRepositoryToken(DIDDocumentEntity),
           useFactory: repositoryMockFactory,

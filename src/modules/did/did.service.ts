@@ -34,7 +34,11 @@ import {
 } from '@ew-did-registry/did-ethr-resolver';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { DID, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
+import {
+  DID,
+  UPDATE_DID_DOC_JOB_NAME,
+  UPDATE_DOCUMENT_QUEUE_NAME,
+} from './did.types';
 import { Logger } from '../logger/logger.service';
 import { DIDDocumentEntity, IClaim } from './did.entity';
 import { Provider } from '../../common/provider';
@@ -52,7 +56,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly config: ConfigService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly httpService: HttpService,
-    @InjectQueue('dids') private readonly didQueue: Queue<string>,
+    @InjectQueue(UPDATE_DOCUMENT_QUEUE_NAME)
+    private readonly didQueue: Queue<string>,
     private readonly logger: Logger,
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
@@ -349,7 +354,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
-        await this.didQueue.add(UPDATE_DID_DOC_QUEUE_NAME, did);
+        await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did);
       }
     });
   }
@@ -358,7 +363,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     this.logger.debug(`Beginning sync of DID Documents`);
     const cachedDIDs = await this.didRepository.find({ select: ['id'] });
     cachedDIDs.forEach(async (did) => {
-      await this.didQueue.add(UPDATE_DID_DOC_QUEUE_NAME, did.id);
+      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did.id);
     });
   }
 
