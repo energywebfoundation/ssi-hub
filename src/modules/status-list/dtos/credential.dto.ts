@@ -14,7 +14,7 @@ import {
   CredentialSubject,
   CredentialType,
 } from '@ew-did-registry/credentials-interface';
-import { ICredentialContextType } from '@sphereon/pex/dist/main/lib/types/SSI.types';
+import { ICredentialContextType } from '@sphereon/ssi-types';
 
 export class CredentialSubjectIssuerFieldsDto {
   @IsString()
