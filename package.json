@@ -119,7 +119,7 @@
     "redis": "^4.6.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.3.0",
-    "siwe": "^1.1.6",
+    "siwe": "^2.1.3",
     "swagger-ui-express": "^4.1.4",
     "typechain": "^8.1.1",
     "typeorm": "^0.3.17",
