@@ -18,7 +18,6 @@
 - [getByRequesterDid](modules_claim_claim_controller.ClaimController.md#getbyrequesterdid)
 - [getByRevokerDid](modules_claim_claim_controller.ClaimController.md#getbyrevokerdid)
 - [getBySubject](modules_claim_claim_controller.ClaimController.md#getbysubject)
-- [getBySubjects](modules_claim_claim_controller.ClaimController.md#getbysubjects)
 - [getByUserDid](modules_claim_claim_controller.ClaimController.md#getbyuserdid)
 - [getDidsOfNamespace](modules_claim_claim_controller.ClaimController.md#getdidsofnamespace)
 - [getIssuedClaimsBySubjects](modules_claim_claim_controller.ClaimController.md#getissuedclaimsbysubjects)
@@ -177,25 +176,6 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `subject` | `string` |
-| `isAccepted?` | `boolean` |
-| `namespace?` | `string` |
-| `user?` | `string` |
-
-#### Returns
-
-`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
-
-___
-
-### getBySubjects
-
-▸ **getBySubjects**(`«destructured»`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
