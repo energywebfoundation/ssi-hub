@@ -497,7 +497,7 @@ describe('ClaimsController', () => {
       });
   });
 
-  it('`/by/subjects` should return only claim related to authenticated user', async () => {
+  it.skip('`/by/subjects` should return only claim related to authenticated user', async () => {
     const requester = randomDID();
     const foreignRequester = randomDID();
     const [ownedClaim] = await Promise.all([
@@ -573,7 +573,7 @@ describe('ClaimsController', () => {
     it('should be able to specify rejection reason', async () => {
       didMock.mockReturnValueOnce(requesterDID);
       await testHttpServer
-        .get(`/v1/claim/by/subjects?subjects=${requesterDID}`)
+        .get(`/v1/claim/subject/${requesterDID}`)
         .expect(200)
         .expect((res) => {
           expect(res.body).toBeInstanceOf(Array);

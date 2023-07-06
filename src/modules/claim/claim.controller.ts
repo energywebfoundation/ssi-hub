@@ -451,30 +451,6 @@ export class ClaimController {
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
   }
 
-  @UsePipes(new ValidationPipe({ transform: true }))
-  @Get('/by/subjects')
-  @ApiQuery({
-    name: 'subjects',
-    required: true,
-    description: 'DIDs whose claims are being requested',
-  })
-  @ApiTags('Claims')
-  @ApiOperation({
-    summary: 'returns claims requested for given DIDs',
-  })
-  public async getBySubjects(
-    @Query() { subjects }: DIDsQuery,
-    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
-    @Query('namespace') namespace?: string,
-    @User() user?: string
-  ) {
-    return this.claimService.getBySubjects({
-      subjects,
-      filters: { isAccepted, namespace },
-      currentUser: user,
-    });
-  }
-
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   @Post('/issued')
   @ApiExcludeEndpoint()
