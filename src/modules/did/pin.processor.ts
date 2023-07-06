@@ -32,7 +32,7 @@ export class PinProcessor {
       `${IPFS_CLUSTER_USER}:${IPFS_CLUSTER_PASSWORD}`
     ).toString('base64')}`;
     this.didCluster = new DidStoreCluster(IPFS_CLUSTER_ROOT, {
-      Authorization,
+      headers: { Authorization },
     });
   }
 
@@ -75,7 +75,9 @@ export class PinProcessor {
   @Process(PIN_CLAIM_JOB_NAME)
   async pinClaims(doc: DIDDocumentEntity) {
     for (const cid of doc.service.map((s) => s.serviceEndpoint)) {
-      if (!(await this.didCluster.isPinned(cid))) {
+      try {
+        await this.didCluster.get(cid);
+      } catch (e) {
         const token = await this.didInfura.get(cid);
         await this.didCluster.save(token);
       }
