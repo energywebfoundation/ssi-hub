@@ -1,5 +1,6 @@
-import d from 'dotenv';
-d.config();
+import { config } from 'dotenv';
+// although it is called in app.module, it is added here to be able to override DID_REGISTRY_ADDRESS. When config() is called next time it will not change variables alredy presented in env
+config();
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { ethers, network } from 'hardhat';
@@ -35,13 +36,14 @@ describe('iam-cache-server E2E tests', () => {
   }
 
   beforeAll(async () => {
+    await import('../src/scripts/truncate-db');
     consoleLogSpy = jest.spyOn(global.console, 'log');
 
     didRegistry = await loadFixture(deployDidRegistry);
     process.env.DID_REGISTRY_ADDRESS = didRegistry.address;
 
     cluster = await spawnIpfsCluster();
-    process.env.IPFS_CLUSTER_ROOT_URL = 'http://localhost:8080';
+    process.env.IPFS_CLUSTER_ROOT = 'http://localhost:8080';
 
     process.env.IPFS_CLIENT_URL = 'http://mocked'; // CID resolved incorrectly through gateway exposed on cluster. TODO: instead of gateway try to expose IPFS API
 

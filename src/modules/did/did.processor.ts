@@ -9,12 +9,12 @@ import {
 } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { Job, Queue } from 'bull';
+import { PIN_CLAIM_JOB_NAME, PIN_CLAIM_QUEUE_NAME } from '../ipfs/ipfs.types';
 import { Logger } from '../logger/logger.service';
+import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import {
   ADD_DID_DOC_JOB_NAME,
-  PIN_CLAIM_JOB_NAME,
-  PIN_CLAIM_QUEUE_NAME,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
 } from './did.types';
@@ -55,7 +55,9 @@ export class DIDProcessor {
   public async processDIDDocumentAddition(job: Job<string>) {
     const doc = await this.didService.addCachedDocument(job.data);
 
-    await this.pinQueue.add(PIN_CLAIM_JOB_NAME, doc);
+    for (const cid of doc.service.map((s) => s.serviceEndpoint)) {
+      await this.pinQueue.add(PIN_CLAIM_JOB_NAME, { cid });
+    }
   }
 
   @Process(UPDATE_DID_DOC_JOB_NAME)

@@ -4,9 +4,10 @@ import { Queue } from 'bull';
 import request from 'supertest';
 import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import { DidStore as DidStoreCluster } from 'didStoreCluster';
-import { DidStore as DidStoreGateway } from 'didStoreGateway';
+import { DidStore as DidStoreGateway } from 'didStoreInfura';
 import { app } from '../app.e2e.spec';
 import { randomUser } from '../utils';
+import { PIN_CLAIM_QUEUE_NAME } from '../../src/modules/ipfs/ipfs.types';
 
 export const ipfsModuleTestSuite = () => {
   let queryRunner: QueryRunner;
@@ -24,7 +25,8 @@ export const ipfsModuleTestSuite = () => {
 
     didStoreCluster = app.get(DidStoreCluster);
     didStoreInfura = app.get(DidStoreGateway);
-    pinsQueue = app.get(getQueueToken('pins'));
+    pinsQueue = app.get(getQueueToken(PIN_CLAIM_QUEUE_NAME));
+    await pinsQueue.empty();
 
     const manager = app.get(EntityManager);
     const dbConnection = app.get(Connection);
@@ -41,7 +43,7 @@ export const ipfsModuleTestSuite = () => {
     await queryRunner.release();
   });
 
-  it('should be able to post claim', async () => {
+  it('save() should post claim in cluster', async () => {
     const claimData = {
       claimType: 'claim type',
       claimTypeVersion: 1,
@@ -56,17 +58,22 @@ export const ipfsModuleTestSuite = () => {
       .send(claimData)
       .expect(HttpStatus.CREATED);
 
-    const get = jest.spyOn(didStoreCluster, 'get');
+    const didStoreClusterGet = jest.spyOn(didStoreCluster, 'get');
+    jest
+      .spyOn(didStoreInfura, 'get')
+      .mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 24 * 60 * 60 * 1000))
+      );
     const { text: stored } = await request(app.getHttpServer())
       .get(`/v1/ipfs/${cid}`)
       .set('Cookie', requester.cookies)
       .expect(HttpStatus.OK);
-    expect(get).toBeCalledTimes(1);
+    expect(didStoreClusterGet).toBeCalledTimes(2); // first in IpfsService.get, second in PinProcessor.pin
 
     expect(JSON.parse(stored)).toStrictEqual(claimData);
   });
 
-  it('should return 404 if claim was not persisted in IPFS', async () => {
+  it('if claim was not persisted in IPFS, get() should respond with 404 status code', async () => {
     const didStoreInfuraGet = jest.spyOn(didStoreInfura, 'get');
     const requester = await randomUser();
 
@@ -78,7 +85,7 @@ export const ipfsModuleTestSuite = () => {
       .expect(HttpStatus.NOT_FOUND);
   });
 
-  it('claim persisted in IPFS should be pinned in cluster', async () => {
+  it('if claim is not found in cluster, get() should save claim in cluster', async () => {
     const didStoreClusterGet = jest.spyOn(didStoreCluster, 'get');
     const didStoreInfuraGet = jest.spyOn(didStoreInfura, 'get');
 
@@ -99,14 +106,19 @@ export const ipfsModuleTestSuite = () => {
 
     await claimPinned;
 
-    expect(didStoreClusterGet).toBeCalledTimes(0);
+    expect(didStoreClusterGet).toBeCalledTimes(2);
     expect(didStoreInfuraGet).toBeCalledTimes(1);
 
+    jest
+      .spyOn(didStoreInfura, 'get')
+      .mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 24 * 60 * 60 * 1000))
+      );
     await request(app.getHttpServer())
       .get(`/v1/ipfs/${cid}`)
       .set('Cookie', requester.cookies);
 
-    expect(didStoreClusterGet).toBeCalledTimes(1);
-    expect(didStoreInfuraGet).toBeCalledTimes(1);
+    expect(didStoreClusterGet).toBeCalledTimes(4);
+    expect(didStoreInfuraGet).toBeCalledTimes(2);
   });
 };

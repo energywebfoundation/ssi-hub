@@ -1,4 +1,3 @@
-import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +10,9 @@ import { DIDResolver } from './did.resolver';
 import { DIDService } from './did.service';
 import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { ConfigService } from '@nestjs/config';
+import { BullModule } from '@nestjs/bull';
+import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
+import { PIN_CLAIM_QUEUE_NAME } from '../ipfs/ipfs.types';
 
 const RegistrySettingsProvider = {
   provide: 'RegistrySettings',
@@ -37,7 +39,6 @@ const RegistrySettingsProvider = {
   providers: [
     DIDService,
     DIDProcessor,
-    PinProcessor,
     DIDResolver,
     Provider,
     RegistrySettingsProvider,

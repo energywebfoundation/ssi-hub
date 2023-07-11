@@ -2,6 +2,10 @@
 
 [modules/ipfs/ipfs.service](../modules/modules_ipfs_ipfs_service.md).IPFSService
 
+## Implements
+
+- `OnModuleDestroy`
+
 ## Table of contents
 
 ### Constructors
@@ -10,15 +14,81 @@
 
 ### Methods
 
+- [get](modules_ipfs_ipfs_service.IPFSService.md#get)
+- [onModuleDestroy](modules_ipfs_ipfs_service.IPFSService.md#onmoduledestroy)
+- [save](modules_ipfs_ipfs_service.IPFSService.md#save)
 - [isCID](modules_ipfs_ipfs_service.IPFSService.md#iscid)
 
 ## Constructors
 
 ### constructor
 
-• **new IPFSService**()
+• **new IPFSService**(`didStoreCluster`, `didStoreInfura`, `pinsQueue`, `logger`)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `didStoreCluster` | `DidStore` |
+| `didStoreInfura` | `DidStore` |
+| `pinsQueue` | `Queue`<`string`\> |
+| `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
+
+### get
+
+▸ **get**(`cid`): `Promise`<`string`\>
+
+Get claim from cluster. If claim isn't found tries to get from gateway
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `cid` | `string` | Content identifier. |
+
+#### Returns
+
+`Promise`<`string`\>
+
+Stringified credential
+
+___
+
+### onModuleDestroy
+
+▸ **onModuleDestroy**(): `Promise`<`void`\>
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Implementation of
+
+OnModuleDestroy.onModuleDestroy
+
+___
+
+### save
+
+▸ **save**(`credential`): `Promise`<`string`\>
+
+Saves credential on cluster
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `credential` | `string` | Credential being persisted |
+
+#### Returns
+
+`Promise`<`string`\>
+
+CID of the persisted credential
+
+___
 
 ### isCID
 
