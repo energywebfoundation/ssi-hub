@@ -18,12 +18,12 @@ const IPFSInfuraConfigProvider = {
   provide: IPFSInfuraConfigToken,
   useFactory: (config: ConfigService): IpfsInfuraConfig => {
     const IPFS_CLIENT_URL = config.get<string>('IPFS_CLIENT_URL');
-    const IPFS_CLIENT_PROTO = config.get<string>('IPFS_CLIENT_PROTO');
+    const IPFS_CLIENT_PROTOCOL = config.get<string>('IPFS_CLIENT_PROTOCOL');
     const IPFS_CLIENT_HOST = config.get<string>('IPFS_CLIENT_HOST');
     const IPFS_CLIENT_PORT = config.get<string>('IPFS_CLIENT_PORT');
     const ipfsConfig: IpfsInfuraConfig = {
       url: IPFS_CLIENT_URL,
-      protocol: IPFS_CLIENT_PROTO,
+      protocol: IPFS_CLIENT_PROTOCOL,
       host: IPFS_CLIENT_HOST,
       port: parseInt(IPFS_CLIENT_PORT),
     };

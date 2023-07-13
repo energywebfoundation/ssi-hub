@@ -90,7 +90,7 @@ export const envVarsValidationSchema = Joi.object({
   ASSETS_SYNC_ENABLED: Joi.boolean().required(),
 
   IPFS_CLIENT_URL: Joi.string().uri(),
-  IPFS_CLIENT_PROTO: Joi.string(),
+  IPFS_CLIENT_PROTOCOL: Joi.string(),
   IPFS_CLIENT_HOST: Joi.string().hostname(),
   IPFS_CLIENT_PORT: Joi.number().port(),
   IPFS_CLIENT_PROJECT_ID: Joi.string(),
@@ -130,4 +130,4 @@ export const envVarsValidationSchema = Joi.object({
   DISABLE_GET_DIDS_BY_ROLE: Joi.bool().default(false),
 })
   .or('IPFS_CLIENT_URL', 'IPFS_CLIENT_HOST')
-  .with('IPFS_CLIENT_HOST', ['IPFS_CLIENT_PROTO', 'IPFS_CLIENT_PORT']);
+  .with('IPFS_CLIENT_HOST', ['IPFS_CLIENT_PROTOCOL', 'IPFS_CLIENT_PORT']);
