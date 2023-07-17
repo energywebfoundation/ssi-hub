@@ -37,8 +37,8 @@ export class IPFSController {
     description: 'Stringified credential',
   })
   @ApiOperation({
-    summary: 'Saves credential in IPFS',
-    description: 'Saves credential on IPFS and returns its CID',
+    summary: 'Saves content in IPFS',
+    description: 'Saves content in IPFS and returns its CID',
   })
   public async save(@Body() credential: Record<string, unknown>) {
     return this.ipfsService.save(JSON.stringify(credential));
