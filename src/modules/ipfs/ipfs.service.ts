@@ -66,15 +66,12 @@ export class IPFSService implements OnModuleDestroy {
     const getFromCluster = this.didStoreCluster.get(cid);
     const getFromInfura = this.didStoreInfura.get(cid);
     try {
-      claim = await Promise.race([getFromCluster, getFromInfura]);
+      claim = await Promise.any([getFromCluster, getFromInfura]);
     } catch (e) {
-      try {
-        claim = await getFromInfura;
-      } catch (e) {
-        // TODO: catch this in DidService
-        throw new HttpException(`Claim ${cid} not found`, HttpStatus.NOT_FOUND);
-      }
+      // TODO: catch this in DidService
+      throw new HttpException(`Claim ${cid} not found`, HttpStatus.NOT_FOUND);
     }
+
     await this.pinsQueue.add(
       PIN_CLAIM_JOB_NAME,
       JSON.stringify({ cid, claim })
