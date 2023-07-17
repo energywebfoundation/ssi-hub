@@ -55,7 +55,7 @@ export const ipfsModuleTestSuite = () => {
     const { text: cid } = await request(app.getHttpServer())
       .post(`/v1/ipfs/`)
       .set('Cookie', requester.cookies)
-      .send(JSON.stringify(claimData))
+      .send(claimData)
       .expect(HttpStatus.CREATED);
 
     const claimPinned = new Promise<void>((resolve) => {
@@ -75,7 +75,6 @@ export const ipfsModuleTestSuite = () => {
       .expect(HttpStatus.OK);
     await claimPinned;
     expect(didStoreClusterGet).toBeCalledTimes(2); // first in IpfsService.get, second in PinProcessor.pin to check that claim if claim is pinned
-
     expect(JSON.parse(stored)).toStrictEqual(claimData);
   });
 

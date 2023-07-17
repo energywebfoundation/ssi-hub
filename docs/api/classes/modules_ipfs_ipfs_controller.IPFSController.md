@@ -51,7 +51,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `credential` | `string` |
+| `credential` | `string` \| `object` |
 
 #### Returns
 

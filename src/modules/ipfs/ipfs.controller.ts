@@ -41,7 +41,9 @@ export class IPFSController {
     summary: 'Saves content in IPFS',
     description: 'Saves content in IPFS and returns its CID',
   })
-  public async save(@Body() credential: string) {
-    return this.ipfsService.save(credential);
+  public async save(@Body() credential: string | object) {
+    return this.ipfsService.save(
+      typeof credential === 'string' ? credential : JSON.stringify(credential)
+    );
   }
 }
