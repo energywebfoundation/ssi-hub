@@ -51,7 +51,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `credential` | `Record`<`string`, `unknown`\> |
+| `credential` | `string` |
 
 #### Returns
 

@@ -55,7 +55,7 @@ export const ipfsModuleTestSuite = () => {
     const { text: cid } = await request(app.getHttpServer())
       .post(`/v1/ipfs/`)
       .set('Cookie', requester.cookies)
-      .send(claimData)
+      .send(JSON.stringify(claimData))
       .expect(HttpStatus.CREATED);
 
     const claimPinned = new Promise<void>((resolve) => {
