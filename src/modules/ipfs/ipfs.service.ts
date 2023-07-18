@@ -86,13 +86,21 @@ export class IPFSService implements OnModuleDestroy {
    * @returns CID of the persisted credential
    */
   public async save(credential: string): Promise<string> {
-    try {
-      return this.didStoreCluster.save(credential);
-    } catch (_) {
+    const [clusterCID, infuraCID] = await Promise.allSettled([
+      this.didStoreCluster.save(credential),
+      this.didStoreInfura.save(credential),
+    ]);
+    if (clusterCID.status === 'fulfilled') {
       this.logger.warn(
         `Error saving ${credential} in cluster. Saving in Infura`
       );
-      return this.didStoreInfura.save(credential);
+      return clusterCID.value;
+    } else if (infuraCID.status === 'fulfilled') {
+      return infuraCID.value;
+    } else {
+      throw new Error(
+        `Error saving ${credential} in Infura: ${infuraCID.reason}`
+      );
     }
   }
 }
