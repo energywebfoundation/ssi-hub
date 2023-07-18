@@ -99,7 +99,7 @@ export const ipfsModuleTestSuite = () => {
     const claim = JSON.stringify(notPinned);
     const cid = notPinnedCid;
 
-    const claimPinned = new Promise<void>((resolve) => {
+    let claimPinned = new Promise<void>((resolve) => {
       pinsQueue.on('completed', () => {
         resolve();
       });
@@ -114,6 +114,12 @@ export const ipfsModuleTestSuite = () => {
     expect(didStoreClusterGet).toBeCalledTimes(2);
     expect(didStoreInfuraGet).toBeCalledTimes(1);
 
+    claimPinned = new Promise<void>((resolve) => {
+      pinsQueue.on('completed', () => {
+        resolve();
+      });
+    });
+
     jest
       .spyOn(didStoreInfura, 'get')
       .mockImplementation(
@@ -122,6 +128,8 @@ export const ipfsModuleTestSuite = () => {
     await request(app.getHttpServer())
       .get(`/v1/ipfs/${cid}`)
       .set('Cookie', requester.cookies);
+
+    await claimPinned;
 
     expect(didStoreClusterGet).toBeCalledTimes(4);
     expect(didStoreInfuraGet).toBeCalledTimes(2);
