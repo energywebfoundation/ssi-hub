@@ -1,11 +1,6 @@
 import { DidStore as DidStoreCluster } from 'didStoreCluster';
 import { DidStore as DidStoreGateway } from 'didStoreInfura';
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  OnModuleDestroy,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CID } from 'multiformats/cid';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
@@ -13,7 +8,7 @@ import { PIN_CLAIM_QUEUE_NAME, PIN_CLAIM_JOB_NAME } from './ipfs.types';
 import { Logger } from '../logger/logger.service';
 
 @Injectable()
-export class IPFSService implements OnModuleDestroy {
+export class IPFSService {
   constructor(
     private didStoreCluster: DidStoreCluster,
     private didStoreInfura: DidStoreGateway,
@@ -22,11 +17,6 @@ export class IPFSService implements OnModuleDestroy {
     private readonly logger: Logger
   ) {
     this.logger.setContext(IPFSService.name);
-  }
-
-  async onModuleDestroy() {
-    await this.pinsQueue.empty();
-    await this.pinsQueue.close();
   }
 
   /**

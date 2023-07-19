@@ -2,10 +2,6 @@
 
 [modules/ipfs/ipfs.service](../modules/modules_ipfs_ipfs_service.md).IPFSService
 
-## Implements
-
-- `OnModuleDestroy`
-
 ## Table of contents
 
 ### Constructors
@@ -15,7 +11,6 @@
 ### Methods
 
 - [get](modules_ipfs_ipfs_service.IPFSService.md#get)
-- [onModuleDestroy](modules_ipfs_ipfs_service.IPFSService.md#onmoduledestroy)
 - [save](modules_ipfs_ipfs_service.IPFSService.md#save)
 - [isCID](modules_ipfs_ipfs_service.IPFSService.md#iscid)
 
@@ -53,20 +48,6 @@ Get claim from cluster. If claim isn't found tries to get from gateway
 `Promise`<`string`\>
 
 Stringified credential
-
-___
-
-### onModuleDestroy
-
-▸ **onModuleDestroy**(): `Promise`<`void`\>
-
-#### Returns
-
-`Promise`<`void`\>
-
-#### Implementation of
-
-OnModuleDestroy.onModuleDestroy
 
 ___
 
