@@ -91,11 +91,11 @@ export class IPFSService implements OnModuleDestroy {
       this.didStoreInfura.save(credential),
     ]);
     if (clusterCID.status === 'fulfilled') {
+      return clusterCID.value;
+    } else if (infuraCID.status === 'fulfilled') {
       this.logger.warn(
         `Error saving ${credential} in cluster. Saving in Infura`
       );
-      return clusterCID.value;
-    } else if (infuraCID.status === 'fulfilled') {
       return infuraCID.value;
     } else {
       throw new Error(
