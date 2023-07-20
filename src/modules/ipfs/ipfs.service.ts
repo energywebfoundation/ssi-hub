@@ -84,7 +84,7 @@ export class IPFSService {
       return clusterCID.value;
     } else if (infuraCID.status === 'fulfilled') {
       this.logger.warn(
-        `Error saving ${credential} in cluster. Saving in Infura`
+        `Error saving ${credential} in cluster. Was saved to Infura as backup`
       );
       return infuraCID.value;
     } else {
