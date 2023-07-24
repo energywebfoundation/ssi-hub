@@ -2,7 +2,6 @@
 /dist
 /node_modules
 /src/ethers
-.env
 
 # Logs
 logs
@@ -20,6 +19,8 @@ ormlogs.log
 # Tests
 /coverage
 /.nyc_output
+/e2e/setupIpfsCluster/ipfs0/
+!/e2e/setupIpfsCluster/docker-compose.yml
 
 # IDEs and editors
 /.idea

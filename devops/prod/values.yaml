@@ -135,6 +135,7 @@ iam-cache-server-helm:
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
     SENTRY_ENV: prod
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFVKQS7MfgeN9hdXrPG6HHH02O
     IPFS_CLIENT_HOST: ipfs.infura.io

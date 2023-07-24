@@ -7,13 +7,14 @@ import { URL } from 'url';
 import { RoleIssuerResolver } from '../claim/resolvers/issuer.resolver';
 import { RoleRevokerResolver } from '../claim/resolvers/revoker.resolver';
 import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
+import { IPFSInfuraConfigToken } from '../ipfs/ipfs.types';
 import { LoginStrategyOptions } from 'passport-did-auth/dist/lib/LoginStrategy';
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
   constructor(
     configService: ConfigService,
-    @Inject('IPFSClientConfig') ipfsConfig,
+    @Inject(IPFSInfuraConfigToken) ipfsConfig,
     issuerResolver: RoleIssuerResolver,
     revokerResolver: RoleRevokerResolver,
     credentialResolver: RoleCredentialResolver
