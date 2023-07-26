@@ -69,6 +69,10 @@ export class DIDProcessor {
       doc = await this.didService.incrementalRefreshCachedDocument(job.data);
     }
 
-    await this.pinQueue.add(PIN_CLAIM_JOB_NAME, doc);
+    for (const service of doc.service) {
+      await this.pinQueue.add(PIN_CLAIM_JOB_NAME, {
+        cid: service.serviceEndpoint,
+      });
+    }
   }
 }
