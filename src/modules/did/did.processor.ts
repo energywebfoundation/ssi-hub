@@ -55,9 +55,13 @@ export class DIDProcessor {
   public async processDIDDocumentAddition(job: Job<string>) {
     const doc = await this.didService.addCachedDocument(job.data);
 
-    for (const cid of doc.service.map((s) => s.serviceEndpoint)) {
-      await this.pinQueue.add(PIN_CLAIM_JOB_NAME, { cid });
-    }
+    await Promise.all(
+      doc.service.map(({ serviceEndpoint }) => {
+        this.pinQueue.add(PIN_CLAIM_JOB_NAME, {
+          cid: serviceEndpoint,
+        });
+      })
+    );
   }
 
   @Process(UPDATE_DID_DOC_JOB_NAME)
@@ -69,6 +73,12 @@ export class DIDProcessor {
       doc = await this.didService.incrementalRefreshCachedDocument(job.data);
     }
 
-    await this.pinQueue.add(PIN_CLAIM_JOB_NAME, doc);
+    await Promise.all(
+      doc.service.map(({ serviceEndpoint }) => {
+        this.pinQueue.add(PIN_CLAIM_JOB_NAME, {
+          cid: serviceEndpoint,
+        });
+      })
+    );
   }
 }
