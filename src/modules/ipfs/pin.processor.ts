@@ -2,6 +2,7 @@ import {
   OnQueueError,
   OnQueueFailed,
   OnQueueStalled,
+  OnQueueWaiting,
   Process,
   Processor,
 } from '@nestjs/bull';
@@ -29,6 +30,11 @@ export class PinProcessor {
   @OnQueueStalled()
   onStalled(job: Job) {
     this.logger.warn(`Stalled ${job.name} claim ${JSON.parse(job.data).cid}`);
+  }
+
+  @OnQueueWaiting()
+  async OnQueueWaiting(job: Job) {
+    this.logger.debug(`Waiting ${job.name} claim ${job.data}`);
   }
 
   @OnQueueFailed()
