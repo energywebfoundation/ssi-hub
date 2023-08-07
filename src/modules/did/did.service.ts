@@ -493,12 +493,6 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       );
       const jobsCounts = await this.didQueue.getJobCounts();
       this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
-      if (/OOM/.test(String(e))) {
-        this.logger.warn(
-          `Redis exceeded memory limit. Removing waiting jobs from DID queue`
-        );
-        await this.didQueue.empty();
-      }
     }
   }
 }

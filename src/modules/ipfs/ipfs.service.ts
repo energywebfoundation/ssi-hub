@@ -72,12 +72,6 @@ export class IPFSService {
       this.logger.debug(`Error to add pin job for cid ${cid}: ${e}`);
       const jobsCounts = await this.pinsQueue.getJobCounts();
       this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
-      if (/OOM/.test(String(e))) {
-        this.logger.warn(
-          `Redis exceeded memory limit. Removing waiting jobs from PIN queue`
-        );
-        await this.pinsQueue.empty();
-      }
     }
     return claim;
   }
