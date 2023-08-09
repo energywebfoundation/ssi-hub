@@ -10,6 +10,7 @@
 
 ### Methods
 
+- [OnQueueWaiting](modules_did_did_processor.DIDProcessor.md#onqueuewaiting)
 - [onActive](modules_did_did_processor.DIDProcessor.md#onactive)
 - [onError](modules_did_did_processor.DIDProcessor.md#onerror)
 - [onFailed](modules_did_did_processor.DIDProcessor.md#onfailed)
@@ -33,6 +34,22 @@
 | `pinQueue` | `Queue`<`any`\> |
 
 ## Methods
+
+### OnQueueWaiting
+
+▸ **OnQueueWaiting**(`job`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `job` | `Job`<`any`\> |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
 
 ### onActive
 

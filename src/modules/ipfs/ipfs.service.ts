@@ -6,6 +6,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { PIN_CLAIM_QUEUE_NAME, PIN_CLAIM_JOB_NAME } from './ipfs.types';
 import { Logger } from '../logger/logger.service';
+import { inspect } from 'util';
 
 @Injectable()
 export class IPFSService {
@@ -62,10 +63,16 @@ export class IPFSService {
       throw new HttpException(`Claim ${cid} not found`, HttpStatus.NOT_FOUND);
     }
 
-    await this.pinsQueue.add(
-      PIN_CLAIM_JOB_NAME,
-      JSON.stringify({ cid, claim })
-    );
+    try {
+      await this.pinsQueue.add(
+        PIN_CLAIM_JOB_NAME,
+        JSON.stringify({ cid, claim })
+      );
+    } catch (e) {
+      this.logger.debug(`Error to add pin job for cid ${cid}: ${e}`);
+      const jobsCounts = await this.pinsQueue.getJobCounts();
+      this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
+    }
     return claim;
   }
 

@@ -4,6 +4,7 @@ import {
   OnQueueError,
   OnQueueFailed,
   OnQueueStalled,
+  OnQueueWaiting,
   Process,
   Processor,
 } from '@nestjs/bull';
@@ -49,6 +50,11 @@ export class DIDProcessor {
   @OnQueueFailed()
   onFailed(job: Job) {
     this.logger.debug(`Failed ${job.name} document ${job.data}`);
+  }
+
+  @OnQueueWaiting()
+  async OnQueueWaiting(job: Job) {
+    this.logger.debug(`Waiting ${job.name} document ${job.data}`);
   }
 
   @Process(ADD_DID_DOC_JOB_NAME)

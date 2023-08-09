@@ -10,6 +10,7 @@
 
 ### Methods
 
+- [OnQueueWaiting](modules_ipfs_pin_processor.PinProcessor.md#onqueuewaiting)
 - [onError](modules_ipfs_pin_processor.PinProcessor.md#onerror)
 - [onFailed](modules_ipfs_pin_processor.PinProcessor.md#onfailed)
 - [onStalled](modules_ipfs_pin_processor.PinProcessor.md#onstalled)
@@ -30,6 +31,22 @@
 | `didStoreInfura` | `DidStore` |
 
 ## Methods
+
+### OnQueueWaiting
+
+▸ **OnQueueWaiting**(`job`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `job` | `Job`<`any`\> |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
 
 ### onError
 
