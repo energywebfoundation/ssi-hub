@@ -2,7 +2,7 @@ name: Build and deploy
 
 on:
   push:
-    branches: [ develop, master, release ]
+    branches: [ develop, release ]
     paths-ignore:
       - 'devops/**'    
   workflow_dispatch:
@@ -44,12 +44,6 @@ jobs:
                 echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_OUTPUT
                 echo "TAG_DRY_RUN=true" >> $GITHUB_OUTPUT
                 echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
-              elif [ "${{ github.ref }}" = "refs/heads/master" ]; then
-                echo "ENVIRONMENT=staging" >> $GITHUB_OUTPUT
-                echo "PRERELEASE=true" >> $GITHUB_OUTPUT
-                echo "IMAGE_TAG=staging" >> $GITHUB_OUTPUT
-                echo "TAG_DRY_RUN=false" >> $GITHUB_OUTPUT
-                echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
               elif [ "${{ github.ref }}" = "refs/heads/release" ]; then
                 echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
                 echo "PRERELEASE=false" >> $GITHUB_OUTPUT
@@ -76,16 +70,15 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: release
-          pre_release_branches: master    # these branches will produce pre-release tag (eg. v0.1.2-beta.0)
           append_to_pre_release_tag: beta
           custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
           dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}   # pushes to develop won't trigger tagging
 
       - name: Create a GitHub release
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release'
         uses: ncipollo/release-action@v1.12.0
         with:
-          prerelease: ${{  needs.configure.outputs.PRERELEASE  }}   # master branch will create a pre-release
+          prerelease: ${{  needs.configure.outputs.PRERELEASE  }} 
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
@@ -124,7 +117,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       # When running on develop branch we want to tag Docker images with unique id and branch name only.
-      # When running on master and release we're adding sem ver and latest (for release) tags too.
+      # When running on release we're adding sem ver and latest (for release) tags too.
       - name: Setup Docker tags
         id: tags
         run: |
