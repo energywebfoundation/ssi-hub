@@ -96,13 +96,13 @@ ___
 
 ### create
 
-▸ `Static` **create**(`__namedParameters`): `Promise`<[`RoleDTO`](modules_role_role_dto.RoleDTO.md)\>
+▸ `Static` **create**(`«destructured»`): `Promise`<[`RoleDTO`](modules_role_role_dto.RoleDTO.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Partial`<[`RoleDTO`](modules_role_role_dto.RoleDTO.md)\> |
+| `«destructured»` | `Partial`<[`RoleDTO`](modules_role_role_dto.RoleDTO.md)\> |
 
 #### Returns
 

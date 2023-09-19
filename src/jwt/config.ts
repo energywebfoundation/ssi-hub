@@ -9,8 +9,8 @@ export const getJWTConfig = async (
   configService: ConfigService
 ): Promise<JwtModuleOptions> => {
   const [publicKey, privateKey] = await Promise.all([
-    readFile(configService.get<string>('JWT_PUBLIC_KEY')),
-    readFile(configService.get<string>('JWT_PRIVATE_KEY')),
+    readFile(configService.get<string>('JWT_PUBLIC_KEY_PATH')),
+    readFile(configService.get<string>('JWT_PRIVATE_KEY_PATH')),
   ]);
 
   return {

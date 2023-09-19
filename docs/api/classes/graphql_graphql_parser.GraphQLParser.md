@@ -22,15 +22,15 @@
 
 ### isFieldRequested
 
-▸ **isFieldRequested**(`__namedParameters`): `boolean`
+▸ **isFieldRequested**(`«destructured»`): `boolean`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.field` | `string` |
-| `__namedParameters.infoObject` | `GraphQLResolveInfo` |
+| `«destructured»` | `Object` |
+| › `field` | `string` |
+| › `infoObject` | `GraphQLResolveInfo` |
 
 #### Returns
 

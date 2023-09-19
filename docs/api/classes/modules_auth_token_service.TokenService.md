@@ -10,10 +10,11 @@
 
 ### Methods
 
+- [checkAccessTokenOrigin](modules_auth_token_service.TokenService.md#checkaccesstokenorigin)
 - [generateAccessToken](modules_auth_token_service.TokenService.md#generateaccesstoken)
 - [generateRefreshToken](modules_auth_token_service.TokenService.md#generaterefreshtoken)
-- [handleOriginCheck](modules_auth_token_service.TokenService.md#handleorigincheck)
 - [invalidateRefreshToken](modules_auth_token_service.TokenService.md#invalidaterefreshtoken)
+- [isLoginOriginMatchesRequestOrigin](modules_auth_token_service.TokenService.md#isloginoriginmatchesrequestorigin)
 - [verifyAccessToken](modules_auth_token_service.TokenService.md#verifyaccesstoken)
 - [verifyRefreshToken](modules_auth_token_service.TokenService.md#verifyrefreshtoken)
 
@@ -33,42 +34,9 @@
 
 ## Methods
 
-### generateAccessToken
+### checkAccessTokenOrigin
 
-▸ **generateAccessToken**(`data`): `Promise`<`string`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`TokenPayload`](../interfaces/modules_auth_token_service.TokenPayload.md) |
-
-#### Returns
-
-`Promise`<`string`\>
-
-___
-
-### generateRefreshToken
-
-▸ **generateRefreshToken**(`__namedParameters`): `Promise`<`string`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.userDid` | `string` |
-
-#### Returns
-
-`Promise`<`string`\>
-
-___
-
-### handleOriginCheck
-
-▸ **handleOriginCheck**(`req`, `res`, `next`): `Promise`<`void`\>
+▸ **checkAccessTokenOrigin**(`req`, `res`, `next`): `Promise`<`void`\>
 
 Our approach to prevent or at least maximum decrease chances for any CSRF attacks:
 
@@ -97,9 +65,43 @@ A pattern such as the double cookie submit pattern cannot be used because the ca
 
 ___
 
+### generateAccessToken
+
+▸ **generateAccessToken**(`data`): `Promise`<`string`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `data` | [`TokenPayload`](../interfaces/modules_auth_token_service.TokenPayload.md) |
+
+#### Returns
+
+`Promise`<`string`\>
+
+___
+
+### generateRefreshToken
+
+▸ **generateRefreshToken**(`«destructured»`): `Promise`<`string`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `origin` | `string` |
+| › `userDid` | `string` |
+
+#### Returns
+
+`Promise`<`string`\>
+
+___
+
 ### invalidateRefreshToken
 
-▸ **invalidateRefreshToken**(`id`): `Promise`<`void`\>
+▸ **invalidateRefreshToken**(`id`): `Promise`<`number`\>
 
 #### Parameters
 
@@ -109,7 +111,26 @@ ___
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<`number`\>
+
+___
+
+### isLoginOriginMatchesRequestOrigin
+
+▸ **isLoginOriginMatchesRequestOrigin**(`origin`, `req`): `boolean`
+
+Checks that `origin` of token corresponds to origin of request
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `origin` | `string` | Origin specified for token |
+| `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> | Http request object being authenticated with token |
+
+#### Returns
+
+`boolean`
 
 ___
 

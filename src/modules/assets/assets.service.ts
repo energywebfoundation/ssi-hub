@@ -157,8 +157,9 @@ export class AssetsService {
       'ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS'
     );
 
-    const ASSETS_SYNC_ENABLED =
-      this.configService.get<string>('ASSETS_SYNC_ENABLED') === 'true';
+    const ASSETS_SYNC_ENABLED = this.configService.get<boolean>(
+      'ASSETS_SYNC_ENABLED'
+    );
 
     if (ASSETS_SYNC_ENABLED && ASSETS_SYNC_INTERVAL) {
       const interval = setInterval(

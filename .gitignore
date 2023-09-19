@@ -2,7 +2,6 @@
 /dist
 /node_modules
 /src/ethers
-.env
 
 # Logs
 logs
@@ -12,6 +11,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 *-audit.json
+ormlogs.log
 
 # OS
 .DS_Store
@@ -19,6 +19,8 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+/e2e/setupIpfsCluster/ipfs0/
+!/e2e/setupIpfsCluster/docker-compose.yml
 
 # IDEs and editors
 /.idea
@@ -41,6 +43,5 @@ lerna-debug.log*
 # Using either dev or prod docker-compose file
 docker-compose.yml
 db_dumps
-ormconfig.json
 private.pem
 public.pem

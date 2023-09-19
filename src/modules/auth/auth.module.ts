@@ -6,7 +6,6 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ApplicationService } from '../application/application.service';
-import { CookiesServices } from './cookies.service';
 import { JwtAuthGuard } from './jwt.guard';
 import { LoginController } from './login.controller';
 import { LoginGuard } from './login.guard';
@@ -19,7 +18,9 @@ import { GqlAuthGuard } from './jwt.gql.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { getJWTConfig } from '../../jwt/config';
 import { ConfigService } from '@nestjs/config';
+import { NextFunction, Request, Response } from 'express';
 import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
+import { ClaimModule } from '../claim/claim.module';
 
 @Global()
 @Module({
@@ -29,11 +30,11 @@ import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
       useFactory: getJWTConfig,
       inject: [ConfigService],
     }),
+    ClaimModule,
   ],
 
   controllers: [LoginController],
   providers: [
-    CookiesServices,
     ApplicationService,
     LoginGuard,
     JwtAuthGuard,
@@ -46,12 +47,15 @@ import { STATUS_LIST_MODULE_PATH } from '../status-list/status-list.const';
   exports: [JwtAuthGuard, JwtStrategy, GqlAuthGuard],
 })
 export class AuthModule implements NestModule {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor(
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService
+  ) {}
 
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply((req, res, next) =>
-        this.tokenService.handleOriginCheck(req, res, next)
+      .apply((req: Request, res: Response, next: NextFunction) =>
+        this.tokenService.checkAccessTokenOrigin(req, res, next)
       )
       .exclude(
         { path: '/v1/login', method: RequestMethod.ALL },
@@ -63,8 +67,23 @@ export class AuthModule implements NestModule {
         {
           path: `/v1/${STATUS_LIST_MODULE_PATH}/:credentialId`,
           method: RequestMethod.GET,
-        }
+        },
+        { path: '/v1/login/siwe/initiate', method: RequestMethod.POST },
+        { path: '/v1/login/siwe/verify', method: RequestMethod.POST }
       )
-      .forRoutes({ path: '/*', method: RequestMethod.ALL });
+      .forRoutes({ path: '/*', method: RequestMethod.ALL })
+      .apply((_req: Request, res: Response, next: NextFunction) => {
+        if (!this.configService.get('BLOCKNUM_AUTH_ENABLED')) {
+          res.status(404).send({
+            code: 404,
+            error: 'Not Found',
+            message:
+              'Authentication at this endpoint is disabled. Other authentication protocols may be available',
+          });
+        } else {
+          next();
+        }
+      })
+      .forRoutes({ path: '/v1/login', method: RequestMethod.POST });
   }
 }

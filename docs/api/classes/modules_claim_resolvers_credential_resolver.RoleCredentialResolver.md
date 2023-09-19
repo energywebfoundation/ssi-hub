@@ -17,6 +17,7 @@
 - [credentialsOf](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#credentialsof)
 - [eip191JwtsOf](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#eip191jwtsof)
 - [getCredential](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getcredential)
+- [getDIDDocument](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getdiddocument)
 - [getEIP191JWT](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#geteip191jwt)
 - [getVerifiableCredential](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#getverifiablecredential)
 - [serviceEndpointsToCredentials](modules_claim_resolvers_credential_resolver.RoleCredentialResolver.md#serviceendpointstocredentials)
@@ -94,6 +95,26 @@ ___
 #### Implementation of
 
 CredentialResolver.getCredential
+
+___
+
+### getDIDDocument
+
+▸ **getDIDDocument**(`did`): `Promise`<`IDIDDocument`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
+
+#### Returns
+
+`Promise`<`IDIDDocument`\>
+
+#### Implementation of
+
+CredentialResolver.getDIDDocument
 
 ___
 

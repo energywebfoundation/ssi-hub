@@ -10,7 +10,10 @@ import { RolePayload } from '@energyweb/vc-verification';
 import { RoleCredentialSubject } from '@energyweb/credential-governance';
 import * as jwt from 'jsonwebtoken';
 import { DIDService } from '../../did/did.service';
+import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RoleCredentialResolver implements CredentialResolver {
   constructor(private readonly didService: DIDService) {}
 
@@ -76,7 +79,11 @@ export class RoleCredentialResolver implements CredentialResolver {
     return tokens
       .map((token) => {
         try {
-          return jwt.decode(token) as RolePayload;
+          const decoded = jwt.decode(token) as RolePayload;
+          return {
+            eip191Jwt: token,
+            payload: decoded,
+          };
         } catch (_) {
           return {};
         }
@@ -95,7 +102,7 @@ export class RoleCredentialResolver implements CredentialResolver {
     tokens: string[]
   ): VerifiableCredential<RoleCredentialSubject>[] {
     return tokens
-      .map((token) => {
+      ?.map((token) => {
         try {
           return JSON.parse(token);
         } catch (_) {
@@ -103,5 +110,9 @@ export class RoleCredentialResolver implements CredentialResolver {
         }
       })
       .filter(isVerifiableCredential);
+  }
+
+  getDIDDocument(did: string): Promise<IDIDDocument> {
+    return this.didService.getById(did);
   }
 }

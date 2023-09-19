@@ -16,7 +16,8 @@ import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { DidStore } from '@ew-did-registry/did-ipfs-store';
+import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
+import { IPFSService } from '../ipfs/ipfs.service';
 
 const { formatBytes32String } = utils;
 
@@ -51,14 +52,7 @@ const repositoryMockFactory = jest.fn(() => ({
   }),
   save: jest.fn((entity) => entity),
 }));
-const queueMockFactory = jest.fn(() => ({}));
-jest.mock('@ew-did-registry/did-ipfs-store', () => {
-  return {
-    DidStore: jest.fn(() => {
-      return {};
-    }),
-  };
-});
+const queueMockFactory = jest.fn(() => ({ clean: jest.fn() }));
 jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
   ...(jest.requireActual('@ew-did-registry/did-ethr-resolver') as Record<
     string,
@@ -75,6 +69,7 @@ jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
 describe('DidDocumentService', () => {
   let service: DIDService;
   let didRegistry: EthereumDIDRegistry;
+  let module: TestingModule;
 
   beforeEach(async () => {
     didRegistry = (await deployContract(
@@ -82,7 +77,6 @@ describe('DidDocumentService', () => {
       ethrReg
     )) as EthereumDIDRegistry;
     await didRegistry.deployed();
-
     const MockConfigService = {
       get: jest.fn((key: string) => {
         if (key === 'DID_SYNC_ENABLED') {
@@ -95,14 +89,17 @@ describe('DidDocumentService', () => {
       }),
     };
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         DIDService,
         { provide: ConfigService, useValue: MockConfigService },
         { provide: SchedulerRegistry, useValue: MockObject },
         { provide: HttpService, useValue: MockObject },
         { provide: Logger, useValue: MockLogger },
-        { provide: getQueueToken('dids'), useFactory: queueMockFactory },
+        {
+          provide: getQueueToken(UPDATE_DOCUMENT_QUEUE_NAME),
+          useFactory: queueMockFactory,
+        },
         {
           provide: getRepositoryToken(DIDDocumentEntity),
           useFactory: repositoryMockFactory,
@@ -118,12 +115,16 @@ describe('DidDocumentService', () => {
           }),
           inject: [ConfigService],
         },
-        { provide: DidStore, useValue: MockObject },
+        { provide: IPFSService, useValue: MockObject },
       ],
     }).compile();
     await module.init();
 
     service = module.get<DIDService>(DIDService);
+  });
+
+  afterEach(async () => {
+    await module.close();
   });
 
   afterAll(() => {
