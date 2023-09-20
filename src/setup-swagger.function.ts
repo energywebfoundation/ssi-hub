@@ -10,7 +10,11 @@ export const setupSwagger = (app: INestApplication, config: ConfigService) => {
   const options = new DocumentBuilder()
     .setTitle('API')
     .setDescription('Cache Server API documentation')
-    .setVersion(`(${buildInfo.gitSha}.${buildInfo.timestamp})`);
+    .setVersion(
+      `(${buildInfo.gitSha || 'no-sha'}.${
+        buildInfo.timestamp || 'no-timestamp'
+      })`
+    );
 
   if (config.get<boolean>('ENABLE_AUTH')) {
     options.addBearerAuth();
