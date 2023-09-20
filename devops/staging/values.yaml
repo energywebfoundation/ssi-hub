@@ -138,6 +138,7 @@ iam-cache-server-helm:
     NESTJS_PORT: 3000
     DB_MAXIMUM_CONNECTION_POOL: 150 # 1024^3 * 4 / 9531392 = 450 . 450/3 = 150. https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: staging
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFOoYU78LsICBTNhrwRGctWE7i
     IPFS_CLIENT_HOST: ipfs.infura.io

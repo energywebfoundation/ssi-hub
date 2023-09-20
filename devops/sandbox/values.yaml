@@ -110,6 +110,7 @@ iam-cache-server-helm:
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_SECRET: 9506198a91243f03417aaed60e5eb654
     IPFS_CLIENT_PROJECT_ID: 2DBFBP5zsjfImw1wBPn1Vx08Yd5

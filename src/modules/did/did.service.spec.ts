@@ -2,7 +2,6 @@
 import { IDIDDocument } from '@ew-did-registry/did-resolver-interface';
 import { addressOf, ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { Methods, Chain } from '@ew-did-registry/did';
-import { DidStore as DidStoreInfura } from 'didStoreInfura';
 import { getQueueToken } from '@nestjs/bull';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -17,7 +16,8 @@ import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { PIN_CLAIM_QUEUE_NAME, UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
+import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
+import { IPFSService } from '../ipfs/ipfs.service';
 
 const { formatBytes32String } = utils;
 
@@ -101,10 +101,6 @@ describe('DidDocumentService', () => {
           useFactory: queueMockFactory,
         },
         {
-          provide: getQueueToken(PIN_CLAIM_QUEUE_NAME),
-          useFactory: queueMockFactory,
-        },
-        {
           provide: getRepositoryToken(DIDDocumentEntity),
           useFactory: repositoryMockFactory,
         },
@@ -119,7 +115,7 @@ describe('DidDocumentService', () => {
           }),
           inject: [ConfigService],
         },
-        { provide: DidStoreInfura, useValue: MockObject },
+        { provide: IPFSService, useValue: MockObject },
       ],
     }).compile();
     await module.init();

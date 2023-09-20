@@ -26,7 +26,6 @@ import {
   DidEventNames,
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
-import { DidStore as DidStoreInfura } from 'didStoreInfura';
 import {
   documentFromLogs,
   Resolver,
@@ -45,6 +44,7 @@ import { Provider } from '../../common/provider';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { IPFSService } from '../ipfs/ipfs.service';
+import { inspect } from 'util';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
@@ -64,7 +64,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly didStore: DidStoreInfura
+    private readonly ipfsService: IPFSService
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -327,15 +327,12 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
    * @param did DID of the document service endpoints
    */
   public async resolveServiceEndpoints(did: string) {
-    if (!this.didStore) {
-      throw new Error(`resolveServiceEndpoints: DIDStore is undefined`);
-    }
     const { service } = await this.getById(did);
     return Promise.all(
       service
         .map(({ serviceEndpoint }) => serviceEndpoint)
         .filter((endpoint) => IPFSService.isCID(endpoint))
-        .map((cid) => this.didStore.get(cid))
+        .map((cid) => this.ipfsService.get(cid))
     );
   }
 
@@ -354,7 +351,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
-        await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did);
+        await this.pinDocument(did);
       }
     });
   }
@@ -363,7 +360,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     this.logger.debug(`Beginning sync of DID Documents`);
     const cachedDIDs = await this.didRepository.find({ select: ['id'] });
     cachedDIDs.forEach(async (did) => {
-      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did.id);
+      await this.pinDocument(did.id);
     });
   }
 
@@ -424,7 +421,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     return logs;
   }
 
-  private resolveNotCachedClaims(
+  private async resolveNotCachedClaims(
     services: IServiceEndpoint[],
     cachedServices: IClaim[] = []
   ): Promise<IClaim[]> {
@@ -442,7 +439,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           return { serviceEndpoint, ...rest };
         }
 
-        const token = await this.didStore.get(serviceEndpoint);
+        const token = await this.ipfsService.get(serviceEndpoint);
 
         if (isJWT(token)) {
           const decodedData = jwt.decode(token) as {
@@ -485,5 +482,17 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         }
       })
     );
+  }
+
+  private async pinDocument(did: string): Promise<void> {
+    try {
+      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did);
+    } catch (e) {
+      this.logger.warn(
+        `Error to add DID synchronization job for document ${did}: ${e}`
+      );
+      const jobsCounts = await this.didQueue.getJobCounts();
+      this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
+    }
   }
 }

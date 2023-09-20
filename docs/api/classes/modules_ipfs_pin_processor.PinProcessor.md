@@ -1,40 +1,40 @@
 # Class: PinProcessor
 
-[modules/did/pin.processor](../modules/modules_did_pin_processor.md).PinProcessor
+[modules/ipfs/pin.processor](../modules/modules_ipfs_pin_processor.md).PinProcessor
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](modules_did_pin_processor.PinProcessor.md#constructor)
+- [constructor](modules_ipfs_pin_processor.PinProcessor.md#constructor)
 
 ### Methods
 
-- [onActive](modules_did_pin_processor.PinProcessor.md#onactive)
-- [onError](modules_did_pin_processor.PinProcessor.md#onerror)
-- [onFailed](modules_did_pin_processor.PinProcessor.md#onfailed)
-- [onStalled](modules_did_pin_processor.PinProcessor.md#onstalled)
-- [pinClaims](modules_did_pin_processor.PinProcessor.md#pinclaims)
+- [OnQueueWaiting](modules_ipfs_pin_processor.PinProcessor.md#onqueuewaiting)
+- [onError](modules_ipfs_pin_processor.PinProcessor.md#onerror)
+- [onFailed](modules_ipfs_pin_processor.PinProcessor.md#onfailed)
+- [onStalled](modules_ipfs_pin_processor.PinProcessor.md#onstalled)
+- [pin](modules_ipfs_pin_processor.PinProcessor.md#pin)
 
 ## Constructors
 
 ### constructor
 
-• **new PinProcessor**(`logger`, `configService`, `didInfura`)
+• **new PinProcessor**(`logger`, `didStoreCluster`, `didStoreInfura`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
-| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
-| `didInfura` | `DidStore` |
+| `didStoreCluster` | `DidStore` |
+| `didStoreInfura` | `DidStore` |
 
 ## Methods
 
-### onActive
+### OnQueueWaiting
 
-▸ **onActive**(`job`): `void`
+▸ **OnQueueWaiting**(`job`): `Promise`<`void`\>
 
 #### Parameters
 
@@ -44,7 +44,7 @@
 
 #### Returns
 
-`void`
+`Promise`<`void`\>
 
 ___
 
@@ -66,13 +66,14 @@ ___
 
 ### onFailed
 
-▸ **onFailed**(`job`): `void`
+▸ **onFailed**(`job`, `err`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `job` | `Job`<`any`\> |
+| `err` | `Error` |
 
 #### Returns
 
@@ -96,9 +97,9 @@ ___
 
 ___
 
-### pinClaims
+### pin
 
-▸ **pinClaims**(`doc`): `Promise`<`void`\>
+▸ **pin**(`job`): `Promise`<`void`\>
 
 This method migrates claims by retrieving from one DidStore and pinning to another
 It was implemented for EW migration from Infura to EW hosted IPFS
@@ -107,7 +108,7 @@ It was implemented for EW migration from Infura to EW hosted IPFS
 
 | Name | Type |
 | :------ | :------ |
-| `doc` | [`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md) |
+| `job` | `Job`<`any`\> |
 
 #### Returns
 

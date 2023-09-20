@@ -109,6 +109,7 @@ iam-cache-server-helm:
     NESTJS_PORT: 3000
     DB_MAXIMUM_CONNECTION_POOL: 56 # https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: dev
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFOVbJGkFy289ekGv5BjgZngCt
     IPFS_CLIENT_HOST: ipfs.infura.io
