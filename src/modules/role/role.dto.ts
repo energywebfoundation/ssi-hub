@@ -75,6 +75,15 @@ export class FieldsDTO implements Fields {
   @IsDate()
   @ApiProperty()
   maxDate?: Date;
+
+  /**
+   * A JSON Schema definition
+   * For more information about JSON Schema, see https://json-schema.org/
+   */
+  @IsOptional()
+  @IsObject()
+  @ApiProperty()
+  schema?: Record<string, unknown>;
 }
 
 export class PreconditionsDTO implements EnrolmentPrecondition {

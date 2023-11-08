@@ -10,7 +10,9 @@
 
 ### Methods
 
+- [initiateSiweLogin](modules_auth_login_controller.LoginController.md#initiatesiwelogin)
 - [login](modules_auth_login_controller.LoginController.md#login)
+- [loginSiwe](modules_auth_login_controller.LoginController.md#loginsiwe)
 - [refreshToken](modules_auth_login_controller.LoginController.md#refreshtoken)
 - [status](modules_auth_login_controller.LoginController.md#status)
 
@@ -18,18 +20,34 @@
 
 ### constructor
 
-• **new LoginController**(`tokenService`, `cookiesServices`, `configService`, `roleService`)
+• **new LoginController**(`tokenService`, `configService`, `roleService`, `redis`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `tokenService` | [`TokenService`](modules_auth_token_service.TokenService.md) |
-| `cookiesServices` | [`CookiesServices`](modules_auth_cookies_service.CookiesServices.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `roleService` | [`RoleService`](modules_role_role_service.RoleService.md) |
+| `redis` | `RedisClientType`<{}, `Record`<`string`, `never`\>, `Record`<`string`, `never`\>\> |
 
 ## Methods
+
+### initiateSiweLogin
+
+▸ **initiateSiweLogin**(`res`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `res` | `Response`<`any`, `Record`<`string`, `any`\>\> |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
 
 ### login
 
@@ -41,6 +59,24 @@
 | :------ | :------ |
 | `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
 | `res` | `Response`<`any`, `Record`<`string`, `any`\>\> |
+
+#### Returns
+
+`Promise`<`void`\>
+
+___
+
+### loginSiwe
+
+▸ **loginSiwe**(`req`, `res`, `«destructured»`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `req` | `Request`<`ParamsDictionary`, `any`, `any`, `ParsedQs`, `Record`<`string`, `any`\>\> |
+| `res` | `Response`<`any`, `Record`<`string`, `any`\>\> |
+| `«destructured»` | [`SiweReqPayloadDTO`](modules_auth_siwe_dto.SiweReqPayloadDTO.md) |
 
 #### Returns
 

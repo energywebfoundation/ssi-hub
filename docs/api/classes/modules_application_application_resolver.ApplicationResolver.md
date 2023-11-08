@@ -62,13 +62,13 @@ ___
 
 ### roles
 
-▸ **roles**(`__namedParameters`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
+▸ **roles**(`«destructured»`): `Promise`<[`Role`](modules_role_role_entity.Role.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`Application`](modules_application_application_entity.Application.md) |
+| `«destructured»` | [`Application`](modules_application_application_entity.Application.md) |
 
 #### Returns
 

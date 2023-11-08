@@ -132,7 +132,7 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`, `__namedParameters?`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
+▸ **getByOwner**(`owner`, `«destructured»?`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)[]\>
 
 Returns organizations owned by `owner`
 Also returns the suborgs of the org and, optionally, associated apps and/or roles
@@ -142,8 +142,8 @@ Also returns the suborgs of the org and, optionally, associated apps and/or role
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
-| `__namedParameters?` | `Object` |
-| `__namedParameters.withRelations?` | `boolean` |
+| `«destructured»` | `Object` |
+| › `withRelations?` | `boolean` |
 
 #### Returns
 
@@ -189,19 +189,19 @@ ___
 
 ### handleOrgSyncWithEns
 
-▸ **handleOrgSyncWithEns**(`__namedParameters`): `Promise`<`void`\>
+▸ **handleOrgSyncWithEns**(`«destructured»`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.metadata` | `IOrganizationDefinition` |
-| `__namedParameters.name` | `string` |
-| `__namedParameters.namehash` | `string` |
-| `__namedParameters.namespace` | `string` |
-| `__namedParameters.owner` | `string` |
-| `__namedParameters.parentOrgNamespace` | `string` |
+| `«destructured»` | `Object` |
+| › `metadata` | `IOrganizationDefinition` |
+| › `name` | `string` |
+| › `namehash` | `string` |
+| › `namespace` | `string` |
+| › `owner` | `string` |
+| › `parentOrgNamespace` | `string` |
 
 #### Returns
 
@@ -247,7 +247,7 @@ ___
 
 ### update
 
-▸ **update**(`__namedParameters`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)\>
+▸ **update**(`«destructured»`): `Promise`<[`Organization`](modules_organization_organization_entity.Organization.md)\>
 
 Update existing Org with given namespace
 
@@ -255,7 +255,7 @@ Update existing Org with given namespace
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | [`OrganizationDTO`](modules_organization_organization_dto.OrganizationDTO.md) |
+| `«destructured»` | [`OrganizationDTO`](modules_organization_organization_dto.OrganizationDTO.md) |
 
 #### Returns
 

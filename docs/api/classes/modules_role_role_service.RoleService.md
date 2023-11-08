@@ -12,6 +12,7 @@
 
 - [create](modules_role_role_service.RoleService.md#create)
 - [exists](modules_role_role_service.RoleService.md#exists)
+- [fetchEnrolmentPreconditions](modules_role_role_service.RoleService.md#fetchenrolmentpreconditions)
 - [getAll](modules_role_role_service.RoleService.md#getall)
 - [getByNamehash](modules_role_role_service.RoleService.md#getbynamehash)
 - [getByNamespace](modules_role_role_service.RoleService.md#getbynamespace)
@@ -22,7 +23,6 @@
 - [removeByNameHash](modules_role_role_service.RoleService.md#removebynamehash)
 - [update](modules_role_role_service.RoleService.md#update)
 - [verifyEnrolmentIssuer](modules_role_role_service.RoleService.md#verifyenrolmentissuer)
-- [verifyEnrolmentPrecondition](modules_role_role_service.RoleService.md#verifyenrolmentprecondition)
 - [verifyUserRoles](modules_role_role_service.RoleService.md#verifyuserroles)
 
 ## Constructors
@@ -78,6 +78,27 @@ return true if role with given namespace exists
 #### Returns
 
 `Promise`<`boolean`\>
+
+___
+
+### fetchEnrolmentPreconditions
+
+▸ **fetchEnrolmentPreconditions**(`claimType`): `Promise`<{}[]\>
+
+Fetches enrolment preconditions for a given role (claim type)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `claimType` | `Object` | the role to fetch enrolment preconditions for |
+| `claimType.claimType` | `string` | - |
+
+#### Returns
+
+`Promise`<{}[]\>
+
+enrolment preconditions for a given role (claim type)
 
 ___
 
@@ -165,20 +186,20 @@ ___
 
 ### handleRoleSyncWithEns
 
-▸ **handleRoleSyncWithEns**(`__namedParameters`): `Promise`<`void`\>
+▸ **handleRoleSyncWithEns**(`«destructured»`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.appNamespace?` | `string` |
-| `__namedParameters.metadata` | `IRoleDefinition` \| `IRoleDefinitionV2` |
-| `__namedParameters.name` | `string` |
-| `__namedParameters.namehash` | `string` |
-| `__namedParameters.namespace` | `string` |
-| `__namedParameters.orgNamespace?` | `string` |
-| `__namedParameters.owner` | `string` |
+| `«destructured»` | `Object` |
+| › `appNamespace?` | `string` |
+| › `metadata` | `IRoleDefinitionV2` \| `IRoleDefinition` |
+| › `name` | `string` |
+| › `namehash` | `string` |
+| › `namespace` | `string` |
+| › `orgNamespace?` | `string` |
+| › `owner` | `string` |
 
 #### Returns
 
@@ -242,33 +263,15 @@ ___
 
 ### verifyEnrolmentIssuer
 
-▸ **verifyEnrolmentIssuer**(`__namedParameters`): `Promise`<`void`\>
+▸ **verifyEnrolmentIssuer**(`«destructured»`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.claimType` | `string` |
-| `__namedParameters.issuerDID` | `string` |
-
-#### Returns
-
-`Promise`<`void`\>
-
-___
-
-### verifyEnrolmentPrecondition
-
-▸ **verifyEnrolmentPrecondition**(`__namedParameters`): `Promise`<`void`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.claimType` | `string` |
-| `__namedParameters.userDID` | `string` |
+| `«destructured»` | `Object` |
+| › `claimType` | `string` |
+| › `issuerDID` | `string` |
 
 #### Returns
 

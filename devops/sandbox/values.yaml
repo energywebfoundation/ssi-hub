@@ -2,7 +2,7 @@ iam-cache-server-helm:
   replicaCount: 1
 
   image:
-    repository: "124847487737.dkr.ecr.us-west-2.amazonaws.com/ics-api"
+    repository: "ghcr.io/energywebfoundation/ssi-hub"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -20,7 +20,7 @@ iam-cache-server-helm:
   securityContext: { }
 
   service:
-    type: NodePort
+    type: ClusterIP
     port: 3000
 
   ingress:
@@ -53,6 +53,8 @@ iam-cache-server-helm:
   config:
     secretRefName: ics-secrets
     configRefName: ics-cm
+    jwtKeysSecretName: jwt-keys
+    jwtKeysMountPath: "/keys"
 
   sealedSecret:
     enabled: true
@@ -60,9 +62,12 @@ iam-cache-server-helm:
     encryptedData:
       SENTRY_DNS: AgB6Cjvjl4ykIZAadTyJSKH/QbkVN9QFTDrIPyevC2aOjU30EQDospRyd19KT6VuSA9O748/iCxZzpuwtzp2toHvzTaio211bFKDdkXi/FyHfOSLAGtx3c+vfot0ZC+TsCJU+5C7mGLAfeRo5GaRTxA4yCPSIt3Bz9/QmRnyTXW+LP/pg19ERIJCLs8D3osd3av79xfmNID4EkTnFqKCKKTju2cEXd4Vh87dXX6oq0Cd2LJ8F25J/gE2NKJsGkQAiNOToZChbjXsTU1WL/JwNaH+CydhdDt7A+GGlGcByvEpBTA5d+MkDm+bTCMe5pMuysuUbI49VyxYkNMIsXRbfPd8CezzGPd54BcI79opPEWe+xcBo3odPIoGP+2BwyEcoyPSa0SZ1wMHmzgyevDIOUS3ktRn6luTvtTDGbZoV9g9qKMRrgk2fYfH81yPNClR+AAUa/L09A83rqUSsKFP7fQIBb5nUjy8SPRh6hFyA5dFk+LMJGwB4q/NhPPEl2zmoP84VNqOGsXSTZjI7lrhy6HTYfN2gj2YNLHILHCggZn+nMOEeZLRczRX8OlnVzcSITZICe7/cWyynIsEY7p3HdYJ+k0iVZUe3ySxGQEFvWhUkXWUBYC1kN34G3R+TUxFdOgBoGcJKGoDXAHw5cDrW2LcQ2Um6T7b49Ta+NH7yJdLzRYQ1yuVs2E16oiM2GXHfQXpA0RJ8qlSFY8j10+8FNMPUsnSslHaSzF8dKzs+y8yBD+xE+vi3CGSeesBUz/xPnGYY6WiCsAREIu0KZp8vgLT5yDSlfhM94i0jQ==
       STRATEGY_PRIVATE_KEY: AgBM4BIbZIvZ9ErUDLWmmgw0UMEGk4k9hO54/tos4Rf9bUeewlDyAOrnz+gcl8uXuwFiGazQYNia2JFOjCapKnVt0h3LUjvubN4G2cVoQQl9E2+BDzSb7Ucji2UsdleN1ScOwd6XOADdw7Pa1LUXdpf32rf5YADhdYLGDiYy6hqpJ0OPd+61s92HgtyKHioTSP3fJ4YyFqgXQ4wORRR15rdwJdvzSxUrzGnft/ceuB+ilGJc0qSu/jT+SifQ1411zZ6/vsvhfvSq7q4wXEibn2OWSy7MxxNdYafVC7PbyFgc9i6t8V2YKJzUigIGV53ds9GuMK8i8CeGVg2R3e4iHyuOuWv6LeNjbdUd6QeAynOFVos9rBWwS/L7g+Rv0aUUnD016GYSoPwLGPRwvpyhk3jRtJ94uj4FAkUwWGWKagTA+F0uZyIjq2emO4opE8J5FwbPJOA3SKxfo0yPxgQF7S7uTAGlslQdxSrBk9ICUb5FuMVZ32Bxv3fbJ4R3xIS6D8g9hfPG3/P+zpvTxMzPlOjn7bgXHpbV6qOtt47OjTb9A+ELEVnwF/hOY6efSNa/MYlDU0wjF8CGveKFmYkSo9QHnTx7ruGu1s18yXMQZGK47WEERFR3WS0JqB7iQKv2KhPlMJLQapbROLP3MEYGWpEExDdfQRksmvCpQvQhM/7rtBpjobktxKfP6FVsiCTiL0A8Lkbo+i48oVti3SK6vNF2kDBhy4b6uLWwztYNvz3XL1ZalmcWSwe6iMtscD8Vcjms4FVe3hBRPZbXK5/wOpMq
+      ENS_URL: AgDogSHI4CvlKQEZAeop8qWQ4isVl9prSFdz7VDvSCJZ2M9cBsKfYcKFTZwuxznxGJ6vfNT9gpmNgB2R9sHvv+f0sx7ngK5noqQheAGvA6R5jks/5N+digvPrMAc8bZdrlo1WTedhKThJ/eM5S5jNQnBKbFeoUIrlUWvSRZWDYjMnzJm2HU1SCnO9hni6o0OUVde242b0c+AzKMCMHXTQ9wR5F3u0URuk8RguTScBaREN5brQeZs5hTTrAUZlqAc92an9khQhB8t0JEn4fc4Z4p97LuCVsVsA60GlcAGPy2hLOJXL2Qg7Q3k34ralmDCQBnby7dLFOL2aja0DtcKvhQYmoPlQyS4C1AHWZi8jOWCf9dzEYvDtsf/pkb5wdoqq7DblCsyRSN/w656kIsd992mbhIJMNeIKW64WdYQJ586VQZVxSBhKogXQISfDigHv7BhlyilBbQqHNEppdLNNTPvKhIX/M/efTgdlP0WcXCYWJL8UMW9afQTcS9lSf9od6/HcF2RRt4Lg/PSith2vsj/XOis+UAVIQRcC6ozqV8UVc4vqtrfkdL47MWppCljybbp0kQvKE/dLcXOre+/6ezQHcp8XDJYXWlcwbwuVMDr/W4qohydE1OAOdSznD+EiEq1Uvc178T44qK2QoQ0xan9okleU9UKl/yUKRxI1qnQswcMNNKciOdD43ikrMxfT/nFhi3MiMjec0av+Tx7EK4OuwXf5o8UGEwtspoIo1ftBxf8M858u2DkgZSMQ/KwXauuiExRkA==
 
   appValues:
     CHAIN_ID: 73799
+    CHAIN_NAME: volta
+    NATS_ENVIRONMENT_NAME: ewf-dev
     PUBLIC_RESOLVER_ADDRESS: 0x0a97e07c4Df22e2e31872F20C5BE191D5EFc4680
     ENS_REGISTRY_ADDRESS: 0xd7CeF70Ba7efc2035256d828d5287e2D285CD1ac
     ROOT_DOMAIN: iam.ewc
@@ -71,50 +76,57 @@ iam-cache-server-helm:
     DOMAIN_NOTIFIER_ADDRESS: 0xeea658026d6CDede4380D3aD030beAC911758A93
     RESOLVER_V1_ADDRESS: 0xf5EA22c1F799d425356c2aab2004200Ab4490D2b
     RESOLVER_V2_ADDRESS: 0xcf72f16Ab886776232bea2fcf3689761a0b74EfE
-    ASSETS_MANAGER_ADDRESS: 0x84d0c7284A869213CB047595d34d6044d9a7E14A
+    ASSETS_MANAGER_ADDRESS: 0x524563FeA0c9b54B337F0bAc366A9f541d26b3ea
     ASSETS_SYNC_INTERVAL_IN_HOURS: 10
     ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: 21
-    ASSETS_SYNC_ENABLED: true
+    ASSETS_SYNC_ENABLED: false
     DIDDOC_SYNC_INTERVAL_IN_HOURS: 12
     DID_SYNC_ENABLED: true
     DID_SYNC_MODE_FULL: false
     ENS_SYNC_INTERVAL_IN_HOURS: 11
     ENS_SYNC_ENABLED: true
-    ENABLE_AUTH: false
-    JWT_PRIVATE_KEY: /app/private.pem
-    JWT_PUBLIC_KEY: /app/public.pem
-    STRATEGY_CACHE_SERVER: https://ics-dev.energyweb.org/v1
+    ENABLE_AUTH: true
+    JWT_PRIVATE_KEY_PATH: /keys/private.pem
+    JWT_PUBLIC_KEY_PATH: /keys/public.pem
+    STRATEGY_CACHE_SERVER: https://identitycache-sandbox.energyweb.org/v1
+    BLOCKNUM_AUTH_ENABLED: false
     STRATEGY_NUM_BLOCKS_BACK: 10
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
+    SIWE_NONCE_EXPIRES_IN: 1m
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
-    STATUS_LIST_DOMAIN: https://ics-dev.energyweb.org/v1
+    STATUS_LIST_DOMAIN: https://identitycache-sandbox.energyweb.org/v1
     CHAIN_REQUEST_ATTEMPTS: 5
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics
     NODE_ENV: production
-    ENS_URL: https://volta-rpc-vkn5r5zx4ke71f9hcu0c.energyweb.org/
     UNIVERSAL_RESOLVER_URL: https://dev.uniresolver.io/10/identifiers/
     NATS_VERSION: 2.1.8
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_SECRET: 9506198a91243f03417aaed60e5eb654
     IPFS_CLIENT_PROJECT_ID: 2DBFBP5zsjfImw1wBPn1Vx08Yd5
     IPFS_CLIENT_HOST: ipfs.infura.io
+    DB_MAXIMUM_CONNECTION_POOL: 56 # https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
+    SENTRY_ENV: sandbox
 
   resources:
     limits:
       cpu: 750m
-      memory: 1Gi
+      memory: 1700Mi
     requests:
       cpu: 500m
       # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
       # We anticipate memory usage to decrease once node v18 is used
-      memory: 900Mi
+      memory: 1500Mi
 
   autoscaling:
     enabled: false

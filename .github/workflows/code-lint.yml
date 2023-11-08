@@ -7,6 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.19.1'
       - name: Install modules
         run: npm ci
       - name: Run ESLint
@@ -18,4 +22,4 @@ jobs:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           report-json: 'eslint_report.json'
       - name: Run Prettier
-        run: npx prettier --check src/**/*.*s test/**/*.*s
+        run: npx prettier --check src/**/*.*s e2e/**/*.*s

@@ -18,26 +18,28 @@
 
 ### constructor
 
-• **new RefreshTokenRepository**(`configService`)
+• **new RefreshTokenRepository**(`configService`, `client`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
+| `client` | `RedisClientType`<{}, `Record`<`string`, `never`\>, `Record`<`string`, `never`\>\> |
 
 ## Methods
 
 ### createRefreshToken
 
-▸ **createRefreshToken**(`__namedParameters`): `Promise`<`Record`<`string`, `any`\>\>
+▸ **createRefreshToken**(`«destructured»`): `Promise`<`Record`<`string`, `any`\>\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `__namedParameters` | `Object` |
-| `__namedParameters.userDid` | `string` |
+| `«destructured»` | `Object` |
+| › `origin` | `string` |
+| › `userDid` | `string` |
 
 #### Returns
 
@@ -47,7 +49,7 @@ ___
 
 ### deleteRefreshTokenById
 
-▸ **deleteRefreshTokenById**(`tokenId`): `Promise`<`void`\>
+▸ **deleteRefreshTokenById**(`tokenId`): `Promise`<`number`\>
 
 #### Parameters
 
@@ -57,7 +59,7 @@ ___
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`<`number`\>
 
 ___
 
