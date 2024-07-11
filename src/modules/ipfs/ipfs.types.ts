@@ -19,3 +19,8 @@ export const IPFSClusterConfigToken = Symbol.for('IPFSClusterConfigToken');
 
 export const PIN_CLAIM_JOB_NAME = 'pinning';
 export const PIN_CLAIM_QUEUE_NAME = 'pinClaimQueue';
+
+export type PinClaimData = {
+  cid: string;
+  claim?: string;
+};
