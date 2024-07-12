@@ -10,7 +10,11 @@ import { Job } from 'bull';
 import { DidStore as DidStoreInfura } from 'didStoreInfura';
 import { DidStore as DidStoreCluster } from 'didStoreCluster';
 import { Logger } from '../logger/logger.service';
-import { PIN_CLAIM_JOB_NAME, PIN_CLAIM_QUEUE_NAME } from './ipfs.types';
+import {
+  PinClaimData,
+  PIN_CLAIM_JOB_NAME,
+  PIN_CLAIM_QUEUE_NAME,
+} from './ipfs.types';
 
 @Processor(PIN_CLAIM_QUEUE_NAME)
 export class PinProcessor {
@@ -49,10 +53,9 @@ export class PinProcessor {
    * It was implemented for EW migration from Infura to EW hosted IPFS
    */
   @Process(PIN_CLAIM_JOB_NAME)
-  async pin(job: Job) {
-    const data = JSON.parse(job.data);
-    const cid = data.cid;
-    let claim = data.claim;
+  async pin(job: Job<PinClaimData>) {
+    const cid = job.data.cid;
+    let claim = job.data.claim;
     try {
       await this.didStoreCluster.get(cid);
     } catch (_) {

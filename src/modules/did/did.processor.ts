@@ -10,7 +10,11 @@ import {
 } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { Job, Queue } from 'bull';
-import { PIN_CLAIM_JOB_NAME, PIN_CLAIM_QUEUE_NAME } from '../ipfs/ipfs.types';
+import {
+  PinClaimData,
+  PIN_CLAIM_JOB_NAME,
+  PIN_CLAIM_QUEUE_NAME,
+} from '../ipfs/ipfs.types';
 import { Logger } from '../logger/logger.service';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
@@ -27,7 +31,7 @@ export class DIDProcessor {
     private readonly logger: Logger,
     private readonly configService: ConfigService,
     @InjectQueue(PIN_CLAIM_QUEUE_NAME)
-    private pinQueue: Queue
+    private pinQueue: Queue<PinClaimData>
   ) {
     this.logger.setContext(DIDProcessor.name);
   }
