@@ -108,7 +108,7 @@ It was implemented for EW migration from Infura to EW hosted IPFS
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `job` | `Job`<[`PinClaimData`](../modules/modules_ipfs_ipfs_types.md#pinclaimdata)\> |
 
 #### Returns
 
