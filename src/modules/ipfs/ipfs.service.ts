@@ -4,7 +4,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CID } from 'multiformats/cid';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { PIN_CLAIM_QUEUE_NAME, PIN_CLAIM_JOB_NAME } from './ipfs.types';
+import {
+  PIN_CLAIM_QUEUE_NAME,
+  PIN_CLAIM_JOB_NAME,
+  PinClaimData,
+} from './ipfs.types';
 import { Logger } from '../logger/logger.service';
 import { inspect } from 'util';
 
@@ -14,7 +18,7 @@ export class IPFSService {
     private didStoreCluster: DidStoreCluster,
     private didStoreInfura: DidStoreGateway,
     @InjectQueue(PIN_CLAIM_QUEUE_NAME)
-    private readonly pinsQueue: Queue<string>,
+    private readonly pinsQueue: Queue<PinClaimData>,
     private readonly logger: Logger
   ) {
     this.logger.setContext(IPFSService.name);
@@ -64,10 +68,7 @@ export class IPFSService {
     }
 
     try {
-      await this.pinsQueue.add(
-        PIN_CLAIM_JOB_NAME,
-        JSON.stringify({ cid, claim })
-      );
+      await this.pinsQueue.add(PIN_CLAIM_JOB_NAME, { cid, claim });
     } catch (e) {
       this.logger.debug(`Error to add pin job for cid ${cid}: ${e}`);
       const jobsCounts = await this.pinsQueue.getJobCounts();

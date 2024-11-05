@@ -6,6 +6,7 @@
 
 - [IpfsClusterConfig](modules_ipfs_ipfs_types.md#ipfsclusterconfig)
 - [IpfsInfuraConfig](modules_ipfs_ipfs_types.md#ipfsinfuraconfig)
+- [PinClaimData](modules_ipfs_ipfs_types.md#pinclaimdata)
 
 ### Variables
 
@@ -37,6 +38,19 @@ ___
 | `port?` | `number` |
 | `protocol?` | `string` |
 | `url?` | `string` |
+
+___
+
+### PinClaimData
+
+Ƭ **PinClaimData**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `cid` | `string` |
+| `claim?` | `string` |
 
 ## Variables
 
