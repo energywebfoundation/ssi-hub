@@ -44,7 +44,7 @@
 | `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 | `registrySettings` | `RegistrySettings` |
 | `ipfsService` | [`IPFSService`](modules_ipfs_ipfs_service.IPFSService.md) |
-| `lastDidSyncRepository` | `Repository`<[`LastDidSync`](modules_did_lastDidSync_entity.LastDidSync.md)\> |
+| `lastDidSyncRepository` | `Repository`<[`LatestDidSync`](modules_did_latestDidSync_entity.LatestDidSync.md)\> |
 
 ## Methods
 

@@ -18,7 +18,7 @@ import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
 import { IPFSService } from '../ipfs/ipfs.service';
-import { LastDidSync } from './lastDidSync.entity';
+import { LatestDidSync } from './latestDidSync.entity';
 
 const { formatBytes32String } = utils;
 
@@ -106,7 +106,7 @@ describe('DidDocumentService', () => {
           useFactory: repositoryMockFactory,
         },
         {
-          provide: getRepositoryToken(LastDidSync),
+          provide: getRepositoryToken(LatestDidSync),
           useFactory: repositoryMockFactory,
         },
         { provide: Provider, useValue: provider },
