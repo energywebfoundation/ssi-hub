@@ -46,7 +46,7 @@ import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { IPFSService } from '../ipfs/ipfs.service';
 import { inspect } from 'util';
-import { LastDidSync } from './lastDidSync.entity';
+import { LatestDidSync } from './latestDidSync.entity';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
@@ -67,8 +67,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
     private readonly ipfsService: IPFSService,
-    @InjectRepository(LastDidSync)
-    private readonly lastDidSyncRepository: Repository<LastDidSync>
+    @InjectRepository(LatestDidSync)
+    private readonly lastDidSyncRepository: Repository<LatestDidSync>
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -93,6 +93,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
+    this.syncDocuments();
   }
 
   async onModuleInit() {
