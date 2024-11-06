@@ -45,6 +45,7 @@ import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { IPFSService } from '../ipfs/ipfs.service';
 import { inspect } from 'util';
+import { LastDidSync } from './lastDidSync.entity';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
@@ -64,7 +65,9 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly ipfsService: IPFSService
+    private readonly ipfsService: IPFSService,
+    @InjectRepository(LastDidSync)
+    private readonly lastDidSyncRepository: Repository<LastDidSync>
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -360,10 +363,44 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   private async syncDocuments() {
     this.logger.debug(`Beginning sync of DID Documents`);
-    const cachedDIDs = await this.didRepository.find({ select: ['id'] });
-    cachedDIDs.forEach(async (did) => {
+    const didEventFilters = [
+      this.didRegistry.filters.DIDAttributeChanged(null),
+      this.didRegistry.filters.DIDDelegateChanged(null),
+      this.didRegistry.filters.DIDOwnerChanged(null),
+    ];
+    const syncs = await this.lastDidSyncRepository.find({
+      order: { createdDate: 'DESC' },
+    });
+    const fromBlock = syncs.length > 0 ? syncs[0].block : 0;
+    const topBlock = await this.provider.getBlockNumber();
+    const maxSyncInterval = 5000000;
+    const toBlock = Math.min(topBlock, fromBlock + maxSyncInterval);
+    this.logger.debug(
+      `Getting DID update events from block ${fromBlock} to block ${toBlock}...`
+    );
+    const events = (
+      await Promise.all(
+        didEventFilters.map((filter) =>
+          this.didRegistry.queryFilter(filter, fromBlock, toBlock)
+        )
+      )
+    ).flat();
+    let changedIdentities = events.map((event) => {
+      return event.args.identity;
+    });
+    // Deduplicate identities if there are appears in several events
+    changedIdentities = [...new Set(changedIdentities).values()];
+    const didsToSynchronize = (
+      await this.didRepository.find({ select: ['id'] })
+    ).filter((doc) => {
+      const identity = doc.id.split(':')[3];
+      return changedIdentities.includes(identity);
+    });
+    didsToSynchronize.forEach(async (did) => {
       await this.pinDocument(did.id);
     });
+
+    await this.lastDidSyncRepository.save({ block: toBlock });
   }
 
   private parseLogs(logs: string) {
