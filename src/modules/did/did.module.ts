@@ -5,6 +5,7 @@ import { Methods } from '@ew-did-registry/did';
 import { Provider } from '../../common/provider';
 import { DIDController } from './did.controller';
 import { DIDDocumentEntity } from './did.entity';
+import { LastDidSync } from './lastDidSync.entity';
 import { DIDProcessor } from './did.processor';
 import { DIDResolver } from './did.resolver';
 import { DIDService } from './did.service';
@@ -41,4 +42,4 @@ const RegistrySettingsProvider = {
   ],
   exports: [DIDService, RegistrySettingsProvider],
 })
-export class DIDModule { }
+export class DIDModule {}

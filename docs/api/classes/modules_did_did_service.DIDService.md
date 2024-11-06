@@ -28,7 +28,7 @@
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`, `lastDidSyncRepository`)
 
 #### Parameters
 
@@ -37,13 +37,14 @@
 | `config` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 | `schedulerRegistry` | `SchedulerRegistry` |
 | `httpService` | `HttpService` |
-| `didQueue` | `Queue`<`string`\> |
+| `didQueue` | `Queue`<[`UpdateDocumentJobData`](../modules/modules_did_did_types.md#updatedocumentjobdata)\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `didRepository` | `Repository`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\> |
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 | `registrySettings` | `RegistrySettings` |
 | `ipfsService` | [`IPFSService`](modules_ipfs_ipfs_service.IPFSService.md) |
+| `lastDidSyncRepository` | `Repository`<[`LastDidSync`](modules_did_lastDidSync_entity.LastDidSync.md)\> |
 
 ## Methods
 
