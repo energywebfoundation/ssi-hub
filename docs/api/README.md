@@ -3,7 +3,6 @@
 ## Description
 
 The SSI Hub aims to be a server application to provide SSI and IAM functionality as a part of an SSI wallet system. It performs the following functions:
-
 - Facilitates the credentials exchange between credential requesters and issuers.
 - Account multi-tenancy. Multiple users can store their data and data access is authorized appropriately.
 - Caches smart contract data such  DID documents in order to improve read-query performance.
@@ -15,57 +14,51 @@ This repository was formerly refered to as the `iam-cache-server`.
 ### Development
 
 ```bash
-git checkout develop
-cp .env.dev .env
-cp docker-compose.dev.yml docker-compose.yml
+$ git checkout develop
+$ cp .env.dev .env
+$ cp docker-compose.dev.yml docker-compose.yml
 ```
 
 Fill in configuration values in your `.env`. For reference look at `.env.dev`
 
 ### Production
-
 ```bash
-git checkout master
-cp .env.dist .env
-cp docker-compose.prod.yml docker-compose.yml
+$ git checkout master
+$ cp .env.dist .env
+$ cp docker-compose.prod.yml docker-compose.yml
 ```
-
 In `production` empty values need to be populated in `.env` file, while `development` is prepopulated with sample values  
 
 ## Installation
 
 ```bash
-npm install
+$ npm install
 ```
 
 On Apple Silicon (M1)  `TARGET_ARCH=amd64` may be required for dependencies to be build. So
 execute `TARGET_ARCH=amd64 npm install` or set `export TARGET_ARCH=amd64` in your shell.
 
 ## Generating the keys pair
-
 ```bash
-npm run generate:jwtkeys
+$ npm run generate:jwtkeys
 ```
 
 ## Generating types for contracts
-
 ```bash
-npm run build:contracts
+$ npm run build:contracts
 ```
 
 ## Running the app
 
 ### development
-
 ```bash
-docker-compose up -d
-npm run start:dev
+$ docker-compose up -d
+$ npm run start:dev
 ```
 
 ### production
-
 ```bash
-npm run docker:start
+$ npm run docker:start
 ```
 
 ### Cookies
@@ -106,7 +99,7 @@ $ npm run test:cov
 Release note is generated using [standard-version](https://www.npmjs.com/package/standard-version) which generates `CHANGELOG.md` based on last tag version and commits history. this can be generated using the command.
 
 ```bash
- npm run release
+ $ npm run release
 ```
 
 ## Commit Message Guidelines

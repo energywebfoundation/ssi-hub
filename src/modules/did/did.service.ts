@@ -387,7 +387,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     let changedIdentities = events.map((event) => {
       return event.args.identity;
     });
-    // Deduplicate identities if there are appears in several events
+    // Deduplicate identities if they are appears in multiple events
     changedIdentities = [...new Set(changedIdentities).values()];
     const didsToSynchronize = (
       await this.didRepository.find({ select: ['id'] })
