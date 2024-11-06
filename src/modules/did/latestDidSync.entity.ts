@@ -1,7 +1,7 @@
 import { CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
-export class LastDidSync {
+export class LatestDidSync {
   @PrimaryColumn()
   block: number;
 
