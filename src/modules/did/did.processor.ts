@@ -20,6 +20,7 @@ import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
 import {
   ADD_DID_DOC_JOB_NAME,
+  UpdateDocumentJobData,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
 } from './did.types';
@@ -42,28 +43,28 @@ export class DIDProcessor {
   }
 
   @OnQueueActive()
-  onActive(job: Job) {
-    this.logger.debug(`Starting ${job.name} document ${job.data}`);
+  onActive(job: Job<UpdateDocumentJobData>) {
+    this.logger.debug(`Starting ${job.name} document ${job.data.did}`);
   }
 
   @OnQueueStalled()
-  onStalled(job: Job) {
-    this.logger.debug(`Stalled ${job.name} document ${job.data}`);
+  onStalled(job: Job<UpdateDocumentJobData>) {
+    this.logger.debug(`Stalled ${job.name} document ${job.data.did}`);
   }
 
   @OnQueueFailed()
-  onFailed(job: Job) {
-    this.logger.debug(`Failed ${job.name} document ${job.data}`);
+  onFailed(job: Job<UpdateDocumentJobData>) {
+    this.logger.debug(`Failed ${job.name} document ${job.data.did}`);
   }
 
   @OnQueueWaiting()
-  async OnQueueWaiting(job: Job) {
-    this.logger.debug(`Waiting ${job.name} document ${job.data}`);
+  async OnQueueWaiting(jobId: number) {
+    this.logger.debug(`Waiting job ${jobId}`);
   }
 
   @Process(ADD_DID_DOC_JOB_NAME)
-  public async processDIDDocumentAddition(job: Job<string>) {
-    const doc = await this.didService.addCachedDocument(job.data);
+  public async processDIDDocumentAddition(job: Job<UpdateDocumentJobData>) {
+    const doc = await this.didService.addCachedDocument(job.data.did);
 
     await Promise.all(
       doc.service.map(({ serviceEndpoint }) => {
@@ -75,12 +76,14 @@ export class DIDProcessor {
   }
 
   @Process(UPDATE_DID_DOC_JOB_NAME)
-  public async processDIDDocumentRefresh(job: Job<string>) {
+  public async processDIDDocumentRefresh(job: Job<UpdateDocumentJobData>) {
     let doc: DIDDocumentEntity;
     if (this.configService.get<boolean>('DID_SYNC_MODE_FULL')) {
-      doc = await this.didService.addCachedDocument(job.data, true);
+      doc = await this.didService.addCachedDocument(job.data.did, true);
     } else {
-      doc = await this.didService.incrementalRefreshCachedDocument(job.data);
+      doc = await this.didService.incrementalRefreshCachedDocument(
+        job.data.did
+      );
     }
 
     await Promise.all(

@@ -35,6 +35,7 @@ import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDID
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import {
   DID,
+  UpdateDocumentJobData,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
 } from './did.types';
@@ -58,7 +59,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly httpService: HttpService,
     @InjectQueue(UPDATE_DOCUMENT_QUEUE_NAME)
-    private readonly didQueue: Queue<string>,
+    private readonly didQueue: Queue<UpdateDocumentJobData>,
     private readonly logger: Logger,
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
@@ -523,7 +524,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   private async pinDocument(did: string): Promise<void> {
     try {
-      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did);
+      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, { did });
     } catch (e) {
       this.logger.warn(
         `Error to add DID synchronization job for document ${did}: ${e}`
