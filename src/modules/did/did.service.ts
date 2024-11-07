@@ -53,6 +53,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly resolver: Resolver;
   private readonly JOBS_CLEANUP_DELAY = 1000;
+  private readonly MAX_EVENTS_QUERY_INTERVAL = 1000000;
 
   constructor(
     private readonly config: ConfigService,
@@ -68,7 +69,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
     private readonly ipfsService: IPFSService,
     @InjectRepository(LatestDidSync)
-    private readonly lastDidSyncRepository: Repository<LatestDidSync>
+    private readonly latestDidSyncRepository: Repository<LatestDidSync>
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -93,7 +94,6 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       );
       this.schedulerRegistry.addInterval('DID Document Sync', interval);
     }
-    this.syncDocuments();
   }
 
   async onModuleInit() {
@@ -365,33 +365,18 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   private async syncDocuments() {
     this.logger.debug(`Beginning sync of DID Documents`);
-    const didEventFilters = [
-      this.didRegistry.filters.DIDAttributeChanged(null),
-      this.didRegistry.filters.DIDDelegateChanged(null),
-      this.didRegistry.filters.DIDOwnerChanged(null),
-    ];
-    const syncs = await this.lastDidSyncRepository.find({
+    const syncs = await this.latestDidSyncRepository.find({
       order: { createdDate: 'DESC' },
     });
     const fromBlock = syncs.length > 0 ? syncs[0].block : 0;
     const topBlock = await this.provider.getBlockNumber();
-    const maxSyncInterval = 5000000;
-    const toBlock = Math.min(topBlock, fromBlock + maxSyncInterval);
     this.logger.debug(
-      `Getting DID update events from block ${fromBlock} to block ${toBlock}...`
+      `Getting DID update events from block ${fromBlock} to block ${topBlock}...`
     );
-    const events = (
-      await Promise.all(
-        didEventFilters.map((filter) =>
-          this.didRegistry.queryFilter(filter, fromBlock, toBlock)
-        )
-      )
-    ).flat();
-    let changedIdentities = events.map((event) => {
-      return event.args.identity;
-    });
-    // Deduplicate identities if they are appears in multiple events
-    changedIdentities = [...new Set(changedIdentities).values()];
+    const changedIdentities = await this.getChangedIdentities(
+      fromBlock,
+      topBlock
+    );
     const didsToSynchronize = (
       await this.didRepository.find({ select: ['id'] })
     ).filter((doc) => {
@@ -399,10 +384,11 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       return changedIdentities.includes(identity);
     });
     didsToSynchronize.forEach(async (did) => {
+      this.logger.debug(`Synchronizing DID ${did.id}`);
       await this.pinDocument(did.id);
     });
 
-    await this.lastDidSyncRepository.save({ block: toBlock });
+    await this.latestDidSyncRepository.save({ block: topBlock });
   }
 
   private parseLogs(logs: string) {
@@ -540,5 +526,42 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       const jobsCounts = await this.didQueue.getJobCounts();
       this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
     }
+  }
+
+  private async getChangedIdentities(
+    fromBlock: number,
+    topBlock: number
+  ): Promise<string[]> {
+    const didEventFilters = [
+      this.didRegistry.filters.DIDAttributeChanged(null),
+      this.didRegistry.filters.DIDDelegateChanged(null),
+      this.didRegistry.filters.DIDOwnerChanged(null),
+    ];
+    const events = [];
+    while (fromBlock < topBlock) {
+      const toBlock = Math.min(
+        topBlock,
+        fromBlock + this.MAX_EVENTS_QUERY_INTERVAL
+      );
+
+      const intervalEvents = (
+        await Promise.all(
+          didEventFilters.map((filter) =>
+            this.didRegistry.queryFilter(filter, fromBlock, toBlock)
+          )
+        )
+      ).flat();
+      this.logger.debug(
+        `Fetched ${intervalEvents.length} DID events from interval [${fromBlock}, ${toBlock}]`
+      );
+      events.push(...intervalEvents);
+      fromBlock += this.MAX_EVENTS_QUERY_INTERVAL;
+    }
+    this.logger.debug(`Update document events count ${events.length}`);
+    const changedIdentities = events.map((event) => {
+      return event.args.identity;
+    });
+    // Deduplicate identities if they are appears in multiple events
+    return [...new Set(changedIdentities).values()];
   }
 }
