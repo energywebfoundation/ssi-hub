@@ -508,7 +508,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   private async pinDocument(did: string): Promise<void> {
     try {
-      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, { did });
+      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, { did }, { jobId: did });
     } catch (e) {
       this.logger.warn(
         `Error to add DID synchronization job for document ${did}: ${e}`
