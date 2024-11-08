@@ -30,6 +30,7 @@ import {
   documentFromLogs,
   Resolver,
   mergeLogs,
+  addressOf,
 } from '@ew-did-registry/did-ethr-resolver';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
@@ -577,7 +578,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     const staleDIDs = (
       await this.didRepository.find({ select: ['id'] })
     ).filter((doc) => {
-      const identity = doc.id.split(':')[3];
+      const identity = addressOf(doc.id);
       return changedIdentities.includes(identity);
     });
     await this.didSyncStatusRepository
