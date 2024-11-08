@@ -91,6 +91,8 @@
 - [modules/did/did.resolver](modules/modules_did_did_resolver.md)
 - [modules/did/did.service](modules/modules_did_did_service.md)
 - [modules/did/did.types](modules/modules_did_did_types.md)
+- [modules/did/didSyncStatus.entity](modules/modules_did_didSyncStatus_entity.md)
+- [modules/did/latestDidSync.entity](modules/modules_did_latestDidSync_entity.md)
 - [modules/ens/ens.module](modules/modules_ens_ens_module.md)
 - [modules/ens/ens.service](modules/modules_ens_ens_service.md)
 - [modules/interceptors/interceptors.module](modules/modules_interceptors_interceptors_module.md)

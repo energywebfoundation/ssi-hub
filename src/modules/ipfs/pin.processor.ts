@@ -32,20 +32,18 @@ export class PinProcessor {
   }
 
   @OnQueueStalled()
-  onStalled(job: Job) {
-    this.logger.warn(`Stalled ${job.name} claim ${JSON.parse(job.data).cid}`);
+  onStalled(job: Job<PinClaimData>) {
+    this.logger.warn(`Stalled ${job.name} claim ${job.data.cid}`);
   }
 
   @OnQueueWaiting()
-  async OnQueueWaiting(job: Job) {
-    this.logger.debug(`Waiting ${job.name} claim ${job.data}`);
+  async OnQueueWaiting(jobId: number) {
+    this.logger.debug(`Waiting ${jobId}`);
   }
 
   @OnQueueFailed()
-  onFailed(job: Job, err: Error) {
-    this.logger.error(
-      `Failed ${job.name} claim ${JSON.parse(job.data).cid}: ${err}`
-    );
+  onFailed(job: Job<PinClaimData>, err: Error) {
+    this.logger.error(`Failed ${job.name} claim ${job.data.cid}: ${err}`);
   }
 
   /**
@@ -56,14 +54,29 @@ export class PinProcessor {
   async pin(job: Job<PinClaimData>) {
     const cid = job.data.cid;
     let claim = job.data.claim;
+    this.logger.debug(`Pinning CID ${cid}`);
     try {
       await this.didStoreCluster.get(cid);
     } catch (_) {
       if (!claim) {
-        claim = await this.didStoreInfura.get(cid);
+        try {
+          claim = await this.didStoreInfura.get(cid);
+        } catch (e) {
+          this.logger.error(
+            `Can not fetch claim from Infura IPFS. CID ${cid}: ${e}`
+          );
+          return;
+        }
       }
-      const clusterCid = await this.didStoreCluster.save(claim);
-      this.logger.debug(`CID ${cid} saved in cluster by CID ${clusterCid}`);
+      try {
+        const clusterCid = await this.didStoreCluster.save(claim);
+        this.logger.debug(`CID ${cid} saved in cluster by CID ${clusterCid}`);
+      } catch (e) {
+        this.logger.error(
+          `Can not save claim in IPFS cluster. CID ${cid}: ${e}`
+        );
+        return;
+      }
     }
   }
 }
