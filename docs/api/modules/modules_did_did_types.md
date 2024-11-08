@@ -2,6 +2,10 @@
 
 ## Table of contents
 
+### Enumerations
+
+- [DidSyncStatus](../enums/modules_did_did_types.DidSyncStatus.md)
+
 ### Classes
 
 - [DID](../classes/modules_did_did_types.DID.md)
