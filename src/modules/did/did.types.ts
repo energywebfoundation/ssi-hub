@@ -114,3 +114,8 @@ export const UPDATE_DOCUMENT_QUEUE_NAME = 'updateDocumentQueue';
 export type UpdateDocumentJobData = {
   did: string;
 };
+
+export enum DidSyncStatus {
+  Synced,
+  Stale,
+}

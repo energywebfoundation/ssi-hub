@@ -28,7 +28,7 @@
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`, `latestDidSyncRepository`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`, `latestDidSyncRepository`, `didSyncStatusRepository`)
 
 #### Parameters
 
@@ -45,6 +45,7 @@
 | `registrySettings` | `RegistrySettings` |
 | `ipfsService` | [`IPFSService`](modules_ipfs_ipfs_service.IPFSService.md) |
 | `latestDidSyncRepository` | `Repository`<[`LatestDidSync`](modules_did_latestDidSync_entity.LatestDidSync.md)\> |
+| `didSyncStatusRepository` | `Repository`<[`DidSyncStatusEntity`](modules_did_didSyncStatus_entity.DidSyncStatusEntity.md)\> |
 
 ## Methods
 
