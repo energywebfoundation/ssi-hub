@@ -16,7 +16,7 @@ import { Transaction } from '@sentry/types';
 import { isJWT } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
 import { Queue } from 'bull';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
 import { BigNumber } from 'ethers';
 import {
@@ -35,6 +35,7 @@ import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDID
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import {
   DID,
+  DidSyncStatus,
   UpdateDocumentJobData,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
@@ -47,6 +48,7 @@ import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { IPFSService } from '../ipfs/ipfs.service';
 import { inspect } from 'util';
 import { LatestDidSync } from './latestDidSync.entity';
+import { DidSyncStatusEntity } from './didSyncStatus.entity';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
@@ -69,7 +71,9 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
     private readonly ipfsService: IPFSService,
     @InjectRepository(LatestDidSync)
-    private readonly latestDidSyncRepository: Repository<LatestDidSync>
+    private readonly latestDidSyncRepository: Repository<LatestDidSync>,
+    @InjectRepository(DidSyncStatusEntity)
+    private readonly didSyncStatusRepository: Repository<DidSyncStatusEntity>
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -220,7 +224,12 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         logs: JSON.stringify(logs),
       });
 
-      return this.didRepository.save(updatedEntity);
+      const updated = await this.didRepository.save(updatedEntity);
+      await this.didSyncStatusRepository.save({
+        document: did,
+        status: DidSyncStatus.Synced,
+      });
+      return updated;
     } catch (err) {
       this.logger.error(err);
     } finally {
@@ -362,31 +371,18 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async syncDocuments() {
-    this.logger.debug(`Beginning sync of DID Documents`);
-    const syncs = await this.latestDidSyncRepository.find({
-      order: { createdDate: 'DESC' },
-    });
-    const fromBlock = syncs.length > 0 ? syncs[0].block : 0;
-    const topBlock = await this.provider.getBlockNumber();
-    this.logger.debug(
-      `Getting DID update events from block ${fromBlock} to block ${topBlock}...`
-    );
-    const changedIdentities = await this.getChangedIdentities(
-      fromBlock,
-      topBlock
-    );
-    const didsToSynchronize = (
-      await this.didRepository.find({ select: ['id'] })
-    ).filter((doc) => {
-      const identity = doc.id.split(':')[3];
-      return changedIdentities.includes(identity);
-    });
-    didsToSynchronize.forEach(async (did) => {
-      this.logger.debug(`Synchronizing DID ${did.id}`);
-      await this.pinDocument(did.id);
-    });
+    await this.markStaleDocuments();
 
-    await this.latestDidSyncRepository.save({ block: topBlock });
+    const staleDIDs = (
+      await this.didSyncStatusRepository.find({
+        where: { status: DidSyncStatus.Stale },
+      })
+    ).map((status) => status.document);
+    this.logger.debug(`Beginning sync of DID Documents`);
+    staleDIDs.forEach(async (did) => {
+      this.logger.debug(`Synchronizing DID ${did}`);
+      await this.pinDocument(did);
+    });
   }
 
   private parseLogs(logs: string) {
@@ -556,5 +552,35 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     });
     // Deduplicate identities if they are appears in multiple events
     return [...new Set(changedIdentities).values()];
+  }
+
+  private async markStaleDocuments() {
+    const syncs = await this.latestDidSyncRepository.find({
+      order: { createdDate: 'DESC' },
+    });
+    const fromBlock = syncs.length > 0 ? syncs[0].block : 0;
+    const topBlock = await this.provider.getBlockNumber();
+    this.logger.debug(
+      `Getting DID update events from block ${fromBlock} to block ${topBlock}...`
+    );
+    const changedIdentities = await this.getChangedIdentities(
+      fromBlock,
+      topBlock
+    );
+    const staleDIDs = (
+      await this.didRepository.find({ select: ['id'] })
+    ).filter((doc) => {
+      const identity = doc.id.split(':')[3];
+      return changedIdentities.includes(identity);
+    });
+    await this.didSyncStatusRepository
+      .createQueryBuilder()
+      .useTransaction(true)
+      .update(DidSyncStatusEntity)
+      .set({ status: DidSyncStatus.Stale })
+      .where({ document: In(staleDIDs) })
+      .execute();
+
+    await this.latestDidSyncRepository.save({ block: topBlock });
   }
 }
