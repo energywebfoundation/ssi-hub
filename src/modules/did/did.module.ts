@@ -14,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
 import { PIN_CLAIM_QUEUE_NAME } from '../ipfs/ipfs.types';
+import { DidSyncStatusEntity } from './didSyncStatus.entity';
 
 const RegistrySettingsProvider = {
   provide: 'RegistrySettings',
@@ -34,7 +35,11 @@ const RegistrySettingsProvider = {
     BullModule.registerQueue({
       name: PIN_CLAIM_QUEUE_NAME,
     }),
-    TypeOrmModule.forFeature([DIDDocumentEntity, LatestDidSync]),
+    TypeOrmModule.forFeature([
+      DIDDocumentEntity,
+      LatestDidSync,
+      DidSyncStatusEntity,
+    ]),
   ],
   controllers: [DIDController],
   providers: [
