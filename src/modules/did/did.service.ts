@@ -16,7 +16,7 @@ import { Transaction } from '@sentry/types';
 import { isJWT } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
 import { Queue } from 'bull';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
 import { BigNumber } from 'ethers';
 import {
@@ -74,7 +74,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     @InjectRepository(LatestDidSync)
     private readonly latestDidSyncRepository: Repository<LatestDidSync>,
     @InjectRepository(DidSyncStatusEntity)
-    private readonly didSyncStatusRepository: Repository<DidSyncStatusEntity>
+    private readonly didSyncStatusRepository: Repository<DidSyncStatusEntity>,
+    private dataSource: DataSource
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -225,12 +226,21 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         logs: JSON.stringify(logs),
       });
 
-      const updated = await this.didRepository.save(updatedEntity);
-      await this.didSyncStatusRepository.save({
-        document: updated,
-        status: DidSyncStatus.Synced,
-      });
-      return updated;
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const updated = await this.didRepository.save(updatedEntity);
+        await this.didSyncStatusRepository.save({
+          document: updated,
+          status: DidSyncStatus.Synced,
+        });
+        return updated;
+      } catch (_) {
+        await queryRunner.rollbackTransaction();
+      } finally {
+        await queryRunner.release();
+      }
     } catch (err) {
       this.logger.error(err);
     } finally {
