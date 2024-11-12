@@ -31,7 +31,7 @@ ___
 
 ### document
 
-• **document**: `string`
+• **document**: [`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)
 
 ___
 

@@ -16,7 +16,7 @@ export class DidSyncStatusEntity {
 
   @OneToOne(() => DIDDocumentEntity, (document) => document.id)
   @JoinColumn()
-  document: string;
+  document: DIDDocumentEntity;
 
   @Column({ enum: DidSyncStatus, type: 'enum' })
   status: DidSyncStatus;

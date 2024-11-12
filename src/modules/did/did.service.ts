@@ -227,7 +227,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
       const updated = await this.didRepository.save(updatedEntity);
       await this.didSyncStatusRepository.save({
-        document: did,
+        document: updated,
         status: DidSyncStatus.Synced,
       });
       return updated;
@@ -378,7 +378,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       await this.didSyncStatusRepository.find({
         where: { status: DidSyncStatus.Stale },
       })
-    ).map((status) => status.document);
+    ).map((status) => status.document.id);
     this.logger.debug(`Beginning sync of DID Documents`);
     staleDIDs.forEach(async (did) => {
       this.logger.debug(`Synchronizing DID ${did}`);

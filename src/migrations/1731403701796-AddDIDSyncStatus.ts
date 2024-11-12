@@ -1,9 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddDidSyncStatus1731053556839 implements MigrationInterface {
-  name = 'AddDidSyncStatus1731053556839';
+export class AddDIDSyncStatus1731403701796 implements MigrationInterface {
+  name = 'AddDIDSyncStatus1731403701796';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `CREATE TABLE "did_document_entity" ("id" character varying NOT NULL, "service" jsonb NOT NULL, "authentication" jsonb NOT NULL, "created" character varying, "delegates" text array, "proof" jsonb, "publicKey" jsonb NOT NULL, "updated" character varying, "@context" character varying NOT NULL, "logs" character varying NOT NULL, CONSTRAINT "PK_d96048f4c93be203eeff05ef404" PRIMARY KEY ("id"))`
+    );
     await queryRunner.query(
       `CREATE TYPE "public"."did_sync_status_entity_status_enum" AS ENUM('0', '1')`
     );
@@ -23,5 +26,6 @@ export class AddDidSyncStatus1731053556839 implements MigrationInterface {
     await queryRunner.query(
       `DROP TYPE "public"."did_sync_status_entity_status_enum"`
     );
+    await queryRunner.query(`DROP TABLE "did_document_entity"`);
   }
 }
