@@ -20,6 +20,7 @@ import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
 import { IPFSService } from '../ipfs/ipfs.service';
 import { LatestDidSync } from './latestDidSync.entity';
 import { DidSyncStatusEntity } from './didSyncStatus.entity';
+import { DataSource } from 'typeorm';
 
 const { formatBytes32String } = utils;
 
@@ -66,6 +67,15 @@ jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
       readFromBlock: jest.fn(() => '<logs>'),
     };
   }),
+}));
+
+const dataSourceMockFactory = jest.fn(() => ({
+  createQueryRunner: jest.fn().mockImplementation(() => ({
+    connect: jest.fn(),
+    startTransaction: jest.fn(),
+    release: jest.fn(),
+    rollbackTransaction: jest.fn(),
+  })),
 }));
 
 describe('DidDocumentService', () => {
@@ -126,6 +136,7 @@ describe('DidDocumentService', () => {
           inject: [ConfigService],
         },
         { provide: IPFSService, useValue: MockObject },
+        { provide: DataSource, useFactory: dataSourceMockFactory },
       ],
     }).compile();
     await module.init();
