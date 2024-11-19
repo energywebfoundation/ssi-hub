@@ -58,6 +58,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly resolver: Resolver;
   private readonly JOBS_CLEANUP_DELAY = 1000;
   private readonly MAX_EVENTS_QUERY_INTERVAL = 1000000;
+  private readonly MAX_SYNC_DOCUMENTS = 1000;
 
   constructor(
     private readonly config: ConfigService,
@@ -390,6 +391,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     const staleDIDs = (
       await this.didSyncStatusRepository.find({
         where: { status: DidSyncStatus.Stale },
+        take: this.MAX_SYNC_DOCUMENTS,
       })
     ).map((status) => status.document.id);
     this.logger.debug(`Beginning sync of DID Documents`);
