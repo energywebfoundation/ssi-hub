@@ -16,7 +16,7 @@ import { Transaction } from '@sentry/types';
 import { isJWT } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
 import { Queue } from 'bull';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import jwt from 'jsonwebtoken';
 import { BigNumber } from 'ethers';
 import {
@@ -30,13 +30,14 @@ import {
   documentFromLogs,
   Resolver,
   mergeLogs,
-  addressOf,
+  // addressOf,
 } from '@ew-did-registry/did-ethr-resolver';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import {
   DID,
   DidSyncStatus,
+  getDIDFromAddress,
   UpdateDocumentJobData,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
@@ -578,19 +579,19 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       fromBlock,
       topBlock
     );
-    const staleDIDs = (
-      await this.didRepository.find({ select: ['id'] })
-    ).filter((doc) => {
-      const identity = addressOf(doc.id);
-      return changedIdentities.includes(identity);
-    });
-    await this.didSyncStatusRepository
-      .createQueryBuilder()
-      .useTransaction(true)
+    this.logger.debug(
+      `Fetched DID update events from block ${fromBlock} to block ${syncedBlock}`
+    );
+    const changedDIDs = changedIdentities.map(getDIDFromAddress);
+    const { affected } = await this.didSyncStatusRepository
+      .createQueryBuilder('syncStatus')
+      .leftJoin('syncStatus.document', 'document')
+      .where('document.id IN (:...changedDIDs)', { changedDIDs })
       .update(DidSyncStatusEntity)
       .set({ status: DidSyncStatus.Stale })
-      .where({ document: In(staleDIDs) })
+      .useTransaction(true)
       .execute();
+    this.logger.debug(`Marked ${affected} stale documents`);
 
     await this.latestDidSyncRepository.save({ block: topBlock });
   }
