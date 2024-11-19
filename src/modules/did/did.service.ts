@@ -539,6 +539,11 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  /**
+   * Finds DID's changed in given block interval. If fetching of DID's fails at some block, then further fetching stops.
+   *
+   * Returns last successfully synced block
+   */
   private async getChangedIdentities(
     fromBlock: number,
     topBlock: number
@@ -555,7 +560,6 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         topBlock,
         fromBlock + this.MAX_EVENTS_QUERY_INTERVAL
       );
-
       try {
         const intervalEvents = (
           await Promise.all(
@@ -589,6 +593,9 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
+  /**
+   * Finds documents changed since last synchronization and sets their sync status to `Stale`
+   */
   private async markStaleDocuments() {
     const syncs = await this.latestDidSyncRepository.find({
       order: { createdDate: 'DESC' },
