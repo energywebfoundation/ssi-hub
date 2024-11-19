@@ -14,13 +14,15 @@ export class DidSyncStatusEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => DIDDocumentEntity, (document) => document.id)
-  @JoinColumn()
+  @OneToOne(() => DIDDocumentEntity, (document) => document.id, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'document_id' })
   document: DIDDocumentEntity;
 
-  @Column({ enum: DidSyncStatus, type: 'enum' })
+  @Column({ enum: DidSyncStatus, type: 'enum', default: DidSyncStatus.Synced })
   status: DidSyncStatus;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_date' })
   createdDate: Date;
 }
