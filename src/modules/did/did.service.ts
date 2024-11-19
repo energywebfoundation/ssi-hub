@@ -535,38 +535,51 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   private async getChangedIdentities(
     fromBlock: number,
     topBlock: number
-  ): Promise<string[]> {
+  ): Promise<{ changedIdentities: string[]; syncedBlock: number }> {
     const didEventFilters = [
       this.didRegistry.filters.DIDAttributeChanged(null),
       this.didRegistry.filters.DIDDelegateChanged(null),
       this.didRegistry.filters.DIDOwnerChanged(null),
     ];
     const events = [];
+    let syncedBlock = fromBlock;
     while (fromBlock < topBlock) {
       const toBlock = Math.min(
         topBlock,
         fromBlock + this.MAX_EVENTS_QUERY_INTERVAL
       );
 
-      const intervalEvents = (
-        await Promise.all(
-          didEventFilters.map((filter) =>
-            this.didRegistry.queryFilter(filter, fromBlock, toBlock)
+      try {
+        const intervalEvents = (
+          await Promise.all(
+            didEventFilters.map((filter) =>
+              this.didRegistry.queryFilter(filter, fromBlock, toBlock)
+            )
           )
-        )
-      ).flat();
-      this.logger.debug(
-        `Fetched ${intervalEvents.length} DID events from interval [${fromBlock}, ${toBlock}]`
-      );
-      events.push(...intervalEvents);
-      fromBlock += this.MAX_EVENTS_QUERY_INTERVAL;
+        ).flat();
+        this.logger.debug(
+          `Fetched ${intervalEvents.length} DID events from interval [${fromBlock}, ${toBlock}]`
+        );
+        events.push(...intervalEvents);
+      } catch (e) {
+        console.error(
+          `Failed to fetch DID events from interval [${fromBlock}, ${toBlock}]: ${e.message}`
+        );
+        break;
+      }
+      syncedBlock += this.MAX_EVENTS_QUERY_INTERVAL;
+      fromBlock = syncedBlock;
     }
+
     this.logger.debug(`Update document events count ${events.length}`);
     const changedIdentities = events.map((event) => {
       return event.args.identity;
     });
-    // Deduplicate identities if they are appears in multiple events
-    return [...new Set(changedIdentities).values()];
+    return {
+      // Deduplicate identities if they are appears in multiple events
+      changedIdentities: [...new Set(changedIdentities).values()],
+      syncedBlock,
+    };
   }
 
   private async markStaleDocuments() {
@@ -575,10 +588,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     });
     const fromBlock = syncs.length > 0 ? syncs[0].block : 0;
     const topBlock = await this.provider.getBlockNumber();
-    this.logger.debug(
-      `Getting DID update events from block ${fromBlock} to block ${topBlock}...`
-    );
-    const changedIdentities = await this.getChangedIdentities(
+    const { changedIdentities, syncedBlock } = await this.getChangedIdentities(
       fromBlock,
       topBlock
     );
@@ -596,6 +606,6 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       .execute();
     this.logger.debug(`Marked ${affected} stale documents`);
 
-    await this.latestDidSyncRepository.save({ block: topBlock });
+    await this.latestDidSyncRepository.save({ block: syncedBlock });
   }
 }
