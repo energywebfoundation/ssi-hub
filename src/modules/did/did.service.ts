@@ -391,6 +391,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     const staleDIDs = (
       await this.didSyncStatusRepository.find({
         where: { status: DidSyncStatus.Stale },
+        relations: { document: true },
         take: this.MAX_SYNC_DOCUMENTS,
       })
     ).map((status) => status.document.id);
