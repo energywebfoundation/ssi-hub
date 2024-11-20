@@ -235,13 +235,12 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           DIDDocumentEntity,
           updatedEntity
         );
-        await queryRunner.manager.update(
-          DidSyncStatusEntity,
-          {
-            document: { id: updated.id },
+        await queryRunner.manager.save(DidSyncStatusEntity, {
+          document: {
+            id: updated.id,
+            status: DidSyncStatus.Synced,
           },
-          { status: DidSyncStatus.Synced }
-        );
+        });
         await queryRunner.commitTransaction();
         this.logger.debug(`Document ${did} was synchronized`);
         return updated;
