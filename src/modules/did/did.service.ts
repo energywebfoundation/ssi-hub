@@ -610,15 +610,17 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       `Fetched DID update events from block ${fromBlock} to block ${syncedBlock}`
     );
     const changedDIDs = changedIdentities.map(getDIDFromAddress);
-    const { affected } = await this.didSyncStatusRepository
-      .createQueryBuilder('syncStatus')
-      .leftJoin('syncStatus.document', 'document')
-      .where('document.id IN (:...changedDIDs)', { changedDIDs })
-      .update(DidSyncStatusEntity)
-      .set({ status: DidSyncStatus.Stale })
-      .useTransaction(true)
-      .execute();
-    this.logger.debug(`Marked ${affected} stale documents`);
+    if (changedDIDs.length > 0) {
+      const { affected } = await this.didSyncStatusRepository
+        .createQueryBuilder('syncStatus')
+        .leftJoin('syncStatus.document', 'document')
+        .where('document.id IN (:...changedDIDs)', { changedDIDs })
+        .update(DidSyncStatusEntity)
+        .set({ status: DidSyncStatus.Stale })
+        .useTransaction(true)
+        .execute();
+      this.logger.debug(`Marked ${affected} stale documents`);
+    }
 
     await this.latestDidSyncRepository.save({ block: syncedBlock });
   }
