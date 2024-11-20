@@ -75,6 +75,10 @@ const dataSourceMockFactory = jest.fn(() => ({
     startTransaction: jest.fn(),
     release: jest.fn(),
     rollbackTransaction: jest.fn(),
+    commitTransaction: jest.fn(),
+    manager: {
+      save: jest.fn((_target, entity) => entity),
+    },
   })),
 }));
 
