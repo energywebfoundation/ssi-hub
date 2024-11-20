@@ -30,7 +30,6 @@ import {
   documentFromLogs,
   Resolver,
   mergeLogs,
-  // addressOf,
 } from '@ew-did-registry/did-ethr-resolver';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
@@ -232,11 +231,19 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-        const updated = await this.didRepository.save(updatedEntity);
-        await this.didSyncStatusRepository.save({
-          document: updated,
-          status: DidSyncStatus.Synced,
-        });
+        const updated = await queryRunner.manager.save(
+          DIDDocumentEntity,
+          updatedEntity
+        );
+        await queryRunner.manager.update(
+          DidSyncStatusEntity,
+          {
+            document: { id: updated.id },
+          },
+          { status: DidSyncStatus.Synced }
+        );
+        await queryRunner.commitTransaction();
+        this.logger.debug(`Document ${did} was synchronized`);
         return updated;
       } catch (_) {
         await queryRunner.rollbackTransaction();
@@ -270,7 +277,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     });
 
     try {
-      this.logger.info(`refreshing cached document for did: ${did}`);
+      this.logger.info(`Refreshing cached document for did: ${did}`);
       let span = transaction?.startChild({
         op: 'find_did_document',
         description: 'Find DID Document',
@@ -315,7 +322,29 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         logs: JSON.stringify(logs),
       });
 
-      return this.didRepository.save(updatedEntity);
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const updated = await queryRunner.manager.save(
+          DIDDocumentEntity,
+          updatedEntity
+        );
+        await queryRunner.manager.update(
+          DidSyncStatusEntity,
+          {
+            document: { id: updated.id },
+          },
+          { status: DidSyncStatus.Synced }
+        );
+        await queryRunner.commitTransaction();
+        this.logger.debug(`Document ${did} was synchronized`);
+        return updated;
+      } catch (_) {
+        await queryRunner.rollbackTransaction();
+      } finally {
+        await queryRunner.release();
+      }
     } catch (err) {
       this.logger.error(err);
     } finally {
@@ -393,7 +422,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         take: this.MAX_SYNC_DOCUMENTS,
       })
     ).map((status) => status.document.id);
-    this.logger.debug(`Beginning sync of DID Documents`);
+    this.logger.debug(`Synchronizing ${staleDIDs.length} documents`);
     staleDIDs.forEach(async (did) => {
       this.logger.debug(`Synchronizing DID ${did}`);
       await this.pinDocument(did);
