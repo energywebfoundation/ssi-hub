@@ -568,7 +568,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         syncedBlock = toBlock;
         fromBlock = toBlock;
       } catch (e) {
-        console.error(
+        this.logger.error(
           `Failed to fetch DID events from interval [${fromBlock}, ${toBlock}]: ${e.message}`
         );
         break;
