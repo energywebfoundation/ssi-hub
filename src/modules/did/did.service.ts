@@ -565,14 +565,14 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           `Fetched ${intervalEvents.length} DID events from interval [${fromBlock}, ${toBlock}]`
         );
         events.push(...intervalEvents);
+        syncedBlock = toBlock;
+        fromBlock = toBlock;
       } catch (e) {
         console.error(
           `Failed to fetch DID events from interval [${fromBlock}, ${toBlock}]: ${e.message}`
         );
         break;
       }
-      syncedBlock += this.MAX_EVENTS_QUERY_INTERVAL;
-      fromBlock = syncedBlock;
     }
 
     this.logger.debug(`Update document events count ${events.length}`);
