@@ -65,7 +65,7 @@ ___
 | :------ | :------ |
 | `assetId` | `string` |
 | `«destructured»` | `Object` |
-| › `order` | ``"DESC"`` \| ``"ASC"`` |
+| › `order` | ``"ASC"`` \| ``"DESC"`` |
 | › `skip` | `number` |
 | › `take` | `number` |
 | › `type` | [`AssetHistoryEventType`](../enums/modules_assets_assets_event.AssetHistoryEventType.md) |
