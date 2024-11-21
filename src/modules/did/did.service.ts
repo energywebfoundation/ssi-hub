@@ -338,8 +338,9 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         await queryRunner.commitTransaction();
         this.logger.debug(`Document ${did} was synchronized`);
         return updated;
-      } catch (_) {
+      } catch (e) {
         await queryRunner.rollbackTransaction();
+        this.logger.error(`Failed to synchronize DID ${did}: ${e}`);
       } finally {
         await queryRunner.release();
       }
