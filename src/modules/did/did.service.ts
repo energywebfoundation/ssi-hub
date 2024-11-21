@@ -656,7 +656,6 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           }))
         )
         .orUpdate(['status'], ['document_id'])
-        .useTransaction(true)
         .execute();
 
       this.logger.debug(`Marked ${identifiers.length} stale documents`);
