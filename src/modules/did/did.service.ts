@@ -235,7 +235,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           DIDDocumentEntity,
           updatedEntity
         );
-        await queryRunner.manager.save(DidSyncStatusEntity, {
+        await queryRunner.manager.insert(DidSyncStatusEntity, {
           document: updated,
           status: DidSyncStatus.Synced,
         });
@@ -327,12 +327,13 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           DIDDocumentEntity,
           updatedEntity
         );
-        await queryRunner.manager.update(
+        await queryRunner.manager.upsert(
           DidSyncStatusEntity,
           {
-            document: { id: updated.id },
+            document: updated,
+            status: DidSyncStatus.Synced,
           },
-          { status: DidSyncStatus.Synced }
+          ['document']
         );
         await queryRunner.commitTransaction();
         this.logger.debug(`Document ${did} was synchronized`);
