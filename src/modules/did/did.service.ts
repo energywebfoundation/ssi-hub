@@ -561,7 +561,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Finds DID's changed in given block interval. If fetching of DID's fails at some block, then further fetching stops.
+   * Finds DIDs changed in given block interval. If fetching of DIDs fails at some block, then further fetching stops.
    *
    * Returns last successfully synced block
    */
