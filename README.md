@@ -19,15 +19,7 @@ $ cp .env.dev .env
 $ cp docker-compose.dev.yml docker-compose.yml
 ```
 
-Set the following values in your `.env`:
-
-```text
-ENS_URL=<PUT_YOUR_VALUE_HERE>
-IPFS_CLIENT_HOST=<PUT_YOUR_VALUE_HERE>
-IPFS_CLIENT_PORT=<PUT_YOUR_VALUE_HERE>
-IPFS_CLIENT_PROJECT_ID=<PUT_YOUR_VALUE_HERE>
-IPFS_CLIENT_PROJECT_SECRET=<PUT_YOUR_VALUE_HERE>
-```
+Fill in configuration values in your `.env`. For reference look at `.env.dev`
 
 ### Production
 ```bash

@@ -18,7 +18,6 @@
 - [getByRequesterDid](modules_claim_claim_controller.ClaimController.md#getbyrequesterdid)
 - [getByRevokerDid](modules_claim_claim_controller.ClaimController.md#getbyrevokerdid)
 - [getBySubject](modules_claim_claim_controller.ClaimController.md#getbysubject)
-- [getBySubjects](modules_claim_claim_controller.ClaimController.md#getbysubjects)
 - [getByUserDid](modules_claim_claim_controller.ClaimController.md#getbyuserdid)
 - [getDidsOfNamespace](modules_claim_claim_controller.ClaimController.md#getdidsofnamespace)
 - [getIssuedClaimsBySubjects](modules_claim_claim_controller.ClaimController.md#getissuedclaimsbysubjects)
@@ -32,7 +31,7 @@
 
 ### constructor
 
-• **new ClaimController**(`claimService`, `claimIssuanceService`, `didService`, `assetsService`, `logger`, `nats`)
+• **new ClaimController**(`claimService`, `claimIssuanceService`, `didService`, `assetsService`, `logger`, `nats`, `configService`)
 
 #### Parameters
 
@@ -44,6 +43,7 @@
 | `assetsService` | [`AssetsService`](modules_assets_assets_service.AssetsService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `nats` | [`NatsService`](modules_nats_nats_service.NatsService.md) |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 
 ## Methods
 
@@ -176,25 +176,6 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `subject` | `string` |
-| `isAccepted?` | `boolean` |
-| `namespace?` | `string` |
-| `user?` | `string` |
-
-#### Returns
-
-`Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
-
-___
-
-### getBySubjects
-
-▸ **getBySubjects**(`«destructured»`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |

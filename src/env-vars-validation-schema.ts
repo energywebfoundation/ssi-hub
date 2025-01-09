@@ -58,6 +58,12 @@ export const envVarsValidationSchema = Joi.object({
   DB_USERNAME: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
 
+  TYPEORM_LOGGING: Joi.optional().default('error,warn'),
+  TYPEORM_LOGGER: Joi.string()
+    .valid('file', 'debug', 'advanced-console', 'simple-console', 'debug')
+    .optional()
+    .default('file'),
+
   REDIS_PASSWORD: Joi.string().optional(),
   REDIS_PORT: Joi.number().port().required(),
   REDIS_HOST: Joi.string().hostname().required(),
@@ -83,14 +89,15 @@ export const envVarsValidationSchema = Joi.object({
   ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: Joi.number().positive().required(),
   ASSETS_SYNC_ENABLED: Joi.boolean().required(),
 
+  IPFS_CLIENT_URL: Joi.string().uri(),
+  IPFS_CLIENT_PROTOCOL: Joi.string(),
   IPFS_CLIENT_HOST: Joi.string().hostname(),
   IPFS_CLIENT_PORT: Joi.number().port(),
   IPFS_CLIENT_PROJECT_ID: Joi.string(),
   IPFS_CLIENT_PROJECT_SECRET: Joi.string(),
-  IPFS_CLUSTER_ROOT: Joi.string(),
+  IPFS_CLUSTER_ROOT: Joi.string().required(),
   IPFS_CLUSTER_USER: Joi.string(),
   IPFS_CLUSTER_PASSWORD: Joi.string(),
-
   DID_SYNC_MODE_FULL: Joi.boolean().required(),
   DID_SYNC_ENABLED: Joi.boolean().required(),
   DIDDOC_SYNC_INTERVAL_IN_HOURS: Joi.number().positive().required(),
@@ -119,4 +126,8 @@ export const envVarsValidationSchema = Joi.object({
   SENTRY_RELEASE: Joi.string().allow(''),
 
   STATUS_LIST_DOMAIN: Joi.string().uri().required(),
-});
+
+  DISABLE_GET_DIDS_BY_ROLE: Joi.bool().default(false),
+})
+  .or('IPFS_CLIENT_URL', 'IPFS_CLIENT_HOST')
+  .with('IPFS_CLIENT_HOST', ['IPFS_CLIENT_PROTOCOL', 'IPFS_CLIENT_PORT']);

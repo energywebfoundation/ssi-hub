@@ -98,6 +98,9 @@ iam-cache-server-helm:
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache-sandbox.energyweb.org/v1
     CHAIN_REQUEST_ATTEMPTS: 5
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics
@@ -107,6 +110,7 @@ iam-cache-server-helm:
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_SECRET: 9506198a91243f03417aaed60e5eb654
     IPFS_CLIENT_PROJECT_ID: 2DBFBP5zsjfImw1wBPn1Vx08Yd5

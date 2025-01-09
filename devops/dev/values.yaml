@@ -1,6 +1,11 @@
 iam-cache-server-helm:
   replicaCount: 3
 
+  # Pod disruption budget will be created only if replicaCount > 1
+  pdb:
+    enabled: true
+    minAvailable: 1
+
   image:
     repository: "ghcr.io/energywebfoundation/ssi-hub"
     pullPolicy: IfNotPresent
@@ -95,6 +100,9 @@ iam-cache-server-helm:
     ALLOWED_ORIGINS: https://switchboard-dev.energyweb.org,https://gp4btc-ui-dev.energyweb.org/,https://staking-ui-dev.energyweb.org,https://stedin-dev.energyweb.org
     STATUS_LIST_DOMAIN: https://identitycache-dev.energyweb.org/v1
     CHAIN_REQUEST_ATTEMPTS: 5
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics
@@ -106,6 +114,7 @@ iam-cache-server-helm:
     NESTJS_PORT: 3000
     DB_MAXIMUM_CONNECTION_POOL: 56 # https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: dev
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFOVbJGkFy289ekGv5BjgZngCt
     IPFS_CLIENT_HOST: ipfs.infura.io
@@ -113,12 +122,12 @@ iam-cache-server-helm:
   resources:
     limits:
       cpu: 750m
-      memory: 2200Mi
+      memory: 1Gi
     requests:
       cpu: 500m
       # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
       # We anticipate memory usage to decrease once node v18 is used
-      memory: 2000Mi
+      memory: 900Mi
 
   autoscaling:
     enabled: true

@@ -7,6 +7,7 @@ iam-cache-server-helm:
 
   image:
     repository: "ghcr.io/energywebfoundation/ssi-hub"
+    tag: v2.13.0
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -124,6 +125,9 @@ iam-cache-server-helm:
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache-staging.energyweb.org/v1
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics
@@ -135,6 +139,7 @@ iam-cache-server-helm:
     NESTJS_PORT: 3000
     DB_MAXIMUM_CONNECTION_POOL: 150 # 1024^3 * 4 / 9531392 = 450 . 450/3 = 150. https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: staging
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFOoYU78LsICBTNhrwRGctWE7i
     IPFS_CLIENT_HOST: ipfs.infura.io
