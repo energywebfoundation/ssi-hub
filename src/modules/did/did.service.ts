@@ -439,7 +439,12 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           return { serviceEndpoint, ...rest };
         }
 
-        const token = await this.ipfsService.get(serviceEndpoint);
+        let token: string;
+        try {
+          token = await this.ipfsService.get(serviceEndpoint);
+        } catch (e) {
+          return { serviceEndpoint, ...rest };
+        }
 
         if (isJWT(token)) {
           const decodedData = jwt.decode(token) as {

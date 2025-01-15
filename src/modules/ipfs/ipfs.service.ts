@@ -72,8 +72,10 @@ export class IPFSService {
         timeout,
       ]);
     } catch (e) {
-      // TODO: catch this in DidService
-      throw new HttpException(`Claim ${cid} not found`, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `Claim ${cid} not resolved`,
+        HttpStatus.NOT_FOUND
+      );
     }
     this.logger.debug(`got ${cid}`);
 
