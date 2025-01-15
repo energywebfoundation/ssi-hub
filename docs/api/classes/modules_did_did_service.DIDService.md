@@ -22,7 +22,7 @@
 - [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
 - [onModuleDestroy](modules_did_did_service.DIDService.md#onmoduledestroy)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
-- [resolveServiceEndpoints](modules_did_did_service.DIDService.md#resolveserviceendpoints)
+- [resolveCredentials](modules_did_did_service.DIDService.md#resolvecredentials)
 
 ## Constructors
 
@@ -167,11 +167,11 @@ OnModuleInit.onModuleInit
 
 ___
 
-### resolveServiceEndpoints
+### resolveCredentials
 
-▸ **resolveServiceEndpoints**(`did`): `Promise`<`string`[]\>
+▸ **resolveCredentials**(`did`): `Promise`<`any`[]\>
 
-Resolves document service endponts
+Resolves service endponts, which represent credentials
 
 #### Parameters
 
@@ -181,4 +181,4 @@ Resolves document service endponts
 
 #### Returns
 
-`Promise`<`string`[]\>
+`Promise`<`any`[]\>
