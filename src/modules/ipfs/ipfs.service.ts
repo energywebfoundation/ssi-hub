@@ -72,6 +72,7 @@ export class IPFSService {
         timeout,
       ]);
     } catch (e) {
+      this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
       throw new HttpException(
         `Claim ${cid} not resolved`,
         HttpStatus.NOT_FOUND
