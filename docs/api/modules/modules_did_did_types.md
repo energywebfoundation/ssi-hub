@@ -2,9 +2,17 @@
 
 ## Table of contents
 
+### Enumerations
+
+- [DidSyncStatus](../enums/modules_did_did_types.DidSyncStatus.md)
+
 ### Classes
 
 - [DID](../classes/modules_did_did_types.DID.md)
+
+### Type Aliases
+
+- [UpdateDocumentJobData](modules_did_did_types.md#updatedocumentjobdata)
 
 ### Variables
 
@@ -16,6 +24,18 @@
 ### Functions
 
 - [getDIDFromAddress](modules_did_did_types.md#getdidfromaddress)
+
+## Type Aliases
+
+### UpdateDocumentJobData
+
+Ƭ **UpdateDocumentJobData**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
 
 ## Variables
 

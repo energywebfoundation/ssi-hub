@@ -37,13 +37,13 @@
 
 ### OnQueueWaiting
 
-▸ **OnQueueWaiting**(`job`): `Promise`<`void`\>
+▸ **OnQueueWaiting**(`jobId`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `jobId` | `number` |
 
 #### Returns
 
@@ -59,7 +59,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `job` | `Job`<[`UpdateDocumentJobData`](../modules/modules_did_did_types.md#updatedocumentjobdata)\> |
 
 #### Returns
 
@@ -91,7 +91,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `job` | `Job`<[`UpdateDocumentJobData`](../modules/modules_did_did_types.md#updatedocumentjobdata)\> |
 
 #### Returns
 
@@ -107,7 +107,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `job` | `Job`<[`UpdateDocumentJobData`](../modules/modules_did_did_types.md#updatedocumentjobdata)\> |
 
 #### Returns
 
@@ -123,7 +123,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`string`\> |
+| `job` | `Job`<[`UpdateDocumentJobData`](../modules/modules_did_did_types.md#updatedocumentjobdata)\> |
 
 #### Returns
 
@@ -139,7 +139,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`string`\> |
+| `job` | `Job`<[`UpdateDocumentJobData`](../modules/modules_did_did_types.md#updatedocumentjobdata)\> |
 
 #### Returns
 
