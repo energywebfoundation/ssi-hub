@@ -12,7 +12,7 @@ iam-cache-server-helm:
 
   image:
     repository: "ghcr.io/energywebfoundation/ssi-hub"
-    tag: v2.13.0
+    tag: 126ac01c-81c5-48df-8ef9-0dd8154a957b
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
