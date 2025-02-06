@@ -34,13 +34,13 @@
 
 ### OnQueueWaiting
 
-▸ **OnQueueWaiting**(`job`): `Promise`<`void`\>
+▸ **OnQueueWaiting**(`jobId`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `jobId` | `number` |
 
 #### Returns
 
@@ -72,7 +72,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `job` | `Job`<[`PinClaimData`](../modules/modules_ipfs_ipfs_types.md#pinclaimdata)\> |
 | `err` | `Error` |
 
 #### Returns
@@ -89,7 +89,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `job` | `Job`<[`PinClaimData`](../modules/modules_ipfs_ipfs_types.md#pinclaimdata)\> |
 
 #### Returns
 
@@ -108,7 +108,7 @@ It was implemented for EW migration from Infura to EW hosted IPFS
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<`any`\> |
+| `job` | `Job`<[`PinClaimData`](../modules/modules_ipfs_ipfs_types.md#pinclaimdata)\> |
 
 #### Returns
 

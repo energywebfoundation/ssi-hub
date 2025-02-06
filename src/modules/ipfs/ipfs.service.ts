@@ -4,7 +4,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CID } from 'multiformats/cid';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { PIN_CLAIM_QUEUE_NAME, PIN_CLAIM_JOB_NAME } from './ipfs.types';
+import {
+  PIN_CLAIM_QUEUE_NAME,
+  PIN_CLAIM_JOB_NAME,
+  PinClaimData,
+} from './ipfs.types';
 import { Logger } from '../logger/logger.service';
 import { inspect } from 'util';
 
@@ -14,7 +18,7 @@ export class IPFSService {
     private didStoreCluster: DidStoreCluster,
     private didStoreInfura: DidStoreGateway,
     @InjectQueue(PIN_CLAIM_QUEUE_NAME)
-    private readonly pinsQueue: Queue<string>,
+    private readonly pinsQueue: Queue<PinClaimData>,
     private readonly logger: Logger
   ) {
     this.logger.setContext(IPFSService.name);
@@ -56,18 +60,28 @@ export class IPFSService {
     let claim: string;
     const getFromCluster = this.didStoreCluster.get(cid);
     const getFromInfura = this.didStoreInfura.get(cid);
+    const timeout = new Promise<string>(
+      (_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), 5000) // 5 seconds timeout
+    );
+
+    this.logger.debug(`trying to get ${cid}`);
     try {
-      claim = await Promise.any([getFromCluster, getFromInfura]);
+      claim = await Promise.race([
+        Promise.any([getFromCluster, getFromInfura]),
+        timeout,
+      ]);
     } catch (e) {
-      // TODO: catch this in DidService
-      throw new HttpException(`Claim ${cid} not found`, HttpStatus.NOT_FOUND);
+      this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
+      throw new HttpException(
+        `Claim ${cid} not resolved`,
+        HttpStatus.NOT_FOUND
+      );
     }
+    this.logger.debug(`got ${cid}`);
 
     try {
-      await this.pinsQueue.add(
-        PIN_CLAIM_JOB_NAME,
-        JSON.stringify({ cid, claim })
-      );
+      await this.pinsQueue.add(PIN_CLAIM_JOB_NAME, { cid, claim });
     } catch (e) {
       this.logger.debug(`Error to add pin job for cid ${cid}: ${e}`);
       const jobsCounts = await this.pinsQueue.getJobCounts();

@@ -5,13 +5,16 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 export const setupSwagger = (app: INestApplication, config: ConfigService) => {
-  const version = readVersion();
   const buildInfo = readBuildInfo();
 
   const options = new DocumentBuilder()
     .setTitle('API')
     .setDescription('Cache Server API documentation')
-    .setVersion(`${version} (${buildInfo.gitSha}.${buildInfo.timestamp})`);
+    .setVersion(
+      `(${buildInfo.gitSha || 'no-sha'}.${
+        buildInfo.timestamp || 'no-timestamp'
+      })`
+    );
 
   if (config.get<boolean>('ENABLE_AUTH')) {
     options.addBearerAuth();
@@ -23,21 +26,6 @@ export const setupSwagger = (app: INestApplication, config: ConfigService) => {
     SwaggerModule.createDocument(app, options.build())
   );
 };
-
-function readVersion(): string {
-  let pkg;
-
-  try {
-    pkg = JSON.parse(
-      readFileSync(resolve(__dirname, '../package.json')).toString('utf8')
-    );
-  } catch (err) {
-    console.log(`error reading/parsing package.json: ${err}`);
-    return '';
-  }
-
-  return pkg.version;
-}
 
 function readBuildInfo():
   | { timestamp: string; gitSha: string }

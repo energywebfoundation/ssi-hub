@@ -23,9 +23,7 @@ export class RoleCredentialResolver implements CredentialResolver {
   ): Promise<
     VerifiableCredential<RoleCredentialSubject> | RoleEIP191JWT | null
   > {
-    const resolvedEndpoints = await this.didService.resolveServiceEndpoints(
-      did
-    );
+    const resolvedEndpoints = await this.didService.resolveCredentials(did);
     return (
       this.serviceEndpointsToCredentials(resolvedEndpoints).find(
         (cred) => cred?.credentialSubject?.role?.namespace === namespace
@@ -57,7 +55,7 @@ export class RoleCredentialResolver implements CredentialResolver {
 
   async eip191JwtsOf(subject: string): Promise<RoleEIP191JWT[]> {
     return this.serviceEndpointsToEIP191(
-      await this.didService.resolveServiceEndpoints(subject)
+      await this.didService.resolveCredentials(subject)
     );
   }
 
@@ -65,7 +63,7 @@ export class RoleCredentialResolver implements CredentialResolver {
     subject: string
   ): Promise<VerifiableCredential<RoleCredentialSubject>[]> {
     return this.serviceEndpointsToCredentials(
-      await this.didService.resolveServiceEndpoints(subject)
+      await this.didService.resolveCredentials(subject)
     );
   }
 
