@@ -64,14 +64,7 @@ export class DIDProcessor {
   @Process(ADD_DID_DOC_JOB_NAME)
   public async processDIDDocumentAddition(job: Job<string>) {
     const doc = await this.didService.addCachedDocument(job.data);
-
-    await Promise.all(
-      doc.service.map(({ serviceEndpoint }) => {
-        this.pinQueue.add(PIN_CLAIM_JOB_NAME, {
-          cid: serviceEndpoint,
-        });
-      })
-    );
+    await this.addPinJobs(doc);
   }
 
   @Process(UPDATE_DID_DOC_JOB_NAME)
@@ -82,7 +75,20 @@ export class DIDProcessor {
     } else {
       doc = await this.didService.incrementalRefreshCachedDocument(job.data);
     }
+    await this.addPinJobs(doc);
+  }
 
+  private async addPinJobs(doc: DIDDocumentEntity) {
+    // Cluster pinning needs to be explictly set to true
+    if (!this.configService.get<boolean>('IPFS_CLUSTER_PINNING_ENABLED')) {
+      this.logger.debug(
+        `IPFS cluster pinning disabled. Skipping for ${doc?.id}`
+      );
+      return;
+    }
+    this.logger.debug(
+      `IPFS cluster pinning enabled. Pinning IPFS data for ${doc?.id}`
+    );
     await Promise.all(
       doc.service.map(({ serviceEndpoint }) => {
         this.pinQueue.add(PIN_CLAIM_JOB_NAME, {
