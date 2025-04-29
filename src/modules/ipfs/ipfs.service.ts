@@ -60,12 +60,25 @@ export class IPFSService {
     let claim: string;
     const getFromCluster = this.didStoreCluster.get(cid);
     const getFromInfura = this.didStoreInfura.get(cid);
+    const timeout = new Promise<string>(
+      (_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), 5000) // 5 seconds timeout
+    );
+
+    this.logger.debug(`trying to get ${cid}`);
     try {
-      claim = await Promise.any([getFromCluster, getFromInfura]);
+      claim = await Promise.race([
+        Promise.any([getFromCluster, getFromInfura]),
+        timeout,
+      ]);
     } catch (e) {
-      // TODO: catch this in DidService
-      throw new HttpException(`Claim ${cid} not found`, HttpStatus.NOT_FOUND);
+      this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
+      throw new HttpException(
+        `Claim ${cid} not resolved`,
+        HttpStatus.NOT_FOUND
+      );
     }
+    this.logger.debug(`got ${cid}`);
 
     try {
       await this.pinsQueue.add(PIN_CLAIM_JOB_NAME, { cid, claim });

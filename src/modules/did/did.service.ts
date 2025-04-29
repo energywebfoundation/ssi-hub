@@ -322,18 +322,20 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Resolves document service endponts
+   * Resolves service endponts, which represent credentials
    *
    * @param did DID of the document service endpoints
    */
-  public async resolveServiceEndpoints(did: string) {
+  public async resolveCredentials(did: string) {
     const { service } = await this.getById(did);
-    return Promise.all(
-      service
-        .map(({ serviceEndpoint }) => serviceEndpoint)
-        .filter((endpoint) => IPFSService.isCID(endpoint))
-        .map((cid) => this.ipfsService.get(cid))
-    );
+    return (
+      await Promise.all(
+        service
+          .map(({ serviceEndpoint }) => serviceEndpoint)
+          .filter((endpoint) => IPFSService.isCID(endpoint))
+          .map((cid) => this.ipfsService.get(cid).catch(() => null))
+      )
+    ).filter(Boolean);
   }
 
   private async InitEventListeners(): Promise<void> {
@@ -439,7 +441,12 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           return { serviceEndpoint, ...rest };
         }
 
-        const token = await this.ipfsService.get(serviceEndpoint);
+        let token: string;
+        try {
+          token = await this.ipfsService.get(serviceEndpoint);
+        } catch (e) {
+          return { serviceEndpoint, ...rest };
+        }
 
         if (isJWT(token)) {
           const decodedData = jwt.decode(token) as {
