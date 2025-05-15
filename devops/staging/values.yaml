@@ -128,6 +128,7 @@ iam-cache-server-helm:
     TYPEORM_LOGGING: error,warn
     TYPEORM_LOGGER: file
     DISABLE_GET_DIDS_BY_ROLE: true
+    DB_CONNECTION_TIMEOUT: 10000
 
   opsValues:
     DB_NAME: ics
