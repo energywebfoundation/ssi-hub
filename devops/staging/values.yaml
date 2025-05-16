@@ -142,7 +142,8 @@ iam-cache-server-helm:
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
-    DB_MAXIMUM_CONNECTION_POOL: 150 # 1024^3 * 4 / 9531392 = 450 . 450/3 = 150. https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
+    DB_CONNECTION_TIMEOUT: 15000
+    DB_MAXIMUM_CONNECTION_POOL: 20 # 1024^3 * 4 / 9531392 = 450 . 450/3 = 150. https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: staging
     IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
