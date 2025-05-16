@@ -20,13 +20,15 @@
 
 ### constructor
 
-• **new PinProcessor**(`logger`)
+• **new PinProcessor**(`logger`, `didStoreCluster`, `didStoreInfura`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
+| `didStoreCluster` | `DidStore` |
+| `didStoreInfura` | `DidStore` |
 
 ## Methods
 
