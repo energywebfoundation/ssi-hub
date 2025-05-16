@@ -11,6 +11,7 @@ import {
 } from './ipfs.types';
 import { Logger } from '../logger/logger.service';
 import { inspect } from 'util';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class IPFSService {
@@ -19,7 +20,8 @@ export class IPFSService {
     private didStoreInfura: DidStoreGateway,
     @InjectQueue(PIN_CLAIM_QUEUE_NAME)
     private readonly pinsQueue: Queue<PinClaimData>,
-    private readonly logger: Logger
+    private readonly logger: Logger,
+    private readonly configService: ConfigService
   ) {
     this.logger.setContext(IPFSService.name);
   }
@@ -80,6 +82,13 @@ export class IPFSService {
     }
     this.logger.debug(`got ${cid}`);
 
+    if (!this.configService.get<boolean>('IPFS_CLUSTER_PINNING_ENABLED')) {
+      this.logger.debug(`IPFS cluster pinning disabled. Skipping for ${cid}`);
+      return;
+    }
+    this.logger.debug(
+      `IPFS cluster pinning enabled. Pinning IPFS data for ${cid}`
+    );
     try {
       await this.pinsQueue.add(PIN_CLAIM_JOB_NAME, { cid, claim });
     } catch (e) {

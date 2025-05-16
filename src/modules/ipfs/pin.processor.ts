@@ -7,8 +7,8 @@ import {
   Processor,
 } from '@nestjs/bull';
 import { Job } from 'bull';
-// import { DidStore as DidStoreInfura } from 'didStoreInfura';
-// import { DidStore as DidStoreCluster } from 'didStoreCluster';
+import { DidStore as DidStoreInfura } from 'didStoreInfura';
+import { DidStore as DidStoreCluster } from 'didStoreCluster';
 import { Logger } from '../logger/logger.service';
 import {
   PinClaimData,
@@ -20,8 +20,8 @@ import {
 export class PinProcessor {
   constructor(
     private readonly logger: Logger,
-    // private didStoreCluster: DidStoreCluster,
-    // private didStoreInfura: DidStoreInfura
+    private didStoreCluster: DidStoreCluster,
+    private didStoreInfura: DidStoreInfura
   ) {
     this.logger.setContext(PinProcessor.name);
   }
@@ -53,31 +53,31 @@ export class PinProcessor {
   @Process(PIN_CLAIM_JOB_NAME)
   async pin(job: Job<PinClaimData>) {
     return;
-    // const cid = job.data.cid;
-    // let claim = job.data.claim;
-    // this.logger.debug(`Pinning CID ${cid}`);
-    // try {
-    //   await this.didStoreCluster.get(cid);
-    // } catch (_) {
-    //   if (!claim) {
-    //     try {
-    //       claim = await this.didStoreInfura.get(cid);
-    //     } catch (e) {
-    //       this.logger.error(
-    //         `Can not fetch claim from Infura IPFS. CID ${cid}: ${e}`
-    //       );
-    //       return;
-    //     }
-    //   }
-    //   try {
-    //     const clusterCid = await this.didStoreCluster.save(claim);
-    //     this.logger.debug(`CID ${cid} saved in cluster by CID ${clusterCid}`);
-    //   } catch (e) {
-    //     this.logger.error(
-    //       `Can not save claim in IPFS cluster. CID ${cid}: ${e}`
-    //     );
-    //     return;
-    //   }
-    // }
+    const cid = job.data.cid;
+    let claim = job.data.claim;
+    this.logger.debug(`Pinning CID ${cid}`);
+    try {
+      await this.didStoreCluster.get(cid);
+    } catch (_) {
+      if (!claim) {
+        try {
+          claim = await this.didStoreInfura.get(cid);
+        } catch (e) {
+          this.logger.error(
+            `Can not fetch claim from Infura IPFS. CID ${cid}: ${e}`
+          );
+          return;
+        }
+      }
+      try {
+        const clusterCid = await this.didStoreCluster.save(claim);
+        this.logger.debug(`CID ${cid} saved in cluster by CID ${clusterCid}`);
+      } catch (e) {
+        this.logger.error(
+          `Can not save claim in IPFS cluster. CID ${cid}: ${e}`
+        );
+        return;
+      }
+    }
   }
 }
