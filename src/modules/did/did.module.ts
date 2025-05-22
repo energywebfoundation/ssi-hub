@@ -12,7 +12,6 @@ import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
-import { PIN_CLAIM_QUEUE_NAME } from '../ipfs/ipfs.types';
 
 const RegistrySettingsProvider = {
   provide: 'RegistrySettings',
@@ -30,9 +29,6 @@ const RegistrySettingsProvider = {
     BullModule.registerQueue({
       name: UPDATE_DOCUMENT_QUEUE_NAME,
     }),
-    BullModule.registerQueue({
-      name: PIN_CLAIM_QUEUE_NAME,
-    }),
     TypeOrmModule.forFeature([DIDDocumentEntity]),
   ],
   controllers: [DIDController],
@@ -45,4 +41,4 @@ const RegistrySettingsProvider = {
   ],
   exports: [DIDService, RegistrySettingsProvider],
 })
-export class DIDModule {}
+export class DIDModule { }
