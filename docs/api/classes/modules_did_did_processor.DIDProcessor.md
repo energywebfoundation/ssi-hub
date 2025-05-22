@@ -123,7 +123,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `job` | `Job`<[`UpdateDocumentJobData`](../modules/modules_did_did_types.md#updatedocumentjobdata)\> |
+| `job` | `Job`<`string`\> |
 
 #### Returns
 

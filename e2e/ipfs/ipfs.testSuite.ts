@@ -43,7 +43,8 @@ export const ipfsModuleTestSuite = () => {
     await queryRunner.release();
   });
 
-  it('save() should post claim in cluster', async () => {
+  // IPFS cluster is disabled
+  it.skip('save() should post claim in cluster', async () => {
     const claimData = {
       claimType: 'claim type',
       claimTypeVersion: 1,
@@ -90,7 +91,8 @@ export const ipfsModuleTestSuite = () => {
       .expect(HttpStatus.NOT_FOUND);
   });
 
-  it('if claim is not found in cluster, get() should save claim in cluster', async () => {
+  // IPFS cluster is disabled
+  it.skip('if claim is not found in cluster, get() should save claim in cluster', async () => {
     const didStoreClusterGet = jest.spyOn(didStoreCluster, 'get');
     const didStoreInfuraGet = jest.spyOn(didStoreInfura, 'get');
 
