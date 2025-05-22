@@ -616,7 +616,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       return event.args.identity;
     });
     return {
-      // Deduplicate identities if they are appears in multiple events
+      // Deduplicate identities if they appear in multiple events
       changedIdentities: [...new Set(changedIdentities).values()],
       syncedBlock,
     };
