@@ -26,6 +26,12 @@ export class Logger extends NestLogger implements LoggerService {
   ) {
     super();
     this.redactor = new SyncRedactor({
+      builtInRedactors: {
+        digits: {
+          enabled: false,
+        },
+        zipcode: { enabled: false },
+      },
       customRedactors: {
         before: [
           {

@@ -18,6 +18,9 @@ import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
 import { IPFSService } from '../ipfs/ipfs.service';
+import { LatestDidSync } from './latestDidSync.entity';
+import { DidSyncStatusEntity } from './didSyncStatus.entity';
+import { DataSource } from 'typeorm';
 
 const { formatBytes32String } = utils;
 
@@ -66,6 +69,21 @@ jest.mock('@ew-did-registry/did-ethr-resolver', () => ({
   }),
 }));
 
+const dataSourceMockFactory = jest.fn(() => ({
+  createQueryRunner: jest.fn().mockImplementation(() => ({
+    connect: jest.fn(),
+    startTransaction: jest.fn(),
+    release: jest.fn(),
+    rollbackTransaction: jest.fn(),
+    commitTransaction: jest.fn(),
+    manager: {
+      save: jest.fn((_target, entity) => entity),
+      insert: jest.fn((_target, entity) => entity),
+      upsert: jest.fn((_target, entity, _conflict) => entity),
+    },
+  })),
+}));
+
 describe('DidDocumentService', () => {
   let service: DIDService;
   let didRegistry: EthereumDIDRegistry;
@@ -104,6 +122,14 @@ describe('DidDocumentService', () => {
           provide: getRepositoryToken(DIDDocumentEntity),
           useFactory: repositoryMockFactory,
         },
+        {
+          provide: getRepositoryToken(LatestDidSync),
+          useFactory: repositoryMockFactory,
+        },
+        {
+          provide: getRepositoryToken(DidSyncStatusEntity),
+          useFactory: repositoryMockFactory,
+        },
         { provide: Provider, useValue: provider },
         { provide: SentryTracingService, useValue: MockSentryTracing },
         {
@@ -116,6 +142,7 @@ describe('DidDocumentService', () => {
           inject: [ConfigService],
         },
         { provide: IPFSService, useValue: MockObject },
+        { provide: DataSource, useFactory: dataSourceMockFactory },
       ],
     }).compile();
     await module.init();

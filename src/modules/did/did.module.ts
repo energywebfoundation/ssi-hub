@@ -5,6 +5,7 @@ import { Methods } from '@ew-did-registry/did';
 import { Provider } from '../../common/provider';
 import { DIDController } from './did.controller';
 import { DIDDocumentEntity } from './did.entity';
+import { LatestDidSync } from './latestDidSync.entity';
 import { DIDProcessor } from './did.processor';
 import { DIDResolver } from './did.resolver';
 import { DIDService } from './did.service';
@@ -12,6 +13,7 @@ import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
+import { DidSyncStatusEntity } from './didSyncStatus.entity';
 
 const RegistrySettingsProvider = {
   provide: 'RegistrySettings',
@@ -29,7 +31,11 @@ const RegistrySettingsProvider = {
     BullModule.registerQueue({
       name: UPDATE_DOCUMENT_QUEUE_NAME,
     }),
-    TypeOrmModule.forFeature([DIDDocumentEntity]),
+    TypeOrmModule.forFeature([
+      DIDDocumentEntity,
+      LatestDidSync,
+      DidSyncStatusEntity,
+    ]),
   ],
   controllers: [DIDController],
   providers: [
@@ -41,4 +47,4 @@ const RegistrySettingsProvider = {
   ],
   exports: [DIDService, RegistrySettingsProvider],
 })
-export class DIDModule { }
+export class DIDModule {}

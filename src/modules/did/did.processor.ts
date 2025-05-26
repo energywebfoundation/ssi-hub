@@ -5,7 +5,7 @@ import {
   OnQueueStalled,
   OnQueueWaiting,
   Process,
-  Processor
+  Processor,
 } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { Job } from 'bull';
@@ -13,6 +13,7 @@ import { Logger } from '../logger/logger.service';
 import { DIDService } from './did.service';
 import {
   ADD_DID_DOC_JOB_NAME,
+  UpdateDocumentJobData,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
 } from './did.types';
@@ -22,7 +23,7 @@ export class DIDProcessor {
   constructor(
     private readonly didService: DIDService,
     private readonly logger: Logger,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     this.logger.setContext(DIDProcessor.name);
   }
@@ -33,23 +34,23 @@ export class DIDProcessor {
   }
 
   @OnQueueActive()
-  onActive(job: Job) {
-    this.logger.debug(`Starting ${job.name} document ${job.data}`);
+  onActive(job: Job<UpdateDocumentJobData>) {
+    this.logger.debug(`Starting ${job.name} document ${job.data.did}`);
   }
 
   @OnQueueStalled()
-  onStalled(job: Job) {
-    this.logger.debug(`Stalled ${job.name} document ${job.data}`);
+  onStalled(job: Job<UpdateDocumentJobData>) {
+    this.logger.debug(`Stalled ${job.name} document ${job.data.did}`);
   }
 
   @OnQueueFailed()
-  onFailed(job: Job) {
-    this.logger.debug(`Failed ${job.name} document ${job.data}`);
+  onFailed(job: Job<UpdateDocumentJobData>) {
+    this.logger.debug(`Failed ${job.name} document ${job.data.did}`);
   }
 
   @OnQueueWaiting()
-  async OnQueueWaiting(job: Job) {
-    this.logger.debug(`Waiting ${job.name} document ${job.data}`);
+  async OnQueueWaiting(jobId: number) {
+    this.logger.debug(`Waiting job ${jobId}`);
   }
 
   @Process(ADD_DID_DOC_JOB_NAME)
@@ -58,11 +59,11 @@ export class DIDProcessor {
   }
 
   @Process(UPDATE_DID_DOC_JOB_NAME)
-  public async processDIDDocumentRefresh(job: Job<string>) {
+  public async processDIDDocumentRefresh(job: Job<UpdateDocumentJobData>) {
     if (this.configService.get<boolean>('DID_SYNC_MODE_FULL')) {
-      await this.didService.addCachedDocument(job.data, true);
+      await this.didService.addCachedDocument(job.data.did, true);
     } else {
-      await this.didService.incrementalRefreshCachedDocument(job.data);
+      await this.didService.incrementalRefreshCachedDocument(job.data.did);
     }
   }
 }

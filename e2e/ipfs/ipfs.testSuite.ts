@@ -1,5 +1,4 @@
 import { HttpStatus } from '@nestjs/common';
-import { getQueueToken } from '@nestjs/bull';
 import { Queue } from 'bull';
 import request from 'supertest';
 import { Connection, EntityManager, QueryRunner } from 'typeorm';
@@ -7,7 +6,6 @@ import { DidStore as DidStoreCluster } from 'didStoreCluster';
 import { DidStore as DidStoreGateway } from 'didStoreInfura';
 import { app } from '../app.e2e.spec';
 import { randomUser } from '../utils';
-import { PIN_CLAIM_QUEUE_NAME } from '../../src/modules/ipfs/ipfs.types';
 
 export const ipfsModuleTestSuite = () => {
   let queryRunner: QueryRunner;
@@ -25,8 +23,6 @@ export const ipfsModuleTestSuite = () => {
 
     didStoreCluster = app.get(DidStoreCluster);
     didStoreInfura = app.get(DidStoreGateway);
-    pinsQueue = app.get(getQueueToken(PIN_CLAIM_QUEUE_NAME));
-    await pinsQueue.empty();
 
     const manager = app.get(EntityManager);
     const dbConnection = app.get(Connection);
@@ -43,7 +39,8 @@ export const ipfsModuleTestSuite = () => {
     await queryRunner.release();
   });
 
-  it('save() should post claim in cluster', async () => {
+  // IPFS cluster is disabled
+  it.skip('save() should post claim in cluster', async () => {
     const claimData = {
       claimType: 'claim type',
       claimTypeVersion: 1,
@@ -90,7 +87,8 @@ export const ipfsModuleTestSuite = () => {
       .expect(HttpStatus.NOT_FOUND);
   });
 
-  it('if claim is not found in cluster, get() should save claim in cluster', async () => {
+  // IPFS cluster is disabled
+  it.skip('if claim is not found in cluster, get() should save claim in cluster', async () => {
     const didStoreClusterGet = jest.spyOn(didStoreCluster, 'get');
     const didStoreInfuraGet = jest.spyOn(didStoreInfura, 'get');
 
