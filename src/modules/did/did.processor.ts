@@ -60,13 +60,10 @@ export class DIDProcessor {
 
   @Process(UPDATE_DID_DOC_JOB_NAME)
   public async processDIDDocumentRefresh(job: Job<UpdateDocumentJobData>) {
-    let doc: DIDDocumentEntity;
     if (this.configService.get<boolean>('DID_SYNC_MODE_FULL')) {
-      doc = await this.didService.addCachedDocument(job.data.did, true);
+      await this.didService.addCachedDocument(job.data.did, true);
     } else {
-      doc = await this.didService.incrementalRefreshCachedDocument(
-        job.data.did
-      );
+      await this.didService.incrementalRefreshCachedDocument(job.data.did);
     }
   }
 }
