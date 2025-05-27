@@ -17,6 +17,12 @@ import {
   UPDATE_DOCUMENT_QUEUE_NAME,
 } from './did.types';
 
+
+const totalPool = parseInt(process.env.DB_MAXIMUM_CONNECTION_POOL || '10', 10);
+const buffer = Math.ceil(totalPool * 0.2); // 20% buffer
+const usablePool = totalPool - buffer;
+const MAX_CONCURRENCY = Math.max(1, usablePool);
+
 @Processor(UPDATE_DOCUMENT_QUEUE_NAME)
 export class DIDProcessor {
   constructor(
@@ -52,12 +58,12 @@ export class DIDProcessor {
     this.logger.debug(`Waiting ${job.name} document ${job.data}`);
   }
 
-  @Process(ADD_DID_DOC_JOB_NAME)
+  @Process({ name: ADD_DID_DOC_JOB_NAME, concurrency: MAX_CONCURRENCY })
   public async processDIDDocumentAddition(job: Job<string>) {
     await this.didService.addCachedDocument(job.data);
   }
 
-  @Process(UPDATE_DID_DOC_JOB_NAME)
+  @Process({ name: UPDATE_DID_DOC_JOB_NAME, concurrency: MAX_CONCURRENCY })
   public async processDIDDocumentRefresh(job: Job<string>) {
     if (this.configService.get<boolean>('DID_SYNC_MODE_FULL')) {
       await this.didService.addCachedDocument(job.data, true);
