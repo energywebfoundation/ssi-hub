@@ -35,6 +35,10 @@ export const getDBConfig = (configService: ConfigService) => {
         'DB_CONNECTION_TIMEOUT',
         3000
       ),
+      idleTimeoutMillis: configService.get<number>(
+        'DB_CONNECTION_TIMEOUT_IDLE',
+        10000
+      ),
     },
   };
 
