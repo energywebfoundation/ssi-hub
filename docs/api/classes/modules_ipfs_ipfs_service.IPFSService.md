@@ -18,15 +18,13 @@
 
 ### constructor
 
-• **new IPFSService**(`didStoreCluster`, `didStoreInfura`, `pinsQueue`, `logger`)
+• **new IPFSService**(`didStoreInfura`, `logger`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `didStoreCluster` | `DidStore` |
 | `didStoreInfura` | `DidStore` |
-| `pinsQueue` | `Queue`<[`PinClaimData`](../modules/modules_ipfs_ipfs_types.md#pinclaimdata)\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods

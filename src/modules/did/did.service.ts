@@ -1,50 +1,50 @@
-import {
-  Injectable,
-  HttpException,
-  OnModuleInit,
-  InternalServerErrorException,
-  Inject,
-  OnModuleDestroy,
-} from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bull';
-import { InjectRepository } from '@nestjs/typeorm';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { SchedulerRegistry } from '@nestjs/schedule';
+import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { Methods } from '@ew-did-registry/did';
-import { Transaction } from '@sentry/types';
-import { isJWT } from 'class-validator';
-import { firstValueFrom } from 'rxjs';
-import { Queue } from 'bull';
-import { Repository } from 'typeorm';
-import jwt from 'jsonwebtoken';
-import { BigNumber } from 'ethers';
 import {
+  documentFromLogs,
+  mergeLogs,
+  Resolver,
+} from '@ew-did-registry/did-ethr-resolver';
+import {
+  DidEventNames,
   IDIDDocument,
   IDIDLogData,
   IServiceEndpoint,
-  DidEventNames,
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
+import { HttpService } from '@nestjs/axios';
+import { InjectQueue } from '@nestjs/bull';
 import {
-  documentFromLogs,
-  Resolver,
-  mergeLogs,
-} from '@ew-did-registry/did-ethr-resolver';
-import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
+  HttpException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Transaction } from '@sentry/types';
+import { Queue } from 'bull';
+import { isJWT } from 'class-validator';
+import { BigNumber } from 'ethers';
+import jwt from 'jsonwebtoken';
+import { firstValueFrom } from 'rxjs';
+import { Repository } from 'typeorm';
+import { inspect } from 'util';
+import { Provider } from '../../common/provider';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
+import { IPFSService } from '../ipfs/ipfs.service';
+import { Logger } from '../logger/logger.service';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
+import { DIDDocumentEntity, IClaim } from './did.entity';
 import {
   DID,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
 } from './did.types';
-import { Logger } from '../logger/logger.service';
-import { DIDDocumentEntity, IClaim } from './did.entity';
-import { Provider } from '../../common/provider';
-import { SentryTracingService } from '../sentry/sentry-tracing.service';
-import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
-import { IPFSService } from '../ipfs/ipfs.service';
-import { inspect } from 'util';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
@@ -225,6 +225,17 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   obscureDid(did: string) {
     return did.replace(/(?<=0x[a-f0-9-]{3})[a-f0-9-]+/gi, '***');
+  }
+
+  public async incrementalRefreshCachedDocumentByDid(did: string) {
+    const obscuredDid = this.obscureDid(did);
+    const didDocEntity = await this.didRepository.findOneBy({ id: did });
+    if (!didDocEntity) {
+      throw new InternalServerErrorException(
+        `DID ${obscuredDid} was not found`
+      );
+    }
+    return this.incrementalRefreshCachedDocument(did);
   }
 
   /**
@@ -493,7 +504,10 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   private async pinDocument(did: string): Promise<void> {
     try {
-      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did, { jobId: did });
+      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did, {
+        jobId: did,
+        lifo: true,
+      });
     } catch (e) {
       this.logger.warn(
         `Error to add DID synchronization job for document ${did}: ${e}`

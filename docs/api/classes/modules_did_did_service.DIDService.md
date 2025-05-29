@@ -19,6 +19,7 @@
 - [getById](modules_did_did_service.DIDService.md#getbyid)
 - [getDIDDocumentFromUniversalResolver](modules_did_did_service.DIDService.md#getdiddocumentfromuniversalresolver)
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
+- [incrementalRefreshCachedDocumentByDid](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocumentbydid)
 - [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
 - [onModuleDestroy](modules_did_did_service.DIDService.md#onmoduledestroy)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
@@ -110,6 +111,22 @@ ___
 
 Add any incremental changes to the DID document that occurred since the last sync.
 Also retrieves all claims from IPFS for the document.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
+
+#### Returns
+
+`Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
+
+___
+
+### incrementalRefreshCachedDocumentByDid
+
+▸ **incrementalRefreshCachedDocumentByDid**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
 
 #### Parameters
 

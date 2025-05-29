@@ -101,7 +101,6 @@
 - [modules/ipfs/ipfs.module](modules/modules_ipfs_ipfs_module.md)
 - [modules/ipfs/ipfs.service](modules/modules_ipfs_ipfs_service.md)
 - [modules/ipfs/ipfs.types](modules/modules_ipfs_ipfs_types.md)
-- [modules/ipfs/pin.processor](modules/modules_ipfs_pin_processor.md)
 - [modules/logger/logger.module](modules/modules_logger_logger_module.md)
 - [modules/logger/logger.service](modules/modules_logger_logger_service.md)
 - [modules/nats/nats.module](modules/modules_nats_nats_module.md)
