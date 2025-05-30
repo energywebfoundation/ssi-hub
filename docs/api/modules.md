@@ -88,6 +88,7 @@
 - [modules/did/did.module](modules/modules_did_did_module.md)
 - [modules/did/did.pipe](modules/modules_did_did_pipe.md)
 - [modules/did/did.processor](modules/modules_did_did_processor.md)
+- [modules/did/did.processor.event](modules/modules_did_did_processor_event.md)
 - [modules/did/did.resolver](modules/modules_did_did_resolver.md)
 - [modules/did/did.service](modules/modules_did_did_service.md)
 - [modules/did/did.types](modules/modules_did_did_types.md)

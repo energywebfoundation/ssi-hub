@@ -9,6 +9,8 @@
 ### Variables
 
 - [ADD\_DID\_DOC\_JOB\_NAME](modules_did_did_types.md#add_did_doc_job_name)
+- [EVENT\_UPDATE\_DID\_DOC\_JOB\_NAME](modules_did_did_types.md#event_update_did_doc_job_name)
+- [EVENT\_UPDATE\_DOCUMENT\_QUEUE\_NAME](modules_did_did_types.md#event_update_document_queue_name)
 - [UPDATE\_DID\_DOC\_JOB\_NAME](modules_did_did_types.md#update_did_doc_job_name)
 - [UPDATE\_DOCUMENT\_QUEUE\_NAME](modules_did_did_types.md#update_document_queue_name)
 - [didPattern](modules_did_did_types.md#didpattern)
@@ -22,6 +24,18 @@
 ### ADD\_DID\_DOC\_JOB\_NAME
 
 • `Const` **ADD\_DID\_DOC\_JOB\_NAME**: ``"adding"``
+
+___
+
+### EVENT\_UPDATE\_DID\_DOC\_JOB\_NAME
+
+• `Const` **EVENT\_UPDATE\_DID\_DOC\_JOB\_NAME**: ``"eventRefreshing"``
+
+___
+
+### EVENT\_UPDATE\_DOCUMENT\_QUEUE\_NAME
+
+• `Const` **EVENT\_UPDATE\_DOCUMENT\_QUEUE\_NAME**: ``"eventUpdateDocumentQueue"``
 
 ___
 

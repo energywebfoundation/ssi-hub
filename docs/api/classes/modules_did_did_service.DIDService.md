@@ -29,7 +29,7 @@
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `eventDidQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`)
 
 #### Parameters
 
@@ -39,6 +39,7 @@
 | `schedulerRegistry` | `SchedulerRegistry` |
 | `httpService` | `HttpService` |
 | `didQueue` | `Queue`<`string`\> |
+| `eventDidQueue` | `Queue`<`string`\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `didRepository` | `Repository`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\> |
 | `provider` | [`Provider`](common_provider.Provider.md) |

@@ -42,8 +42,10 @@ import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { DIDDocumentEntity, IClaim } from './did.entity';
 import {
   DID,
+  EVENT_UPDATE_DOCUMENT_QUEUE_NAME,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
+  EVENT_UPDATE_DID_DOC_JOB_NAME,
 } from './did.types';
 
 @Injectable()
@@ -51,6 +53,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly resolver: Resolver;
   private readonly JOBS_CLEANUP_DELAY = 1000;
+  private readonly IPFS_TIMEOUT = 10000;
 
   constructor(
     private readonly config: ConfigService,
@@ -58,6 +61,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly httpService: HttpService,
     @InjectQueue(UPDATE_DOCUMENT_QUEUE_NAME)
     private readonly didQueue: Queue<string>,
+    @InjectQueue(EVENT_UPDATE_DOCUMENT_QUEUE_NAME)
+    private readonly eventDidQueue: Queue<string>,
     private readonly logger: Logger,
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
@@ -364,7 +369,18 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
-        await this.pinDocument(did);
+        try {
+          await this.eventDidQueue.add(EVENT_UPDATE_DID_DOC_JOB_NAME, did, {
+            jobId: did,
+            lifo: true,
+          });
+        } catch (e) {
+          this.logger.warn(
+            `Error to add DID synchronization job for document ${did}: ${e}`
+          );
+          const jobsCounts = await this.eventDidQueue.getJobCounts();
+          this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
+        }
       }
     });
   }
@@ -454,7 +470,10 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
         let token: string;
         try {
-          token = await this.ipfsService.get(serviceEndpoint);
+          token = await this.ipfsService.getWithTimeout(
+            serviceEndpoint,
+            this.IPFS_TIMEOUT
+          );
         } catch (e) {
           return { serviceEndpoint, ...rest };
         }
