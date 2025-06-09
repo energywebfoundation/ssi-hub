@@ -11,6 +11,7 @@
 ### Methods
 
 - [getById](modules_did_did_controller.DIDController.md#getbyid)
+- [postById](modules_did_did_controller.DIDController.md#postbyid)
 
 ## Constructors
 
@@ -45,3 +46,19 @@ Retrieves a cached DID Document. If not in cache, retrieves from blockchain.
 `Promise`<`any`\>
 
 A DID Document representation which optionally includes full claims.
+
+___
+
+### postById
+
+▸ **postById**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | [`DID`](modules_did_did_types.DID.md) |
+
+#### Returns
+
+`Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>

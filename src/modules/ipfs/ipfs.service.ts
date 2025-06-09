@@ -62,6 +62,35 @@ export class IPFSService {
   }
 
   /**
+   * Get claim from cluster with timeout. If claim isn't found tries to get from gateway
+   *
+   * @param cid Content identifier.
+   * @param timeoutMs timeout waiting.
+   * @returns Stringified credential
+   */
+  public async getWithTimeout(cid: string, timeoutMs: number): Promise<string> {
+    let claim: string;
+    this.logger.debug(`trying to get ${cid}`);
+    try {
+      claim = await Promise.race<string>([
+        this.didStoreInfura.get(cid),
+        new Promise<string>((_, reject) =>
+          setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
+        ),
+      ]);
+    } catch (e) {
+      this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
+      throw new HttpException(
+        `Claim ${cid} not resolved`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    this.logger.debug(`got ${cid}`);
+
+    return claim;
+  }
+
+  /**
    * Saves credential on cluster
    *
    * @param credential Credential being persisted
@@ -71,9 +100,7 @@ export class IPFSService {
     try {
       return await this.didStoreInfura.save(credential);
     } catch (error) {
-      throw new Error(
-        `Error saving ${credential} in Infura: ${error.reason}`
-      );
+      throw new Error(`Error saving ${credential} in Infura: ${error.reason}`);
     }
   }
 }
