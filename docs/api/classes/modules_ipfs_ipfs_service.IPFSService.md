@@ -11,6 +11,7 @@
 ### Methods
 
 - [get](modules_ipfs_ipfs_service.IPFSService.md#get)
+- [getWithTimeout](modules_ipfs_ipfs_service.IPFSService.md#getwithtimeout)
 - [save](modules_ipfs_ipfs_service.IPFSService.md#save)
 - [isCID](modules_ipfs_ipfs_service.IPFSService.md#iscid)
 
@@ -18,15 +19,13 @@
 
 ### constructor
 
-• **new IPFSService**(`didStoreCluster`, `didStoreInfura`, `pinsQueue`, `logger`)
+• **new IPFSService**(`didStoreInfura`, `logger`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `didStoreCluster` | `DidStore` |
 | `didStoreInfura` | `DidStore` |
-| `pinsQueue` | `Queue`<[`PinClaimData`](../modules/modules_ipfs_ipfs_types.md#pinclaimdata)\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
@@ -42,6 +41,27 @@ Get claim from cluster. If claim isn't found tries to get from gateway
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `cid` | `string` | Content identifier. |
+
+#### Returns
+
+`Promise`<`string`\>
+
+Stringified credential
+
+___
+
+### getWithTimeout
+
+▸ **getWithTimeout**(`cid`, `timeoutMs`): `Promise`<`string`\>
+
+Get claim from cluster with timeout. If claim isn't found tries to get from gateway
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `cid` | `string` | Content identifier. |
+| `timeoutMs` | `number` | timeout waiting. |
 
 #### Returns
 

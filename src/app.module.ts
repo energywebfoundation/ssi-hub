@@ -71,7 +71,7 @@ try {
         },
         defaultJobOptions: {
           removeOnComplete: true,
-          removeOnFail: 20,
+          removeOnFail: true,
         },
       }),
       inject: [ConfigService],
@@ -101,4 +101,4 @@ try {
   ],
   providers: [JSONObjectScalar],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,7 +1,7 @@
-import { DidStore as DidStoreGateway } from 'didStoreInfura';
-import { DidStore as DidStoreCluster } from 'didStoreCluster';
-import { Module, Global } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DidStore as DidStoreCluster } from 'didStoreCluster';
+import { DidStore as DidStoreGateway } from 'didStoreInfura';
 import { IPFSController } from './ipfs.controller';
 import { IPFSService } from './ipfs.service';
 import {
@@ -9,10 +9,7 @@ import {
   IPFSClusterConfigToken,
   IpfsInfuraConfig,
   IPFSInfuraConfigToken,
-  PIN_CLAIM_QUEUE_NAME,
 } from './ipfs.types';
-import { BullModule } from '@nestjs/bull';
-import { PinProcessor } from './pin.processor';
 
 const IPFSInfuraConfigProvider = {
   provide: IPFSInfuraConfigToken,
@@ -72,11 +69,6 @@ const IPFSClusterConfigProvider = {
 
 @Global()
 @Module({
-  imports: [
-    BullModule.registerQueue({
-      name: PIN_CLAIM_QUEUE_NAME,
-    }),
-  ],
   providers: [
     IPFSClusterConfigProvider,
     IPFSInfuraConfigProvider,
@@ -95,7 +87,6 @@ const IPFSClusterConfigProvider = {
       },
       inject: [{ token: IPFSInfuraConfigToken, optional: false }],
     },
-    PinProcessor,
   ],
   controllers: [IPFSController],
   exports: [
@@ -106,4 +97,4 @@ const IPFSClusterConfigProvider = {
     DidStoreGateway,
   ],
 })
-export class IPFSModule {}
+export class IPFSModule { }

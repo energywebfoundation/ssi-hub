@@ -1,24 +1,12 @@
-import { DidStore as DidStoreCluster } from 'didStoreCluster';
-import { DidStore as DidStoreGateway } from 'didStoreInfura';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { DidStore as DidStoreGateway } from 'didStoreInfura';
 import { CID } from 'multiformats/cid';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import {
-  PIN_CLAIM_QUEUE_NAME,
-  PIN_CLAIM_JOB_NAME,
-  PinClaimData,
-} from './ipfs.types';
 import { Logger } from '../logger/logger.service';
-import { inspect } from 'util';
 
 @Injectable()
 export class IPFSService {
   constructor(
-    private didStoreCluster: DidStoreCluster,
     private didStoreInfura: DidStoreGateway,
-    @InjectQueue(PIN_CLAIM_QUEUE_NAME)
-    private readonly pinsQueue: Queue<PinClaimData>,
     private readonly logger: Logger
   ) {
     this.logger.setContext(IPFSService.name);
@@ -58,18 +46,37 @@ export class IPFSService {
    */
   public async get(cid: string): Promise<string> {
     let claim: string;
-    const getFromCluster = this.didStoreCluster.get(cid);
-    const getFromInfura = this.didStoreInfura.get(cid);
-    const timeout = new Promise<string>(
-      (_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out')), 5000) // 5 seconds timeout
-    );
-
     this.logger.debug(`trying to get ${cid}`);
     try {
-      claim = await Promise.race([
-        Promise.any([getFromCluster, getFromInfura]),
-        timeout,
+      claim = await this.didStoreInfura.get(cid);
+    } catch (e) {
+      this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
+      throw new HttpException(
+        `Claim ${cid} not resolved`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    this.logger.debug(`got ${cid}`);
+
+    return claim;
+  }
+
+  /**
+   * Get claim from cluster with timeout. If claim isn't found tries to get from gateway
+   *
+   * @param cid Content identifier.
+   * @param timeoutMs timeout waiting.
+   * @returns Stringified credential
+   */
+  public async getWithTimeout(cid: string, timeoutMs: number): Promise<string> {
+    let claim: string;
+    this.logger.debug(`trying to get ${cid}`);
+    try {
+      claim = await Promise.race<string>([
+        this.didStoreInfura.get(cid),
+        new Promise<string>((_, reject) =>
+          setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
+        ),
       ]);
     } catch (e) {
       this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
@@ -80,13 +87,6 @@ export class IPFSService {
     }
     this.logger.debug(`got ${cid}`);
 
-    try {
-      await this.pinsQueue.add(PIN_CLAIM_JOB_NAME, { cid, claim });
-    } catch (e) {
-      this.logger.debug(`Error to add pin job for cid ${cid}: ${e}`);
-      const jobsCounts = await this.pinsQueue.getJobCounts();
-      this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
-    }
     return claim;
   }
 
@@ -97,21 +97,10 @@ export class IPFSService {
    * @returns CID of the persisted credential
    */
   public async save(credential: string): Promise<string> {
-    const [clusterCID, infuraCID] = await Promise.allSettled([
-      this.didStoreCluster.save(credential),
-      this.didStoreInfura.save(credential),
-    ]);
-    if (clusterCID.status === 'fulfilled') {
-      return clusterCID.value;
-    } else if (infuraCID.status === 'fulfilled') {
-      this.logger.warn(
-        `Error saving ${credential} in cluster. Was saved to Infura as backup`
-      );
-      return infuraCID.value;
-    } else {
-      throw new Error(
-        `Error saving ${credential} in Infura: ${infuraCID.reason}`
-      );
+    try {
+      return await this.didStoreInfura.save(credential);
+    } catch (error) {
+      throw new Error(`Error saving ${credential} in Infura: ${error.reason}`);
     }
   }
 }
