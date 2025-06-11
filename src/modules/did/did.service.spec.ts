@@ -16,8 +16,8 @@ import { DIDService } from './did.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
-import { IPFSService } from '../ipfs/ipfs.service';
+import { EVENT_UPDATE_DOCUMENT_QUEUE_NAME, UPDATE_DOCUMENT_QUEUE_NAME } from './did.types';
+import { S3Service } from '../s3/s3.service';
 
 const { formatBytes32String } = utils;
 
@@ -101,6 +101,10 @@ describe('DidDocumentService', () => {
           useFactory: queueMockFactory,
         },
         {
+          provide: getQueueToken(EVENT_UPDATE_DOCUMENT_QUEUE_NAME),
+          useFactory: queueMockFactory,
+        },
+        {
           provide: getRepositoryToken(DIDDocumentEntity),
           useFactory: repositoryMockFactory,
         },
@@ -115,7 +119,7 @@ describe('DidDocumentService', () => {
           }),
           inject: [ConfigService],
         },
-        { provide: IPFSService, useValue: MockObject },
+        { provide: S3Service, useValue: MockObject },
       ],
     }).compile();
     await module.init();
