@@ -3,7 +3,7 @@ name: Populate dependencies for PRs
 # Controls when the action will run.
 on:
   push:
-    branches: [ develop ]
+    branches: [develop]
 
 jobs:
   install:
@@ -15,7 +15,7 @@ jobs:
       - name: Setup app dependencies
         uses: actions/setup-node@v3
         with:
-          node-version: '16.19.1'
+          node-version: '18.20.8'
 
       - name: Cache npm cache
         uses: actions/cache@v3
