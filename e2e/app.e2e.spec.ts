@@ -60,7 +60,7 @@ describe('iam-cache-server E2E tests', () => {
   });
 
   afterAll(async () => {
-    expect(consoleLogSpy).not.toBeCalledWith(
+    expect(consoleLogSpy).not.toHaveBeenCalledWith(
       expect.stringMatching(/^error \[.+\] : .+/)
     );
     await app.close();

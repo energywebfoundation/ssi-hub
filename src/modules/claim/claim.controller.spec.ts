@@ -209,8 +209,8 @@ describe('ClaimsController', () => {
       claimTypeVersion,
       requester,
     });
-    expect(publishForDids).toBeCalledTimes(1);
-    expect(publishForDids).toBeCalledWith(
+    expect(publishForDids).toHaveBeenCalledTimes(1);
+    expect(publishForDids).toHaveBeenCalledWith(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
       claimIssuer,

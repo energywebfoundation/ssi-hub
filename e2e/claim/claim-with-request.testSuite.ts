@@ -188,8 +188,8 @@ export const claimWithRequestTestSuite = () => {
 
     const publishForDids = jest.spyOn(nats, 'publishForDids');
     await issueClaimRequest(claimData, issuer, 201);
-    expect(publishForDids).toBeCalledTimes(1);
-    expect(publishForDids).toBeCalledWith(
+    expect(publishForDids).toHaveBeenCalledTimes(1);
+    expect(publishForDids).toHaveBeenCalledWith(
       ClaimEventType.ISSUE_CREDENTIAL,
       NATS_EXCHANGE_TOPIC,
       [requester.did],
