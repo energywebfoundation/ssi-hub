@@ -14,7 +14,6 @@ import { EthereumDIDRegistry } from '../src/ethers/EthereumDIDRegistry';
 import { EthereumDIDRegistry__factory } from '../src/ethers/factories/EthereumDIDRegistry__factory';
 import { didModuleTestSuite } from './did/did-service';
 import { Provider } from '../src/common/provider';
-import { ipfsModuleTestSuite } from './ipfs/ipfs.testSuite';
 import { ChildProcess } from 'child_process';
 
 export let app: INestApplication;
@@ -61,7 +60,7 @@ describe('iam-cache-server E2E tests', () => {
   });
 
   afterAll(async () => {
-    expect(consoleLogSpy).not.toBeCalledWith(
+    expect(consoleLogSpy).not.toHaveBeenCalledWith(
       expect.stringMatching(/^error \[.+\] : .+/)
     );
     await app.close();
@@ -73,6 +72,5 @@ describe('iam-cache-server E2E tests', () => {
     describe('Claim module', claimTestSuite);
     describe('StatusList2021 module', statusList2021TestSuite);
     describe('Did module', didModuleTestSuite);
-    describe('Ipfs module', ipfsModuleTestSuite);
   });
 });

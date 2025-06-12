@@ -186,7 +186,7 @@ describe('StatusList2021 service', () => {
           credential,
           'did:ethr:volta:0xe852f6784EeD893cC81dDa21D31f212332CC120a'
         )
-      ).rejects.toThrowError(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw an error if the credential was registered with different namespace', async () => {
@@ -199,7 +199,7 @@ describe('StatusList2021 service', () => {
           credential,
           'did:ethr:volta:0xe852f6784EeD893cC81dDa21D31f212332CC120a'
         )
-      ).rejects.toThrowError(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should create a new status list credential for given credential', async () => {
@@ -319,7 +319,7 @@ describe('StatusList2021 service', () => {
         service.addSignedStatusListCredential(credential)
       ).resolves.toBe(credential);
 
-      expect(statusListCredentialRepository.save).toBeCalledTimes(1);
+      expect(statusListCredentialRepository.save).toHaveBeenCalledTimes(1);
     });
 
     it('should add a valid StatusList2021Credential when namespace revocations exists', async () => {
@@ -365,7 +365,7 @@ describe('StatusList2021 service', () => {
 
       await expect(
         service.addSignedStatusListCredential(credential)
-      ).rejects.toThrowError(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -382,7 +382,7 @@ describe('StatusList2021 service', () => {
       await expect(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         service.verifyCredential({ id: 'uuid' } as any)
-      ).rejects.toThrowError(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should not throw an error when credential is valid', async () => {

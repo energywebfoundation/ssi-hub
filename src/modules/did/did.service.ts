@@ -36,7 +36,6 @@ import { inspect } from 'util';
 import { Provider } from '../../common/provider';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
-import { IPFSService } from '../ipfs/ipfs.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { DIDDocumentEntity, IClaim } from './did.entity';
@@ -47,6 +46,7 @@ import {
   UPDATE_DOCUMENT_QUEUE_NAME,
   EVENT_UPDATE_DID_DOC_JOB_NAME,
 } from './did.types';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
@@ -69,7 +69,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly ipfsService: IPFSService
+    private readonly s3Service: S3Service
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -348,8 +348,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       await Promise.all(
         service
           .map(({ serviceEndpoint }) => serviceEndpoint)
-          .filter((endpoint) => IPFSService.isCID(endpoint))
-          .map((cid) => this.ipfsService.get(cid).catch(() => null))
+          .filter((endpoint) => S3Service.isCID(endpoint))
+          .map((cid) => this.s3Service.get(cid).catch(() => null))
       )
     ).filter(Boolean);
   }
@@ -464,13 +464,13 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           return cachedService;
         }
 
-        if (!IPFSService.isCID(serviceEndpoint)) {
+        if (!S3Service.isCID(serviceEndpoint)) {
           return { serviceEndpoint, ...rest };
         }
 
         let token: string;
         try {
-          token = await this.ipfsService.getWithTimeout(
+          token = await this.s3Service.getWithTimeout(
             serviceEndpoint,
             this.IPFS_TIMEOUT
           );

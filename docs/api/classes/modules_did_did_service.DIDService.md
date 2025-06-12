@@ -29,7 +29,7 @@
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `eventDidQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `eventDidQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `s3Service`)
 
 #### Parameters
 
@@ -45,7 +45,7 @@
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 | `registrySettings` | `RegistrySettings` |
-| `ipfsService` | [`IPFSService`](modules_ipfs_ipfs_service.IPFSService.md) |
+| `s3Service` | [`S3Service`](modules_s3_s3_service.S3Service.md) |
 
 ## Methods
 
