@@ -161,6 +161,7 @@
 - [modules/status-list/status-list.module](modules/modules_status_list_status_list_module.md)
 - [modules/status-list/status-list.service](modules/modules_status_list_status_list_service.md)
 - [scripts/migrate](modules/scripts_migrate.md)
+- [scripts/migrate-ipfs-to-s3](modules/scripts_migrate_ipfs_to_s3.md)
 - [scripts/purge-extraneous-claims](modules/scripts_purge_extraneous_claims.md)
 - [scripts/truncate-db](modules/scripts_truncate_db.md)
 - [setup-swagger.function](modules/setup_swagger_function.md)
