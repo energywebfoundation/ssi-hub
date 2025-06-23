@@ -3,10 +3,136 @@ name: Build and test
 # Controls when the action will run.
 on:
   pull_request:
+    paths-ignore:
+      - 'devops/**'
   workflow_dispatch:
 
+env:
+  CI: true
+  ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
+  CHAIN_ID: ${{secrets.CHAIN_ID}}
+  CHAIN_NAME: volta
+  PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
+  RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
+  RESOLVER_V2_ADDRESS: '0xcf72f16Ab886776232bea2fcf3689761a0b74EfE'
+  DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
+  ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
+  ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
+  ENS_URL: ${{secrets.ENS_URL}}
+  REDIS_HOST: ${{secrets.REDIS_HOST}}
+  REDIS_PORT: 6379
+  NATS_CLIENTS_URL: ${{secrets.NATS_CLIENTS_URL}}
+  JWT_PUBLIC_KEY_PATH: ${{secrets.JWT_PUBLIC_KEY}}
+  JWT_PRIVATE_KEY_PATH: ${{secrets.JWT_PRIVATE_KEY}}
+  DB_HOST: ${{secrets.DB_HOST}}
+  DB_PORT: ${{secrets.DB_PORT}}
+  DB_USERNAME: ${{secrets.DB_USERNAME}}
+  DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+  DB_NAME: ${{secrets.DB_NAME}}
+  JWT_ACCESS_TOKEN_EXPIRES_IN: ${{secrets.JWT_ACCESS_TOKEN_EXPIRES_IN}}
+  JWT_REFRESH_TOKEN_EXPIRES_IN: ${{secrets.JWT_REFRESH_TOKEN_EXPIRES_IN}}
+  SIWE_NONCE_EXPIRES_IN: 1m
+  JWT_ACCESS_TOKEN_NAME: ${{secrets.JWT_ACCESS_TOKEN_NAME}}
+  JWT_REFRESH_TOKEN_NAME: ${{secrets.JWT_REFRESH_TOKEN_NAME}}
+  RESTRICT_CORS_ORIGINS: true
+  ALLOWED_ORIGINS: https://switchboard-dev.energyweb.org,https://gp4btc-ui-dev.energyweb.org/,https://staking-ui-dev.energyweb.org,https://stedin-dev.energyweb.org
+  UNIVERSAL_RESOLVER_URL: ${{secrets.UNIVERSAL_RESOLVER_URL}}
+  ROOT_DOMAIN: iam.ewc
+  DID_SYNC_ENABLED: false
+  DIDDOC_SYNC_INTERVAL_IN_HOURS: 21
+  DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
+  CLAIM_MANAGER_ADDRESS: ${{secrets.CLAIM_MANAGER_ADDRESS}}
+  ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
+  ASSETS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_INTERVAL_IN_HOURS}}
+  ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS}}
+  ASSETS_SYNC_ENABLED: ${{secrets.ASSETS_SYNC_ENABLED}}
+  IPFS_CLIENT_URL: ${{secrets.IPFS_URL}}
+  NESTJS_PORT: ${{secrets.NESTJS_PORT}}
+  STRATEGY_CACHE_SERVER: ${{secrets.STRATEGY_CACHE_SERVER}}
+  STRATEGY_PRIVATE_KEY: ${{secrets.STRATEGY_PRIVATE_KEY}}
+  BLOCKNUM_AUTH_ENABLED: true
+  STRATEGY_NUM_BLOCKS_BACK: 10
+  STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
+  DID_SYNC_MODE_FULL: false
+  ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
+  STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
+  NATS_ENVIRONMENT_NAME: dev
+  DISABLE_GET_DIDS_BY_ROLE: true
+
 jobs:
-  deployment:
+  cancel-previous:
+      name: 'Cancel Previous'
+      runs-on: ubuntu-latest
+      timeout-minutes: 3
+      steps:
+        - uses: styfle/cancel-workflow-action@0.11.0
+          with:
+            access_token: ${{ github.token }}
+  install:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup app dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.19.1'
+      - name: Cache npm cache
+        uses: actions/cache@v3
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+            ${{ runner.os }}-npm-
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        name: npm ci
+        run: npm ci
+
+  build:
+    name: Build application
+    needs: [install]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.19.1'
+
+      - name: Restore node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist
+            src/ethers
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      - name: Build the app
+        run: npm run build
+
+  unit-tests:
+    name: Unit tests
+    needs: [build]
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:12
@@ -18,12 +144,6 @@ jobs:
           - 5432:5432
         # Add a health check
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        # NATS
-      jetstream:
-        image: synadia/jsm:latest
-        options: >-
-          -e JSM_MODE=server
-
 
       redis:
         image: redis
@@ -32,102 +152,101 @@ jobs:
         options: >-
           --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5 --entrypoint redis-server
 
-
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v2
+
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16.10.0'
+          node-version: '16.19.1'
 
-      - name: Cache Dependencies
-        uses: actions/cache@v2
+      - name: Restore node_modules
+        uses: actions/cache@v3
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate keys
-        run: npm run generate:jwtkeys
-
-      - name: Build the app
-        run: npm run build
+      - name: Restore build artefacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist
+            src/ethers
+          key: ${{ runner.os }}-build-${{ github.sha }}
 
       - name: Create Nats cluster
         uses: onichandame/nats-action@master
         with:
           port: '4222 4223 4224'
 
-      - name: Running tests
-        run: npm run test --forceExit
-        env:
-          CI: true
-          ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
-          CHAIN_ID: ${{secrets.CHAIN_ID}}
-          CHAIN_NAME: volta
-          PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
-          RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
-          DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
-          ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
-          ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
-          ENS_URL: ${{secrets.ENS_URL}}
-          ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
-          REDIS_HOST: localhost
-          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
-          NATS_CLIENTS_URL: localhost:4222
-          STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
-          ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
-          DID_SYNC_MODE_FULL: false
-          STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
-          NATS_ENVIRONMENT_NAME: dev
+      - name: Generate keys
+        run: npm run generate:jwtkeys
 
-      - name: Running E2E tests
-        run: npm run test:e2e
+      - name: execute DB migrations
+        run: npm run migration:run:dev
+
+      - name: Execute tests
+        run: npm run test --forceExit
+
+  e2e-tests:
+    name: E2E tests
+    needs: [build]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
         env:
-          CI: true
-          ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
-          CHAIN_ID: ${{secrets.CHAIN_ID}}
-          CHAIN_NAME: volta
-          PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
-          RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
-          DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
-          ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
-          ENS_URL: ${{secrets.ENS_URL}}
-          REDIS_HOST: ${{secrets.REDIS_HOST}}
-          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
-          NATS_CLIENTS_URL: ${{secrets.NATS_CLIENTS_URL}}
-          JWT_PUBLIC_KEY: ${{secrets.JWT_PUBLIC_KEY}}
-          JWT_PRIVATE_KEY: ${{secrets.JWT_PRIVATE_KEY}}
-          DB_HOST: ${{secrets.DB_HOST}}
-          DB_PORT: ${{secrets.DB_PORT}}
-          DB_USERNAME: ${{secrets.DB_USERNAME}}
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-          DB_NAME: ${{secrets.DB_NAME}}
-          JWT_ACCESS_TOKEN_EXPIRES_IN: ${{secrets.JWT_ACCESS_TOKEN_EXPIRES_IN}}
-          JWT_REFRESH_TOKEN_EXPIRES_IN: ${{secrets.JWT_REFRESH_TOKEN_EXPIRES_IN}}
-          JWT_ACCESS_TOKEN_NAME: ${{secrets.JWT_ACCESS_TOKEN_NAME}}
-          JWT_REFRESH_TOKEN_NAME: ${{secrets.JWT_REFRESH_TOKEN_NAME}}
-          UNIVERSAL_RESOLVER_URL: ${{secrets.UNIVERSAL_RESOLVER_URL}}
-          ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
-          DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
-          CLAIM_MANAGER_ADDRESS: ${{secrets.CLAIM_MANAGER_ADDRESS}}
-          ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
-          ASSETS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_INTERVAL_IN_HOURS}}
-          ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS}}
-          ASSETS_SYNC_ENABLED: ${{secrets.ASSETS_SYNC_ENABLED}}
-          IPFS_URL: ${{secrets.IPFS_URL}}
-          NESTJS_PORT: ${{secrets.NESTJS_PORT}}
-          STRATEGY_CACHE_SERVER: ${{secrets.STRATEGY_CACHE_SERVER}}
-          STRATEGY_PRIVATE_KEY: ${{secrets.STRATEGY_PRIVATE_KEY}}
-          STRATEGY_NUM_BLOCKS_BACK: 10
-          STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
-          DID_SYNC_MODE_FULL: false
-          ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
-          STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
-          NATS_ENVIRONMENT_NAME: dev
+          POSTGRES_USER: ${{secrets.DB_USERNAME}}
+          POSTGRES_DB: ${{secrets.DB_NAME}}
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
+        ports:
+          - 5432:5432
+        # Add a health check
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5 --entrypoint redis-server
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.19.1'
+
+      - name: Restore node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Restore build artefacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist
+            src/ethers
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      - name: Create Nats cluster
+        uses: onichandame/nats-action@master
+        with:
+          port: '4222 4223 4224'
+
+      - name: Generate keys
+        run: npm run generate:jwtkeys
+
+      - name: execute DB migrations
+        run: npm run migration:run:dev
+
+      - name: Execute tests
+        run: npm run test:e2e

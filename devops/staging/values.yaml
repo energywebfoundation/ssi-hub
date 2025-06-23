@@ -3,10 +3,16 @@ iam-cache-server-helm:
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
 
-  replicaCount: 3
+  replicaCount: 1
+
+  # Pod disruption budget will be created only if replicaCount > 1
+  pdb:
+    enabled: true
+    minAvailable: 1
 
   image:
-    repository: "887755037386.dkr.ecr.us-west-2.amazonaws.com/ics-api"
+    repository: "ghcr.io/energywebfoundation/ssi-hub"
+    tag: v2.14.0
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -36,7 +42,7 @@ iam-cache-server-helm:
   # runAsUser: 1000
 
   service:
-    type: NodePort
+    type: ClusterIP
     port: 3000
 
   ingress:
@@ -85,6 +91,8 @@ iam-cache-server-helm:
   config:
     secretRefName: ics-secrets
     configRefName: ics-cm
+    jwtKeysSecretName: jwt-keys
+    jwtKeysMountPath: "/keys"
 
   appValues:
     CHAIN_ID: 73799
@@ -98,7 +106,7 @@ iam-cache-server-helm:
     DOMAIN_NOTIFIER_ADDRESS: 0xeea658026d6CDede4380D3aD030beAC911758A93
     RESOLVER_V1_ADDRESS: 0xf5EA22c1F799d425356c2aab2004200Ab4490D2b
     RESOLVER_V2_ADDRESS: 0xcf72f16Ab886776232bea2fcf3689761a0b74EfE
-    ASSETS_MANAGER_ADDRESS: 0x84d0c7284A869213CB047595d34d6044d9a7E14A
+    ASSETS_MANAGER_ADDRESS: 0x524563FeA0c9b54B337F0bAc366A9f541d26b3ea
     STAKING_POOL_FACTORY_ADDRESS: 0x4b2A127680320eD980beAa7aD9b2447B96BC32fC
     ASSETS_SYNC_INTERVAL_IN_HOURS: 10
     ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: 21
@@ -107,17 +115,24 @@ iam-cache-server-helm:
     DID_SYNC_ENABLED: true
     DID_SYNC_MODE_FULL: true
     ENS_SYNC_INTERVAL_IN_HOURS: 11
-    ENS_SYNC_ENABLED: true
+    ENS_SYNC_ENABLED: false
     ENABLE_AUTH: true
-    JWT_PRIVATE_KEY: /app/private.pem
-    JWT_PUBLIC_KEY: /app/public.pem
+    JWT_PRIVATE_KEY_PATH: /keys/private.pem
+    JWT_PUBLIC_KEY_PATH: /keys/public.pem
     STRATEGY_CACHE_SERVER: https://identitycache-staging.energyweb.org/v1
+    BLOCKNUM_AUTH_ENABLED: true
     STRATEGY_NUM_BLOCKS_BACK: 10
     JWT_ACCESS_TOKEN_EXPIRES_IN: 15m
     JWT_REFRESH_TOKEN_EXPIRES_IN: 1h
+    RESTRICT_CORS_ORIGINS: true
+    ALLOWED_ORIGINS: https://identitycache-staging.energyweb.org,https://switchboard-staging.energyweb.org
+    SIWE_NONCE_EXPIRES_IN: 1m
     JWT_ACCESS_TOKEN_NAME: token
     JWT_REFRESH_TOKEN_NAME: refreshToken
     STATUS_LIST_DOMAIN: https://identitycache-staging.energyweb.org/v1
+    TYPEORM_LOGGING: error,warn
+    TYPEORM_LOGGER: file
+    DISABLE_GET_DIDS_BY_ROLE: true
 
   opsValues:
     DB_NAME: ics
@@ -127,8 +142,10 @@ iam-cache-server-helm:
     NATS_CLIENTS_URL: iam-cache-server-nats.ics.svc.cluster.local:4222
     LOGS_DIRECTORY: /app/logs
     NESTJS_PORT: 3000
-    DB_MAXIMUM_CONNECTION_POOL: 150 # 1024^3 * 4 / 9531392 = 450 . 450/3 = 150. https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
+    DB_CONNECTION_TIMEOUT: 15000
+    DB_MAXIMUM_CONNECTION_POOL: 20 # 1024^3 * 4 / 9531392 = 450 . 450/3 = 150. https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: staging
+    IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
     IPFS_CLIENT_PROJECT_ID: 2DFOoYU78LsICBTNhrwRGctWE7i
     IPFS_CLIENT_HOST: ipfs.infura.io
@@ -137,17 +154,17 @@ iam-cache-server-helm:
   resources:
     limits:
       cpu: 750m
-      memory: 1Gi
+      memory: 1700Mi
     requests:
       cpu: 500m
       # High memory request is due to DIDKit usage https://github.com/spruceid/didkit/issues/301
       # We anticipate memory usage to decrease once node v18 is used
-      memory: 900Mi
+      memory: 1500Mi
 
   autoscaling:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 4
+    minReplicas: 1
+    maxReplicas: 1
     targetCPUUtilizationPercentage: 50
     targetMemoryUtilizationPercentage: 85
 
@@ -175,3 +192,6 @@ iam-cache-server-helm:
       STRATEGY_PRIVATE_KEY: AgBUKnUcH9FvehwFusDjKu9flZYBZitaRl/rcukk8ACmuHubI91oZ0A4SJvdf4RAJYCW9SVWfGuDb2LFYOKtwKWzURMCre8bIiAgL27HSXv94Z15DnVzA1jz9lYpgtL/yJ8ecW/GxRWX7StGhhubrZHZGHbsBmW8GDYuIig7D3U8g9VBSHahUSkkUP+reNWr2iZeLnnqiPNqVcXb/fUPydtjDQtYITdRXrQOjVnwrWoqmyiDF5G5RPQxb38+GGF7U7tN/tC3vZ9C56OGlw00S20p8is+FGwqxUvGXjsEdYrnfWFqwo9AVRmB8F+gNuWUAWREvla8gZUHyiCIMTykR2Q1GjYCeQ7h8C3TSlqRakjcWaX3qZfGJot6fyJahS1n42h/XEyBrNTRDJfy6ptA3C9xty468Nckimobvx1PDrq8M5h4+4W6/Lory/q9m1Jvb3/QO70nlLIj0LFHeCOgVEmeNuzDNliDHmrAV07q+Kq2txCNQLgCEA8unyZE49V0CZVRVtEiatuPh459aOeJpl8/Fvj/1tMF0Pg0TEoOrhg+oib6QXh/KOj2/LHe2qLP/HpIgmKPazwYo4/rAfAdopqI3LXdxjq0WA2F1Kwa7hhO5Dvor/NA2a/X91Gx9X/XwziuL8Ujb9lUJO/PVUU7mynLO2FMpSPKxehoOX8BefmHH1EI0mVZ09v1LXTSWE/y4Ql2am7AapGGI/ZuwKZ/UfDK4Jq4b/JOnMc+AmFNtrxVD/CBrDCrAGPnWz/upoBDl6YgpvhhCTBh9MILIRKuJsSr
       ENS_URL: AgBsK8gUObR1EYkUp1i1JWqgi6MqGx/oUxJ3RfR+sSjIsRZIY9t6VraXAIY9b8WHcTHfjPCUgygqrM4HNPdLQD+HkMmX2WXbYzC1Bg59QruEudTBtkSu/XQPlOKdgQDtx+Zm1bTgh/BMwhJ0DkDo0gOjZZ9KbSnqFUBlqKOAOpSQhsKi7Zx2Gngqbt+ux1KFExAgSm4MNqWIVZM98sTxFvSYVy+g3rDO4it4dz2bQmtd1Tk4iZnc5n+Ms6mW9mylTCi6QXZEkoB/mUmn3GftEsRJeT+HxR7b+DiuTmCTA9xgNAzbt+6QOxaAZSqsViyqWeBSoHnMONS3/ui7Y1NFm+13DwsXCXwkXD/04OUcaQXpycSyGHxN1mOCSHRjb2eKRRkR7FLjftvTgGI4MnK4xo6fXR8NvCmWQJqaLgniQcVOY0ltSYOq82zzmQroA19b0Url0ZzjXTitGIc35dOHrzCjZa/P1vwQWq4YVr66f+HANnFxSD1TbON8LpfSME7/8TBlvveB5UpKnUfeRJW7T1PYt22PA14pFnIXwPjO0kW1CRTZSbPQUH2YaKwmqc8RCDdKD5vwxQFcOsuJW5x3cR9e55HCIayJSNm7n4KCaa/66ocrwOJ5rHerFk0ct9BTzYLoig2tpvYes06AM6TbrhoEHgsluVSdRiUNBd42C2gt43vkOgMvRtTpnNZ7g/EwNmZNf+PGFGvvEHXbrQ4T5ETUFI4/Y51OL4C121AjJF/1sfd/JYdqFF7s84gP/lQQtSJMJGJAoQ==
       IPFS_CLIENT_PROJECT_SECRET: AgCTaz+RJTcIxalxDyZuTIg5Xlp5k9vwQuqhjsYIhoj9b1nN646cHZwMuhvD/VgelW+6txuTSxN6p+jlaTqGSOoYr+L2mekZg+X7wN8c+ESu8AJ2AqwC4rQ6g8ohLYiEuyVdIAZ9DqzdnU0rvy9FUp+e2rJSG2SeUSe8+PNyq7uzHWQWMywaZymPdxYnz0DQhpynb9Fead8deiMV4Q5ENxOQcvOrghcfiBGSiCyQ9DaXS8WVVH95PmDAAxdskJvWEoCAlG3x9tjn75r1m5YO7QumX9NuDXUvMXwRtdCVNZggpxfa/43l4zhrcy5EP9YauFWkJOXljMfTc/5BNb37u3qzXfcUtCZiQUC1u15/7f8TkNrousg/nVOaSN5fDm1646JJq1RK0n1hbJhTzcBnMs5Feqxu7J64CdUOKs96xF7FyAxMiywWSKR+i+55Z8rMNy3kS3Q/rkV4AiKR9jNoyzTEIPufZ6dsR16p/On//aDKmO7mskRdclfHSJE5KfJ6hNkHkyOexnfomZSKSOWMe9Wuy4tainBnIvTLXvGMghqHMb5sOmHOfbBnP6G75TflDnlG3c1NlSkv+IxhQC89sYF5fH/0uCEd13tldNYBOZj7DcDbjDuJ2U+VVcDNiEAXznuxn7RL7OPpfQwCv0cDOH7u0WaxLSAKfiNtNvyWOC1bHXmGFiUQJN5VqJfRVI6UrTRxGyi8AD4vfczoZQKEi5cVZ4ykhylGcUJxfUBbzR353Q==
+      IPFS_CLUSTER_ROOT: AgAtfY/TBRgUck7vkr769EbYBCH/ryv/SqrEYa4LOKHTUliKgpxOhiYsKVf9vja7omk6mtXV8gFuYEMFgxT/u9BOt2eRTGGPGcgOl+QO2KkSr5E3myvong91vDojehq+KYCHUh7QGZy5t6pZJ9OEwMQsJeGafU3vtAL0FPJe+jXAFANrG013vN4pQMSw+VsMviPEngWopUraUaRyZI0Hfk7BaaDGTQhbTgGYdvh09c29B4XJQPgDZqDNxcFKsabwmjRGHzzOCQZixVrAB3jKBE8jcSS4sH6FT+O23gw5yqFQWpaoX0iIuh7AydJ8vhM1TOz4onQCTEFzYpgZ7wMvn0tpGc9W69EumAnrBJyxtKt7D3ynkg1H8+ILPGyDYB9WTBEqVdcLVLF6LKNKIwOzvO22GfsN06DKAydO48D+/qqK+ewt1RsavLGuVe2aDZk404wEx97Fe/DCWucHHuGo1j2E+U2C/L+rnqFi28nsb5BZtYCX3wdZUmhkY92WD1kSqQ6oVx3eaMeSG3EYVcneZ74S707EypsxUmqVOAXtm/kf9D7CVbSAKg1B3ofdc6gSXfnc6lwgh/pnWOp62Rf9YYwtxupYGaYjiiXp0pyqdlSy0xeT6cgUxZbSXGlBerVgJIXn0cR5OVYe/1nT2jhlSleE1ggmctWHjx5YpS3T4qJ4JXsmdggvF1IWDAqRfYHP+5mkiQ3RmvxG6B0PwftcEKDd4LncOqFDcaq79sHRxLGBboL6bG436Vdk6iGn
+      IPFS_CLUSTER_USER: AgAl2Z0Sz2vGEvqCqf4LeNii7N1+PbHnQoxwoLH00qTegQ9IP5nx6JjBTKQz1R7dZ1noycxPI5EBWY61+u59mf06tl8/QwkL8LwxiWk8HWvbZgDdj+G0g3zWcf8TVzY0uwjP5hpVec05RqXYiP+S1YauWQyU72PYq6gwpLH4zd1QyUKoGF1MprgnwAlLJDCnOHFlpWvJr6BnNgViK0fLD4wKhY21U6bhfdyo5CH3rJEuIb8dDE9yM5IF3iSJ9UzsdS4+FXoLFNPqHkVG2B6Qnq80Jeb+674yvkkX3Df9n/AjcEYN2lmKnRbEwZYQpA48p6gCgy1ECT1rSKSvWu+sa7hJ4nOfIIA0Ma0I8BWn3IRK3DbsktpqTSB/F8aElxGDnJIN4Be0+T37XdjsIQNhabogHxqmcH+0lQBLHorU84zNn5ucoigApcmPzvSE9etskfNWPVexsF3UTwmzCBLnSYx7+GWfeKnZFGVL6lVYTj9Szi2QRB1rrtHeovCKlowXGhdj9zJ1fqIuX0osuriBLLpukotlw6eDdbkpeRV0pkchPXigwzlJs3+7+4dpmoBvF6xCTvNiMD97GTJ8mxd9CpPwmNFeeMqpNa8tcVZgxKNVxukQwTthEN2ulVn+I/N7gpSooxo5XcPTLNj72WZn/ZOkadg/BZ2oJm00243Jmv+zAQz/tXRxd+8emFtDLutlf1rM+mAjWxiY3yrTjSob5dvZ9Wwe1w==
+      IPFS_CLUSTER_PASSWORD: AgAob/YA5VIT0fNBEC4fwAV1TmSLaguGk1njikTaXvhbGIC+32ASJfvx6BOFIFpSfHZoU/UARvwNmj1EczqCkiMvDT8OWlDwkVxNGrJZORChM54l2y00mQ584K1YD4BtUCRivoe0DXb4EwEsMFECZsY4K5YExeTHPkt+0fYjfCPaxW/ZH8sJH2bXCawOU4+uAWQq8+J8nynaBfaD0Z9YZMOpwvcfCOiSSwz7P2fR6YNqis/yViEe8FnEyA0gAy+h1260wfWnxUZHHaN88e4brCMdzCslJpV+tQ/Ix7OoRYjPVNT/7Ab8n3pG5GciSgwMOal5NhNSCuBHXZ2xWe/D0H03DY6gk9dd5Njhspe2uCfo+7WW5hvTuzsk1m5w7pmB3Y6hqHI39pnrn0XLZIUgJ8Bpc1ffGLcyP+uJxHbDfGQCye1gs86yTDixDzPDLYZBp796uBpcnYDOLerRKFwhxpYZCvoiKNJ9I6RktSgD2oIw/MF9c2S7lZ1WGoXDvfY5k9UMP20nson3DDQA1T9YCAU8j+fcDi9fwpqH7grSXIwLeMezfhIYhqPosuwabutnoTRdRapinnx7WFKIYnq5NeC/t27PbO19qZRdJgxiVViM2YIRM2ZsDHlpCqI4Mk0n2fQzt5Z0zo172kdWhR/JdbB3q3B3VBTsD/G/HUwBo0VJ/fuA08Mxo1+rLFkHc4XobDJjaqjKI0TI8F8Bl0QJEOz6py2Epg==

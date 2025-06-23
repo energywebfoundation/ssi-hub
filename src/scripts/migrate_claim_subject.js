@@ -6,15 +6,19 @@ const {
   RoleClaim,
 } = require('../../dist/modules/claim/entities/roleClaim.entity.js');
 
+require('dotenv').config();
+
+const { DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD } = process.env;
+
 (async function () {
   const connection = await createConnection({
     // had to copy from orgmconfig because typeorm doesn't detect postgres driver
     type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'postgres',
-    password: 'password',
-    database: 'dev-test',
+    host: DB_HOST,
+    port: DB_PORT,
+    username: DB_USERNAME,
+    password: DB_PASSWORD,
+    database: DB_NAME,
     entities: ['dist/**/*.entity.js'],
   });
   const claimsRepository = connection.getRepository(RoleClaim);

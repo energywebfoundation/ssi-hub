@@ -24,6 +24,7 @@
 - [minValue](modules_role_role_dto.FieldsDTO.md#minvalue)
 - [pattern](modules_role_role_dto.FieldsDTO.md#pattern)
 - [required](modules_role_role_dto.FieldsDTO.md#required)
+- [schema](modules_role_role_dto.FieldsDTO.md#schema)
 
 ### Methods
 
@@ -134,6 +135,15 @@ ___
 #### Implementation of
 
 [Fields](../interfaces/modules_role_role_types.Fields.md).[required](../interfaces/modules_role_role_types.Fields.md#required)
+
+___
+
+### schema
+
+• `Optional` **schema**: `Record`<`string`, `unknown`\>
+
+A JSON Schema definition
+For more information about JSON Schema, see https://json-schema.org/
 
 ## Methods
 

@@ -15,7 +15,7 @@ import { ApplicationController } from './application.controller';
 import { ApplicationService } from './application.service';
 import { SentryModule } from '../sentry/sentry.module';
 import { Role } from '../role/role.entity';
-import * as TestDbCOnfig from '../../../test/config';
+import * as TestDbCOnfig from '../../../e2e/config';
 import { appConfig, MockJWTAuthGuard } from '../../common/test.utils';
 import { OrganizationService } from '../organization/organization.service';
 import { Organization } from '../organization/organization.entity';

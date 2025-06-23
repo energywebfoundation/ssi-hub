@@ -5,6 +5,7 @@
 ## Implements
 
 - `OnModuleInit`
+- `OnModuleDestroy`
 
 ## Table of contents
 
@@ -19,6 +20,7 @@
 - [getDIDDocumentFromUniversalResolver](modules_did_did_service.DIDService.md#getdiddocumentfromuniversalresolver)
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
 - [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
+- [onModuleDestroy](modules_did_did_service.DIDService.md#onmoduledestroy)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
 - [resolveServiceEndpoints](modules_did_did_service.DIDService.md#resolveserviceendpoints)
 
@@ -26,7 +28,7 @@
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `didStore`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`)
 
 #### Parameters
 
@@ -41,7 +43,7 @@
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 | `registrySettings` | `RegistrySettings` |
-| `didStore` | `DidStore` |
+| `ipfsService` | [`IPFSService`](modules_ipfs_ipfs_service.IPFSService.md) |
 
 ## Methods
 
@@ -134,6 +136,20 @@ ___
 #### Returns
 
 `string`
+
+___
+
+### onModuleDestroy
+
+▸ **onModuleDestroy**(): `Promise`<`void`\>
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Implementation of
+
+OnModuleDestroy.onModuleDestroy
 
 ___
 

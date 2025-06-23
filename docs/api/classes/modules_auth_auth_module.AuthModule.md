@@ -20,13 +20,14 @@
 
 ### constructor
 
-• **new AuthModule**(`tokenService`)
+• **new AuthModule**(`tokenService`, `configService`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `tokenService` | [`TokenService`](modules_auth_token_service.TokenService.md) |
+| `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
 
 ## Methods
 

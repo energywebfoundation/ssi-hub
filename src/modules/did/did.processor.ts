@@ -1,16 +1,37 @@
-import { OnQueueError, Process, Processor } from '@nestjs/bull';
+import {
+  InjectQueue,
+  OnQueueActive,
+  OnQueueError,
+  OnQueueFailed,
+  OnQueueStalled,
+  OnQueueWaiting,
+  Process,
+  Processor,
+} from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
-import { Job } from 'bull';
+import { Job, Queue } from 'bull';
+import {
+  PinClaimData,
+  PIN_CLAIM_JOB_NAME,
+  PIN_CLAIM_QUEUE_NAME,
+} from '../ipfs/ipfs.types';
 import { Logger } from '../logger/logger.service';
+import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
-import { ADD_DID_DOC_QUEUE_NAME, UPDATE_DID_DOC_QUEUE_NAME } from './did.types';
+import {
+  ADD_DID_DOC_JOB_NAME,
+  UPDATE_DID_DOC_JOB_NAME,
+  UPDATE_DOCUMENT_QUEUE_NAME,
+} from './did.types';
 
-@Processor('dids')
+@Processor(UPDATE_DOCUMENT_QUEUE_NAME)
 export class DIDProcessor {
   constructor(
     private readonly didService: DIDService,
     private readonly logger: Logger,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    @InjectQueue(PIN_CLAIM_QUEUE_NAME)
+    private pinQueue: Queue<PinClaimData>
   ) {
     this.logger.setContext(DIDProcessor.name);
   }
@@ -20,19 +41,54 @@ export class DIDProcessor {
     this.logger.error(error);
   }
 
-  @Process(ADD_DID_DOC_QUEUE_NAME)
-  public async processDIDDocumentAddition(job: Job<string>) {
-    this.logger.debug(`processing cache add for ${job.data}`);
-    await this.didService.addCachedDocument(job.data);
+  @OnQueueActive()
+  onActive(job: Job) {
+    this.logger.debug(`Starting ${job.name} document ${job.data}`);
   }
 
-  @Process(UPDATE_DID_DOC_QUEUE_NAME)
+  @OnQueueStalled()
+  onStalled(job: Job) {
+    this.logger.debug(`Stalled ${job.name} document ${job.data}`);
+  }
+
+  @OnQueueFailed()
+  onFailed(job: Job) {
+    this.logger.debug(`Failed ${job.name} document ${job.data}`);
+  }
+
+  @OnQueueWaiting()
+  async OnQueueWaiting(job: Job) {
+    this.logger.debug(`Waiting ${job.name} document ${job.data}`);
+  }
+
+  @Process(ADD_DID_DOC_JOB_NAME)
+  public async processDIDDocumentAddition(job: Job<string>) {
+    const doc = await this.didService.addCachedDocument(job.data);
+
+    await Promise.all(
+      doc.service.map(({ serviceEndpoint }) => {
+        this.pinQueue.add(PIN_CLAIM_JOB_NAME, {
+          cid: serviceEndpoint,
+        });
+      })
+    );
+  }
+
+  @Process(UPDATE_DID_DOC_JOB_NAME)
   public async processDIDDocumentRefresh(job: Job<string>) {
-    this.logger.debug(`processing cache refresh for ${job.data}`);
-    if (this.configService.get('DID_SYNC_MODE_FULL') === 'true') {
-      await this.didService.addCachedDocument(job.data, true);
+    let doc: DIDDocumentEntity;
+    if (this.configService.get<boolean>('DID_SYNC_MODE_FULL')) {
+      doc = await this.didService.addCachedDocument(job.data, true);
     } else {
-      await this.didService.incrementalRefreshCachedDocument(job.data);
+      doc = await this.didService.incrementalRefreshCachedDocument(job.data);
     }
+
+    await Promise.all(
+      doc.service.map(({ serviceEndpoint }) => {
+        this.pinQueue.add(PIN_CLAIM_JOB_NAME, {
+          cid: serviceEndpoint,
+        });
+      })
+    );
   }
 }

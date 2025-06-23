@@ -1,6 +1,8 @@
+import { config as loadEnvVars } from 'dotenv';
+loadEnvVars(); // this is required by the Auth decorator depending on process.env.ENABLE_AUTH
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
@@ -8,6 +10,9 @@ import compression from 'compression';
 import helmet from 'helmet';
 import { SentryService } from './modules/sentry/sentry.service';
 import * as SentryNode from '@sentry/node';
+import { corsConfig } from './common/cors.config';
+import { setupSwagger } from './setup-swagger.function';
+import { NotFoundExceptionFilter } from './common/not-found-exception-filter';
 
 // This allows TypeScript to detect our global value and properly assign maps for sentry
 // See more here: https://docs.sentry.io/platforms/node/typescript/
@@ -38,6 +43,7 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new NotFoundExceptionFilter());
 
   // add security middleware
   app.use(
@@ -53,21 +59,9 @@ async function bootstrap() {
   // add compression for the API responses
   app.use(compression());
 
-  const options = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('Cache Server API documentation')
-    .setVersion('1.0');
+  setupSwagger(app, configService);
 
-  if (process.env.ENABLE_AUTH === 'true') {
-    options.addBearerAuth();
-  }
-
-  const builtOptions = options.build();
-
-  const document = SwaggerModule.createDocument(app, builtOptions);
-  SwaggerModule.setup('api', app, document);
-
-  app.enableCors({ credentials: true, origin: true });
+  corsConfig(app);
 
   app.use(SentryNode.Handlers.errorHandler());
   await app.listen(configService.get('NESTJS_PORT'));

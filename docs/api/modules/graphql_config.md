@@ -10,7 +10,7 @@
 
 ### getGraphQlConfig
 
-▸ **getGraphQlConfig**(`configService`): `GqlModuleOptions`
+▸ **getGraphQlConfig**(`configService`): `GqlModuleOptions`<`any`\>
 
 #### Parameters
 
@@ -20,4 +20,4 @@
 
 #### Returns
 
-`GqlModuleOptions`
+`GqlModuleOptions`<`any`\>

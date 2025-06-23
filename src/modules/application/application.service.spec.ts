@@ -5,7 +5,7 @@ import {
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
 import { Application } from '../application/application.entity';
-import * as TestDbCOnfig from '../../../test/config';
+import * as TestDbCOnfig from '../../../e2e/config';
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { Chance } from 'chance';
 import { Logger } from '../logger/logger.service';

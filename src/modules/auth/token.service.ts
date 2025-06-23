@@ -23,9 +23,16 @@ export class TokenService {
     return this.jwtService.signAsync(data);
   }
 
-  async generateRefreshToken({ userDid }: { userDid: string }) {
+  async generateRefreshToken({
+    userDid,
+    origin,
+  }: {
+    userDid: string;
+    origin: string;
+  }) {
     const refreshToken = await this.refreshTokenRepository.createRefreshToken({
       userDid,
+      origin,
     });
 
     return this.jwtService.signAsync(refreshToken, {
@@ -84,9 +91,12 @@ export class TokenService {
    *
    * A pattern such as the double cookie submit pattern cannot be used because the cache-server does not share an origin with it's clients.
    */
-  async handleOriginCheck(req: Request, res: Response, next: NextFunction) {
-    const authEnabled = this.configService.get<string>('ENABLE_AUTH');
-    if (authEnabled === 'false') {
+  async checkAccessTokenOrigin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    if (!this.configService.get<boolean>('ENABLE_AUTH')) {
       return next();
     }
     let token = null;
@@ -96,22 +106,33 @@ export class TokenService {
       token = req.cookies?.token;
     }
 
-    if (token) {
-      const decodedToken = jwt.decode(token) as TokenPayload;
-      const isBrowserRequestFromAuthenticatedOrigin =
-        decodedToken?.origin === req.headers['origin'];
-      const isServerRequestOrGETFromSameDomain =
-        req.headers['origin'] === undefined;
-      if (
-        isBrowserRequestFromAuthenticatedOrigin ||
-        isServerRequestOrGETFromSameDomain
-      ) {
-        next();
-      } else {
-        throw new UnauthorizedException('Origins not matched');
-      }
-    } else {
-      throw new UnauthorizedException('Unauthorized');
+    if (!token) {
+      throw new UnauthorizedException('Access token was not set');
     }
+
+    const decodedToken = jwt.decode(token) as TokenPayload;
+    if (!this.isLoginOriginMatchesRequestOrigin(decodedToken?.origin, req)) {
+      throw new UnauthorizedException(
+        `Token origin ${decodedToken?.origin} does not matches request origin ${req.headers['origin']}`
+      );
+    }
+
+    next();
+  }
+
+  /**
+   * Checks that `origin` of token corresponds to origin of request
+   * @param origin Origin specified for token
+   * @param req Http request object being authenticated with token
+   */
+  isLoginOriginMatchesRequestOrigin(origin: string, req: Request): boolean {
+    const isBrowserRequestFromAuthenticatedOrigin =
+      origin === req.headers['origin'];
+    const isServerRequestOrGETFromSameDomain =
+      req.headers['origin'] === undefined;
+    return (
+      isBrowserRequestFromAuthenticatedOrigin ||
+      isServerRequestOrGETFromSameDomain
+    );
   }
 }

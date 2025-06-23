@@ -24,7 +24,7 @@
 
 ### constructor
 
-• **new StatusListService**(`configService`, `credentialWithStatusRepository`, `namespaceStatusListsRepository`, `namespaceStatusListRepository`, `statusListCredentialRepository`, `revocationVerificationService`)
+• **new StatusListService**(`configService`, `credentialWithStatusRepository`, `namespaceStatusListsRepository`, `namespaceStatusListRepository`, `statusListCredentialRepository`, `revocationVerificationService`, `logger`)
 
 #### Parameters
 
@@ -36,6 +36,7 @@
 | `namespaceStatusListRepository` | `Repository`<[`NamespaceStatusList`](modules_status_list_entities_namespace_status_list_entity.NamespaceStatusList.md)\> |
 | `statusListCredentialRepository` | `Repository`<[`StatusListCredential`](modules_status_list_entities_status_list_credential_entity.StatusListCredential.md)\> |
 | `revocationVerificationService` | [`RevocationVerificationService`](modules_claim_services_revocation_verification_service.RevocationVerificationService.md) |
+| `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
 

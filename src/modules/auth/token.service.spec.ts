@@ -63,7 +63,7 @@ class TestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply((req, res, next) =>
-        this.tokenService.handleOriginCheck(req, res, next)
+        this.tokenService.checkAccessTokenOrigin(req, res, next)
       )
       .exclude(
         { path: '/login', method: RequestMethod.ALL },
@@ -92,7 +92,7 @@ describe('TokenService', () => {
       [method]('/test')
       .set({ Authorization: `Bearer ${token}` });
 
-    if (origin) req.set({ origin: origin });
+    if (origin) req.set({ origin });
     return req.expect(status);
   };
 
@@ -106,15 +106,15 @@ describe('TokenService', () => {
     await app.init();
   });
 
-  it('should have same GET request ORIGIN header as stored in JWT token ', async () => {
+  it('should authorize if token origin matches request origin', async () => {
     return mockRequest('get', 'https://switchboard-dev.energyweb.org');
   });
 
-  it('should NOT have same POST request ORIGIN header as stored in JWT token ', async () => {
+  it('should not authorize if token origin does not matches request origin ', async () => {
     return mockRequest('post', 'https://hacked-website.com', 401);
   });
 
-  it('should NOT have origin in request headers', async () => {
+  it('should authorize when login origin is set and request origin is not', async () => {
     return mockRequest('get');
   });
 

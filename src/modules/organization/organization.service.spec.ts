@@ -8,7 +8,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Application } from '../application/application.entity';
 import { Organization } from './organization.entity';
 import { OrganizationService } from './organization.service';
-import * as TestDbCOnfig from '../../../test/config';
+import * as TestDbCOnfig from '../../../e2e/config';
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { organizationFixture } from './organization.fixture';
 import { Chance } from 'chance';

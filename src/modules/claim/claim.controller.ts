@@ -13,6 +13,7 @@ import {
   UsePipes,
   ForbiddenException,
   Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { DIDService } from '../did/did.service';
 import { DIDPipe } from '../did/did.pipe';
@@ -53,20 +54,27 @@ import { DIDsQuery } from './entities/roleClaim.entity';
 import { RoleDTO } from '../role/role.dto';
 import { NatsService } from '../nats/nats.service';
 import { ClaimIssuanceService, ClaimService } from './services';
+import { ConfigService } from '@nestjs/config';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
 @Controller({ path: 'claim', version: '1' })
 export class ClaimController {
+  private readonly DISABLE_GET_DIDS_BY_ROLE: string;
+
   constructor(
     private readonly claimService: ClaimService,
     private readonly claimIssuanceService: ClaimIssuanceService,
     private readonly didService: DIDService,
     private readonly assetsService: AssetsService,
     private readonly logger: Logger,
-    private readonly nats: NatsService
+    private readonly nats: NatsService,
+    private readonly configService: ConfigService
   ) {
     this.logger.setContext(ClaimController.name);
+    this.DISABLE_GET_DIDS_BY_ROLE = this.configService.get(
+      'DISABLE_GET_DIDS_BY_ROLE'
+    );
   }
 
   @Post('/issue/:did')
@@ -437,31 +445,10 @@ export class ClaimController {
     @Query('accepted', BooleanPipe)
     accepted?: boolean
   ) {
+    if (this.DISABLE_GET_DIDS_BY_ROLE) {
+      throw new UnauthorizedException();
+    }
     return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
-  }
-
-  @UsePipes(new ValidationPipe({ transform: true }))
-  @Get('/by/subjects')
-  @ApiQuery({
-    name: 'subjects',
-    required: true,
-    description: 'DIDs whose claims are being requested',
-  })
-  @ApiTags('Claims')
-  @ApiOperation({
-    summary: 'returns claims requested for given DIDs',
-  })
-  public async getBySubjects(
-    @Query() { subjects }: DIDsQuery,
-    @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
-    @Query('namespace') namespace?: string,
-    @User() user?: string
-  ) {
-    return this.claimService.getBySubjects({
-      subjects,
-      filters: { isAccepted, namespace },
-      currentUser: user,
-    });
   }
 
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))

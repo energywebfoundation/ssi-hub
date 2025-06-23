@@ -20,7 +20,7 @@ import { AssetsService } from '../../assets/assets.service';
 import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
-
+import { ClaimVerificationService } from './claim-verification.service';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -35,7 +35,8 @@ export class ClaimService {
     private readonly roleClaimRepository: Repository<RoleClaim>,
     @InjectRepository(Claim)
     private readonly claimRepository: Repository<Claim>,
-    private readonly assetService: AssetsService
+    private readonly assetService: AssetsService,
+    private claimVerificationService: ClaimVerificationService
   ) {
     this.logger.setContext(ClaimService.name);
   }
@@ -80,11 +81,18 @@ export class ClaimService {
       claimType,
       claimTypeVersion,
     });
+    const enrolmentPreconditions =
+      await this.roleService.fetchEnrolmentPreconditions({
+        claimType: dto.claimType,
+      });
 
-    await this.roleService.verifyEnrolmentPrecondition({
-      claimType,
-      userDID: dto.requester,
-    });
+    if (enrolmentPreconditions?.length > 0) {
+      this.claimVerificationService.verifyEnrolmentPreconditions(
+        enrolmentPreconditions,
+        dto.requester,
+        claimType
+      );
+    }
 
     await this.create(dto, sub, redirectUri);
 
@@ -123,7 +131,6 @@ export class ClaimService {
       isAccepted: false,
       isRejected: false,
     });
-
     if (previousRequest) {
       throw new ForbiddenException('Claim request already exists');
     }
