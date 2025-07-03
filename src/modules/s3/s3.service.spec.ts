@@ -1,7 +1,7 @@
 import { S3Service } from './s3.service';
 
-describe('IPFSService', () => {
-  it('should check valid IPFS cid', async () => {
+describe('DidStoreService', () => {
+  it('should check valid DidStore cid', async () => {
     // CID v0
     expect(
       S3Service.isCID('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR')

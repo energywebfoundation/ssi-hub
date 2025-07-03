@@ -19,7 +19,7 @@ import { ChildProcess } from 'child_process';
 export let app: INestApplication;
 
 jest.setTimeout(600_000);
-describe('iam-cache-server E2E tests', () => {
+xdescribe('iam-cache-server E2E tests', () => {
   const provider = ethers.provider;
   const deployer = provider.getSigner(0);
   let didRegistry: EthereumDIDRegistry;

@@ -41,7 +41,7 @@ export class Logger extends NestLogger implements LoggerService {
       format.printf(
         ({ level, message, timestamp, context }) =>
           `${level} [${context || ''}] : ${timestamp} - ${this.redactor.redact(
-            message
+            message as string
           )}`
       ),
       format.colorize()

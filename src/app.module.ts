@@ -26,7 +26,6 @@ import { BullModule } from '@nestjs/bull';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { DIDContactModule } from './modules/did-contact/did.contact.module';
 import { StatusListModule } from './modules/status-list/status-list.module';
-import { IPFSModule } from './modules/ipfs/ipfs.module';
 import { ValidationOptions } from 'joi';
 import { envVarsValidationSchema as validationSchema } from './env-vars-validation-schema';
 import { RedisModule } from './modules/redis/redis.module';
@@ -97,7 +96,6 @@ try {
     StakingModule,
     HealthCheckModule,
     StatusListModule,
-    IPFSModule,
     RedisModule,
     S3Module
   ],
