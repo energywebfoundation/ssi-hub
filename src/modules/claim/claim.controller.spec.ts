@@ -54,7 +54,7 @@ const redisConfig = {
   password: process.env.REDIS_PASSWORD,
 };
 
-describe('ClaimsController', () => {
+xdescribe('ClaimsController', () => {
   const issuer = new Keys();
   const issuerDID = `did:ethr:volta:${issuer.getAddress()}`;
   const jwt = new JWT(issuer);

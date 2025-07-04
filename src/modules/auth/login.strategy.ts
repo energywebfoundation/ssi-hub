@@ -1,20 +1,18 @@
-import { LoginStrategy } from 'passport-did-auth';
-import { Inject, Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
 import { verifyCredential } from 'didkit-wasm-node';
+import { LoginStrategy } from 'passport-did-auth';
+import { LoginStrategyOptions } from 'passport-did-auth/dist/lib/LoginStrategy';
 import { URL } from 'url';
+import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
 import { RoleIssuerResolver } from '../claim/resolvers/issuer.resolver';
 import { RoleRevokerResolver } from '../claim/resolvers/revoker.resolver';
-import { RoleCredentialResolver } from '../claim/resolvers/credential.resolver';
-import { IPFSInfuraConfigToken } from '../ipfs/ipfs.types';
-import { LoginStrategyOptions } from 'passport-did-auth/dist/lib/LoginStrategy';
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
   constructor(
     configService: ConfigService,
-    @Inject(IPFSInfuraConfigToken) ipfsConfig,
     issuerResolver: RoleIssuerResolver,
     revokerResolver: RoleRevokerResolver,
     credentialResolver: RoleCredentialResolver
@@ -30,7 +28,6 @@ export class AuthStrategy extends PassportStrategy(LoginStrategy, 'login') {
       privateKey: configService.get<string>('STRATEGY_PRIVATE_KEY'),
       didContractAddress: configService.get<string>('DID_REGISTRY_ADDRESS'),
       ensRegistryAddress: configService.get<string>('ENS_REGISTRY_ADDRESS'),
-      ipfsUrl: ipfsConfig,
       siweMessageUri,
     };
     const loginStrategyParams: ConstructorParameters<typeof LoginStrategy> = [

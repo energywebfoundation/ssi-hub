@@ -52,7 +52,6 @@ export class EnsService implements OnModuleDestroy {
   ) {
     this.logger.setContext(EnsService.name);
     utils.Logger.setLogLevel(LogLevel.ERROR);
-
     const CHAIN_ID = this.config.get<number>('CHAIN_ID');
     const RESOLVER_V1_ADDRESS = this.config.get<string>('RESOLVER_V1_ADDRESS');
     const RESOLVER_V2_ADDRESS = this.config.get<string>('RESOLVER_V2_ADDRESS');
@@ -251,10 +250,10 @@ export class EnsService implements OnModuleDestroy {
     hash,
   }: {
     data:
-      | IRoleDefinitionV2
-      | IRoleDefinition
-      | IOrganizationDefinition
-      | IAppDefinition;
+    | IRoleDefinitionV2
+    | IRoleDefinition
+    | IOrganizationDefinition
+    | IAppDefinition;
     namespace: string;
     owner: string;
     hash: string;
