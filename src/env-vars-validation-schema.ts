@@ -71,7 +71,7 @@ export const envVarsValidationSchema = Joi.object({
   NATS_CLIENTS_URL: Joi.string().required(), // TODO: store whole URL here, including `nats://` and validate as URL
   NATS_ENVIRONMENT_NAME: Joi.string().required(),
 
-  ROOT_DOMAIN: Joi.string().domain().required(),
+  ROOT_DOMAIN: Joi.string().required(),
   CHAIN_ID: Joi.number().integer().positive().required(),
   CHAIN_NAME: Joi.string().required(),
   ENS_URL: Joi.string().uri().required(),

@@ -53,7 +53,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly resolver: Resolver;
   private readonly JOBS_CLEANUP_DELAY = 1000;
-  private readonly IPFS_TIMEOUT = 10000;
+  private readonly DIDSTORE_TIMEOUT = 10000;
 
   constructor(
     private readonly config: ConfigService,
@@ -175,7 +175,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   /**
    * Adds or fully refresh the DID Document cache for a given DID.
-   * Also retrieves all claims from IPFS for the document.
+   * Also retrieves all claims from DidStore for the document.
    * @param {string} did
    */
   public async addCachedDocument(did: string, isSync = false) {
@@ -245,7 +245,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   /**
    * Add any incremental changes to the DID document that occurred since the last sync.
-   * Also retrieves all claims from IPFS for the document.
+   * Also retrieves all claims from DidStore for the document.
    * @param {string} did
    */
   public async incrementalRefreshCachedDocument(did: string) {
@@ -472,7 +472,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
         try {
           token = await this.s3Service.getWithTimeout(
             serviceEndpoint,
-            this.IPFS_TIMEOUT
+            this.DIDSTORE_TIMEOUT
           );
         } catch (e) {
           return { serviceEndpoint, ...rest };
