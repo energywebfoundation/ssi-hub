@@ -113,7 +113,7 @@ describe('ClaimVerificationService', () => {
           resolvedCredential.payload.did,
           'claimType'
         )
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
     it('should throw an error if the resolveCredentialAndVerify returns an error', async () => {
       const mockError = {
@@ -135,7 +135,7 @@ describe('ClaimVerificationService', () => {
           resolvedCredential.payload.did,
           'claimType'
         )
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         `Role enrolment precondition not met for user: ${
           resolvedCredential.payload.did
         } for role: ${'conditionone.org.ewc'}. Verification errors for enrolment preconditions: ${JSON.stringify(
@@ -163,7 +163,7 @@ describe('ClaimVerificationService', () => {
           resolvedCredential.payload.did,
           'claimType'
         )
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         `Role enrolment precondition not met for user: ${resolvedCredential.payload.did} and role: claimType. User does not have the required enrolment preconditons.`
       );
     });

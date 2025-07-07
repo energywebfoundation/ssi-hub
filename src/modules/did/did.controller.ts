@@ -83,7 +83,7 @@ export class DIDController {
     summary: 'Sync and refresh a DID document',
     description:
       'Add any incremental changes to the DID document that occurred since the last sync.\n' +
-      'Also retrieves all claims from IPFS for the document.',
+      'Also retrieves all claims from DidStore for the document.',
   })
   @UseInterceptors(NotFoundInterceptor)
   public async postById(@Body('did', DIDPipe) did: DID) {

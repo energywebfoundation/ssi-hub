@@ -1,19 +1,19 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { DidStore as DidStoreGateway } from 'didStoreInfura';
+import { DidStore as S3DidStoreGateway } from '@ew-did-registry/did-s3-store';
 import { CID } from 'multiformats/cid';
 import { Logger } from '../logger/logger.service';
 
 @Injectable()
-export class IPFSService {
+export class S3Service {
   constructor(
-    private didStoreInfura: DidStoreGateway,
+    private didStore: S3DidStoreGateway,
     private readonly logger: Logger
   ) {
-    this.logger.setContext(IPFSService.name);
+    this.logger.setContext(S3Service.name);
   }
 
   /**
-   * Check if given value is a valid IPFS CID.
+   * Check if given value is a valid S3 CID.
    *
    * ```typescript
    * didService.isCID('Qm...');
@@ -48,9 +48,9 @@ export class IPFSService {
     let claim: string;
     this.logger.debug(`trying to get ${cid}`);
     try {
-      claim = await this.didStoreInfura.get(cid);
+      claim = await this.didStore.get(cid);
     } catch (e) {
-      this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
+      this.logger.debug(`Claim is not resolved in S3. Claim CID ${cid}`);
       throw new HttpException(
         `Claim ${cid} not resolved`,
         HttpStatus.NOT_FOUND
@@ -73,13 +73,13 @@ export class IPFSService {
     this.logger.debug(`trying to get ${cid}`);
     try {
       claim = await Promise.race<string>([
-        this.didStoreInfura.get(cid),
+        this.didStore.get(cid),
         new Promise<string>((_, reject) =>
           setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
         ),
       ]);
     } catch (e) {
-      this.logger.debug(`Claim is not resolved in IPFS. Claim CID ${cid}`);
+      this.logger.debug(`Claim is not resolved in S3. Claim CID ${cid}`);
       throw new HttpException(
         `Claim ${cid} not resolved`,
         HttpStatus.NOT_FOUND
@@ -98,9 +98,9 @@ export class IPFSService {
    */
   public async save(credential: string): Promise<string> {
     try {
-      return await this.didStoreInfura.save(credential);
+      return await this.didStore.save(credential);
     } catch (error) {
-      throw new Error(`Error saving ${credential} in Infura: ${error.reason}`);
+      throw new Error(`Error saving ${credential} in s3: ${error.reason}`);
     }
   }
 }

@@ -61,13 +61,13 @@ env:
 
 jobs:
   cancel-previous:
-      name: 'Cancel Previous'
-      runs-on: ubuntu-latest
-      timeout-minutes: 3
-      steps:
-        - uses: styfle/cancel-workflow-action@0.11.0
-          with:
-            access_token: ${{ github.token }}
+    name: 'Cancel Previous'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
   install:
     name: Install dependencies
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
       - name: Setup app dependencies
         uses: actions/setup-node@v3
         with:
-          node-version: '16.19.1'
+          node-version: '18.20.8'
       - name: Cache npm cache
         uses: actions/cache@v3
         with:
@@ -109,7 +109,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.19.1'
+          node-version: '18.20.8'
 
       - name: Restore node_modules
         uses: actions/cache@v3
@@ -152,6 +152,7 @@ jobs:
         options: >-
           --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5 --entrypoint redis-server
 
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -159,7 +160,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.19.1'
+          node-version: '18.20.8'
 
       - name: Restore node_modules
         uses: actions/cache@v3
@@ -213,6 +214,7 @@ jobs:
         options: >-
           --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5 --entrypoint redis-server
 
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -220,7 +222,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.19.1'
+          node-version: '18.20.8'
 
       - name: Restore node_modules
         uses: actions/cache@v3

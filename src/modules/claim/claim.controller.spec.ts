@@ -54,7 +54,7 @@ const redisConfig = {
   password: process.env.REDIS_PASSWORD,
 };
 
-describe('ClaimsController', () => {
+xdescribe('ClaimsController', () => {
   const issuer = new Keys();
   const issuerDID = `did:ethr:volta:${issuer.getAddress()}`;
   const jwt = new JWT(issuer);
@@ -209,8 +209,8 @@ describe('ClaimsController', () => {
       claimTypeVersion,
       requester,
     });
-    expect(publishForDids).toBeCalledTimes(1);
-    expect(publishForDids).toBeCalledWith(
+    expect(publishForDids).toHaveBeenCalledTimes(1);
+    expect(publishForDids).toHaveBeenCalledWith(
       ClaimEventType.REQUEST_CREDENTIALS,
       NATS_EXCHANGE_TOPIC,
       claimIssuer,

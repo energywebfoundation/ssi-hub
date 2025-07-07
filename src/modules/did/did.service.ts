@@ -36,7 +36,6 @@ import { inspect } from 'util';
 import { Provider } from '../../common/provider';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
 import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
-import { IPFSService } from '../ipfs/ipfs.service';
 import { Logger } from '../logger/logger.service';
 import { SentryTracingService } from '../sentry/sentry-tracing.service';
 import { DIDDocumentEntity, IClaim } from './did.entity';
@@ -47,13 +46,14 @@ import {
   UPDATE_DOCUMENT_QUEUE_NAME,
   EVENT_UPDATE_DID_DOC_JOB_NAME,
 } from './did.types';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly resolver: Resolver;
   private readonly JOBS_CLEANUP_DELAY = 1000;
-  private readonly IPFS_TIMEOUT = 10000;
+  private readonly DIDSTORE_TIMEOUT = 10000;
 
   constructor(
     private readonly config: ConfigService,
@@ -69,7 +69,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly ipfsService: IPFSService
+    private readonly s3Service: S3Service
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -175,7 +175,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   /**
    * Adds or fully refresh the DID Document cache for a given DID.
-   * Also retrieves all claims from IPFS for the document.
+   * Also retrieves all claims from DidStore for the document.
    * @param {string} did
    */
   public async addCachedDocument(did: string, isSync = false) {
@@ -245,7 +245,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   /**
    * Add any incremental changes to the DID document that occurred since the last sync.
-   * Also retrieves all claims from IPFS for the document.
+   * Also retrieves all claims from DidStore for the document.
    * @param {string} did
    */
   public async incrementalRefreshCachedDocument(did: string) {
@@ -348,8 +348,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       await Promise.all(
         service
           .map(({ serviceEndpoint }) => serviceEndpoint)
-          .filter((endpoint) => IPFSService.isCID(endpoint))
-          .map((cid) => this.ipfsService.get(cid).catch(() => null))
+          .filter((endpoint) => S3Service.isCID(endpoint))
+          .map((cid) => this.s3Service.get(cid).catch(() => null))
       )
     ).filter(Boolean);
   }
@@ -464,15 +464,15 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           return cachedService;
         }
 
-        if (!IPFSService.isCID(serviceEndpoint)) {
+        if (!S3Service.isCID(serviceEndpoint)) {
           return { serviceEndpoint, ...rest };
         }
 
         let token: string;
         try {
-          token = await this.ipfsService.getWithTimeout(
+          token = await this.s3Service.getWithTimeout(
             serviceEndpoint,
-            this.IPFS_TIMEOUT
+            this.DIDSTORE_TIMEOUT
           );
         } catch (e) {
           return { serviceEndpoint, ...rest };

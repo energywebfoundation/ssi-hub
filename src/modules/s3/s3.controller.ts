@@ -11,39 +11,44 @@ import { CID } from 'multiformats/cid';
 import { CIDPipe } from '../../common/cid.pipe';
 import { Auth } from '../auth/auth.decorator';
 import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
-import { IPFSService } from './ipfs.service';
+import { S3Service } from './s3.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
-@Controller({ path: 'ipfs', version: '1' })
-export class IPFSController {
-  constructor(private ipfsService: IPFSService) {}
+@Controller({ path: 's3', version: '1' })
+export class S3Controller {
+  constructor(private s3Service: S3Service) { }
 
   @Get('/:cid')
-  @ApiTags('IPFS')
+  @ApiTags('S3')
   @ApiOperation({
-    summary: 'Returns content from IPFS Store',
+    summary: 'Returns content from S3 Store',
     description:
       'Returns data identified by the provided content identifier (cid). This can be used, for example, to resolve credentials linked in the service endpoint of a DID document.',
   })
   @ApiParam({ name: 'cid', type: 'string', required: true })
   public async get(@Param('cid', CIDPipe) cid: CID): Promise<string> {
-    return this.ipfsService.get(cid.toString());
+    return this.s3Service.get(cid.toString());
   }
 
   @Post()
-  @ApiTags('IPFS')
+  @ApiTags('S3')
   @ApiBody({
-    type: 'string',
-    description: 'Stringified content',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'string',
+        },
+      },
+    },
   })
   @ApiOperation({
-    summary: 'Saves content in IPFS',
-    description: 'Saves content in IPFS and returns its CID',
+    summary: 'Saves content in S3',
+    description: 'Saves content in S3 and returns its CID',
   })
-  public async save(@Body() credential: string | object) {
-    return this.ipfsService.save(
-      typeof credential === 'string' ? credential : JSON.stringify(credential)
-    );
+  public async save(@Body('data') data: string) {
+    return this.s3Service.save(data);
   }
 }

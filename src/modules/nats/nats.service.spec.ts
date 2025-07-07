@@ -46,6 +46,6 @@ describe('NatsService', () => {
       { data: 'some data' }
     );
 
-    expect(mockQueue.add).toBeCalledTimes(3);
+    expect(mockQueue.add).toHaveBeenCalledTimes(3);
   });
 });
