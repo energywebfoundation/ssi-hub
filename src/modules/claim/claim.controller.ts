@@ -183,7 +183,7 @@ export class ClaimController {
       ...data,
     };
 
-    const claimDTO = ClaimRequestDTO.create(claimData);
+    const claimDTO = await ClaimRequestDTO.create(claimData);
 
     await validateOrReject(claimDTO);
     const result = await this.claimService.handleClaimEnrolmentRequest(
@@ -230,7 +230,7 @@ export class ClaimController {
       ...data,
     };
 
-    const claimDTO = ClaimRejectionDTO.create(claimData);
+    const claimDTO = await ClaimRejectionDTO.create(claimData);
 
     await validateOrReject(claimDTO);
 
