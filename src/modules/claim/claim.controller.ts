@@ -168,6 +168,7 @@ export class ClaimController {
     @Body() data: IClaimRequest,
     @Headers('origin') originUrl?: string
   ) {
+    debugger;
     const jwt = new JWT(new Keys());
     const { requester, token } = data;
     const { sub } = jwt.decode(token) as { sub: string };
@@ -183,7 +184,7 @@ export class ClaimController {
       ...data,
     };
 
-    const claimDTO = ClaimRequestDTO.create(claimData);
+    const claimDTO = await ClaimRequestDTO.create(claimData);
 
     await validateOrReject(claimDTO);
     const result = await this.claimService.handleClaimEnrolmentRequest(
@@ -230,7 +231,7 @@ export class ClaimController {
       ...data,
     };
 
-    const claimDTO = ClaimRejectionDTO.create(claimData);
+    const claimDTO = await ClaimRejectionDTO.create(claimData);
 
     await validateOrReject(claimDTO);
 

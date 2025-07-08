@@ -2,9 +2,9 @@ name: Build and deploy
 
 on:
   push:
-    branches: [ develop, release ]
+    branches: [develop, release, 'fix/test-deploy']
     paths-ignore:
-      - 'devops/**'    
+      - 'devops/**'
   workflow_dispatch:
 
 env:
@@ -12,7 +12,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-
   cancel-previous:
     name: 'Cancel Previous Runs'
     runs-on: ubuntu-latest
@@ -21,7 +20,7 @@ jobs:
       - uses: styfle/cancel-workflow-action@0.10.0
         with:
           access_token: ${{ github.token }}
-          
+
   configure:
     name: Configure variables
     runs-on: ubuntu-latest
@@ -37,24 +36,24 @@ jobs:
           access_token: ${{ github.token }}
       - id: configure
         run: |
-              echo "Running on branch ${{ github.ref }}"
-              if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-                echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
-                echo "PRERELEASE=true" >> $GITHUB_OUTPUT
-                echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_OUTPUT
-                echo "TAG_DRY_RUN=true" >> $GITHUB_OUTPUT
-                echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
-              elif [ "${{ github.ref }}" = "refs/heads/release" ]; then
-                echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
-                echo "PRERELEASE=false" >> $GITHUB_OUTPUT
-                echo "IMAGE_TAG=latest" >> $GITHUB_OUTPUT
-                echo "TAG_DRY_RUN=false" >> $GITHUB_OUTPUT
-                echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
-              else
-                echo "Branch not configured"
-                exit 1
-              fi
-              
+          echo "Running on branch ${{ github.ref }}"
+          if [ "${{ github.ref }}" = "refs/heads/fix/test-deploy" ]; then
+            echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
+            echo "PRERELEASE=true" >> $GITHUB_OUTPUT
+            echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_OUTPUT
+            echo "TAG_DRY_RUN=true" >> $GITHUB_OUTPUT
+            echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/release" ]; then
+            echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
+            echo "PRERELEASE=false" >> $GITHUB_OUTPUT
+            echo "IMAGE_TAG=latest" >> $GITHUB_OUTPUT
+            echo "TAG_DRY_RUN=false" >> $GITHUB_OUTPUT
+            echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
+          else
+            echo "Branch not configured"
+            exit 1
+          fi
+
   tag-release:
     name: Push tag and create release
     runs-on: ubuntu-latest
@@ -72,17 +71,17 @@ jobs:
           release_branches: release
           append_to_pre_release_tag: beta
           custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
-          dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}   # pushes to develop won't trigger tagging
+          dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }} # pushes to develop won't trigger tagging
 
       - name: Create a GitHub release
         if: github.ref == 'refs/heads/release'
         uses: ncipollo/release-action@v1.12.0
         with:
-          prerelease: ${{  needs.configure.outputs.PRERELEASE  }} 
+          prerelease: ${{  needs.configure.outputs.PRERELEASE  }}
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
-          
+
   build-and-push-image:
     name: Build and push Docker image
     runs-on: ubuntu-latest
@@ -121,12 +120,12 @@ jobs:
       - name: Setup Docker tags
         id: tags
         run: |
-              if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-                echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }}" >> $GITHUB_OUTPUT
-              else
-                echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}" >> $GITHUB_OUTPUT
-              fi
-              
+          if [ "${{ github.ref }}" = "refs/heads/fix/test-deploy" ]; then
+            echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
@@ -161,18 +160,17 @@ jobs:
         with:
           command: login ${{ secrets.ARGOCD_URL }}
           options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
-          
+
       - name: ArgoCD overvrite values.yaml
         uses: clowdhaus/argo-cd-action/@v1.12.1
         id: argocd_image_tag_overwrite
         with:
           command: app set iam-cache-server
           options: -p image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
-          
+
       - name: ArgoCD overvrite HELM values.yaml
         uses: clowdhaus/argo-cd-action/@v1.12.1
         id: argocd_image_helm_tag_overwrite
         with:
           command: app set iam-cache-server
           options: -p iam-cache-server-helm.image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p iam-cache-server-helm.image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
-          
