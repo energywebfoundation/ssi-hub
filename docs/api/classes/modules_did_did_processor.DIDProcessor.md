@@ -22,7 +22,7 @@
 
 ### constructor
 
-• **new DIDProcessor**(`didService`, `logger`, `configService`, `pinQueue`)
+• **new DIDProcessor**(`didService`, `logger`, `configService`)
 
 #### Parameters
 
@@ -31,7 +31,6 @@
 | `didService` | [`DIDService`](modules_did_did_service.DIDService.md) |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `configService` | `ConfigService`<`Record`<`string`, `unknown`\>, ``false``\> |
-| `pinQueue` | `Queue`<[`PinClaimData`](../modules/modules_ipfs_ipfs_types.md#pinclaimdata)\> |
 
 ## Methods
 

@@ -110,3 +110,5 @@ export const getDIDFromAddress = (address: string) =>
 export const ADD_DID_DOC_JOB_NAME = 'adding';
 export const UPDATE_DID_DOC_JOB_NAME = 'refreshing';
 export const UPDATE_DOCUMENT_QUEUE_NAME = 'updateDocumentQueue';
+export const EVENT_UPDATE_DID_DOC_JOB_NAME = 'eventRefreshing';
+export const EVENT_UPDATE_DOCUMENT_QUEUE_NAME = 'eventUpdateDocumentQueue';

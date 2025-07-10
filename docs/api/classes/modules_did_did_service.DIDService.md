@@ -19,6 +19,7 @@
 - [getById](modules_did_did_service.DIDService.md#getbyid)
 - [getDIDDocumentFromUniversalResolver](modules_did_did_service.DIDService.md#getdiddocumentfromuniversalresolver)
 - [incrementalRefreshCachedDocument](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocument)
+- [incrementalRefreshCachedDocumentByDid](modules_did_did_service.DIDService.md#incrementalrefreshcacheddocumentbydid)
 - [obscureDid](modules_did_did_service.DIDService.md#obscuredid)
 - [onModuleDestroy](modules_did_did_service.DIDService.md#onmoduledestroy)
 - [onModuleInit](modules_did_did_service.DIDService.md#onmoduleinit)
@@ -28,7 +29,7 @@
 
 ### constructor
 
-• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `ipfsService`)
+• **new DIDService**(`config`, `schedulerRegistry`, `httpService`, `didQueue`, `eventDidQueue`, `logger`, `didRepository`, `provider`, `sentryTracingService`, `registrySettings`, `s3Service`)
 
 #### Parameters
 
@@ -38,12 +39,13 @@
 | `schedulerRegistry` | `SchedulerRegistry` |
 | `httpService` | `HttpService` |
 | `didQueue` | `Queue`<`string`\> |
+| `eventDidQueue` | `Queue`<`string`\> |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 | `didRepository` | `Repository`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\> |
 | `provider` | [`Provider`](common_provider.Provider.md) |
 | `sentryTracingService` | [`SentryTracingService`](modules_sentry_sentry_tracing_service.SentryTracingService.md) |
 | `registrySettings` | `RegistrySettings` |
-| `ipfsService` | [`IPFSService`](modules_ipfs_ipfs_service.IPFSService.md) |
+| `s3Service` | [`S3Service`](modules_s3_s3_service.S3Service.md) |
 
 ## Methods
 
@@ -110,6 +112,22 @@ ___
 
 Add any incremental changes to the DID document that occurred since the last sync.
 Also retrieves all claims from IPFS for the document.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `did` | `string` |
+
+#### Returns
+
+`Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
+
+___
+
+### incrementalRefreshCachedDocumentByDid
+
+▸ **incrementalRefreshCachedDocumentByDid**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
 
 #### Parameters
 

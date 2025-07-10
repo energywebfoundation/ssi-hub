@@ -800,7 +800,7 @@ export const statusList2021TestSuite = () => {
           .get(`/v1/${STATUS_LIST_MODULE_PATH}/${id}`)
           .expect(200);
 
-        expect(mockFunc).toBeCalledWith(
+        expect(mockFunc).toHaveBeenCalledWith(
           expect.objectContaining({
             where: {
               statusListId: expect.stringContaining(
@@ -822,7 +822,7 @@ export const statusList2021TestSuite = () => {
         .get(`/v1/${STATUS_LIST_MODULE_PATH}/urn:uuid:b40311fa-cf70-4fec-b268`)
         .expect(204);
 
-      expect(mockFunc).toBeCalledWith(
+      expect(mockFunc).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             statusListId: expect.stringContaining(

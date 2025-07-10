@@ -71,7 +71,7 @@ export const envVarsValidationSchema = Joi.object({
   NATS_CLIENTS_URL: Joi.string().required(), // TODO: store whole URL here, including `nats://` and validate as URL
   NATS_ENVIRONMENT_NAME: Joi.string().required(),
 
-  ROOT_DOMAIN: Joi.string().domain().required(),
+  ROOT_DOMAIN: Joi.string().required(),
   CHAIN_ID: Joi.number().integer().positive().required(),
   CHAIN_NAME: Joi.string().required(),
   ENS_URL: Joi.string().uri().required(),
@@ -95,6 +95,7 @@ export const envVarsValidationSchema = Joi.object({
   IPFS_CLIENT_PORT: Joi.number().port(),
   IPFS_CLIENT_PROJECT_ID: Joi.string(),
   IPFS_CLIENT_PROJECT_SECRET: Joi.string(),
+  IPFS_CLUSTER_PINNING_ENABLED: Joi.boolean().optional().default(false),
   IPFS_CLUSTER_ROOT: Joi.string().required(),
   IPFS_CLUSTER_USER: Joi.string(),
   IPFS_CLUSTER_PASSWORD: Joi.string(),

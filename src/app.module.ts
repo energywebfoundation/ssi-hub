@@ -26,10 +26,10 @@ import { BullModule } from '@nestjs/bull';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { DIDContactModule } from './modules/did-contact/did.contact.module';
 import { StatusListModule } from './modules/status-list/status-list.module';
-import { IPFSModule } from './modules/ipfs/ipfs.module';
 import { ValidationOptions } from 'joi';
 import { envVarsValidationSchema as validationSchema } from './env-vars-validation-schema';
 import { RedisModule } from './modules/redis/redis.module';
+import { S3Module } from './modules/s3/s3.module';
 
 const validationOptions: ValidationOptions = {
   stripUnknown: true,
@@ -71,7 +71,7 @@ try {
         },
         defaultJobOptions: {
           removeOnComplete: true,
-          removeOnFail: 20,
+          removeOnFail: true,
         },
       }),
       inject: [ConfigService],
@@ -96,9 +96,9 @@ try {
     StakingModule,
     HealthCheckModule,
     StatusListModule,
-    IPFSModule,
     RedisModule,
+    S3Module
   ],
   providers: [JSONObjectScalar],
 })
-export class AppModule {}
+export class AppModule { }

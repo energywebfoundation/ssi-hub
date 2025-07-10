@@ -1,56 +1,59 @@
-import {
-  Injectable,
-  HttpException,
-  OnModuleInit,
-  InternalServerErrorException,
-  Inject,
-  OnModuleDestroy,
-} from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bull';
-import { InjectRepository } from '@nestjs/typeorm';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { SchedulerRegistry } from '@nestjs/schedule';
+import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
 import { Methods } from '@ew-did-registry/did';
-import { Transaction } from '@sentry/types';
-import { isJWT } from 'class-validator';
-import { firstValueFrom } from 'rxjs';
-import { Queue } from 'bull';
-import { Repository } from 'typeorm';
-import jwt from 'jsonwebtoken';
-import { BigNumber } from 'ethers';
 import {
+  documentFromLogs,
+  mergeLogs,
+  Resolver,
+} from '@ew-did-registry/did-ethr-resolver';
+import {
+  DidEventNames,
   IDIDDocument,
   IDIDLogData,
   IServiceEndpoint,
-  DidEventNames,
   RegistrySettings,
 } from '@ew-did-registry/did-resolver-interface';
+import { HttpService } from '@nestjs/axios';
+import { InjectQueue } from '@nestjs/bull';
 import {
-  documentFromLogs,
-  Resolver,
-  mergeLogs,
-} from '@ew-did-registry/did-ethr-resolver';
-import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
+  HttpException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Transaction } from '@sentry/types';
+import { Queue } from 'bull';
+import { isJWT } from 'class-validator';
+import { BigNumber } from 'ethers';
+import jwt from 'jsonwebtoken';
+import { firstValueFrom } from 'rxjs';
+import { Repository } from 'typeorm';
+import { inspect } from 'util';
+import { Provider } from '../../common/provider';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
+import { EthereumDIDRegistry__factory } from '../../ethers/factories/EthereumDIDRegistry__factory';
+import { Logger } from '../logger/logger.service';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
+import { DIDDocumentEntity, IClaim } from './did.entity';
 import {
   DID,
+  EVENT_UPDATE_DOCUMENT_QUEUE_NAME,
   UPDATE_DID_DOC_JOB_NAME,
   UPDATE_DOCUMENT_QUEUE_NAME,
+  EVENT_UPDATE_DID_DOC_JOB_NAME,
 } from './did.types';
-import { Logger } from '../logger/logger.service';
-import { DIDDocumentEntity, IClaim } from './did.entity';
-import { Provider } from '../../common/provider';
-import { SentryTracingService } from '../sentry/sentry-tracing.service';
-import { isVerifiableCredential } from '@ew-did-registry/credentials-interface';
-import { IPFSService } from '../ipfs/ipfs.service';
-import { inspect } from 'util';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class DIDService implements OnModuleInit, OnModuleDestroy {
   private readonly didRegistry: EthereumDIDRegistry;
   private readonly resolver: Resolver;
   private readonly JOBS_CLEANUP_DELAY = 1000;
+  private readonly DIDSTORE_TIMEOUT = 10000;
 
   constructor(
     private readonly config: ConfigService,
@@ -58,13 +61,15 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     private readonly httpService: HttpService,
     @InjectQueue(UPDATE_DOCUMENT_QUEUE_NAME)
     private readonly didQueue: Queue<string>,
+    @InjectQueue(EVENT_UPDATE_DOCUMENT_QUEUE_NAME)
+    private readonly eventDidQueue: Queue<string>,
     private readonly logger: Logger,
     @InjectRepository(DIDDocumentEntity)
     private readonly didRepository: Repository<DIDDocumentEntity>,
     private readonly provider: Provider,
     private readonly sentryTracingService: SentryTracingService,
     @Inject('RegistrySettings') registrySettings: RegistrySettings,
-    private readonly ipfsService: IPFSService
+    private readonly s3Service: S3Service
   ) {
     this.logger.setContext(DIDService.name);
 
@@ -170,7 +175,7 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   /**
    * Adds or fully refresh the DID Document cache for a given DID.
-   * Also retrieves all claims from IPFS for the document.
+   * Also retrieves all claims from DidStore for the document.
    * @param {string} did
    */
   public async addCachedDocument(did: string, isSync = false) {
@@ -227,9 +232,20 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
     return did.replace(/(?<=0x[a-f0-9-]{3})[a-f0-9-]+/gi, '***');
   }
 
+  public async incrementalRefreshCachedDocumentByDid(did: string) {
+    const obscuredDid = this.obscureDid(did);
+    const didDocEntity = await this.didRepository.findOneBy({ id: did });
+    if (!didDocEntity) {
+      throw new InternalServerErrorException(
+        `DID ${obscuredDid} was not found`
+      );
+    }
+    return this.incrementalRefreshCachedDocument(did);
+  }
+
   /**
    * Add any incremental changes to the DID document that occurred since the last sync.
-   * Also retrieves all claims from IPFS for the document.
+   * Also retrieves all claims from DidStore for the document.
    * @param {string} did
    */
   public async incrementalRefreshCachedDocument(did: string) {
@@ -332,8 +348,8 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       await Promise.all(
         service
           .map(({ serviceEndpoint }) => serviceEndpoint)
-          .filter((endpoint) => IPFSService.isCID(endpoint))
-          .map((cid) => this.ipfsService.get(cid).catch(() => null))
+          .filter((endpoint) => S3Service.isCID(endpoint))
+          .map((cid) => this.s3Service.get(cid).catch(() => null))
       )
     ).filter(Boolean);
   }
@@ -353,7 +369,18 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
       // Only refreshing a DID that is already cached.
       // Otherwise, cache could grow too large with DID Docs that aren't relevant to Switchboard
       if (didDocEntity) {
-        await this.pinDocument(did);
+        try {
+          await this.eventDidQueue.add(EVENT_UPDATE_DID_DOC_JOB_NAME, did, {
+            jobId: did,
+            lifo: true,
+          });
+        } catch (e) {
+          this.logger.warn(
+            `Error to add DID synchronization job for document ${did}: ${e}`
+          );
+          const jobsCounts = await this.eventDidQueue.getJobCounts();
+          this.logger.debug(inspect(jobsCounts, { depth: 2, colors: true }));
+        }
       }
     });
   }
@@ -437,13 +464,16 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
           return cachedService;
         }
 
-        if (!IPFSService.isCID(serviceEndpoint)) {
+        if (!S3Service.isCID(serviceEndpoint)) {
           return { serviceEndpoint, ...rest };
         }
 
         let token: string;
         try {
-          token = await this.ipfsService.get(serviceEndpoint);
+          token = await this.s3Service.getWithTimeout(
+            serviceEndpoint,
+            this.DIDSTORE_TIMEOUT
+          );
         } catch (e) {
           return { serviceEndpoint, ...rest };
         }
@@ -493,7 +523,10 @@ export class DIDService implements OnModuleInit, OnModuleDestroy {
 
   private async pinDocument(did: string): Promise<void> {
     try {
-      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did);
+      await this.didQueue.add(UPDATE_DID_DOC_JOB_NAME, did, {
+        jobId: did,
+        lifo: true,
+      });
     } catch (e) {
       this.logger.warn(
         `Error to add DID synchronization job for document ${did}: ${e}`

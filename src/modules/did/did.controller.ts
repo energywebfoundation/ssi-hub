@@ -1,13 +1,20 @@
-import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
-import { Logger } from '../logger/logger.service';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../auth/auth.decorator';
 import { NotFoundInterceptor } from '../interceptors/not-found.interceptor';
+import { SentryErrorInterceptor } from '../interceptors/sentry-error-interceptor';
+import { Logger } from '../logger/logger.service';
+import { SentryTracingService } from '../sentry/sentry-tracing.service';
+import { DIDPipe } from './did.pipe';
 import { DIDService } from './did.service';
 import { DID } from './did.types';
-import { DIDPipe } from './did.pipe';
-import { SentryTracingService } from '../sentry/sentry-tracing.service';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -56,6 +63,36 @@ export class DIDController {
     const document = await this.didService.getById(did.did, transaction);
     this.logger.info(`Retrieved document for did: ${did.did}`);
     transaction?.finish();
+    return document;
+  }
+
+  @Post()
+  @ApiTags('DID')
+  @ApiBody({
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        did: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Sync and refresh a DID document',
+    description:
+      'Add any incremental changes to the DID document that occurred since the last sync.\n' +
+      'Also retrieves all claims from DidStore for the document.',
+  })
+  @UseInterceptors(NotFoundInterceptor)
+  public async postById(@Body('did', DIDPipe) did: DID) {
+    this.logger.info(
+      `Received request for Sync and refresh document for did: ${did.id}`
+    );
+    const document =
+      await this.didService.incrementalRefreshCachedDocumentByDid(did.did);
+    this.logger.info(`Retrieved document for did: ${did.id}`);
     return document;
   }
 }

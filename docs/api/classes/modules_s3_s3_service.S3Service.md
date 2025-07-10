@@ -1,31 +1,31 @@
-# Class: IPFSService
+# Class: S3Service
 
-[modules/ipfs/ipfs.service](../modules/modules_ipfs_ipfs_service.md).IPFSService
+[modules/s3/s3.service](../modules/modules_s3_s3_service.md).S3Service
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](modules_ipfs_ipfs_service.IPFSService.md#constructor)
+- [constructor](modules_s3_s3_service.S3Service.md#constructor)
 
 ### Methods
 
-- [get](modules_ipfs_ipfs_service.IPFSService.md#get)
-- [getWithTimeout](modules_ipfs_ipfs_service.IPFSService.md#getwithtimeout)
-- [save](modules_ipfs_ipfs_service.IPFSService.md#save)
-- [isCID](modules_ipfs_ipfs_service.IPFSService.md#iscid)
+- [get](modules_s3_s3_service.S3Service.md#get)
+- [getWithTimeout](modules_s3_s3_service.S3Service.md#getwithtimeout)
+- [save](modules_s3_s3_service.S3Service.md#save)
+- [isCID](modules_s3_s3_service.S3Service.md#iscid)
 
 ## Constructors
 
 ### constructor
 
-• **new IPFSService**(`didStoreInfura`, `logger`)
+• **new S3Service**(`didStore`, `logger`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `didStoreInfura` | `DidStore` |
+| `didStore` | `DidStore` |
 | `logger` | [`Logger`](modules_logger_logger_service.Logger.md) |
 
 ## Methods
@@ -95,7 +95,7 @@ ___
 
 ▸ `Static` **isCID**(`hash`): `boolean`
 
-Check if given value is a valid IPFS CID.
+Check if given value is a valid S3 CID.
 
 ```typescript
 didService.isCID('Qm...');
