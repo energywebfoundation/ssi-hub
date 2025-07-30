@@ -42,7 +42,7 @@ export class DidStoreService {
    */
   public async save(type: string, credential: string): Promise<string> {
     try {
-      return await this.storeFactory.getGateway(type).save(credential);
+      return await this.storeFactory.getGateway(type.toUpperCase()).save(credential);
     } catch (error) {
       throw new Error(`Error saving ${credential} in ${type}: ${error.reason}`);
     }
