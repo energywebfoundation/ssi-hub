@@ -91,7 +91,7 @@ export class RoleCredentialResolver implements CredentialResolver {
   }
 
   /**
-   * Finds verifiable credentials among service ednpoints
+   * Finds verifiable credentials among service endpoints
    *
    * @param tokens resolved service endpoints of DID document services
    * @returns verifiable credentials
