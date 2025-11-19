@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: styfle/cancel-workflow-action@0.10.0
+      - uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
           
@@ -32,7 +32,7 @@ jobs:
       TAG_DRY_RUN: ${{ steps.configure.outputs.TAG_DRY_RUN }}
       PUSH_DOCKER: ${{ steps.configure.outputs.PUSH_DOCKER }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.11.0
+      - uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
       - id: configure
@@ -66,7 +66,7 @@ jobs:
 
       - name: Bump version and push tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: release
@@ -76,7 +76,7 @@ jobs:
 
       - name: Create a GitHub release
         if: github.ref == 'refs/heads/release'
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           prerelease: ${{  needs.configure.outputs.PRERELEASE  }} 
           tag: ${{ steps.tag_version.outputs.new_tag }}
@@ -103,7 +103,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v2.1.0
+        uses: docker/login-action@v2.2.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -112,7 +112,7 @@ jobs:
       # This step outputs Docker labels and Docker tag associated with github.ref (branch name in this scenario)
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4.3.0
+        uses: docker/metadata-action@v4.6.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
@@ -156,21 +156,21 @@ jobs:
             SENTRY_COMMIT="${{ github.repository }}/${{ github.sha }}"
 
       - name: ArgoCD login
-        uses: clowdhaus/argo-cd-action/@v1.12.1
+        uses: clowdhaus/argo-cd-action/@v1.17.0
         id: argocd_login
         with:
           command: login ${{ secrets.ARGOCD_URL }}
           options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
           
       - name: ArgoCD overvrite values.yaml
-        uses: clowdhaus/argo-cd-action/@v1.12.1
+        uses: clowdhaus/argo-cd-action/@v1.17.0
         id: argocd_image_tag_overwrite
         with:
           command: app set iam-cache-server
           options: -p image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
           
       - name: ArgoCD overvrite HELM values.yaml
-        uses: clowdhaus/argo-cd-action/@v1.12.1
+        uses: clowdhaus/argo-cd-action/@v1.17.0
         id: argocd_image_helm_tag_overwrite
         with:
           command: app set iam-cache-server
