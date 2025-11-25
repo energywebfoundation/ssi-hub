@@ -69,7 +69,7 @@ iam-cache-server-helm:
               service:
                 name: ics
                 port:
-                  number: 80
+                  number: 3000
       - host: volta-identitycache.energyweb.org
         paths:
           - path: "/"
@@ -85,7 +85,7 @@ iam-cache-server-helm:
               service:
                 name: ics
                 port:
-                  number: 80
+                  number: 3000
     tls: [ ]
 
   config:
