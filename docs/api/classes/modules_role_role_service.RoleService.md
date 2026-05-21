@@ -186,20 +186,20 @@ ___
 
 ### handleRoleSyncWithEns
 
-▸ **handleRoleSyncWithEns**(`«destructured»`): `Promise`<`void`\>
+▸ **handleRoleSyncWithEns**(`__namedParameters`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `appNamespace?` | `string` |
-| › `metadata` | `IRoleDefinitionV2` \| `IRoleDefinition` |
-| › `name` | `string` |
-| › `namehash` | `string` |
-| › `namespace` | `string` |
-| › `orgNamespace?` | `string` |
-| › `owner` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.appNamespace?` | `string` |
+| `__namedParameters.metadata` | `IRoleDefinitionV2` \| `IRoleDefinition` |
+| `__namedParameters.name` | `string` |
+| `__namedParameters.namehash` | `string` |
+| `__namedParameters.namespace` | `string` |
+| `__namedParameters.orgNamespace?` | `string` |
+| `__namedParameters.owner` | `string` |
 
 #### Returns
 
@@ -263,15 +263,15 @@ ___
 
 ### verifyEnrolmentIssuer
 
-▸ **verifyEnrolmentIssuer**(`«destructured»`): `Promise`<`void`\>
+▸ **verifyEnrolmentIssuer**(`__namedParameters`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `claimType` | `string` |
-| › `issuerDID` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.issuerDID` | `string` |
 
 #### Returns
 

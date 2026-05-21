@@ -113,7 +113,7 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`owner`, `«destructured»?`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
+▸ **getByOwner**(`owner`, `__namedParameters?`): `Promise`<[`Application`](modules_application_application_entity.Application.md)[]\>
 
 Returns applications owned by `owner`
 
@@ -122,8 +122,8 @@ Returns applications owned by `owner`
 | Name | Type |
 | :------ | :------ |
 | `owner` | `string` |
-| `«destructured»` | `Object` |
-| › `withRelations?` | `boolean` |
+| `__namedParameters?` | `Object` |
+| `__namedParameters.withRelations?` | `boolean` |
 
 #### Returns
 
@@ -151,19 +151,19 @@ ___
 
 ### handleAppSyncWithEns
 
-▸ **handleAppSyncWithEns**(`«destructured»`): `Promise`<`void`\>
+▸ **handleAppSyncWithEns**(`__namedParameters`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `metadata` | `IAppDefinition` |
-| › `name` | `string` |
-| › `namehash` | `string` |
-| › `namespace` | `string` |
-| › `owner` | `string` |
-| › `parentOrgNamespace` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.metadata` | `IAppDefinition` |
+| `__namedParameters.name` | `string` |
+| `__namedParameters.namehash` | `string` |
+| `__namedParameters.namespace` | `string` |
+| `__namedParameters.owner` | `string` |
+| `__namedParameters.parentOrgNamespace` | `string` |
 
 #### Returns
 
@@ -209,7 +209,7 @@ ___
 
 ### update
 
-▸ **update**(`«destructured»`): `Promise`<[`Application`](modules_application_application_entity.Application.md)\>
+▸ **update**(`__namedParameters`): `Promise`<[`Application`](modules_application_application_entity.Application.md)\>
 
 Update existing App with given namespace
 
@@ -217,7 +217,7 @@ Update existing App with given namespace
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`ApplicationDTO`](modules_application_application_dto.ApplicationDTO.md) |
+| `__namedParameters` | [`ApplicationDTO`](modules_application_application_dto.ApplicationDTO.md) |
 
 #### Returns
 

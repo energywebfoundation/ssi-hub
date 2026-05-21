@@ -26,6 +26,11 @@ interface QueryFilters {
   namespace?: string;
 }
 
+interface PaginationOptions {
+  skip?: number;
+  take?: number;
+}
+
 @Injectable()
 export class ClaimService {
   constructor(
@@ -174,10 +179,12 @@ export class ClaimService {
     subjects,
     filters: { isAccepted, namespace } = {},
     currentUser,
+    pagination: { skip, take } = {},
   }: {
     subjects: string[];
     filters?: QueryFilters;
     currentUser?: string;
+    pagination?: PaginationOptions;
   }): Promise<RoleClaim[]> {
     const qb = this.roleClaimRepository.createQueryBuilder('claim');
     qb.where('claim.subject IN (:...subjects)', { subjects });
@@ -198,6 +205,9 @@ export class ClaimService {
       });
     }
 
+    if (skip !== undefined) qb.skip(skip);
+    if (take !== undefined) qb.take(take);
+
     return qb.getMany();
   }
 
@@ -206,9 +216,14 @@ export class ClaimService {
    * eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.app", "user.roles.A.app"
    * @param namespace target parent namespace
    */
-  async getByParentNamespace(namespace: string) {
+  async getByParentNamespace(
+    namespace: string,
+    { skip, take }: PaginationOptions = {}
+  ) {
     return this.roleClaimRepository.find({
       where: { namespace },
+      skip,
+      take,
     });
   }
 
@@ -220,10 +235,12 @@ export class ClaimService {
     did,
     filters: { isAccepted, namespace } = {},
     currentUser,
+    pagination: { skip, take } = {},
   }: {
     did: string;
     filters?: QueryFilters;
     currentUser?: string;
+    pagination?: PaginationOptions;
   }) {
     const qb = this.roleClaimRepository
       .createQueryBuilder()
@@ -248,6 +265,10 @@ export class ClaimService {
         })
       );
     }
+
+    if (skip !== undefined) qb.skip(skip);
+    if (take !== undefined) qb.take(take);
+
     return qb.getMany();
   }
 
@@ -260,10 +281,12 @@ export class ClaimService {
     issuer,
     filters: { isAccepted, namespace } = {},
     currentUser,
+    pagination: { skip, take } = {},
   }: {
     issuer: string;
     filters?: QueryFilters;
     currentUser?: string;
+    pagination?: PaginationOptions;
   }) {
     const rolesByIssuer = (await this.rolesByIssuer(issuer, namespace)).map(
       (r) => r.namespace
@@ -286,6 +309,10 @@ export class ClaimService {
     if (currentUser) {
       await this.filterUserRelatedClaims(currentUser, qb);
     }
+
+    if (skip !== undefined) qb.skip(skip);
+    if (take !== undefined) qb.take(take);
+
     return qb.getMany();
   }
 
@@ -300,10 +327,12 @@ export class ClaimService {
     revoker,
     currentUser,
     filters: { namespace } = {},
+    pagination: { skip, take } = {},
   }: {
     revoker: string;
     filters?: QueryFilters;
     currentUser?: string;
+    pagination?: PaginationOptions;
   }) {
     const currentRevoker = currentUser || revoker;
     let allRolesByRevoker = await this.rolesByRevoker(currentRevoker);
@@ -322,6 +351,10 @@ export class ClaimService {
       .createQueryBuilder('claim')
       .where('claim.claimType IN (:...rolesByRevoker)', { rolesByRevoker })
       .andWhere('claim.isAccepted = true');
+
+    if (skip !== undefined) qb.skip(skip);
+    if (take !== undefined) qb.take(take);
+
     return qb.getMany();
   }
 
@@ -334,10 +367,12 @@ export class ClaimService {
     requester,
     filters: { isAccepted, namespace } = {},
     currentUser,
+    pagination: { skip, take } = {},
   }: {
     requester: string;
     filters?: QueryFilters;
     currentUser?: string;
+    pagination?: PaginationOptions;
   }) {
     const qb = this.roleClaimRepository
       .createQueryBuilder()
@@ -362,6 +397,10 @@ export class ClaimService {
         })
       );
     }
+
+    if (skip !== undefined) qb.skip(skip);
+    if (take !== undefined) qb.take(take);
+
     return qb.getMany();
   }
 
@@ -374,12 +413,19 @@ export class ClaimService {
     subject,
     filters,
     currentUser,
+    pagination,
   }: {
     subject: string;
     filters?: QueryFilters;
     currentUser?: string;
+    pagination?: PaginationOptions;
   }) {
-    return this.getBySubjects({ subjects: [subject], filters, currentUser });
+    return this.getBySubjects({
+      subjects: [subject],
+      filters,
+      currentUser,
+      pagination,
+    });
   }
 
   /**
@@ -428,13 +474,17 @@ export class ClaimService {
   public async getClaims({
     roleName,
     isAccepted = true,
+    pagination: { skip, take } = {},
   }: {
     roleName: string;
     isAccepted?: boolean;
+    pagination?: PaginationOptions;
   }): Promise<RoleClaim[]> {
     const parsedFilters = this.parseFilters({ isAccepted });
     return this.roleClaimRepository.find({
       where: [{ ...parsedFilters, claimType: roleName }],
+      skip,
+      take,
     });
   }
 
@@ -445,9 +495,10 @@ export class ClaimService {
    */
   public async getDidOfClaimsOfNamespace(
     roleName: string,
-    isAccepted?: boolean
+    isAccepted?: boolean,
+    pagination?: PaginationOptions
   ): Promise<string[]> {
-    return (await this.getClaims({ roleName, isAccepted })).map(
+    return (await this.getClaims({ roleName, isAccepted, pagination })).map(
       (claim) => claim.requester
     );
   }
@@ -475,12 +526,17 @@ export class ClaimService {
    * Save issued claim
    * @param {Array} claim - DIDs whose issued claims are being requested
    */
-  public async getIssuedClaimsBySubjects(subjects: string[]) {
+  public async getIssuedClaimsBySubjects(
+    subjects: string[],
+    { skip, take }: PaginationOptions = {}
+  ) {
     return this.claimRepository.find({
       where: {
         subject: In(subjects),
       },
       select: ['issuedAt', 'issuedToken', 'subject'],
+      skip,
+      take,
     });
   }
 

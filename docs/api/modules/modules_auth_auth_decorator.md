@@ -11,14 +11,14 @@
 
 ### Auth
 
-▸ **Auth**(`«destructured»?`): <TFunction, Y\>(`target`: `object` \| `TFunction`, `propertyKey?`: `string` \| `symbol`, `descriptor?`: `TypedPropertyDescriptor`<`Y`\>) => `void`
+▸ **Auth**(`__namedParameters?`): <TFunction, Y\>(`target`: `object` \| `TFunction`, `propertyKey?`: `string` \| `symbol`, `descriptor?`: `TypedPropertyDescriptor`<`Y`\>) => `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `useAuth?` | `boolean` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.useAuth?` | `boolean` |
 
 #### Returns
 
@@ -55,14 +55,14 @@ ___
 
 ### AuthGQL
 
-▸ **AuthGQL**(`«destructured»?`): <TFunction, Y\>(`target`: `object` \| `TFunction`, `propertyKey?`: `string` \| `symbol`, `descriptor?`: `TypedPropertyDescriptor`<`Y`\>) => `void`
+▸ **AuthGQL**(`__namedParameters?`): <TFunction, Y\>(`target`: `object` \| `TFunction`, `propertyKey?`: `string` \| `symbol`, `descriptor?`: `TypedPropertyDescriptor`<`Y`\>) => `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `useAuth?` | `boolean` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.useAuth?` | `boolean` |
 
 #### Returns
 

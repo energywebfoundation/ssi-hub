@@ -2,11 +2,11 @@ name: Audit package dependencies
 
 # Controls when the action will run.
 on:
-  push:
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-  workflow_dispatch:
+  # push:
+  #   paths:
+  #     - 'package.json'
+  #     - 'package-lock.json'
+  # workflow_dispatch:
 
 jobs:
   audit:
@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: '18.20.8'
+          node-version: '20.20.2'
 
       - name: Audit package dependencies
         run: npm audit --audit-level=critical

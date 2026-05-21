@@ -54,7 +54,7 @@
 ▸ **addCachedDocument**(`did`, `isSync?`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
 
 Adds or fully refresh the DID Document cache for a given DID.
-Also retrieves all claims from IPFS for the document.
+Also retrieves all claims from DidStore for the document.
 
 #### Parameters
 
@@ -111,7 +111,7 @@ ___
 ▸ **incrementalRefreshCachedDocument**(`did`): `Promise`<[`DIDDocumentEntity`](modules_did_did_entity.DIDDocumentEntity.md)\>
 
 Add any incremental changes to the DID document that occurred since the last sync.
-Also retrieves all claims from IPFS for the document.
+Also retrieves all claims from DidStore for the document.
 
 #### Parameters
 

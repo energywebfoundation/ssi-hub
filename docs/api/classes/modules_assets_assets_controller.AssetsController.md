@@ -32,13 +32,13 @@
 
 ### getByID
 
-▸ **getByID**(`«destructured»`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
+▸ **getByID**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`DID`](modules_did_did_types.DID.md) |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -49,13 +49,13 @@ ___
 
 ### getByOfferedTo
 
-▸ **getByOfferedTo**(`«destructured»`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
+▸ **getByOfferedTo**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`DID`](modules_did_did_types.DID.md) |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -66,13 +66,13 @@ ___
 
 ### getByOwner
 
-▸ **getByOwner**(`«destructured»`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
+▸ **getByOwner**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`DID`](modules_did_did_types.DID.md) |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -83,13 +83,13 @@ ___
 
 ### getByPreviousOwner
 
-▸ **getByPreviousOwner**(`«destructured»`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
+▸ **getByPreviousOwner**(`__namedParameters`, `currentUser?`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`DID`](modules_did_did_types.DID.md) |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `currentUser?` | `string` |
 
 #### Returns
@@ -100,13 +100,13 @@ ___
 
 ### getHistoryByAssetId
 
-▸ **getHistoryByAssetId**(`«destructured»`, `take?`, `skip?`, `order?`, `type?`): `Promise`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md)[]\>
+▸ **getHistoryByAssetId**(`__namedParameters`, `take?`, `skip?`, `order?`, `type?`): `Promise`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`DID`](modules_did_did_types.DID.md) |
+| `__namedParameters` | [`DID`](modules_did_did_types.DID.md) |
 | `take?` | `number` |
 | `skip?` | `number` |
 | `order?` | [`Order`](../enums/modules_assets_assets_types.Order.md) |
