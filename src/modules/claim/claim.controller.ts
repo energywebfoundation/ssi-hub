@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   UseInterceptors,
@@ -268,8 +270,14 @@ export class ClaimController {
       'should return claims for namespaces like ' +
       '`admin.roles.myApp.apps.myOrg.iam.ewc`',
   })
-  public async getByParentNamespace(@Param('namespace') id: string) {
-    return await this.claimService.getByParentNamespace(id);
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
+  public async getByParentNamespace(
+    @Param('namespace') id: string,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
+  ) {
+    return await this.claimService.getByParentNamespace(id, { skip, take });
   }
 
   @Get('/user/:did')
@@ -277,8 +285,19 @@ export class ClaimController {
   @ApiOperation({
     summary: 'returns claims Related to given DID',
   })
-  public async getByUserDid(@Param('did') did: string, @User() user?: string) {
-    return await this.claimService.getByUserDid({ did, currentUser: user });
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
+  public async getByUserDid(
+    @Param('did') did: string,
+    @User() user?: string,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
+  ) {
+    return await this.claimService.getByUserDid({
+      did,
+      currentUser: user,
+      pagination: { skip, take },
+    });
   }
   @Get('/issuer/:did')
   @ApiTags('Claims')
@@ -296,11 +315,15 @@ export class ClaimController {
     required: false,
     description: 'filter only claims of given namespace',
   })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
   public async getByIssuerDid(
     @Param('did') issuer: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string
+    @User() user?: string,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
   ) {
     return await this.claimService.getByIssuer({
       issuer,
@@ -309,6 +332,7 @@ export class ClaimController {
         namespace,
       },
       currentUser: user,
+      pagination: { skip, take },
     });
   }
 
@@ -322,10 +346,14 @@ export class ClaimController {
     required: false,
     description: 'filter only claims of given namespace',
   })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
   public async getByRevokerDid(
     @Param('did') revoker: string,
     @User() user?: string,
-    @Query('namespace') namespace?: string
+    @Query('namespace') namespace?: string,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
   ) {
     return await this.claimService.getByRevoker({
       revoker,
@@ -333,6 +361,7 @@ export class ClaimController {
       filters: {
         namespace,
       },
+      pagination: { skip, take },
     });
   }
 
@@ -382,11 +411,15 @@ export class ClaimController {
     required: false,
     description: 'filter only claims of given namespace',
   })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
   public async getByRequesterDid(
     @Param('did') requester: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string
+    @User() user?: string,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
   ) {
     return await this.claimService.getByRequester({
       requester,
@@ -395,6 +428,7 @@ export class ClaimController {
         namespace,
       },
       currentUser: user,
+      pagination: { skip, take },
     });
   }
 
@@ -414,11 +448,15 @@ export class ClaimController {
     required: false,
     description: 'filter only claims of given namespace',
   })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
   public async getBySubject(
     @Param('did') subject: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
-    @User() user?: string
+    @User() user?: string,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
   ) {
     return await this.claimService.getBySubject({
       subject,
@@ -427,6 +465,7 @@ export class ClaimController {
         namespace,
       },
       currentUser: user,
+      pagination: { skip, take },
     });
   }
 
@@ -436,19 +475,25 @@ export class ClaimController {
     required: false,
     description: 'additional filter',
   })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
   @ApiTags('Claims')
   @ApiOperation({
     summary: 'returns DIDs of claim requests for given namespace',
   })
   public async getDidsOfNamespace(
     @Param('namespace') namespace: string,
-    @Query('accepted', BooleanPipe)
-    accepted?: boolean
+    @Query('accepted', BooleanPipe) accepted?: boolean,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
   ) {
     if (this.DISABLE_GET_DIDS_BY_ROLE) {
       throw new UnauthorizedException();
     }
-    return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted);
+    return this.claimService.getDidOfClaimsOfNamespace(namespace, accepted, {
+      skip,
+      take,
+    });
   }
 
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -466,12 +511,21 @@ export class ClaimController {
     required: true,
     description: 'DIDs whose issued claims are being requested',
   })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
   @ApiTags('Claims')
   @ApiOperation({
     summary: 'returns issued claims requested for given DIDs',
   })
-  public async getIssuedClaimsBySubjects(@Query() { subjects }: DIDsQuery) {
-    return this.claimService.getIssuedClaimsBySubjects(subjects);
+  public async getIssuedClaimsBySubjects(
+    @Query() { subjects }: DIDsQuery,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
+  ) {
+    return this.claimService.getIssuedClaimsBySubjects(subjects, {
+      skip,
+      take,
+    });
   }
 
   @Get('/:id')

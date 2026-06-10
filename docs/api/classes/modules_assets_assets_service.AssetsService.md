@@ -41,13 +41,13 @@
 
 ### create
 
-▸ **create**(`«destructured»`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
+▸ **create**(`__namedParameters`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`AssetDto`](modules_assets_assets_dto.AssetDto.md) |
+| `__namedParameters` | [`AssetDto`](modules_assets_assets_dto.AssetDto.md) |
 
 #### Returns
 
@@ -57,18 +57,18 @@ ___
 
 ### getAssetHistory
 
-▸ **getAssetHistory**(`assetId`, `«destructured»`): `Promise`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md)[]\>
+▸ **getAssetHistory**(`assetId`, `__namedParameters`): `Promise`<[`AssetsHistory`](modules_assets_assets_entity.AssetsHistory.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `assetId` | `string` |
-| `«destructured»` | `Object` |
-| › `order` | ``"ASC"`` \| ``"DESC"`` |
-| › `skip` | `number` |
-| › `take` | `number` |
-| › `type` | [`AssetHistoryEventType`](../enums/modules_assets_assets_event.AssetHistoryEventType.md) |
+| `__namedParameters` | `Object` |
+| `__namedParameters.order` | ``"ASC"`` \| ``"DESC"`` |
+| `__namedParameters.skip` | `number` |
+| `__namedParameters.take` | `number` |
+| `__namedParameters.type` | [`AssetHistoryEventType`](../enums/modules_assets_assets_event.AssetHistoryEventType.md) |
 
 #### Returns
 
@@ -142,13 +142,13 @@ ___
 
 ### update
 
-▸ **update**(`«destructured»`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
+▸ **update**(`__namedParameters`): `Promise`<[`Asset`](modules_assets_assets_entity.Asset.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`AssetDto`](modules_assets_assets_dto.AssetDto.md) |
+| `__namedParameters` | [`AssetDto`](modules_assets_assets_dto.AssetDto.md) |
 
 #### Returns
 

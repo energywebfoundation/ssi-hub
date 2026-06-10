@@ -33,14 +33,14 @@
 
 ### createEntry
 
-▸ **createEntry**(`currentUser`, `«destructured»`): `Promise`<[`CredentialWithStatusDto`](modules_status_list_dtos_credential_status_dto.CredentialWithStatusDto.md)\>
+▸ **createEntry**(`currentUser`, `__namedParameters`): `Promise`<[`CredentialWithStatusDto`](modules_status_list_dtos_credential_status_dto.CredentialWithStatusDto.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `currentUser` | `string` |
-| `«destructured»` | [`CreateEntryInputDto`](modules_status_list_dtos_create_entry_input_dto.CreateEntryInputDto.md) |
+| `__namedParameters` | [`CreateEntryInputDto`](modules_status_list_dtos_create_entry_input_dto.CreateEntryInputDto.md) |
 
 #### Returns
 
@@ -67,14 +67,14 @@ ___
 
 ### initiateStatusUpdate
 
-▸ **initiateStatusUpdate**(`currentUser`, `«destructured»`): `Promise`<[`StatusListCredentialDto`](modules_status_list_dtos_status_list_credential_dto.StatusListCredentialDto.md)\>
+▸ **initiateStatusUpdate**(`currentUser`, `__namedParameters`): `Promise`<[`StatusListCredentialDto`](modules_status_list_dtos_status_list_credential_dto.StatusListCredentialDto.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `currentUser` | `string` |
-| `«destructured»` | [`RegisterRevokeInputDto`](modules_status_list_dtos_register_revoke_input_dto.RegisterRevokeInputDto.md) |
+| `__namedParameters` | [`RegisterRevokeInputDto`](modules_status_list_dtos_register_revoke_input_dto.RegisterRevokeInputDto.md) |
 
 #### Returns
 
@@ -84,13 +84,13 @@ ___
 
 ### persistUpdate
 
-▸ **persistUpdate**(`«destructured»`): `Promise`<[`StatusListVerifiableCredentialDto`](modules_status_list_dtos_status_list_verifiable_credential_dto.StatusListVerifiableCredentialDto.md)\>
+▸ **persistUpdate**(`__namedParameters`): `Promise`<[`StatusListVerifiableCredentialDto`](modules_status_list_dtos_status_list_verifiable_credential_dto.StatusListVerifiableCredentialDto.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`FinalizeUpdateInputDto`](modules_status_list_dtos_sign_revoke_input_dto.FinalizeUpdateInputDto.md) |
+| `__namedParameters` | [`FinalizeUpdateInputDto`](modules_status_list_dtos_sign_revoke_input_dto.FinalizeUpdateInputDto.md) |
 
 #### Returns
 

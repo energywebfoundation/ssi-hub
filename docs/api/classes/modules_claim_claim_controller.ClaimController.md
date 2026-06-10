@@ -97,7 +97,7 @@ ___
 
 ### getByIssuerDid
 
-▸ **getByIssuerDid**(`issuer`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByIssuerDid**(`issuer`, `isAccepted?`, `namespace?`, `user?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -107,6 +107,8 @@ ___
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -116,13 +118,15 @@ ___
 
 ### getByParentNamespace
 
-▸ **getByParentNamespace**(`id`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByParentNamespace**(`id`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `id` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -132,7 +136,7 @@ ___
 
 ### getByRequesterDid
 
-▸ **getByRequesterDid**(`requester`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByRequesterDid**(`requester`, `isAccepted?`, `namespace?`, `user?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -142,6 +146,8 @@ ___
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -151,7 +157,7 @@ ___
 
 ### getByRevokerDid
 
-▸ **getByRevokerDid**(`revoker`, `user?`, `namespace?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByRevokerDid**(`revoker`, `user?`, `namespace?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -160,6 +166,8 @@ ___
 | `revoker` | `string` |
 | `user?` | `string` |
 | `namespace?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -169,7 +177,7 @@ ___
 
 ### getBySubject
 
-▸ **getBySubject**(`subject`, `isAccepted?`, `namespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getBySubject**(`subject`, `isAccepted?`, `namespace?`, `user?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -179,6 +187,8 @@ ___
 | `isAccepted?` | `boolean` |
 | `namespace?` | `string` |
 | `user?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -188,7 +198,7 @@ ___
 
 ### getByUserDid
 
-▸ **getByUserDid**(`did`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByUserDid**(`did`, `user?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -196,6 +206,8 @@ ___
 | :------ | :------ |
 | `did` | `string` |
 | `user?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -205,7 +217,7 @@ ___
 
 ### getDidsOfNamespace
 
-▸ **getDidsOfNamespace**(`namespace`, `accepted?`): `Promise`<`string`[]\>
+▸ **getDidsOfNamespace**(`namespace`, `accepted?`, `skip?`, `take?`): `Promise`<`string`[]\>
 
 #### Parameters
 
@@ -213,6 +225,8 @@ ___
 | :------ | :------ |
 | `namespace` | `string` |
 | `accepted?` | `boolean` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -222,13 +236,15 @@ ___
 
 ### getIssuedClaimsBySubjects
 
-▸ **getIssuedClaimsBySubjects**(`«destructured»`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
+▸ **getIssuedClaimsBySubjects**(`__namedParameters`, `skip?`, `take?`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
+| `__namedParameters` | [`DIDsQuery`](modules_claim_entities_roleClaim_entity.DIDsQuery.md) |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 

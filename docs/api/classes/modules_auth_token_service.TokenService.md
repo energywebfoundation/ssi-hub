@@ -83,15 +83,15 @@ ___
 
 ### generateRefreshToken
 
-▸ **generateRefreshToken**(`«destructured»`): `Promise`<`string`\>
+▸ **generateRefreshToken**(`__namedParameters`): `Promise`<`string`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `origin` | `string` |
-| › `userDid` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.origin` | `string` |
+| `__namedParameters.userDid` | `string` |
 
 #### Returns
 

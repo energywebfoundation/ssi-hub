@@ -63,7 +63,7 @@ ___
 
 ### verifyClaimPresentInDidDocument
 
-▸ **verifyClaimPresentInDidDocument**(`«destructured»`): `Promise`<`boolean`\>
+▸ **verifyClaimPresentInDidDocument**(`__namedParameters`): `Promise`<`boolean`\>
 
 Verifies that a user's Did Document contains all roles required for enrolment (enrolment preconditions)
 
@@ -71,9 +71,9 @@ Verifies that a user's Did Document contains all roles required for enrolment (e
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `conditions` | `string`[] |
-| › `userDID` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.conditions` | `string`[] |
+| `__namedParameters.userDID` | `string` |
 
 #### Returns
 

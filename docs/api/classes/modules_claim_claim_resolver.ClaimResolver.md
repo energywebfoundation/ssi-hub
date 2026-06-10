@@ -49,7 +49,7 @@ ___
 
 ### claimsByIssuer
 
-▸ **claimsByIssuer**(`issuer?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **claimsByIssuer**(`issuer?`, `accepted?`, `parentNamespace?`, `skip?`, `take?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -58,6 +58,8 @@ ___
 | `issuer?` | `string` |
 | `accepted?` | `boolean` |
 | `parentNamespace?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 | `user?` | `string` |
 
 #### Returns
@@ -68,13 +70,15 @@ ___
 
 ### claimsByParentNamespace
 
-▸ **claimsByParentNamespace**(`namespace`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **claimsByParentNamespace**(`namespace`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `namespace` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 
 #### Returns
 
@@ -84,7 +88,7 @@ ___
 
 ### claimsByRequester
 
-▸ **claimsByRequester**(`requester?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **claimsByRequester**(`requester?`, `accepted?`, `parentNamespace?`, `skip?`, `take?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -93,6 +97,8 @@ ___
 | `requester?` | `string` |
 | `accepted?` | `boolean` |
 | `parentNamespace?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 | `user?` | `string` |
 
 #### Returns
@@ -103,7 +109,7 @@ ___
 
 ### claimsByUser
 
-▸ **claimsByUser**(`did?`, `accepted?`, `parentNamespace?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **claimsByUser**(`did?`, `accepted?`, `parentNamespace?`, `skip?`, `take?`, `user?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -112,6 +118,8 @@ ___
 | `did?` | `string` |
 | `accepted?` | `boolean` |
 | `parentNamespace?` | `string` |
+| `skip?` | `number` |
+| `take?` | `number` |
 | `user?` | `string` |
 
 #### Returns

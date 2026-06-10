@@ -1,4 +1,4 @@
-import { Args, Resolver, Query, Mutation } from '@nestjs/graphql';
+import { Args, Int, Resolver, Query, Mutation } from '@nestjs/graphql';
 import { UserGQL } from '../../common/user.decorator';
 import { AuthGQL } from '../auth/auth.decorator';
 import { RoleClaim } from './entities/roleClaim.entity';
@@ -16,9 +16,11 @@ export class ClaimResolver {
 
   @Query(() => [RoleClaim])
   async claimsByParentNamespace(
-    @Args('namespace', { type: () => String }) namespace: string
+    @Args('namespace', { type: () => String }) namespace: string,
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('take', { type: () => Int, nullable: true }) take?: number
   ) {
-    return this.claimService.getByParentNamespace(namespace);
+    return this.claimService.getByParentNamespace(namespace, { skip, take });
   }
 
   @Query(() => [RoleClaim])
@@ -28,6 +30,8 @@ export class ClaimResolver {
     accepted?: boolean,
     @Args('parentNamespace', { type: () => String, nullable: true })
     parentNamespace?: string,
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('take', { type: () => Int, nullable: true }) take?: number,
     @UserGQL()
     user?: string
   ) {
@@ -35,6 +39,7 @@ export class ClaimResolver {
       did,
       currentUser: user,
       filters: { isAccepted: accepted, namespace: parentNamespace },
+      pagination: { skip, take },
     });
   }
 
@@ -45,6 +50,8 @@ export class ClaimResolver {
     accepted?: boolean,
     @Args('parentNamespace', { type: () => String, nullable: true })
     parentNamespace?: string,
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('take', { type: () => Int, nullable: true }) take?: number,
     @UserGQL()
     user?: string
   ) {
@@ -52,6 +59,7 @@ export class ClaimResolver {
       issuer,
       currentUser: user,
       filters: { isAccepted: accepted, namespace: parentNamespace },
+      pagination: { skip, take },
     });
   }
 
@@ -63,6 +71,8 @@ export class ClaimResolver {
     accepted?: boolean,
     @Args('parentNamespace', { type: () => String, nullable: true })
     parentNamespace?: string,
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('take', { type: () => Int, nullable: true }) take?: number,
     @UserGQL()
     user?: string
   ) {
@@ -70,6 +80,7 @@ export class ClaimResolver {
       requester,
       currentUser: user,
       filters: { isAccepted: accepted, namespace: parentNamespace },
+      pagination: { skip, take },
     });
   }
 

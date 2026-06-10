@@ -65,17 +65,17 @@ ___
 
 ### syncNamespace
 
-▸ **syncNamespace**(`«destructured»`): `Promise`<`void`\>
+▸ **syncNamespace**(`__namedParameters`): `Promise`<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `data` | `IRoleDefinitionV2` \| `IRoleDefinition` \| `IOrganizationDefinition` \| `IAppDefinition` |
-| › `hash` | `string` |
-| › `namespace` | `string` |
-| › `owner` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.data` | `IRoleDefinitionV2` \| `IRoleDefinition` \| `IOrganizationDefinition` \| `IAppDefinition` |
+| `__namedParameters.hash` | `string` |
+| `__namedParameters.namespace` | `string` |
+| `__namedParameters.owner` | `string` |
 
 #### Returns
 

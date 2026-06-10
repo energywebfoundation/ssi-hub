@@ -73,7 +73,7 @@ ___
 
 ### getByClaimType
 
-▸ **getByClaimType**(`«destructured»`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+▸ **getByClaimType**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 Get approved claim for given did and claim type
 
@@ -81,9 +81,9 @@ Get approved claim for given did and claim type
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `claimType` | `string` |
-| › `subject` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.claimType` | `string` |
+| `__namedParameters.subject` | `string` |
 
 #### Returns
 
@@ -111,7 +111,7 @@ ___
 
 ### getByIssuer
 
-▸ **getByIssuer**(`«destructured»`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByIssuer**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims issued by user with matching DID
 
@@ -119,10 +119,11 @@ Get claims issued by user with matching DID
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `currentUser?` | `string` |
-| › `filters?` | `QueryFilters` |
-| › `issuer` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.issuer` | `string` |
+| `__namedParameters.pagination?` | `PaginationOptions` |
 
 #### Returns
 
@@ -132,7 +133,7 @@ ___
 
 ### getByParentNamespace
 
-▸ **getByParentNamespace**(`namespace`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByParentNamespace**(`namespace`, `__namedParameters?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 returns claims with matching parent namespace
 eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.app", "user.roles.A.app"
@@ -142,6 +143,7 @@ eg: passing "A.app" will return all roles in this namespace like "admin.roles.A.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `namespace` | `string` | target parent namespace |
+| `__namedParameters` | `PaginationOptions` | - |
 
 #### Returns
 
@@ -151,7 +153,7 @@ ___
 
 ### getByRequester
 
-▸ **getByRequester**(`«destructured»`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByRequester**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims requested by user with matching DID
 
@@ -159,10 +161,11 @@ Get claims requested by user with matching DID
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `currentUser?` | `string` |
-| › `filters?` | `QueryFilters` |
-| › `requester` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.pagination?` | `PaginationOptions` |
+| `__namedParameters.requester` | `string` |
 
 #### Returns
 
@@ -172,7 +175,7 @@ ___
 
 ### getByRevoker
 
-▸ **getByRevoker**(`«destructured»`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByRevoker**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims able to be revoked by user with matching DID
 
@@ -180,10 +183,11 @@ Get claims able to be revoked by user with matching DID
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `currentUser?` | `string` |
-| › `filters?` | `QueryFilters` |
-| › `revoker` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.pagination?` | `PaginationOptions` |
+| `__namedParameters.revoker` | `string` |
 
 #### Returns
 
@@ -195,7 +199,7 @@ ___
 
 ### getBySubject
 
-▸ **getBySubject**(`«destructured»`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getBySubject**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Get claims issued for given subject
 
@@ -203,10 +207,11 @@ Get claims issued for given subject
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `currentUser?` | `string` |
-| › `filters?` | `QueryFilters` |
-| › `subject` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.currentUser?` | `string` |
+| `__namedParameters.filters?` | `QueryFilters` |
+| `__namedParameters.pagination?` | `PaginationOptions` |
+| `__namedParameters.subject` | `string` |
 
 #### Returns
 
@@ -227,6 +232,7 @@ returns claims requested for given DIDs
 | `subjects` | `Object` | claim subjects DIDs |
 | `subjects.currentUser?` | `string` | - |
 | `subjects.filters?` | `QueryFilters` | - |
+| `subjects.pagination?` | `PaginationOptions` | - |
 | `subjects.subjects` | `string`[] | - |
 
 #### Returns
@@ -249,6 +255,7 @@ Get claims requested or issued by user with matching DID
 | `did.currentUser?` | `string` | - |
 | `did.did` | `string` | - |
 | `did.filters?` | `QueryFilters` | - |
+| `did.pagination?` | `PaginationOptions` | - |
 
 #### Returns
 
@@ -258,7 +265,7 @@ ___
 
 ### getClaims
 
-▸ **getClaims**(`«destructured»`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getClaims**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 Returns claims for given role
 
@@ -266,9 +273,10 @@ Returns claims for given role
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `isAccepted?` | `boolean` |
-| › `roleName` | `string` |
+| `__namedParameters` | `Object` |
+| `__namedParameters.isAccepted?` | `boolean` |
+| `__namedParameters.pagination?` | `PaginationOptions` |
+| `__namedParameters.roleName` | `string` |
 
 #### Returns
 
@@ -278,7 +286,7 @@ ___
 
 ### getDidOfClaimsOfNamespace
 
-▸ **getDidOfClaimsOfNamespace**(`roleName`, `isAccepted?`): `Promise`<`string`[]\>
+▸ **getDidOfClaimsOfNamespace**(`roleName`, `isAccepted?`, `pagination?`): `Promise`<`string`[]\>
 
 get all DID of requesters of given namespace
 
@@ -288,6 +296,7 @@ get all DID of requesters of given namespace
 | :------ | :------ | :------ |
 | `roleName` | `string` | target claim namespace |
 | `isAccepted?` | `boolean` | flag for filtering only accepted claims |
+| `pagination?` | `PaginationOptions` | - |
 
 #### Returns
 
@@ -297,7 +306,7 @@ ___
 
 ### getIssuedClaimsBySubjects
 
-▸ **getIssuedClaimsBySubjects**(`subjects`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
+▸ **getIssuedClaimsBySubjects**(`subjects`, `__namedParameters?`): `Promise`<[`Claim`](modules_claim_entities_claim_entity.Claim.md)[]\>
 
 Save issued claim
 
@@ -306,6 +315,7 @@ Save issued claim
 | Name | Type |
 | :------ | :------ |
 | `subjects` | `string`[] |
+| `__namedParameters` | `PaginationOptions` |
 
 #### Returns
 
@@ -370,13 +380,13 @@ ___
 
 ### reject
 
-▸ **reject**(`«destructured»`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
+▸ **reject**(`__namedParameters`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`ClaimRejectionDTO`](modules_claim_claim_dto.ClaimRejectionDTO.md) |
+| `__namedParameters` | [`ClaimRejectionDTO`](modules_claim_claim_dto.ClaimRejectionDTO.md) |
 
 #### Returns
 
