@@ -2,7 +2,7 @@ name: Build and deploy
 
 on:
   push:
-    branches: [ develop, release ]
+    branches: [ intelligent-dev, release ]
     paths-ignore:
       - 'devops/**'    
   workflow_dispatch:
@@ -38,7 +38,7 @@ jobs:
       - id: configure
         run: |
               echo "Running on branch ${{ github.ref }}"
-              if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+              if [ "${{ github.ref }}" = "refs/heads/intelligent-dev" ]; then
                 echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
                 echo "PRERELEASE=true" >> $GITHUB_OUTPUT
                 echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_OUTPUT
@@ -72,7 +72,7 @@ jobs:
           release_branches: release
           append_to_pre_release_tag: beta
           custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
-          dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}   # pushes to develop won't trigger tagging
+          dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}   # pushes to intelligent-dev won't trigger tagging
 
       - name: Create a GitHub release
         if: github.ref == 'refs/heads/release'
@@ -116,12 +116,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # When running on develop branch we want to tag Docker images with unique id and branch name only.
+      # When running on intelligent-dev branch we want to tag Docker images with unique id and branch name only.
       # When running on release we're adding sem ver and latest (for release) tags too.
       - name: Setup Docker tags
         id: tags
         run: |
-              if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+              if [ "${{ github.ref }}" = "refs/heads/intelligent-dev" ]; then
                 echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }}" >> $GITHUB_OUTPUT
               else
                 echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}" >> $GITHUB_OUTPUT
@@ -155,24 +155,24 @@ jobs:
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
             SENTRY_COMMIT="${{ github.repository }}/${{ github.sha }}"
 
-      - name: ArgoCD login
-        uses: clowdhaus/argo-cd-action/@v1.12.1
-        id: argocd_login
-        with:
-          command: login ${{ secrets.ARGOCD_URL }}
-          options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
+      # - name: ArgoCD login
+      #   uses: clowdhaus/argo-cd-action/@v1.12.1
+      #   id: argocd_login
+      #   with:
+      #     command: login ${{ secrets.ARGOCD_URL }}
+      #     options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
           
-      - name: ArgoCD overvrite values.yaml
-        uses: clowdhaus/argo-cd-action/@v1.12.1
-        id: argocd_image_tag_overwrite
-        with:
-          command: app set iam-cache-server
-          options: -p image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
+      # - name: ArgoCD overvrite values.yaml
+      #   uses: clowdhaus/argo-cd-action/@v1.12.1
+      #   id: argocd_image_tag_overwrite
+      #   with:
+      #     command: app set iam-cache-server
+      #     options: -p image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
           
-      - name: ArgoCD overvrite HELM values.yaml
-        uses: clowdhaus/argo-cd-action/@v1.12.1
-        id: argocd_image_helm_tag_overwrite
-        with:
-          command: app set iam-cache-server
-          options: -p iam-cache-server-helm.image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p iam-cache-server-helm.image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
+      # - name: ArgoCD overvrite HELM values.yaml
+      #   uses: clowdhaus/argo-cd-action/@v1.12.1
+      #   id: argocd_image_helm_tag_overwrite
+      #   with:
+      #     command: app set iam-cache-server
+      #     options: -p iam-cache-server-helm.image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p iam-cache-server-helm.image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
           
