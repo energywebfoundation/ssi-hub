@@ -16,6 +16,7 @@ import {
   ForbiddenException,
   Headers,
   UnauthorizedException,
+  ParseEnumPipe,
 } from '@nestjs/common';
 import { DIDService } from '../did/did.service';
 import { DIDPipe } from '../did/did.pipe';
@@ -57,6 +58,7 @@ import { RoleDTO } from '../role/role.dto';
 import { NatsService } from '../nats/nats.service';
 import { ClaimIssuanceService, ClaimService } from './services';
 import { ConfigService } from '@nestjs/config';
+import { Order } from '../assets/assets.types';
 
 @Auth()
 @UseInterceptors(SentryErrorInterceptor)
@@ -317,13 +319,16 @@ export class ClaimController {
   })
   @ApiQuery({ name: 'skip', required: false, type: Number })
   @ApiQuery({ name: 'take', required: false, type: Number })
+  @ApiQuery({ name: 'order', required: false, enum: Order })
   public async getByIssuerDid(
     @Param('did') issuer: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
     @User() user?: string,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
-    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
+    @Query('order', new DefaultValuePipe(Order.DESC), new ParseEnumPipe(Order))
+    order?: Order
   ) {
     return await this.claimService.getByIssuer({
       issuer,
@@ -332,7 +337,7 @@ export class ClaimController {
         namespace,
       },
       currentUser: user,
-      pagination: { skip, take },
+      pagination: { skip, take, order },
     });
   }
 
@@ -348,12 +353,15 @@ export class ClaimController {
   })
   @ApiQuery({ name: 'skip', required: false, type: Number })
   @ApiQuery({ name: 'take', required: false, type: Number })
+  @ApiQuery({ name: 'order', required: false, enum: Order })
   public async getByRevokerDid(
     @Param('did') revoker: string,
     @User() user?: string,
     @Query('namespace') namespace?: string,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
-    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
+    @Query('order', new DefaultValuePipe(Order.DESC), new ParseEnumPipe(Order))
+    order?: Order
   ) {
     return await this.claimService.getByRevoker({
       revoker,
@@ -361,7 +369,7 @@ export class ClaimController {
       filters: {
         namespace,
       },
-      pagination: { skip, take },
+      pagination: { skip, take, order },
     });
   }
 
@@ -413,13 +421,16 @@ export class ClaimController {
   })
   @ApiQuery({ name: 'skip', required: false, type: Number })
   @ApiQuery({ name: 'take', required: false, type: Number })
+  @ApiQuery({ name: 'order', required: false, enum: Order })
   public async getByRequesterDid(
     @Param('did') requester: string,
     @Query('isAccepted', BooleanPipe) isAccepted?: boolean,
     @Query('namespace') namespace?: string,
     @User() user?: string,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
-    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
+    @Query('order', new DefaultValuePipe(Order.DESC), new ParseEnumPipe(Order))
+    order?: Order
   ) {
     return await this.claimService.getByRequester({
       requester,
@@ -428,7 +439,7 @@ export class ClaimController {
         namespace,
       },
       currentUser: user,
-      pagination: { skip, take },
+      pagination: { skip, take, order },
     });
   }
 
