@@ -21,6 +21,7 @@ import { Role } from '../../role/role.entity';
 import { ClaimHandleResult } from '../claim-handle-result.dto';
 import { RoleIssuerResolver } from '../resolvers/issuer.resolver';
 import { ClaimVerificationService } from './claim-verification.service';
+import { Order } from '../../assets/assets.types';
 interface QueryFilters {
   isAccepted?: boolean;
   namespace?: string;
@@ -29,6 +30,7 @@ interface QueryFilters {
 interface PaginationOptions {
   skip?: number;
   take?: number;
+  order?: Order;
 }
 
 @Injectable()
@@ -281,7 +283,7 @@ export class ClaimService {
     issuer,
     filters: { isAccepted, namespace } = {},
     currentUser,
-    pagination: { skip, take } = {},
+    pagination: { skip, take, order = Order.DESC } = {},
   }: {
     issuer: string;
     filters?: QueryFilters;
@@ -310,6 +312,8 @@ export class ClaimService {
       await this.filterUserRelatedClaims(currentUser, qb);
     }
 
+    qb.orderBy('claim.createdAt', order).addOrderBy('claim.id', order);
+
     if (skip !== undefined) qb.skip(skip);
     if (take !== undefined) qb.take(take);
 
@@ -327,7 +331,7 @@ export class ClaimService {
     revoker,
     currentUser,
     filters: { namespace } = {},
-    pagination: { skip, take } = {},
+    pagination: { skip, take, order = Order.DESC } = {},
   }: {
     revoker: string;
     filters?: QueryFilters;
@@ -352,6 +356,8 @@ export class ClaimService {
       .where('claim.claimType IN (:...rolesByRevoker)', { rolesByRevoker })
       .andWhere('claim.isAccepted = true');
 
+    qb.orderBy('claim.createdAt', order).addOrderBy('claim.id', order);
+
     if (skip !== undefined) qb.skip(skip);
     if (take !== undefined) qb.take(take);
 
@@ -367,7 +373,7 @@ export class ClaimService {
     requester,
     filters: { isAccepted, namespace } = {},
     currentUser,
-    pagination: { skip, take } = {},
+    pagination: { skip, take, order = Order.DESC } = {},
   }: {
     requester: string;
     filters?: QueryFilters;
@@ -375,17 +381,17 @@ export class ClaimService {
     pagination?: PaginationOptions;
   }) {
     const qb = this.roleClaimRepository
-      .createQueryBuilder()
-      .where(':requester = requester', { requester });
+      .createQueryBuilder('claim')
+      .where('claim.requester = :requester', { requester });
 
     if (isAccepted !== undefined) {
-      qb.andWhere('"isAccepted" = :isAccepted', {
+      qb.andWhere('claim.isAccepted = :isAccepted', {
         isAccepted,
       });
     }
 
     if (namespace) {
-      qb.andWhere('"namespace" = :namespace', {
+      qb.andWhere('claim.namespace = :namespace', {
         namespace,
       });
     }
@@ -393,10 +399,12 @@ export class ClaimService {
     if (currentUser) {
       qb.andWhere(
         new Brackets((query) => {
-          query.where(':currentUser = requester', { currentUser });
+          query.where('claim.requester = :currentUser', { currentUser });
         })
       );
     }
+
+    qb.orderBy('claim.createdAt', order).addOrderBy('claim.id', order);
 
     if (skip !== undefined) qb.skip(skip);
     if (take !== undefined) qb.take(take);

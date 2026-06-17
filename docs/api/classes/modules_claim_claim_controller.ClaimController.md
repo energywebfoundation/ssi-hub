@@ -97,7 +97,7 @@ ___
 
 ### getByIssuerDid
 
-▸ **getByIssuerDid**(`issuer`, `isAccepted?`, `namespace?`, `user?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByIssuerDid**(`issuer`, `isAccepted?`, `namespace?`, `user?`, `skip?`, `take?`, `order?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -109,6 +109,7 @@ ___
 | `user?` | `string` |
 | `skip?` | `number` |
 | `take?` | `number` |
+| `order?` | [`Order`](../enums/modules_assets_assets_types.Order.md) |
 
 #### Returns
 
@@ -136,7 +137,7 @@ ___
 
 ### getByRequesterDid
 
-▸ **getByRequesterDid**(`requester`, `isAccepted?`, `namespace?`, `user?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByRequesterDid**(`requester`, `isAccepted?`, `namespace?`, `user?`, `skip?`, `take?`, `order?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -148,6 +149,7 @@ ___
 | `user?` | `string` |
 | `skip?` | `number` |
 | `take?` | `number` |
+| `order?` | [`Order`](../enums/modules_assets_assets_types.Order.md) |
 
 #### Returns
 
@@ -157,7 +159,7 @@ ___
 
 ### getByRevokerDid
 
-▸ **getByRevokerDid**(`revoker`, `user?`, `namespace?`, `skip?`, `take?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
+▸ **getByRevokerDid**(`revoker`, `user?`, `namespace?`, `skip?`, `take?`, `order?`): `Promise`<[`RoleClaim`](modules_claim_entities_roleClaim_entity.RoleClaim.md)[]\>
 
 #### Parameters
 
@@ -168,6 +170,7 @@ ___
 | `namespace?` | `string` |
 | `skip?` | `number` |
 | `take?` | `number` |
+| `order?` | [`Order`](../enums/modules_assets_assets_types.Order.md) |
 
 #### Returns
 
