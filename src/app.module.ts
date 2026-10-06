@@ -38,19 +38,16 @@ const validationOptions: ValidationOptions = {
   abortEarly: false,
 };
 
-let config: DynamicModule;
-
-try {
-  config = ConfigModule.forRoot({
-    isGlobal: true,
-    validationOptions,
-    validationSchema,
-  });
-} catch (err) {
+// ConfigModule.forRoot is async since @nestjs/config v3, so validation errors reject the promise
+const config: Promise<DynamicModule> = ConfigModule.forRoot({
+  isGlobal: true,
+  validationOptions,
+  validationSchema,
+}).catch((err) => {
   console.log(err.toString());
   console.log('exiting');
   process.exit(1);
-}
+});
 
 @Module({
   imports: [
@@ -99,8 +96,8 @@ try {
     StatusListModule,
     RedisModule,
     S3Module,
-    DidStoreModule
+    DidStoreModule,
   ],
   providers: [JSONObjectScalar],
 })
-export class AppModule { }
+export class AppModule {}

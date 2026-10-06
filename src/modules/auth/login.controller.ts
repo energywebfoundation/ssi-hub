@@ -17,7 +17,6 @@ import { Request, Response } from 'express';
 import ms from 'ms';
 import { RedisClientType } from 'redis';
 import { SiweMessage, generateNonce } from 'siwe';
-import parseDuration from 'parse-duration';
 import { LoginGuard } from './login.guard';
 import { TokenService } from './token.service';
 import { RoleService } from '../role/role.service';
@@ -94,7 +93,7 @@ export class LoginController {
   async initiateSiweLogin(@Res() res: Response) {
     const nonce = generateNonce();
     const expire = this.configService.get<string>('SIWE_NONCE_EXPIRES_IN');
-    const expireInSec = parseDuration(expire) / 1000;
+    const expireInSec = ms(expire) / 1000;
     await this.redis.set(nonce, 'true', { EX: expireInSec });
     res.send({ nonce });
   }

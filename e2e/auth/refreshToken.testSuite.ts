@@ -2,7 +2,7 @@ import request from 'supertest';
 import { Wallet, providers } from 'ethers';
 import { ConfigService } from '@nestjs/config';
 import { app } from '../app.e2e.spec';
-import parseDuration from 'parse-duration';
+import ms from 'ms';
 import { TokenService } from '../../src/modules/auth/token.service';
 import { RefreshTokenRepository } from '../../src/modules/auth/refreshToken.repository';
 import { RefreshToken } from '../../src/modules/auth/refreshToken.model';
@@ -72,8 +72,8 @@ export const authRefreshTokenTestSuite = () => {
       const refreshToken = await getRefreshToken();
       const { tokenId } = jwtService.decode(refreshToken) as RefreshToken;
 
-      const expireMs = parseDuration(
-        configService.get('JWT_REFRESH_TOKEN_EXPIRES_IN')
+      const expireMs = ms(
+        configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN')
       );
 
       jest.useFakeTimers();
