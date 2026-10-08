@@ -152,7 +152,7 @@ This is in line with the `id` property guidance for [StatusList2021Credential](h
 
 Due to `NamespaceStatusLists` and `CredentialWithStatus` being separate aggregate roots, the design allows for a created entry which is not associated with a credential (due to a failure).
 This is a possible drawback.
-However the rationale for this is that if the association of a credential to an entry is located within the `NamespaceStatusLists` , then is is not possible to efficiently search for a credential based on credential `id`.
+However the rationale for this is that if the association of a credential to an entry is located within the `NamespaceStatusLists` , then it is not possible to efficiently search for a credential based on credential `id`.
 In other words, if needing to search across all of the `NamespaceStatusLists` for a credential based on its `id`, then one would need to lock updates across all namespaces to be sure that a data wasn't inserted during the search.
 (All namespaces must be locked because, based on the `id` alone, the credential could be in any namespace).
 
