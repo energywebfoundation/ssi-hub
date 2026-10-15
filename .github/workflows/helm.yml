@@ -28,7 +28,7 @@ jobs:
       - name: Install helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
-          version: v3.22.0
+          version: v3.22.1
       - name: Lint environment charts
         # The missing sub-chart is reported as a warning; chart metadata, values files and
         # local templates are still validated and fail the job on errors.
