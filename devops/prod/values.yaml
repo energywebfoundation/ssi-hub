@@ -1,9 +1,9 @@
 iam-cache-server-helm:
-  replicaCount: 3
+  replicaCount: 1
 
   # Pod disruption budget will be created only if replicaCount > 1
   pdb:
-    enabled: true
+    enabled: false
     minAvailable: 2
 
   image:
@@ -161,7 +161,7 @@ iam-cache-server-helm:
       memory: 1500Mi
 
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 3
     maxReplicas: 6
     targetCPUUtilizationPercentage: 50
