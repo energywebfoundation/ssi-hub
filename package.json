@@ -209,7 +209,7 @@
     "@ensdomains/ens": {
       "yargs-parser": "^5.0.1"
     },
-    "@graphql-tools/utils": "12.0.1",
+    "@graphql-tools/utils": "12.0.2",
     "@grpc/grpc-js": "^1.13.6",
     "adm-zip": "^0.6.1",
     "ajv@^8": "^8.18.0",
