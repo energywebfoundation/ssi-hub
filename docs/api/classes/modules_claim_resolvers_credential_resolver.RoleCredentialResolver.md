@@ -164,7 +164,7 @@ ___
 
 ▸ **serviceEndpointsToCredentials**(`tokens`): `VerifiableCredential`<`RoleCredentialSubject`\>[]
 
-Finds verifiable credentials among service ednpoints
+Finds verifiable credentials among service endpoints
 
 #### Parameters
 
