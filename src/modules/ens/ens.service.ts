@@ -286,7 +286,7 @@ export class EnsService implements OnModuleDestroy {
         `Bailed: App with namespace:${namespace} does not have 'apps' subdomain`
       );
     }
-    if (DomainReader.isRoleDefinition(data)) {
+    if (DomainReader.isRoleDefinition(data) || DomainReader.isRoleDefinitionV2(data)) {
       const params = {
         metadata: data,
         namespace,
