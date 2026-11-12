@@ -20,3 +20,6 @@ RUN chmod +x ./sentry-upload.sh
 RUN apk add --no-cache curl bash
 RUN curl -sL https://sentry.io/get-cli/ | bash
 RUN SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_COMMIT=$SENTRY_COMMIT SENTRY_RELEASE=$SENTRY_RELEASE SENTRY_ORG=$SENTRY_ORG SENTRY_PROJECT=$SENTRY_PROJECT ./sentry-upload.sh
+
+# Drop privileges after privileged install/upload steps (one-shot image).
+USER nobody

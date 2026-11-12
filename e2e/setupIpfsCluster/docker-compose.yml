@@ -4,6 +4,12 @@ version: '3.4'
 
 services:
   cluster_proxy:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: cluster_proxy
     image: nginx:alpine
     ports:
@@ -19,6 +25,12 @@ services:
   ##################################################################################
 
   ipfs0:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: ipfs0
     image: ipfs/go-ipfs:latest
     expose:
@@ -31,6 +43,12 @@ services:
       - ipfs0:/data/ipfs
 
   cluster0:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: cluster0
     image: ipfs/ipfs-cluster:latest
     depends_on:
@@ -61,12 +79,24 @@ services:
 
   # See Cluster PEER 0 for comments (all removed here and below)
   ipfs1:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: ipfs1
     image: ipfs/go-ipfs:latest
     volumes:
       - ipfs1:/data/ipfs
 
   cluster1:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: cluster1
     image: ipfs/ipfs-cluster:latest
     depends_on:
@@ -86,12 +116,24 @@ services:
 
   # See Cluster PEER 0 for comments (all removed here and below)
   ipfs2:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: ipfs2
     image: ipfs/go-ipfs:latest
     volumes:
       - ipfs2:/data/ipfs
 
   cluster2:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: cluster2
     image: ipfs/ipfs-cluster:latest
     depends_on:

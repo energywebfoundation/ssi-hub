@@ -85,6 +85,7 @@ describe('TokenService', () => {
       {
         origin: 'https://switchboard-dev.energyweb.org',
       },
+      // nosemgrep: javascript.jsonwebtoken.security.jwt-hardcode.hardcoded-jwt-secret -- test-only secret
       'testToken'
     );
 

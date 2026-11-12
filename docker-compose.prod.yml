@@ -2,6 +2,12 @@ version: '3.4'
 
 services:
   app:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: app
     image: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${DOCKER_TAG}
     command: 'node /app/dist/main.js'
@@ -18,6 +24,12 @@ services:
       - nats
       - redis
   nats:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: nats
     image: synadia/nats-server:nightly
     command: '-c /etc/nats/nats.conf'
@@ -30,6 +42,12 @@ services:
       - '4222:4222'
       - '9222:9222'
   redis:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     container_name: redis
     image: redis:${REDIS_VERSION}
     command: redis-server --requirepass ${REDIS_PASSWORD}
