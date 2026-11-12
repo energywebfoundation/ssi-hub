@@ -13,5 +13,5 @@ appVersion: "1.0"
 
 dependencies:
   - name: iam-cache-server-helm
-    version: 1.2.0
+    version: 1.3.0
     repository: "oci://984870885661.dkr.ecr.us-west-2.amazonaws.com"

@@ -3,7 +3,7 @@ import { RefreshToken } from './refreshToken.model';
 import { RedisClientType } from 'redis';
 import { ConfigService } from '@nestjs/config';
 import { instanceToPlain } from 'class-transformer';
-import parseDuration from 'parse-duration';
+import ms from 'ms';
 
 @Injectable()
 export class RefreshTokenRepository {
@@ -23,7 +23,7 @@ export class RefreshTokenRepository {
     const expire = this.configService.get<string>(
       'JWT_REFRESH_TOKEN_EXPIRES_IN'
     );
-    const expireInSec = parseDuration(expire) / 1000;
+    const expireInSec = ms(expire) / 1000;
 
     await this.client.set(refreshToken.tokenId, JSON.stringify(refreshToken), {
       EX: expireInSec,

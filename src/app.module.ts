@@ -30,6 +30,7 @@ import { ValidationOptions } from 'joi';
 import { envVarsValidationSchema as validationSchema } from './env-vars-validation-schema';
 import { RedisModule } from './modules/redis/redis.module';
 import { S3Module } from './modules/s3/s3.module';
+import { DidStoreModule } from './modules/did-store/did-store.module';
 
 const validationOptions: ValidationOptions = {
   stripUnknown: true,
@@ -37,19 +38,16 @@ const validationOptions: ValidationOptions = {
   abortEarly: false,
 };
 
-let config: DynamicModule;
-
-try {
-  config = ConfigModule.forRoot({
-    isGlobal: true,
-    validationOptions,
-    validationSchema,
-  });
-} catch (err) {
+// ConfigModule.forRoot is async since @nestjs/config v3, so validation errors reject the promise
+const config: Promise<DynamicModule> = ConfigModule.forRoot({
+  isGlobal: true,
+  validationOptions,
+  validationSchema,
+}).catch((err) => {
   console.log(err.toString());
   console.log('exiting');
   process.exit(1);
-}
+});
 
 @Module({
   imports: [
@@ -97,8 +95,9 @@ try {
     HealthCheckModule,
     StatusListModule,
     RedisModule,
-    S3Module
+    S3Module,
+    DidStoreModule,
   ],
   providers: [JSONObjectScalar],
 })
-export class AppModule { }
+export class AppModule {}

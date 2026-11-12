@@ -8,8 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockProvider, deployContract } from 'ethereum-waffle';
-import { BigNumber, utils, Wallet } from 'ethers';
+import { BigNumber, ContractFactory, utils, Wallet } from 'ethers';
+import { ethers, network } from 'hardhat';
+import { HardhatNetworkHDAccountsConfig } from 'hardhat/types';
 import { Provider } from '../../common/provider';
 import { DIDDocumentEntity } from './did.entity';
 import { DIDService } from './did.service';
@@ -36,8 +37,12 @@ const MockObject = {};
 const MockSentryTracing = {
   startTransaction: jest.fn(),
 };
-const provider = new MockProvider();
-const cachedIdentity = provider.getWallets()[0];
+const provider = ethers.provider;
+const { mnemonic, path } = network.config
+  .accounts as HardhatNetworkHDAccountsConfig;
+const getWallet = (index: number) =>
+  Wallet.fromMnemonic(mnemonic, `${path}/${index}`).connect(provider);
+const cachedIdentity = getWallet(0);
 const didDoc: IDIDDocument = {
   id: `did:${Methods.Erc1056}:${Chain.VOLTA}:${cachedIdentity.address}`,
   service: [],
@@ -75,10 +80,11 @@ describe('DidDocumentService', () => {
   let module: TestingModule;
 
   beforeEach(async () => {
-    didRegistry = (await deployContract(
-      cachedIdentity,
-      ethrReg
-    )) as EthereumDIDRegistry;
+    didRegistry = (await new ContractFactory(
+      ethrReg.abi,
+      ethrReg.bytecode,
+      cachedIdentity
+    ).deploy()) as EthereumDIDRegistry;
     await didRegistry.deployed();
     const MockConfigService = {
       get: jest.fn((key: string) => {
@@ -171,7 +177,7 @@ describe('DidDocumentService', () => {
   });
 
   it('should synchronize not cached document', async () => {
-    const identity = provider.getWallets()[1];
+    const identity = getWallet(1);
     const did = `did:${Methods.Erc1056}:${Chain.VOLTA}:${identity}`;
     cachedDoc = { ...didDoc, logs: '<logs>' };
     const cachedDID = new Promise((resolve) =>

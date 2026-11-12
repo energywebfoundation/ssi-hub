@@ -13,7 +13,9 @@ import { ConfigService } from '@nestjs/config';
 import { ethrReg } from '@ew-did-registry/did-ethr-resolver';
 import { Methods } from '@ew-did-registry/did';
 import { EthereumDIDRegistry } from '../../ethers/EthereumDIDRegistry';
-import { deployContract, MockProvider } from 'ethereum-waffle';
+import { ContractFactory } from 'ethers';
+import { ethers, network } from 'hardhat';
+import { HardhatNetworkHDAccountsConfig } from 'hardhat/types';
 import { Provider } from '../../common/provider';
 import { Asset, AssetsHistory } from '../assets/assets.entity';
 import { DIDService } from '../did/did.service';
@@ -43,9 +45,12 @@ const MockClaimVerificationService = {
   verifyEnrolmentPreconditions: jest.fn(),
 };
 
-const provider = new MockProvider();
+const { mnemonic, path } = network.config
+  .accounts as HardhatNetworkHDAccountsConfig;
 let didRegistry: EthereumDIDRegistry;
-const cachedIdentity = provider.getWallets()[0];
+const cachedIdentity = Wallet.fromMnemonic(mnemonic, `${path}/0`).connect(
+  ethers.provider
+);
 
 const MockConfigService = {
   get: jest.fn((key: string) => {
@@ -73,10 +78,11 @@ describe('ClaimService', () => {
   const jwt = new JWT(issuer);
   const claimTypeVersion = '1';
   beforeEach(async () => {
-    didRegistry = (await deployContract(
-      cachedIdentity,
-      ethrReg
-    )) as EthereumDIDRegistry;
+    didRegistry = (await new ContractFactory(
+      ethrReg.abi,
+      ethrReg.bytecode,
+      cachedIdentity
+    ).deploy()) as EthereumDIDRegistry;
     await didRegistry.deployed();
     module = await Test.createTestingModule({
       imports: [

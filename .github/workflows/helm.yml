@@ -1,5 +1,7 @@
 name: Validate Helm
 
+# Keyless check: lints the environment charts in devops/ without pulling the private
+# iam-cache-server-helm sub-chart, so no cloud credentials are needed. ArgoCD handles deployment.
 on:
   pull_request:
     branches:
@@ -8,71 +10,33 @@ on:
       - release
       - sandbox
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
-  cancel-previous:
-    name: Cancel Previous Runs
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          access_token: ${{ github.token }}
-  env_name:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get GHA environment name
-        id: env_name
-        run: |
-          echo "Running on branch ${{ github.event.pull_request.base.ref }}"
-          if [ "${{ github.event.pull_request.base.ref }}" = "develop" ]; then
-            echo "::set-output name=env_name::dev"
-          elif [ "${{ github.event.pull_request.base.ref }}" = "sandbox" ]; then
-            echo "::set-output name=env_name::sandbox"
-          elif [ "${{ github.event.pull_request.base.ref }}" = "master" ]; then
-            echo "::set-output name=env_name::staging"
-          elif [ "${{ github.event.pull_request.base.ref }}" = "release" ]; then
-            echo "::set-output name=env_name::prod"
-          else
-            echo "Branch ${{ github.event.pull_request.base.ref }} is not configured for deployment"
-            exit 1
-          fi
-      - name: Use specified environment secrets from previous step
-        run: echo "Environment secrets set name ${{ steps.env_name.outputs.env_name }}"
-    outputs:
-      env_name: ${{ steps.env_name.outputs.env_name }}
   helm-check:
-    needs: [ cancel-previous, env_name ]
-    environment:
-      name: ${{ needs.env_name.outputs.env_name }}
     runs-on: ubuntu-latest
-    env:
-      HELM_EXPERIMENTAL_OCI: 1
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@master
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          aws-access-key-id: ${{ secrets.IAM_HELM_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.IAM_HELM_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.IAM_HELM_AWS_REGION }}
+          persist-credentials: false
       - name: Install helm
-        run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-      - name: Login to ECR
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v3.22.0
+      - name: Lint environment charts
+        # The missing sub-chart is reported as a warning; chart metadata, values files and
+        # local templates are still validated and fail the job on errors.
         run: |
-          aws ecr get-login-password \
-              --region us-west-2 | helm registry login \
-              --username AWS \
-              --password-stdin ${{ secrets.IAM_HELM_AWS_ECR_URL }}
-      - name: Update dependency
-        run: helm dependency update ./devops/${{ needs.env_name.outputs.env_name }}
-      - name: helm-check
-        uses: igabaydulin/helm-check-action@0.2.0
-        env:
-          CHART_LOCATION: ./devops/${{ needs.env_name.outputs.env_name }}
-          CHART_VALUES: ./devops/${{ needs.env_name.outputs.env_name }}/values.yaml
-      - name: Cleanup
-        if: always()
-        run: |
-          rm -rf ./devops/${{ needs.env_name.outputs.env_name }}/charts
-          rm -rf ./devops/${{ needs.env_name.outputs.env_name }}/tmpcharts
-          docker logout ${{ steps.login-ecr.outputs.registry }}
+          status=0
+          for env in dev sandbox staging prod; do
+            echo "::group::helm lint devops/$env"
+            helm lint "devops/$env" || status=1
+            echo "::endgroup::"
+          done
+          exit $status

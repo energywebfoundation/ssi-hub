@@ -24,6 +24,8 @@ RUN apk add --no-cache curl
 
 COPY --chown=node:node --from=build /app/dist /app/dist
 COPY --chown=node:node --from=build /app/node_modules /app/node_modules
+# Target of the node_modules links for dependencies replaced via package.json overrides
+COPY --chown=node:node --from=build /app/stubs /app/stubs
 
 RUN mkdir /app/logs
 
