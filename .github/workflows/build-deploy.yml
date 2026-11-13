@@ -162,11 +162,11 @@ jobs:
           file: ./docker/sentry-upload/Dockerfile
           build-args: |
             PUBLIC_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.configure.outputs.IMAGE_TAG }}
-            SENTRY_RELEASE="${{ needs.configure.outputs.IMAGE_TAG }}"
+            SENTRY_RELEASE=${{ needs.configure.outputs.IMAGE_TAG }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
-            SENTRY_COMMIT="${{ github.repository }}/${{ github.sha }}"
+            SENTRY_COMMIT=${{ github.repository }}/${{ github.sha }}
 
       - name: ArgoCD login
         uses: clowdhaus/argo-cd-action@4619d5f8ddfb2bd6ec028f512ecc6508aa4c3dc2 # v1.12.1
