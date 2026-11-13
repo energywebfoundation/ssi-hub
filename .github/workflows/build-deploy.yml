@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: styfle/cancel-workflow-action@bb6001c4ea612bf59c3abfc4756fbceee4f870c7 # 0.10.0
+      - uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
         with:
           access_token: ${{ github.token }}
 
@@ -32,7 +32,7 @@ jobs:
       TAG_DRY_RUN: ${{ steps.configure.outputs.TAG_DRY_RUN }}
       PUSH_DOCKER: ${{ steps.configure.outputs.PUSH_DOCKER }}
     steps:
-      - uses: styfle/cancel-workflow-action@b173b6ec0100793626c2d9e6b90435061f4fc3e5 # 0.11.0
+      - uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
         with:
           access_token: ${{ github.token }}
       - id: configure
@@ -66,13 +66,13 @@ jobs:
     outputs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
         with:
           fetch-depth: 0
 
       - name: Bump version and push tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # v6.1
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: release
@@ -82,7 +82,7 @@ jobs:
 
       - name: Create a GitHub release
         if: github.ref == 'refs/heads/release'
-        uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e # v1.12.0
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
         with:
           prerelease: ${{  needs.configure.outputs.PRERELEASE  }}
           tag: ${{ steps.tag_version.outputs.new_tag }}
@@ -100,7 +100,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@2b82ce82d56a2a04d2637cd93a637ae1b359c0a7 # v2
@@ -109,7 +109,7 @@ jobs:
         uses: docker/setup-buildx-action@885d1462b80bc1c1c7f0b00334ad271f09369c55 # v2
 
       - name: Log in to the Container registry
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # v2.1.0
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -118,7 +118,7 @@ jobs:
       # This step outputs Docker labels and Docker tag associated with github.ref (branch name in this scenario)
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@507c2f2dc502c992ad446e3d7a5dfbe311567a96 # v4.3.0
+        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175 # v4.6.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
@@ -169,21 +169,21 @@ jobs:
             SENTRY_COMMIT="${{ github.repository }}/${{ github.sha }}"
 
       - name: ArgoCD login
-        uses: clowdhaus/argo-cd-action@4619d5f8ddfb2bd6ec028f512ecc6508aa4c3dc2 # v1.12.1
+        uses: clowdhaus/argo-cd-action@f3ecac7463ffecfaf601620c154f3aab3f93abe4 # v1.17.0
         id: argocd_login
         with:
           command: login ${{ secrets.ARGOCD_URL }}
           options: --insecure --password ${{ secrets.ARGOCD_PASS }} --username ${{ secrets.ARGOCD_USERNAME }}
 
       - name: ArgoCD overvrite values.yaml
-        uses: clowdhaus/argo-cd-action@4619d5f8ddfb2bd6ec028f512ecc6508aa4c3dc2 # v1.12.1
+        uses: clowdhaus/argo-cd-action@f3ecac7463ffecfaf601620c154f3aab3f93abe4 # v1.17.0
         id: argocd_image_tag_overwrite
         with:
           command: app set iam-cache-server
           options: -p image.tag=${{needs.configure.outputs.IMAGE_TAG}} -p image.repository=${{env.REGISTRY}}/${{env.IMAGE_NAME}}
 
       - name: ArgoCD overvrite HELM values.yaml
-        uses: clowdhaus/argo-cd-action@4619d5f8ddfb2bd6ec028f512ecc6508aa4c3dc2 # v1.12.1
+        uses: clowdhaus/argo-cd-action@f3ecac7463ffecfaf601620c154f3aab3f93abe4 # v1.17.0
         id: argocd_image_helm_tag_overwrite
         with:
           command: app set iam-cache-server
