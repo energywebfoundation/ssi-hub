@@ -9,53 +9,18 @@ on:
 
 env:
   CI: true
-  ENS_REGISTRY_ADDRESS: ${{secrets.ENS_REGISTRY_ADDRESS}}
-  CHAIN_ID: ${{secrets.CHAIN_ID}}
   CHAIN_NAME: volta
-  PUBLIC_RESOLVER_ADDRESS: ${{secrets.PUBLIC_RESOLVER_ADDRESS}}
-  RESOLVER_V1_ADDRESS: ${{secrets.RESOLVER_V1_ADDRESS}}
   RESOLVER_V2_ADDRESS: '0xcf72f16Ab886776232bea2fcf3689761a0b74EfE'
-  DOMAIN_NOTIFIER_ADDRESS: ${{secrets.DOMAIN_NOTIFIER_ADDRESS}}
-  ENS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ENS_SYNC_INTERVAL_IN_HOURS}}
-  ENS_SYNC_ENABLED: ${{secrets.ENS_SYNC_ENABLED}}
-  ENS_URL: ${{secrets.ENS_URL}}
-  REDIS_HOST: ${{secrets.REDIS_HOST}}
   REDIS_PORT: 6379
-  NATS_CLIENTS_URL: ${{secrets.NATS_CLIENTS_URL}}
-  JWT_PUBLIC_KEY_PATH: ${{secrets.JWT_PUBLIC_KEY}}
-  JWT_PRIVATE_KEY_PATH: ${{secrets.JWT_PRIVATE_KEY}}
-  DB_HOST: ${{secrets.DB_HOST}}
-  DB_PORT: ${{secrets.DB_PORT}}
-  DB_USERNAME: ${{secrets.DB_USERNAME}}
-  DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-  DB_NAME: ${{secrets.DB_NAME}}
-  JWT_ACCESS_TOKEN_EXPIRES_IN: ${{secrets.JWT_ACCESS_TOKEN_EXPIRES_IN}}
-  JWT_REFRESH_TOKEN_EXPIRES_IN: ${{secrets.JWT_REFRESH_TOKEN_EXPIRES_IN}}
   SIWE_NONCE_EXPIRES_IN: 1m
-  JWT_ACCESS_TOKEN_NAME: ${{secrets.JWT_ACCESS_TOKEN_NAME}}
-  JWT_REFRESH_TOKEN_NAME: ${{secrets.JWT_REFRESH_TOKEN_NAME}}
   RESTRICT_CORS_ORIGINS: true
   ALLOWED_ORIGINS: https://switchboard-dev.energyweb.org,https://gp4btc-ui-dev.energyweb.org/,https://staking-ui-dev.energyweb.org,https://stedin-dev.energyweb.org
-  UNIVERSAL_RESOLVER_URL: ${{secrets.UNIVERSAL_RESOLVER_URL}}
   ROOT_DOMAIN: iam.ewc
   DID_SYNC_ENABLED: false
   DIDDOC_SYNC_INTERVAL_IN_HOURS: 21
-  DID_REGISTRY_ADDRESS: ${{secrets.DID_REGISTRY_ADDRESS}}
-  CLAIM_MANAGER_ADDRESS: ${{secrets.CLAIM_MANAGER_ADDRESS}}
-  ASSETS_MANAGER_ADDRESS: ${{secrets.ASSETS_MANAGER_ADDRESS}}
-  ASSETS_SYNC_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_INTERVAL_IN_HOURS}}
-  ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: ${{secrets.ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS}}
-  ASSETS_SYNC_ENABLED: ${{secrets.ASSETS_SYNC_ENABLED}}
-  IPFS_CLIENT_URL: ${{secrets.IPFS_URL}}
-  NESTJS_PORT: ${{secrets.NESTJS_PORT}}
-  STRATEGY_CACHE_SERVER: ${{secrets.STRATEGY_CACHE_SERVER}}
-  STRATEGY_PRIVATE_KEY: ${{secrets.STRATEGY_PRIVATE_KEY}}
   BLOCKNUM_AUTH_ENABLED: true
   STRATEGY_NUM_BLOCKS_BACK: 10
-  STAKING_POOL_FACTORY_ADDRESS: ${{secrets.STAKING_POOL_FACTORY_ADDRESS}}
   DID_SYNC_MODE_FULL: false
-  ENABLE_AUTH: ${{secrets.ENABLE_AUTH}}
-  STATUS_LIST_DOMAIN: ${{secrets.STATUS_LIST_DOMAIN}}
   NATS_ENVIRONMENT_NAME: dev
   DISABLE_GET_DIDS_BY_ROLE: true
 
@@ -65,20 +30,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: styfle/cancel-workflow-action@0.11.0
+      - uses: styfle/cancel-workflow-action@b173b6ec0100793626c2d9e6b90435061f4fc3e5 # 0.11.0
         with:
           access_token: ${{ github.token }}
   install:
     name: Install dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Setup app dependencies
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: '18.20.8'
       - name: Cache npm cache
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
@@ -89,7 +54,7 @@ jobs:
             ${{ runner.os }}-npm-
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: |
             node_modules
@@ -103,23 +68,23 @@ jobs:
     needs: [install]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: '18.20.8'
 
       - name: Restore node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: |
             node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: |
             dist
@@ -133,13 +98,49 @@ jobs:
     name: Unit tests
     needs: [build]
     runs-on: ubuntu-latest
+    env:
+      ENS_REGISTRY_ADDRESS: ${{ secrets.ENS_REGISTRY_ADDRESS }}
+      CHAIN_ID: ${{ secrets.CHAIN_ID }}
+      PUBLIC_RESOLVER_ADDRESS: ${{ secrets.PUBLIC_RESOLVER_ADDRESS }}
+      RESOLVER_V1_ADDRESS: ${{ secrets.RESOLVER_V1_ADDRESS }}
+      DOMAIN_NOTIFIER_ADDRESS: ${{ secrets.DOMAIN_NOTIFIER_ADDRESS }}
+      ENS_SYNC_INTERVAL_IN_HOURS: ${{ secrets.ENS_SYNC_INTERVAL_IN_HOURS }}
+      ENS_SYNC_ENABLED: ${{ secrets.ENS_SYNC_ENABLED }}
+      ENS_URL: ${{ secrets.ENS_URL }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      NATS_CLIENTS_URL: ${{ secrets.NATS_CLIENTS_URL }}
+      JWT_PUBLIC_KEY_PATH: ${{ secrets.JWT_PUBLIC_KEY }}
+      JWT_PRIVATE_KEY_PATH: ${{ secrets.JWT_PRIVATE_KEY }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      JWT_ACCESS_TOKEN_EXPIRES_IN: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRES_IN }}
+      JWT_REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRES_IN }}
+      JWT_ACCESS_TOKEN_NAME: ${{ secrets.JWT_ACCESS_TOKEN_NAME }}
+      JWT_REFRESH_TOKEN_NAME: ${{ secrets.JWT_REFRESH_TOKEN_NAME }}
+      UNIVERSAL_RESOLVER_URL: ${{ secrets.UNIVERSAL_RESOLVER_URL }}
+      DID_REGISTRY_ADDRESS: ${{ secrets.DID_REGISTRY_ADDRESS }}
+      CLAIM_MANAGER_ADDRESS: ${{ secrets.CLAIM_MANAGER_ADDRESS }}
+      ASSETS_MANAGER_ADDRESS: ${{ secrets.ASSETS_MANAGER_ADDRESS }}
+      ASSETS_SYNC_INTERVAL_IN_HOURS: ${{ secrets.ASSETS_SYNC_INTERVAL_IN_HOURS }}
+      ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: ${{ secrets.ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS }}
+      ASSETS_SYNC_ENABLED: ${{ secrets.ASSETS_SYNC_ENABLED }}
+      IPFS_CLIENT_URL: ${{ secrets.IPFS_URL }}
+      NESTJS_PORT: ${{ secrets.NESTJS_PORT }}
+      STRATEGY_CACHE_SERVER: ${{ secrets.STRATEGY_CACHE_SERVER }}
+      STRATEGY_PRIVATE_KEY: ${{ secrets.STRATEGY_PRIVATE_KEY }}
+      STAKING_POOL_FACTORY_ADDRESS: ${{ secrets.STAKING_POOL_FACTORY_ADDRESS }}
+      ENABLE_AUTH: ${{ secrets.ENABLE_AUTH }}
+      STATUS_LIST_DOMAIN: ${{ secrets.STATUS_LIST_DOMAIN }}
     services:
       postgres:
         image: postgres:12
         env:
-          POSTGRES_USER: ${{secrets.DB_USERNAME}}
-          POSTGRES_DB: ${{secrets.DB_NAME}}
-          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
+          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 5432:5432
         # Add a health check
@@ -154,23 +155,23 @@ jobs:
 
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: '18.20.8'
 
       - name: Restore node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: |
             node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Restore build artefacts
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: |
             dist
@@ -178,7 +179,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ github.sha }}
 
       - name: Create Nats cluster
-        uses: onichandame/nats-action@master
+        uses: onichandame/nats-action@9b54082b16a609d2eb25dc2cc8fa637db1e7e1b8 # master
         with:
           port: '4222 4223 4224'
 
@@ -195,13 +196,49 @@ jobs:
     name: E2E tests
     needs: [build]
     runs-on: ubuntu-latest
+    env:
+      ENS_REGISTRY_ADDRESS: ${{ secrets.ENS_REGISTRY_ADDRESS }}
+      CHAIN_ID: ${{ secrets.CHAIN_ID }}
+      PUBLIC_RESOLVER_ADDRESS: ${{ secrets.PUBLIC_RESOLVER_ADDRESS }}
+      RESOLVER_V1_ADDRESS: ${{ secrets.RESOLVER_V1_ADDRESS }}
+      DOMAIN_NOTIFIER_ADDRESS: ${{ secrets.DOMAIN_NOTIFIER_ADDRESS }}
+      ENS_SYNC_INTERVAL_IN_HOURS: ${{ secrets.ENS_SYNC_INTERVAL_IN_HOURS }}
+      ENS_SYNC_ENABLED: ${{ secrets.ENS_SYNC_ENABLED }}
+      ENS_URL: ${{ secrets.ENS_URL }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      NATS_CLIENTS_URL: ${{ secrets.NATS_CLIENTS_URL }}
+      JWT_PUBLIC_KEY_PATH: ${{ secrets.JWT_PUBLIC_KEY }}
+      JWT_PRIVATE_KEY_PATH: ${{ secrets.JWT_PRIVATE_KEY }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      JWT_ACCESS_TOKEN_EXPIRES_IN: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRES_IN }}
+      JWT_REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRES_IN }}
+      JWT_ACCESS_TOKEN_NAME: ${{ secrets.JWT_ACCESS_TOKEN_NAME }}
+      JWT_REFRESH_TOKEN_NAME: ${{ secrets.JWT_REFRESH_TOKEN_NAME }}
+      UNIVERSAL_RESOLVER_URL: ${{ secrets.UNIVERSAL_RESOLVER_URL }}
+      DID_REGISTRY_ADDRESS: ${{ secrets.DID_REGISTRY_ADDRESS }}
+      CLAIM_MANAGER_ADDRESS: ${{ secrets.CLAIM_MANAGER_ADDRESS }}
+      ASSETS_MANAGER_ADDRESS: ${{ secrets.ASSETS_MANAGER_ADDRESS }}
+      ASSETS_SYNC_INTERVAL_IN_HOURS: ${{ secrets.ASSETS_SYNC_INTERVAL_IN_HOURS }}
+      ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS: ${{ secrets.ASSETS_SYNC_HISTORY_INTERVAL_IN_HOURS }}
+      ASSETS_SYNC_ENABLED: ${{ secrets.ASSETS_SYNC_ENABLED }}
+      IPFS_CLIENT_URL: ${{ secrets.IPFS_URL }}
+      NESTJS_PORT: ${{ secrets.NESTJS_PORT }}
+      STRATEGY_CACHE_SERVER: ${{ secrets.STRATEGY_CACHE_SERVER }}
+      STRATEGY_PRIVATE_KEY: ${{ secrets.STRATEGY_PRIVATE_KEY }}
+      STAKING_POOL_FACTORY_ADDRESS: ${{ secrets.STAKING_POOL_FACTORY_ADDRESS }}
+      ENABLE_AUTH: ${{ secrets.ENABLE_AUTH }}
+      STATUS_LIST_DOMAIN: ${{ secrets.STATUS_LIST_DOMAIN }}
     services:
       postgres:
         image: postgres:12
         env:
-          POSTGRES_USER: ${{secrets.DB_USERNAME}}
-          POSTGRES_DB: ${{secrets.DB_NAME}}
-          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
+          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 5432:5432
         # Add a health check
@@ -216,23 +253,23 @@ jobs:
 
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: '18.20.8'
 
       - name: Restore node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: |
             node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Restore build artefacts
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: |
             dist
@@ -240,7 +277,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ github.sha }}
 
       - name: Create Nats cluster
-        uses: onichandame/nats-action@master
+        uses: onichandame/nats-action@9b54082b16a609d2eb25dc2cc8fa637db1e7e1b8 # master
         with:
           port: '4222 4223 4224'
 

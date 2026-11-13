@@ -112,8 +112,8 @@ iam-cache-server-helm:
     NESTJS_PORT: 3000
     IPFS_CLIENT_PROTOCOL: https
     IPFS_CLIENT_PORT: 5001
-    IPFS_CLIENT_PROJECT_SECRET: 9506198a91243f03417aaed60e5eb654
     IPFS_CLIENT_PROJECT_ID: 2DBFBP5zsjfImw1wBPn1Vx08Yd5
+    # IPFS_CLIENT_PROJECT_SECRET must live in sealedSecret.encryptedData (rotate — was previously committed in plaintext).
     IPFS_CLIENT_HOST: ipfs.infura.io
     DB_MAXIMUM_CONNECTION_POOL: 56 # https://github.com/energywebfoundation/iam-cache-server/blob/develop/README.md#connection-pooling
     SENTRY_ENV: sandbox

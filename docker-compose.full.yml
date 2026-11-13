@@ -2,6 +2,12 @@ version: '3.9'
 
 services:
   app:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     image: ssi-hub
     build:
       dockerfile: docker/prod/Dockerfile
@@ -72,6 +78,12 @@ services:
       STATUS_LIST_DOMAIN: http://localhost:3000/v1/
 
   postgres:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     image: postgres:12-alpine
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -85,6 +97,12 @@ services:
 #    ports:
 #      - '127.0.0.1:${DB_PORT}:5432'
   nats:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     image: synadia/nats-server:nightly
     volumes:
       - ./config/:/etc/nats
@@ -96,6 +114,12 @@ services:
 #      - '127.0.0.1:8222:8222'
 #      - '127.0.0.1:9222:9222'
   redis:
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     image: redis:${REDIS_VERSION}
     volumes:
       - full-redis-data:/data
