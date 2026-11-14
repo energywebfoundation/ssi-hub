@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-// although it is called in app.module, it is added here to be able to override DID_REGISTRY_ADDRESS. When config() is called next time it will not change variables alredy presented in env
+// although it is called in app.module, it is added here to be able to override DID_REGISTRY_ADDRESS. When config() is called next time it will not change variables already presented in env
 config();
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
